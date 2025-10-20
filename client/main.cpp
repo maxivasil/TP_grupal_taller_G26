@@ -4,32 +4,49 @@
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
 
-#include "common/foo.h"
+#include "../common/queue.h"
 
-int main() try {
-    // Initialize SDL library
-    SDL2pp::SDL sdl(SDL_INIT_VIDEO);
+#include "session.h"
 
-    // Create main window: 640x480 dimensions, resizable, "SDL2pp demo" title
-    SDL2pp::Window window("SDL2pp demo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480,
-                          SDL_WINDOW_RESIZABLE);
+int main(int argc, const char* argv[]) {
+    try {
+        // // Initialize SDL library
+        // SDL2pp::SDL sdl(SDL_INIT_VIDEO);
 
-    // Create accelerated video renderer with default driver
-    SDL2pp::Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED);
+        // // Create main window: 640x480 dimensions, resizable, "SDL2pp demo" title
+        // SDL2pp::Window window("SDL2pp demo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+        // 640, 480,
+        //                       SDL_WINDOW_RESIZABLE);
 
-    // Clear screen
-    renderer.Clear();
+        // // Create accelerated video renderer with default driver
+        // SDL2pp::Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    // Show rendered frame
-    renderer.Present();
+        // // Clear screen
+        // renderer.Clear();
 
-    // 5 second delay
-    SDL_Delay(5000);
+        // // Show rendered frame
+        // renderer.Present();
 
-    // Here all resources are automatically released and library deinitialized
-    return 0;
-} catch (std::exception& e) {
-    // If case of error, print it and exit with error
-    std::cerr << e.what() << std::endl;
-    return 1;
+        // // 5 second delay
+        // SDL_Delay(5000);
+
+
+        int ret = 1;
+        if (argc != 3) {
+            std::cerr << "Bad program call. Expected " << argv[0] << " <hostname> <servicename>\n";
+            return ret;
+        }
+        const char* hostname = argv[1];
+        const char* servname = argv[2];
+        Queue<int> recv_queue;
+        ClientSession session(hostname, servname, recv_queue);
+        ret = session.run();
+        return ret;
+    } catch (const std::exception& err) {
+        std::cerr << "Something went wrong and an exception was caught: " << err.what() << "\n";
+        return 1;
+    } catch (...) {
+        std::cerr << "Something went wrong and an unknown exception was caught.\n";
+        return 1;
+    }
 }

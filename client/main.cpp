@@ -1,11 +1,8 @@
 #include <exception>
 #include <iostream>
-
 #include <SDL2/SDL.h>
-#include <SDL2pp/SDL2pp.hh>
-
+//#include <SDL2pp/SDL2pp.hh>
 #include "../common/queue.h"
-
 #include "session.h"
 
 int main(int argc, const char* argv[]) {

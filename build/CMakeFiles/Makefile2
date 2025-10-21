@@ -79,6 +79,8 @@ all: server/all
 all: editor/all
 all: _deps/googletest-build/all
 all: tests/all
+all: box_2d_demo/all
+all: physics_test/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -93,6 +95,8 @@ preinstall: server/preinstall
 preinstall: editor/preinstall
 preinstall: _deps/googletest-build/preinstall
 preinstall: tests/preinstall
+preinstall: box_2d_demo/preinstall
+preinstall: physics_test/preinstall
 .PHONY : preinstall
 
 # The main recursive "clean" target.
@@ -112,6 +116,8 @@ clean: server/clean
 clean: editor/clean
 clean: _deps/googletest-build/clean
 clean: tests/clean
+clean: box_2d_demo/clean
+clean: physics_test/clean
 .PHONY : clean
 
 #=============================================================================
@@ -249,6 +255,21 @@ _deps/sdl2_ttf-build/clean: _deps/sdl2_ttf-build/CMakeFiles/SDL2_ttf.dir/clean
 .PHONY : _deps/sdl2_ttf-build/clean
 
 #=============================================================================
+# Directory level rules for directory box_2d_demo
+
+# Recursive "all" directory target.
+box_2d_demo/all: box_2d_demo/CMakeFiles/box2d_demo.dir/all
+.PHONY : box_2d_demo/all
+
+# Recursive "preinstall" directory target.
+box_2d_demo/preinstall:
+.PHONY : box_2d_demo/preinstall
+
+# Recursive "clean" directory target.
+box_2d_demo/clean: box_2d_demo/CMakeFiles/box2d_demo.dir/clean
+.PHONY : box_2d_demo/clean
+
+#=============================================================================
 # Directory level rules for directory client
 
 # Recursive "all" directory target.
@@ -292,6 +313,21 @@ editor/preinstall:
 # Recursive "clean" directory target.
 editor/clean:
 .PHONY : editor/clean
+
+#=============================================================================
+# Directory level rules for directory physics_test
+
+# Recursive "all" directory target.
+physics_test/all: physics_test/CMakeFiles/physics_test.dir/all
+.PHONY : physics_test/all
+
+# Recursive "preinstall" directory target.
+physics_test/preinstall:
+.PHONY : physics_test/preinstall
+
+# Recursive "clean" directory target.
+physics_test/clean: physics_test/CMakeFiles/physics_test.dir/clean
+.PHONY : physics_test/clean
 
 #=============================================================================
 # Directory level rules for directory server
@@ -364,7 +400,7 @@ CMakeFiles/taller_client.dir/all: _deps/libsdl2pp-build/CMakeFiles/SDL2pp.dir/al
 
 # Build rule for subdir invocation for target.
 CMakeFiles/taller_client.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 52
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 51
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/taller_client.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 0
 .PHONY : CMakeFiles/taller_client.dir/rule
@@ -419,7 +455,7 @@ CMakeFiles/taller_editor.dir/all: _deps/libsdl2pp-build/CMakeFiles/SDL2pp.dir/al
 
 # Build rule for subdir invocation for target.
 CMakeFiles/taller_editor.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 51
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 50
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/taller_editor.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 0
 .PHONY : CMakeFiles/taller_editor.dir/rule
@@ -494,12 +530,12 @@ _deps/sdl2-build/CMakeFiles/sdl_headers_copy.dir/clean:
 _deps/sdl2-build/CMakeFiles/SDL2main.dir/all: _deps/sdl2-build/CMakeFiles/sdl_headers_copy.dir/all
 	$(MAKE) $(MAKESILENT) -f _deps/sdl2-build/CMakeFiles/SDL2main.dir/build.make _deps/sdl2-build/CMakeFiles/SDL2main.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/sdl2-build/CMakeFiles/SDL2main.dir/build.make _deps/sdl2-build/CMakeFiles/SDL2main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=81 "Built target SDL2main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num= "Built target SDL2main"
 .PHONY : _deps/sdl2-build/CMakeFiles/SDL2main.dir/all
 
 # Build rule for subdir invocation for target.
 _deps/sdl2-build/CMakeFiles/SDL2main.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 12
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/sdl2-build/CMakeFiles/SDL2main.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 0
 .PHONY : _deps/sdl2-build/CMakeFiles/SDL2main.dir/rule
@@ -572,12 +608,12 @@ _deps/sdl2-build/CMakeFiles/SDL2-static.dir/clean:
 _deps/sdl2-build/CMakeFiles/SDL2_test.dir/all: _deps/sdl2-build/CMakeFiles/sdl_headers_copy.dir/all
 	$(MAKE) $(MAKESILENT) -f _deps/sdl2-build/CMakeFiles/SDL2_test.dir/build.make _deps/sdl2-build/CMakeFiles/SDL2_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/sdl2-build/CMakeFiles/SDL2_test.dir/build.make _deps/sdl2-build/CMakeFiles/SDL2_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=79,80 "Built target SDL2_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=78,79,80 "Built target SDL2_test"
 .PHONY : _deps/sdl2-build/CMakeFiles/SDL2_test.dir/all
 
 # Build rule for subdir invocation for target.
 _deps/sdl2-build/CMakeFiles/SDL2_test.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 14
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 15
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/sdl2-build/CMakeFiles/SDL2_test.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 0
 .PHONY : _deps/sdl2-build/CMakeFiles/SDL2_test.dir/rule
@@ -650,12 +686,12 @@ _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/clean:
 _deps/sdl2_mixer-build/CMakeFiles/SDL2_mixer.dir/all: _deps/sdl2-build/CMakeFiles/SDL2.dir/all
 	$(MAKE) $(MAKESILENT) -f _deps/sdl2_mixer-build/CMakeFiles/SDL2_mixer.dir/build.make _deps/sdl2_mixer-build/CMakeFiles/SDL2_mixer.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/sdl2_mixer-build/CMakeFiles/SDL2_mixer.dir/build.make _deps/sdl2_mixer-build/CMakeFiles/SDL2_mixer.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=74,75,76,77,78 "Built target SDL2_mixer"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=74,75,76,77 "Built target SDL2_mixer"
 .PHONY : _deps/sdl2_mixer-build/CMakeFiles/SDL2_mixer.dir/all
 
 # Build rule for subdir invocation for target.
 _deps/sdl2_mixer-build/CMakeFiles/SDL2_mixer.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 52
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 51
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/sdl2_mixer-build/CMakeFiles/SDL2_mixer.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 0
 .PHONY : _deps/sdl2_mixer-build/CMakeFiles/SDL2_mixer.dir/rule
@@ -703,12 +739,12 @@ _deps/libsdl2pp-build/CMakeFiles/SDL2pp.dir/all: _deps/sdl2-build/CMakeFiles/SDL
 _deps/libsdl2pp-build/CMakeFiles/SDL2pp.dir/all: _deps/sdl2-build/CMakeFiles/SDL2.dir/all
 	$(MAKE) $(MAKESILENT) -f _deps/libsdl2pp-build/CMakeFiles/SDL2pp.dir/build.make _deps/libsdl2pp-build/CMakeFiles/SDL2pp.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/libsdl2pp-build/CMakeFiles/SDL2pp.dir/build.make _deps/libsdl2pp-build/CMakeFiles/SDL2pp.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=82,83 "Built target SDL2pp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=81,82 "Built target SDL2pp"
 .PHONY : _deps/libsdl2pp-build/CMakeFiles/SDL2pp.dir/all
 
 # Build rule for subdir invocation for target.
 _deps/libsdl2pp-build/CMakeFiles/SDL2pp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 50
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 49
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/libsdl2pp-build/CMakeFiles/SDL2pp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 0
 .PHONY : _deps/libsdl2pp-build/CMakeFiles/SDL2pp.dir/rule
@@ -734,7 +770,7 @@ _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/all: _deps/googletest-bui
 
 # Build rule for subdir invocation for target.
 _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 0
 .PHONY : _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/rule
@@ -761,7 +797,7 @@ _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/all: _deps/googletes
 
 # Build rule for subdir invocation for target.
 _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 0
 .PHONY : _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/rule
@@ -782,12 +818,12 @@ _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/clean:
 _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all:
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=84 "Built target gtest"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num= "Built target gtest"
 .PHONY : _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
 
 # Build rule for subdir invocation for target.
 _deps/googletest-build/googletest/CMakeFiles/gtest.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 0
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 0
 .PHONY : _deps/googletest-build/googletest/CMakeFiles/gtest.dir/rule
@@ -808,7 +844,7 @@ _deps/googletest-build/googletest/CMakeFiles/gtest.dir/clean:
 _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/depend
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num= "Built target gtest_main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=84 "Built target gtest_main"
 .PHONY : _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all
 
 # Build rule for subdir invocation for target.
@@ -826,6 +862,58 @@ gtest_main: _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/rule
 _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/clean:
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/clean
 .PHONY : _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/clean
+
+#=============================================================================
+# Target rules for target box_2d_demo/CMakeFiles/box2d_demo.dir
+
+# All Build rule for target.
+box_2d_demo/CMakeFiles/box2d_demo.dir/all:
+	$(MAKE) $(MAKESILENT) -f box_2d_demo/CMakeFiles/box2d_demo.dir/build.make box_2d_demo/CMakeFiles/box2d_demo.dir/depend
+	$(MAKE) $(MAKESILENT) -f box_2d_demo/CMakeFiles/box2d_demo.dir/build.make box_2d_demo/CMakeFiles/box2d_demo.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=83 "Built target box2d_demo"
+.PHONY : box_2d_demo/CMakeFiles/box2d_demo.dir/all
+
+# Build rule for subdir invocation for target.
+box_2d_demo/CMakeFiles/box2d_demo.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 1
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 box_2d_demo/CMakeFiles/box2d_demo.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 0
+.PHONY : box_2d_demo/CMakeFiles/box2d_demo.dir/rule
+
+# Convenience name for target.
+box2d_demo: box_2d_demo/CMakeFiles/box2d_demo.dir/rule
+.PHONY : box2d_demo
+
+# clean rule for target.
+box_2d_demo/CMakeFiles/box2d_demo.dir/clean:
+	$(MAKE) $(MAKESILENT) -f box_2d_demo/CMakeFiles/box2d_demo.dir/build.make box_2d_demo/CMakeFiles/box2d_demo.dir/clean
+.PHONY : box_2d_demo/CMakeFiles/box2d_demo.dir/clean
+
+#=============================================================================
+# Target rules for target physics_test/CMakeFiles/physics_test.dir
+
+# All Build rule for target.
+physics_test/CMakeFiles/physics_test.dir/all:
+	$(MAKE) $(MAKESILENT) -f physics_test/CMakeFiles/physics_test.dir/build.make physics_test/CMakeFiles/physics_test.dir/depend
+	$(MAKE) $(MAKESILENT) -f physics_test/CMakeFiles/physics_test.dir/build.make physics_test/CMakeFiles/physics_test.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num= "Built target physics_test"
+.PHONY : physics_test/CMakeFiles/physics_test.dir/all
+
+# Build rule for subdir invocation for target.
+physics_test/CMakeFiles/physics_test.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 0
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 physics_test/CMakeFiles/physics_test.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles 0
+.PHONY : physics_test/CMakeFiles/physics_test.dir/rule
+
+# Convenience name for target.
+physics_test: physics_test/CMakeFiles/physics_test.dir/rule
+.PHONY : physics_test
+
+# clean rule for target.
+physics_test/CMakeFiles/physics_test.dir/clean:
+	$(MAKE) $(MAKESILENT) -f physics_test/CMakeFiles/physics_test.dir/build.make physics_test/CMakeFiles/physics_test.dir/clean
+.PHONY : physics_test/CMakeFiles/physics_test.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

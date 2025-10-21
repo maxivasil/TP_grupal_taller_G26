@@ -101,3 +101,17 @@
 /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/tests/CMakeFiles/install.dir
 /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/tests/CMakeFiles/install/local.dir
 /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/tests/CMakeFiles/install/strip.dir
+/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/box_2d_demo/CMakeFiles/box2d_demo.dir
+/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/box_2d_demo/CMakeFiles/edit_cache.dir
+/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/box_2d_demo/CMakeFiles/rebuild_cache.dir
+/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/box_2d_demo/CMakeFiles/list_install_components.dir
+/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/box_2d_demo/CMakeFiles/install.dir
+/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/box_2d_demo/CMakeFiles/install/local.dir
+/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/box_2d_demo/CMakeFiles/install/strip.dir
+/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/physics_test/CMakeFiles/physics_test.dir
+/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/physics_test/CMakeFiles/edit_cache.dir
+/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/physics_test/CMakeFiles/rebuild_cache.dir
+/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/physics_test/CMakeFiles/list_install_components.dir
+/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/physics_test/CMakeFiles/install.dir
+/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/physics_test/CMakeFiles/install/local.dir
+/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/physics_test/CMakeFiles/install/strip.dir

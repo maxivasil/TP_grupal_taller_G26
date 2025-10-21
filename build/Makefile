@@ -408,6 +408,32 @@ gtest_main/fast:
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build
 .PHONY : gtest_main/fast
 
+#=============================================================================
+# Target rules for targets named box2d_demo
+
+# Build rule for target.
+box2d_demo: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 box2d_demo
+.PHONY : box2d_demo
+
+# fast build rule for target.
+box2d_demo/fast:
+	$(MAKE) $(MAKESILENT) -f box_2d_demo/CMakeFiles/box2d_demo.dir/build.make box_2d_demo/CMakeFiles/box2d_demo.dir/build
+.PHONY : box2d_demo/fast
+
+#=============================================================================
+# Target rules for targets named physics_test
+
+# Build rule for target.
+physics_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 physics_test
+.PHONY : physics_test
+
+# fast build rule for target.
+physics_test/fast:
+	$(MAKE) $(MAKESILENT) -f physics_test/CMakeFiles/physics_test.dir/build.make physics_test/CMakeFiles/physics_test.dir/build
+.PHONY : physics_test/fast
+
 client/client_receiver.o: client/client_receiver.cpp.o
 .PHONY : client/client_receiver.o
 
@@ -910,10 +936,12 @@ help:
 	@echo "... SDL2_ttf"
 	@echo "... SDL2main"
 	@echo "... SDL2pp"
+	@echo "... box2d_demo"
 	@echo "... gmock"
 	@echo "... gmock_main"
 	@echo "... gtest"
 	@echo "... gtest_main"
+	@echo "... physics_test"
 	@echo "... taller_client"
 	@echo "... taller_common"
 	@echo "... taller_editor"

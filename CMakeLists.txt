@@ -208,4 +208,16 @@ if(TALLER_TESTS)
         taller_common
         GTest::gtest_main
     )
+
+endif()
+
+# ------------------------------
+# Demo de prueba de Box2D (onboarding)
+# ------------------------------
+option(TALLER_BOX2D_DEMO "Enable Box2D demo build." ON)
+
+if(TALLER_BOX2D_DEMO)
+    message(STATUS "Building Box2D demo (onboarding)")
+    add_subdirectory(box_2d_demo)
+    add_subdirectory(physics_test)
 endif()

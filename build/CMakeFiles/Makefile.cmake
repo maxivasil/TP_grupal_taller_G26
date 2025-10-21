@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
   "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/CMakeLists.txt"
+  "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/box_2d_demo/CMakeLists.txt"
   "CMakeFiles/3.28.3/CMakeCCompiler.cmake"
   "CMakeFiles/3.28.3/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.28.3/CMakeSystem.cmake"
@@ -50,6 +51,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/cmake/CompilerWarnings.cmake"
   "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/CMakeLists.txt"
   "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/editor/CMakeLists.txt"
+  "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/physics_test/CMakeLists.txt"
   "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/server/CMakeLists.txt"
   "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/tests/CMakeLists.txt"
   "/usr/lib/x86_64-linux-gnu/cmake/fluidsynth/FluidSynthConfig.cmake"
@@ -174,6 +176,8 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "_deps/googletest-build/googletest/generated/gtest_main.pc"
   "_deps/googletest-build/googletest/CMakeFiles/CMakeDirectoryInformation.cmake"
   "tests/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "box_2d_demo/CMakeFiles/CMakeDirectoryInformation.cmake"
+  "physics_test/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
@@ -197,4 +201,6 @@ set(CMAKE_DEPEND_INFO_FILES
   "_deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/DependInfo.cmake"
   "_deps/googletest-build/googletest/CMakeFiles/gtest.dir/DependInfo.cmake"
   "_deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/DependInfo.cmake"
+  "box_2d_demo/CMakeFiles/box2d_demo.dir/DependInfo.cmake"
+  "physics_test/CMakeFiles/physics_test.dir/DependInfo.cmake"
   )

@@ -97,6 +97,16 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/tests/cmake_install.cmake")
 endif()
 
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/box_2d_demo/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/physics_test/cmake_install.cmake")
+endif()
+
 if(CMAKE_INSTALL_COMPONENT)
   set(CMAKE_INSTALL_MANIFEST "install_manifest_${CMAKE_INSTALL_COMPONENT}.txt")
 else()

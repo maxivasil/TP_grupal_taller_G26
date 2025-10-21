@@ -6,5 +6,5 @@ C_DEFINES =
 
 C_INCLUDES = -I/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-build/include-config-debug/SDL2 -I/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-build/include/SDL2 -I/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-build/include
 
-C_FLAGS =  -idirafter "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-src/src/video/khronos" -DHAVE_LINUX_VERSION_H  -Wall -Wundef -fno-strict-aliasing -Wdeclaration-after-statement -fvisibility=hidden -Wshadow -Wno-unused-local-typedefs -mmmx -m3dnow -msse -msse2 -msse3  -isystem/usr/include  -isystem/usr/include/pipewire-0.3  -isystem/usr/include/spa-0.2 -D_REENTRANT  -isystem/usr/include/libdrm  -DSDL_BUILD_MAJOR_VERSION=2 -DSDL_BUILD_MINOR_VERSION=30 -DSDL_BUILD_MICRO_VERSION=8 -g
+C_FLAGS =  -idirafter "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-src/src/video/khronos" -DHAVE_LINUX_VERSION_H  -Wall -Wundef -fno-strict-aliasing -Wdeclaration-after-statement -fvisibility=hidden -Wshadow -Wno-unused-local-typedefs -mmmx -m3dnow -msse -msse2 -msse3  -isystem/usr/include  -isystem/usr/include/pipewire-0.3  -isystem/usr/include/spa-0.2 -D_REENTRANT  -isystem/usr/include/libdrm  -DSDL_BUILD_MAJOR_VERSION=2 -DSDL_BUILD_MINOR_VERSION=30 -DSDL_BUILD_MICRO_VERSION=8 -g -fPIC
 

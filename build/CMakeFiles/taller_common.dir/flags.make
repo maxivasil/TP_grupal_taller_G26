@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/.
 
-CXX_FLAGS = -g -std=gnu++20 -Wall -Wextra -Wmisleading-indentation -Wzero-as-null-pointer-constant -Wnon-virtual-dtor -Wunused -Woverloaded-virtual -Wpedantic -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wsuggest-override -Werror
+CXX_FLAGS = -g -std=gnu++20 -fPIC -Wall -Wextra -Wmisleading-indentation -Wzero-as-null-pointer-constant -Wnon-virtual-dtor -Wunused -Woverloaded-virtual -Wpedantic -Wnull-dereference -Wformat=2 -Wimplicit-fallthrough -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wsuggest-override -Werror
 

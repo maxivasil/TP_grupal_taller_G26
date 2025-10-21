@@ -10,10 +10,8 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/3.28.3/CMakeSystem.cmake"
   "CMakeLists.txt"
   "sdl2_ttf-populate-prefix/tmp/sdl2_ttf-populate-mkdirs.cmake"
-  "/usr/share/cmake-3.28/Modules/CMakeDetermineSystem.cmake"
   "/usr/share/cmake-3.28/Modules/CMakeGenericSystem.cmake"
   "/usr/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake"
-  "/usr/share/cmake-3.28/Modules/CMakeSystem.cmake.in"
   "/usr/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake"
   "/usr/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake"
   "/usr/share/cmake-3.28/Modules/ExternalProject.cmake"
@@ -38,7 +36,6 @@ set(CMAKE_MAKEFILE_OUTPUTS
 
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
-  "CMakeFiles/3.28.3/CMakeSystem.cmake"
   "sdl2_ttf-populate-prefix/tmp/sdl2_ttf-populate-mkdirs.cmake"
   "sdl2_ttf-populate-prefix/tmp/sdl2_ttf-populate-gitclone.cmake"
   "sdl2_ttf-populate-prefix/src/sdl2_ttf-populate-stamp/sdl2_ttf-populate-gitinfo.txt"

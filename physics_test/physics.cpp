@@ -1,6 +1,8 @@
 #include "physics.h"
 
-PhysicsEngine::PhysicsEngine() : world(b2Vec2(0.0f, 0.0f)) {}
+PhysicsEngine::PhysicsEngine() : world(b2Vec2(0.0f, 0.0f)) {
+    world.SetContactListener(&collisionListener);
+}
 
 void PhysicsEngine::addCar(const std::string& id, float x, float y) {
     b2BodyDef def;
@@ -10,11 +12,15 @@ void PhysicsEngine::addCar(const std::string& id, float x, float y) {
 
     b2PolygonShape shape;
     shape.SetAsBox(1.0f, 0.5f);
+
     b2FixtureDef fixture;
     fixture.shape = &shape;
     fixture.density = 1.0f;
     fixture.friction = 0.3f;
     body->CreateFixture(&fixture);
+
+    // Guardar el nombre en el UserData del cuerpo
+    body->GetUserData().pointer = reinterpret_cast<uintptr_t>(id.c_str());
 
     bodies[id] = body;
 }
@@ -23,9 +29,14 @@ void PhysicsEngine::addWall(float x, float y, float w, float h) {
     b2BodyDef def;
     def.position.Set(x, y);
     b2Body* body = world.CreateBody(&def);
+
     b2PolygonShape shape;
     shape.SetAsBox(w / 2, h / 2);
     body->CreateFixture(&shape, 0.0f);
+
+    // Guardar nombre del cuerpo para debug
+    static const char* wallName = "Muro";
+    body->GetUserData().pointer = reinterpret_cast<uintptr_t>(wallName);
 }
 
 void PhysicsEngine::applyImpulse(const std::string& id, float fx, float fy) {

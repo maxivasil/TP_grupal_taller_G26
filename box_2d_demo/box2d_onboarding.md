@@ -35,3 +35,12 @@ Para Ubuntu 24.04 (entorno usado en el TP):
 ```bash
 sudo apt update
 sudo apt install -y libbox2d-dev
+---
+
+## 3. Como ejecutar los tests
+
+mkdir -p build
+cd build
+cmake ..
+make -j4
+./physics_test/physics_test

@@ -19,10 +19,12 @@ void PhysicsEngine::addCar(const std::string& id, float x, float y) {
     fixture.friction = 0.3f;
     body->CreateFixture(&fixture);
 
-    // Guardar el nombre en el UserData del cuerpo
-    body->GetUserData().pointer = reinterpret_cast<uintptr_t>(id.c_str());
+    // Guardar datos del auto
+    CarData car{id, 100.0f, body};
+    cars[id] = car;
 
-    bodies[id] = body;
+    // Vincular el puntero de CarData al cuerpo (para el listener)
+    body->GetUserData().pointer = reinterpret_cast<uintptr_t>(&cars[id]);
 }
 
 void PhysicsEngine::addWall(float x, float y, float w, float h) {
@@ -34,15 +36,13 @@ void PhysicsEngine::addWall(float x, float y, float w, float h) {
     shape.SetAsBox(w / 2, h / 2);
     body->CreateFixture(&shape, 0.0f);
 
-    // Guardar nombre del cuerpo para debug
-    static const char* wallName = "Muro";
-    body->GetUserData().pointer = reinterpret_cast<uintptr_t>(wallName);
+    walls.push_back(body);
 }
 
 void PhysicsEngine::applyImpulse(const std::string& id, float fx, float fy) {
-    auto it = bodies.find(id);
-    if (it != bodies.end())
-        it->second->ApplyLinearImpulseToCenter(b2Vec2(fx, fy), true);
+    auto it = cars.find(id);
+    if (it != cars.end())
+        it->second.body->ApplyLinearImpulseToCenter(b2Vec2(fx, fy), true);
 }
 
 void PhysicsEngine::step(float deltaTime) {
@@ -50,8 +50,14 @@ void PhysicsEngine::step(float deltaTime) {
 }
 
 std::pair<float, float> PhysicsEngine::getPosition(const std::string& id) {
-    auto it = bodies.find(id);
-    if (it == bodies.end()) return {0, 0};
-    b2Vec2 pos = it->second->GetPosition();
+    auto it = cars.find(id);
+    if (it == cars.end()) return {0, 0};
+    b2Vec2 pos = it->second.body->GetPosition();
     return {pos.x, pos.y};
+}
+
+float PhysicsEngine::getHealth(const std::string& id) {
+    auto it = cars.find(id);
+    if (it == cars.end()) return 0;
+    return it->second.health;
 }

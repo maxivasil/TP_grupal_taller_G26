@@ -40,8 +40,9 @@ sudo apt install -y libbox2d-dev
 
 ## 3. Como ejecutar los tests
 
-mkdir -p build
+```mkdir -p build
 cd build
 cmake ..
 make -j4
 ./physics_test/physics_test
+```

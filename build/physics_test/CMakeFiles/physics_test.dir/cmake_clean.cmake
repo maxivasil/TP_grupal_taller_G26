@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/physics_test.dir/link.d"
   "CMakeFiles/physics_test.dir/physics.cpp.o"
   "CMakeFiles/physics_test.dir/physics.cpp.o.d"
   "CMakeFiles/physics_test.dir/physics_test.cpp.o"

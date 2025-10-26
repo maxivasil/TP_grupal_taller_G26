@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/taller_tests.dir/link.d"
   "taller_tests"
   "taller_tests.pdb"
 )

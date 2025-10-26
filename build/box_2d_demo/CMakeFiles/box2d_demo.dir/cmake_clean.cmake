@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/box2d_demo.dir/link.d"
   "CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o"
   "CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o.d"
   "box2d_demo"

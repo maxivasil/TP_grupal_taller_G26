@@ -1,1 +1,1 @@
-/usr/bin/c++ -g CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o -o box2d_demo  -lbox2d 
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/box2d_demo.dir/link.d CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o -o box2d_demo  ../_deps/box2d-build/src/libbox2d.a

@@ -1,6 +1,6 @@
 # CMake generated Testfile for 
-# Source directory: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/googletest-src/googlemock
-# Build directory: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/googletest-build/googlemock
+# Source directory: /home/runner/work/TP_grupal_taller_G26/TP_grupal_taller_G26/build/_deps/googletest-src/googlemock
+# Build directory: /home/runner/work/TP_grupal_taller_G26/TP_grupal_taller_G26/build/_deps/googletest-build/googlemock
 # 
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.

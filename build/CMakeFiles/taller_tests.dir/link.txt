@@ -1,1 +1,1 @@
-/usr/bin/c++ -g -o taller_tests  -Wl,-rpath,/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/lib libtaller_common.a lib/libgtest_main.so.1.12.1 lib/libgtest.so.1.12.1 
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/taller_tests.dir/link.d -o taller_tests  libtaller_common.a lib/libgtest_main.a lib/libgtest.a

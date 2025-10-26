@@ -1,1 +1,1 @@
-/usr/bin/c++ -g CMakeFiles/physics_test.dir/physics.cpp.o CMakeFiles/physics_test.dir/physics_test.cpp.o -o physics_test  -lbox2d 
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/physics_test.dir/link.d CMakeFiles/physics_test.dir/physics.cpp.o CMakeFiles/physics_test.dir/physics_test.cpp.o -o physics_test  ../_deps/box2d-build/src/libbox2d.a

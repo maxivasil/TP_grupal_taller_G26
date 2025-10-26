@@ -1,4 +1,13 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/taller_server.dir/link.d"
+  "CMakeFiles/taller_server.dir/server/Car.cpp.o"
+  "CMakeFiles/taller_server.dir/server/Car.cpp.o.d"
+  "CMakeFiles/taller_server.dir/server/PhysicsEngine.cpp.o"
+  "CMakeFiles/taller_server.dir/server/PhysicsEngine.cpp.o.d"
+  "CMakeFiles/taller_server.dir/server/StaticObject.cpp.o"
+  "CMakeFiles/taller_server.dir/server/StaticObject.cpp.o.d"
+  "CMakeFiles/taller_server.dir/server/WorldContactListener.cpp.o"
+  "CMakeFiles/taller_server.dir/server/WorldContactListener.cpp.o.d"
   "CMakeFiles/taller_server.dir/server/acceptor.cpp.o"
   "CMakeFiles/taller_server.dir/server/acceptor.cpp.o.d"
   "CMakeFiles/taller_server.dir/server/client_handler.cpp.o"

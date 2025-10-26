@@ -9,6 +9,10 @@ target_sources(taller_server
     session.cpp
     server_receiver.cpp
     server_sender.cpp
+    Car.cpp
+    PhysicsEngine.cpp
+    WorldContactListener.cpp
+    StaticObject.cpp
     PUBLIC
     # .h files
     acceptor.h
@@ -18,4 +22,10 @@ target_sources(taller_server
     session.h
     server_receiver.h
     server_sender.h
+    Car.h
+    PhysicsEngine.h
+    WorldContactListener.h
+    StaticObject.h
+    CollisionInfo.h
+    Collidable.h
     )

@@ -1,0 +1,25 @@
+#ifndef PHYSICS_ENGINE_H
+#define PHYSICS_ENGINE_H
+
+#include <box2d/box2d.h>
+#include "WorldContactListener.h"
+
+class PhysicsEngine {
+private:
+    b2WorldId world;
+    WorldContactListener listener;
+    
+    void handle_collisions(b2ContactHitEvent* collisions, int beginCount, float dt);
+
+public:
+    PhysicsEngine();
+
+    void step(float dt, int velocityIterations);
+
+    b2WorldId getWorld() const;
+
+    ~PhysicsEngine();
+};
+
+
+#endif

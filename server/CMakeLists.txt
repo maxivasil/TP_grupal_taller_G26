@@ -12,6 +12,7 @@ target_sources(taller_server
     Car.cpp
     PhysicsEngine.cpp
     WorldContactListener.cpp
+    StaticObject.cpp
     PUBLIC
     # .h files
     acceptor.h
@@ -24,4 +25,7 @@ target_sources(taller_server
     Car.h
     PhysicsEngine.h
     WorldContactListener.h
+    StaticObject.h
+    CollisionInfo.h
+    Collidable.h
     )

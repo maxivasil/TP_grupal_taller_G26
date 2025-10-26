@@ -1,6 +1,8 @@
 #ifndef CAR_H
 #define CAR_H
 
+#include "Collidable.h"
+
 #include <box2d/box2d.h>
 
 enum class Direction { FORWARD, LEFT, RIGHT };
@@ -23,12 +25,7 @@ struct CarInput {
     Direction turn_direction;
 };
 
-struct CollisionInfo {
-    float impactForce;
-    float angle;
-};
-
-class Car {
+class Car : public Collidable {
 private:
     b2BodyId body;
     CarStats stats;
@@ -36,7 +33,7 @@ private:
 
     b2BodyDef initCarBodyDef(b2Vec2 position, b2Rot rotation);
 
-    void setShape(b2BodyId body, float width, float length);
+    void setShape(b2BodyId body);
 
     void handleAccelerating(bool accelerating, float speed, b2Vec2 forward);
 
@@ -46,15 +43,19 @@ private:
 
     void verifyMaxSpeed(b2Vec2 velocity, float speed);
 
+    float getImpactForce(Collidable* other, float approachSpeed, float deltaTime);
+
+    float getImpactAngle(Collidable* other, const b2Vec2& contactNormal);
+
 public:
-    Car(b2WorldId world, const CarStats&& stats, b2Vec2 position, b2Rot rotation);
+    Car(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation);
     ~Car();
 
     void repair();
 
     void updatePhysics(const CarInput& input);
 
-    void applyCollision(const CollisionInfo& info);
+    void applyCollision(const CollisionInfo& info) override;
 
     bool isDestroyed() const;
 
@@ -66,7 +67,11 @@ public:
 
     float getCurrentHealth() const;
 
-    float getMass() const;
+    float getMass() const override;
+
+    void onCollision(Collidable* other, float approachSpeed, float deltaTime, const b2Vec2& contactNormal) override;
+
+    b2Rot getRotation(const b2Vec2& contactNormal) const override;
 };
 
 

@@ -5,7 +5,7 @@
 #include "Car.h"
 #include "session.h"
 #include "PhysicsEngine.h"
-
+#include "StaticObject.h"
 //int argc, char* argv[]
 int main() {
     /*
@@ -45,8 +45,15 @@ int main() {
         .width = 4.0f
     };
 
+    StaticObjectParam wall_params = {
+        .length = 10.0f,
+        .width = 10.0f,
+        .mass = 10000.0f
+    };
+
     float p = 20.0f;
     Car carA(world, std::move(stats), {-p, 0.0f}, b2MakeRot(0));
+    StaticObject wall(world, b2Vec2_zero, wall_params);
     Car carB(world, std::move(stats), { p, 0.0f}, b2MakeRot(B2_PI));
 
     const float timeStep = 1.0f / 60.0f;

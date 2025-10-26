@@ -2,11 +2,13 @@
 
 #include <algorithm>
 
-#define DAMAGE_SCALING_FACTOR 500
+#define DAMAGE_SCALING_FACTOR 100000
 
 #define FRONTAL_COLLISION_FACTOR 1.0f
 #define LATERAL_COLLISION_FACTOR 0.7f
 #define REAR_COLLISION_FACTOR 0.3f
+
+#define MIN_IMPACT_FORCE 0.001f
 
 b2BodyDef Car::initCarBodyDef(b2Vec2 position, b2Rot rotation) {
     b2BodyDef bodyDef = b2DefaultBodyDef();
@@ -18,22 +20,22 @@ b2BodyDef Car::initCarBodyDef(b2Vec2 position, b2Rot rotation) {
     return bodyDef;
 }
 
-void Car::setShape(b2BodyId body, float width, float length) {
-    b2Polygon polygon = b2MakeBox(width / 2, length / 2);
+void Car::setShape(b2BodyId body) {
+    b2Polygon polygon = b2MakeBox(stats.width / 2, stats.length / 2);
     b2ShapeDef shape_def = b2DefaultShapeDef();
     shape_def.enableHitEvents = true;
+    shape_def.density = stats.mass / (stats.width * stats.length);
     b2ShapeId shape = b2CreatePolygonShape(body, &shape_def, &polygon);
     b2Shape_EnableContactEvents(shape, true);
     b2Body_ApplyMassFromShapes(body);
 }
 
-Car::Car(b2WorldId world, const CarStats&& stats_, b2Vec2 position, b2Rot rotation) {
+Car::Car(b2WorldId world, const CarStats& stats_, b2Vec2 position, b2Rot rotation) : stats(stats_) {
     b2BodyDef bodyDef = initCarBodyDef(position, rotation);
     body = b2CreateBody(world, &bodyDef);
 
-    setShape(body, stats_.width, stats_.length);
+    setShape(body);
 
-    stats = stats_;
     current_health = stats_.health_max;
 }
 
@@ -113,8 +115,12 @@ void Car::applyCollision(const CollisionInfo& info) {
 
     b2Vec2 vel = b2Body_GetLinearVelocity(body);
     float speed = b2Length(vel);
-    float velocityLoss = std::min(speed, damage * 0.1f);
-    b2Body_SetLinearVelocity(body, vel * ((speed - velocityLoss) / speed));
+    if (speed > 1e-6f) {
+        float velocityLoss = std::min(speed, damage * 0.1f);
+        b2Body_SetLinearVelocity(body, vel * ((speed - velocityLoss) / speed));
+    } else {
+        b2Body_SetLinearVelocity(body, {0.0f, 0.0f});
+    }
 
     // ver de hacer que segun el damage se notifique para que se
     // haga la animacion de choque
@@ -134,5 +140,46 @@ b2Rot Car::getRotation() const { return b2Body_GetRotation(body); }
 float Car::getCurrentHealth() const { return current_health; }
 
 float Car::getMass() const { return b2Body_GetMass(body); }
+
+float Car::getImpactForce(Collidable* other, float approachSpeed, float deltaTime){
+    float mA = getMass();
+    float mB = other->getMass();
+    float reducedMass = (mA * mB) / (mA + mB);
+
+    return reducedMass * approachSpeed / deltaTime;
+}
+
+float Car::getImpactAngle(Collidable* other, const b2Vec2& contactNormal){
+    b2Vec2 forwardA = b2RotateVector(getRotation(), {1, 0});
+    b2Vec2 forwardB;
+
+    if (auto otherCar = dynamic_cast<Car*>(other)) {
+        forwardB = b2RotateVector(otherCar->getRotation(), {1, 0});
+    } else {
+        forwardB = -b2Normalize(contactNormal);
+    }
+
+    float dot = b2Dot(b2Normalize(forwardA), b2Normalize(forwardB));
+    dot = std::clamp(dot, -1.0f, 1.0f);
+    return std::acos(dot);
+}
+
+void Car::onCollision(Collidable* other, float approachSpeed, float deltaTime, const b2Vec2& contactNormal){
+    float impactForce = getImpactForce(other, approachSpeed, deltaTime);
+
+    if (impactForce < MIN_IMPACT_FORCE){
+        return;
+    }
+
+    CollisionInfo info;
+    info.impactForce = impactForce;
+    info.angle = getImpactAngle(other, contactNormal);
+
+    applyCollision(info);
+}
+
+b2Rot Car::getRotation([[maybe_unused]] const b2Vec2& contactNormal) const {
+    return getRotation();
+}
 
 Car::~Car() {}

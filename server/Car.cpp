@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "CollisionCategories.h"
+
 #define DAMAGE_SCALING_FACTOR 100000
 
 #define FRONTAL_COLLISION_FACTOR 1.0f
@@ -24,13 +26,18 @@ void Car::setShape(b2BodyId body) {
     b2Polygon polygon = b2MakeBox(stats.width / 2, stats.length / 2);
     b2ShapeDef shape_def = b2DefaultShapeDef();
     shape_def.enableHitEvents = true;
+    shape_def.enableSensorEvents = true;
     shape_def.density = stats.mass / (stats.width * stats.length);
+    shape_def.isSensor = false;
+    shape_def.filter.categoryBits = CollisionCategories::CategoryDynamic;
+    shape_def.filter.maskBits = CollisionCategories::CategoryAll;
+    shape_def.filter.groupIndex = 0;
     b2ShapeId shape = b2CreatePolygonShape(body, &shape_def, &polygon);
     b2Shape_EnableContactEvents(shape, true);
     b2Body_ApplyMassFromShapes(body);
 }
 
-Car::Car(b2WorldId world, const CarStats& stats_, b2Vec2 position, b2Rot rotation) : stats(stats_) {
+Car::Car(b2WorldId world, const CarStats& stats_, b2Vec2 position, b2Rot rotation): stats(stats_) {
     b2BodyDef bodyDef = initCarBodyDef(position, rotation);
     body = b2CreateBody(world, &bodyDef);
 
@@ -141,7 +148,7 @@ float Car::getCurrentHealth() const { return current_health; }
 
 float Car::getMass() const { return b2Body_GetMass(body); }
 
-float Car::getImpactForce(Collidable* other, float approachSpeed, float deltaTime){
+float Car::getImpactForce(const Collidable* other, float approachSpeed, float deltaTime) {
     float mA = getMass();
     float mB = other->getMass();
     float reducedMass = (mA * mB) / (mA + mB);
@@ -149,11 +156,11 @@ float Car::getImpactForce(Collidable* other, float approachSpeed, float deltaTim
     return reducedMass * approachSpeed / deltaTime;
 }
 
-float Car::getImpactAngle(Collidable* other, const b2Vec2& contactNormal){
+float Car::getImpactAngle(const Collidable* other, const b2Vec2& contactNormal) {
     b2Vec2 forwardA = b2RotateVector(getRotation(), {1, 0});
     b2Vec2 forwardB;
 
-    if (auto otherCar = dynamic_cast<Car*>(other)) {
+    if (auto otherCar = dynamic_cast<const Car*>(other)) {
         forwardB = b2RotateVector(otherCar->getRotation(), {1, 0});
     } else {
         forwardB = -b2Normalize(contactNormal);
@@ -164,10 +171,11 @@ float Car::getImpactAngle(Collidable* other, const b2Vec2& contactNormal){
     return std::acos(dot);
 }
 
-void Car::onCollision(Collidable* other, float approachSpeed, float deltaTime, const b2Vec2& contactNormal){
+void Car::onCollision(Collidable* other, float approachSpeed, float deltaTime,
+                      const b2Vec2& contactNormal) {
     float impactForce = getImpactForce(other, approachSpeed, deltaTime);
 
-    if (impactForce < MIN_IMPACT_FORCE){
+    if (impactForce < MIN_IMPACT_FORCE) {
         return;
     }
 
@@ -178,8 +186,6 @@ void Car::onCollision(Collidable* other, float approachSpeed, float deltaTime, c
     applyCollision(info);
 }
 
-b2Rot Car::getRotation([[maybe_unused]] const b2Vec2& contactNormal) const {
-    return getRotation();
-}
+b2Rot Car::getRotation([[maybe_unused]] const b2Vec2& contactNormal) const { return getRotation(); }
 
 Car::~Car() {}

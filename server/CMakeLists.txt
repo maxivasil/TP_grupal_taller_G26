@@ -13,6 +13,7 @@ target_sources(taller_server
     PhysicsEngine.cpp
     WorldContactListener.cpp
     StaticObject.cpp
+    CheckpointManager.cpp
     PUBLIC
     # .h files
     acceptor.h
@@ -28,4 +29,6 @@ target_sources(taller_server
     StaticObject.h
     CollisionInfo.h
     Collidable.h
+    PhysicalCheckpoint.h
+    CheckpointManager.h
     )

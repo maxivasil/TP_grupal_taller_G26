@@ -18,7 +18,7 @@ public:
      * Parsea la línea ingresada por el usuario y devuelve el comando correspondiente.
      * Si el comando es READ, actualiza lines_to_read con la cantidad de líneas a leer.
      * @param lines_to_read Referencia a un entero que se actualizará si el comando es READ.
-     * @return El comando parseado (EXIT, NITRO, READ, INVALID).
+     * @return El comando parseado (EXIT, MOVE, READ, INVALID).
      */
     ParsedCommand parse_and_filter_line() const;
 

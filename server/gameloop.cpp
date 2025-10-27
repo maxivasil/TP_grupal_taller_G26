@@ -6,7 +6,7 @@
 
 ServerGameLoop::ServerGameLoop(Queue<ClientToServerCmd_Server*>& gameloop_queue,
                                ServerProtectedClients& protected_clients):
-        gameloop_queue(gameloop_queue), protected_clients(protected_clients), actives_nitro() {}
+        gameloop_queue(gameloop_queue), protected_clients(protected_clients) {}
 
 void ServerGameLoop::process_pending_commands() {
     ClientToServerCmd_Server* cmd = nullptr;

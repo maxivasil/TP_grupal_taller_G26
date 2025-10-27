@@ -1,25 +1,80 @@
 #include "server_to_client_snapshot.h"
 
+#include <cstring>
 #include <stdexcept>
 
-// ServerToClientSnapshot::ServerToClientSnapshot() = default;
+#include <arpa/inet.h>
 
-// void ServerToClientSnapshot::execute(ClientSession& client) {
-//     // Implementation of the execute method
-// }
+ServerToClientSnapshot::ServerToClientSnapshot(std::vector<CarSnapshot> cars):
+        cars_snapshot(std::move(cars)) {}
 
-// //id_auto;pos_x;pos_y;hint
-// ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint8_t>& data) {
-//     // Implementation of the from_bytes method
-//     // if (data.size() < 4) {
-//     //     throw std::runtime_error("Snapshot: datos insuficientes");
-//     // }
+void ServerToClientSnapshot::execute(ClientSession& client) {
+    std::cout << "[Snapshot recibido] Autos en escena: " << cars_snapshot.size() << std::endl;
 
-//     // auto snapshot = std::make_unique<ServerToClientSnapshot>();
-//     // snapshot->id_auto = data[1];
-//     // snapshot->pos_x = data[2];
-//     // snapshot->pos_y = data[3];
-//     // snapshot->hint = std::string(data.begin() + 4, data.end());
+    for (const auto& car: cars_snapshot) {
+        std::cout << "  Auto ID: " << car.id << " | Posición: (" << car.pos_x << ", " << car.pos_y
+                  << ")"
+                  << " | Colisión: " << (car.collision ? "sí" : "no")
+                  << " | Vida: " << static_cast<int>(car.health) << " | Velocidad: " << car.speed
+                  << " | Dirección: " << static_cast<int>(car.direction) << std::endl;
+    }
+}
 
-//     // return std::make_unique<ServerToClientSnapshot>();
-// }
+ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint8_t>& data) {
+    if (data.empty()) {
+        throw std::runtime_error("Snapshot data is empty");
+    }
+
+    size_t offset = 0;
+
+    uint8_t header = data[offset++];
+    if (header != SNAPSHOT_COMMAND)
+        throw std::runtime_error("Invalid header for snapshot");
+
+    // if (offset + sizeof(uint8_t) > data.size())
+    //     throw std::runtime_error("Incomplete snapshot: missing car count");
+
+    uint8_t car_count;
+    std::memcpy(&car_count, &data[offset], sizeof(uint8_t));
+    offset += sizeof(uint8_t);
+
+    std::cout << "Data size: " << data.size() << ", offset: " << offset
+              << ", car_count: " << static_cast<int>(car_count) << std::endl;
+
+    std::vector<CarSnapshot> cars;
+    cars.reserve(car_count);
+
+    for (uint8_t i = 0; i < car_count; i++) {
+        CarSnapshot car;
+
+        if (offset + sizeof(car.id) + sizeof(car.pos_x) + sizeof(car.pos_y) + sizeof(uint8_t) +
+                    sizeof(car.health) + sizeof(car.speed) + sizeof(car.direction) >
+            data.size())
+            throw std::runtime_error("Incomplete snapshot: missing car data");
+
+        std::memcpy(&car.id, &data[offset], sizeof(car.id));
+        offset += sizeof(car.id);
+
+        std::memcpy(&car.pos_x, &data[offset], sizeof(car.pos_x));
+        offset += sizeof(car.pos_x);
+
+        std::memcpy(&car.pos_y, &data[offset], sizeof(car.pos_y));
+        offset += sizeof(car.pos_y);
+
+        std::memcpy(&car.collision, &data[offset], sizeof(car.collision));
+        offset += sizeof(car.collision);
+
+        std::memcpy(&car.health, &data[offset], sizeof(car.health));
+        offset += sizeof(car.health);
+
+        std::memcpy(&car.speed, &data[offset], sizeof(car.speed));
+        offset += sizeof(car.speed);
+
+        std::memcpy(&car.direction, &data[offset], sizeof(car.direction));
+        offset += sizeof(car.direction);
+
+        cars.push_back(car);
+    }
+
+    return ServerToClientSnapshot(cars);
+}

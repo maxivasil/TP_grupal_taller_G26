@@ -7,57 +7,40 @@
 
 #include <arpa/inet.h>  // htonl, ntohl
 
+#include "../server/cmd/server_to_client_snapshot.h"
+
 Protocol::Protocol(Socket&& socket): skt(std::move(socket)) {}
 Protocol::Protocol(const char* hostname, const char* servname): skt(hostname, servname) {}
 
-size_t Protocol::compute_expected_size(uint8_t header) const {
-    switch (header) {
-        case MOVE_COMMAND:
-            return sizeof(header) + sizeof(uint8_t);  // direction
-
-        default:
-            throw std::runtime_error("Unknown header");
-    }
-}
-
-uint8_t Protocol::recv_header(Socket& skt, int& ret) const {
-    uint8_t header;
-    ret = skt.recvall(&header, 1);
-    if (ret == 0)
-        return {};  // Connection closed
-    if (ret < 0)
-        throw std::runtime_error("Error receiving header");
-    return header;
-}
-
 std::vector<uint8_t> Protocol::recv_full_message(Socket& skt) {
-    int ret;
-    uint8_t header = recv_header(skt, ret);
-    if (ret == 0)
-        return {};  // connection closed
-    std::vector<uint8_t> buffer{header};
-    if (header == 0) {
+    uint32_t msg_size_network;
+    int ret = skt.recvall(&msg_size_network, sizeof(msg_size_network));
+    if (ret <= 0) {
+        return {};  // conexión cerrada
+    }
+
+    uint32_t msg_size = ntohl(msg_size_network);
+    if (msg_size == 0) {
         return {};
     }
-    if (header == MOVE_COMMAND) {
-        uint8_t direction;
-        ret = skt.recvall(&direction, sizeof(direction));
-        if (ret <= 0)
-            throw std::runtime_error("Error receiving move command direction");
-        BufferUtils::append_bytes(buffer, &direction, sizeof(direction));
-        return buffer;
-    } else {
-        throw std::runtime_error("Unknown header received");
-    }
+
+    std::vector<uint8_t> buffer(msg_size);
+    ret = skt.recvall(buffer.data(), msg_size);
+    if (ret <= 0)
+        throw std::runtime_error("Error receiving full message");
+
     return buffer;
 }
 
 std::vector<uint8_t> Protocol::recv_full_message() { return recv_full_message(skt); }
 
 int Protocol::send_message(Socket& skt, const std::vector<uint8_t>& msg) const {
+    uint32_t msg_size = htonl(static_cast<uint32_t>(msg.size()));
+    skt.sendall(&msg_size, sizeof(msg_size));
     int bytes_sent = skt.sendall(msg.data(), msg.size());
     if (bytes_sent <= 0)
-        throw std::runtime_error("Error sending message");
+        return 0;
+    // throw std::runtime_error("Error sending message");
     return bytes_sent;
 }
 

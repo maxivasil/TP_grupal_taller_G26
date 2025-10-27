@@ -10,6 +10,10 @@ add_library(client_cmd
     server_to_client_snapshot.cpp  
 )
 
+target_link_libraries(client_cmd PRIVATE taller_common)
+
 target_include_directories(client_cmd 
     PUBLIC 
-        ${CMAKE_CURRENT_SOURCE_DIR})
+        ${CMAKE_SOURCE_DIR}          # ya que taller_common PUBLIC incluyó "."
+        ${CMAKE_SOURCE_DIR}/common   # explícito por si incluís "buffer_utils.h"
+)

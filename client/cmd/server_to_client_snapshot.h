@@ -1,15 +1,33 @@
 #ifndef SERVER_TO_CLIENT_SNAPSHOT_H
 #define SERVER_TO_CLIENT_SNAPSHOT_H
 
+#include <utility>
+#include <vector>
+
+#include "../../common/constants.h"
+
 #include "cmd_base_client.h"
 
-// class ServerToClientSnapshot : public ServerToClientCmd_Client {
-// public:
-//     explicit ServerToClientSnapshot();
+struct CarSnapshot {
+    uint8_t id;
+    float pos_x;
+    float pos_y;
+    bool collision;
+    float health;
+    float speed;
+    uint8_t direction;
+};
 
-//     virtual void execute(ClientSession& client) override; // ClientSession& client
+class ServerToClientSnapshot: public ServerToClientCmd_Client {
+private:
+    std::vector<CarSnapshot> cars_snapshot;
 
-//     static ServerToClientSnapshot from_bytes(const std::vector<uint8_t>& data);
-// };
+public:
+    explicit ServerToClientSnapshot(std::vector<CarSnapshot> cars);
+
+    virtual void execute(ClientSession& client) override;  // ClientSession& client
+
+    static ServerToClientSnapshot from_bytes(const std::vector<uint8_t>& data);
+};
 
 #endif  // SERVER_TO_CLIENT_SNAPSHOT_H

@@ -26,16 +26,16 @@ int ClientSession::run() {
                     if (receive_queue.try_pop(cmd)) {
                         if (cmd) {
                             cmd->execute(*this);  // ejecutar el comando polimórfico
+                            delete cmd;
                         }
                         i++;
                     }
                 }
+            } else if (parsed.type == MOVE) {
+                auto* cmd = new ClientToServerMove(static_cast<uint8_t>(parsed.direction));
+                send_queue.try_push(cmd);
             } else {
-                auto it = registered_commands.get_send_registry().find(parsed.type);
-                if (it != registered_commands.get_send_registry().end()) {
-                    auto cmd_ptr = it->second(parsed);
-                    send_queue.try_push(std::move(cmd_ptr));
-                }
+                continue;
             }
         }
         protocol.close_connection();
@@ -61,6 +61,12 @@ int ClientSession::run() {
 }
 
 void ClientSession::stop() {
+    ServerToClientCmd_Client* cmd;
+    while (receive_queue.try_pop(cmd)) {
+        if (cmd) {
+            delete cmd;
+        }
+    }
     receive_queue.close();
     receiver.stop();
     send_queue.close();

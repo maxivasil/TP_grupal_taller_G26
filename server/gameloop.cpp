@@ -18,7 +18,21 @@ void ServerGameLoop::process_pending_commands() {
     }
 }
 
-void ServerGameLoop::update_game_state() {}
+void ServerGameLoop::update_game_state() {
+    std::vector<CarSnapshot> snapshot_data = {
+            {1, 10.0f, 15.5f, false, 100.0f, 2.0f, 0},
+            {2, 20.5f, 25.0f, false, 90.0f, 2.5f, 1},
+    };
+
+    // Crear comando Snapshot
+    auto snapshot_cmd = new ServerToClientSnapshot(snapshot_data);
+
+    // Broadcast a todos los clientes conectados
+    protected_clients.broadcast(snapshot_cmd);
+
+    // IMPORTANTE: el broadcast hace una copia por cliente, así que liberamos el original
+    delete snapshot_cmd;
+}
 
 void ServerGameLoop::run() {
     while (should_keep_running()) {

@@ -2,10 +2,12 @@
 #define SERVER_GAMELOOP_H
 
 #include <map>
+#include <vector>
 
 #include "../common/queue.h"
 #include "../common/socket.h"
 #include "../common/thread.h"
+#include "cmd/server_to_client_snapshot.h"
 
 #include "protected_clients.h"
 

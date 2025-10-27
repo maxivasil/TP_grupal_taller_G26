@@ -1,7 +1,11 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
-// Constants for communication protocol
-#define MOVE_COMMAND 0x01
+
+// Constants for server communication protocol
+#define SNAPSHOT_COMMAND 0x01
+
+// Constants for client communication protocol
+#define MOVE_COMMAND 0x02
 
 // Constants for movement directions
 #define MOVE_UP 0x01

@@ -24,13 +24,6 @@ public:
     Protocol& operator=(Protocol&&) = default;
 
     /**
-     * @brief Calcula el tamaño esperado de un comando dado su header y el size consecuente.
-     * @param header El header del comando.
-     * @return El tamaño esperado del comando completo.
-     */
-    size_t compute_expected_size(uint8_t header) const;
-
-    /**
      * Recibe un mensaje completo desde el socket `skt` siguiendo el protocolo
      * definido en `protocol`.
      * @param skt Socket desde el cual recibir el mensaje.
@@ -66,16 +59,6 @@ public:
 
 private:
     Socket skt;
-
-    // Métodos auxiliares privados para manejar la recepción de mensajes.
-
-    /**
-     * Recibe el encabezado (header) de un mensaje desde el socket.
-     * @param skt Socket desde el cual recibir el encabezado.
-     * @param ret Referencia para almacenar el resultado de la operación de recepción.
-     * @return El byte del encabezado recibido. Si la conexión se cierra, retorna 0.
-     */
-    uint8_t recv_header(Socket& skt, int& ret) const;
 };
 
 #endif

@@ -3,10 +3,10 @@
 ServerProtectedClients::ServerProtectedClients(): clients() {}
 
 
-void ServerProtectedClients::broadcast(const ServerToClientCmd_Server& cmd) {
+void ServerProtectedClients::broadcast(const ServerToClientCmd_Server* cmd) {
     std::lock_guard<std::mutex> lock(m);
     for (auto* client: clients) {
-        client->send_message(cmd.clone());
+        client->send_message(cmd->clone());
     }
 }
 

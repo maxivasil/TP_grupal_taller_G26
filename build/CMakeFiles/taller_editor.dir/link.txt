@@ -1,1 +1,0 @@
-/usr/bin/g++ -g CMakeFiles/taller_editor.dir/editor/main.cpp.o -o taller_editor  -Wl,-rpath,/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/libsdl2pp-build:/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-build libtaller_common.a _deps/libsdl2pp-build/libSDL2pp.so.8.3.0 _deps/sdl2-build/libSDL2maind.a _deps/sdl2-build/libSDL2-2.0d.so.0.3000.8 

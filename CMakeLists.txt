@@ -46,7 +46,7 @@ target_include_directories(taller_common PUBLIC .)
 # compiling the client/editor code.
 #
 # In xubuntu 24.04 these are:
-#
+# taller_tests
 # sudo apt-get install libopus-dev libopusfile-dev libxmp-dev libfluidsynth-dev fluidsynth libwavpack1 libwavpack-dev libfreetype-dev wavpack
 #
 
@@ -180,7 +180,7 @@ if(TALLER_TESTS)
         googletest
         URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
     )
-
+    enable_testing()
     # For Windows: Prevent overriding the parent project's compiler/linker settings
     # (borrowed from https://google.github.io/googletest/quickstart-cmake.html)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
@@ -189,7 +189,11 @@ if(TALLER_TESTS)
 
     # target for testing
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
-    add_executable(taller_tests)
+    add_executable(taller_tests
+    tests/physics/physics_test.cpp
+    tests/physics/car_physics_test.cpp
+    # ... otros archivos de test
+)
 
     # HEY!! TODO XXX: I'm assuming that the code under testing is in taller_common
     # Change this if you have to.
@@ -218,6 +222,7 @@ if(TALLER_TESTS)
     target_link_libraries(taller_tests
         taller_common
         GTest::gtest_main
+        box2d
     )
 
 endif()

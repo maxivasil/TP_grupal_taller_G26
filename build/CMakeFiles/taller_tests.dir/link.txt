@@ -1,1 +1,0 @@
-/usr/bin/g++ -g CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.o CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.o -o taller_tests  -Wl,-rpath,/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/lib libtaller_common.a lib/libgtest_main.so.1.12.1 lib/libgtest.so.1.12.1 

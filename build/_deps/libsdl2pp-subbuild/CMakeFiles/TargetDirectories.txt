@@ -1,3 +1,0 @@
-/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/libsdl2pp-subbuild/CMakeFiles/libsdl2pp-populate.dir
-/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/libsdl2pp-subbuild/CMakeFiles/edit_cache.dir
-/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/libsdl2pp-subbuild/CMakeFiles/rebuild_cache.dir

@@ -2,10 +2,10 @@
 #include <iostream>
 #include <box2d/box2d.h>
 #include <cstdint>
-#include "Car.h"
+#include "car.h"
 #include "session.h"
-#include "PhysicsEngine.h"
-#include "StaticObject.h"
+#include "physics:engine.h"
+#include "static_object.h"
 //int argc, char* argv[]
 int main() {
     /*

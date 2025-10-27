@@ -5,6 +5,8 @@
 
 #include <box2d/box2d.h>
 
+#include "Collidable.h"
+
 enum class Direction { FORWARD, LEFT, RIGHT };
 
 struct CarStats {
@@ -25,7 +27,7 @@ struct CarInput {
     Direction turn_direction;
 };
 
-class Car : public Collidable {
+class Car: public Collidable {
 private:
     b2BodyId body;
     CarStats stats;
@@ -43,9 +45,9 @@ private:
 
     void verifyMaxSpeed(b2Vec2 velocity, float speed);
 
-    float getImpactForce(Collidable* other, float approachSpeed, float deltaTime);
+    float getImpactForce(const Collidable* other, float approachSpeed, float deltaTime);
 
-    float getImpactAngle(Collidable* other, const b2Vec2& contactNormal);
+    float getImpactAngle(const Collidable* other, const b2Vec2& contactNormal);
 
 public:
     Car(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation);
@@ -69,7 +71,8 @@ public:
 
     float getMass() const override;
 
-    void onCollision(Collidable* other, float approachSpeed, float deltaTime, const b2Vec2& contactNormal) override;
+    void onCollision(Collidable* other, float approachSpeed, float deltaTime,
+                     const b2Vec2& contactNormal) override;
 
     b2Rot getRotation(const b2Vec2& contactNormal) const override;
 };

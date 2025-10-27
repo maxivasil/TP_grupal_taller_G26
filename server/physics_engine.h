@@ -8,11 +8,13 @@ class PhysicsEngine {
 private:
     b2WorldId world;
     WorldContactListener listener;
-    
+
     void handle_collisions(b2ContactHitEvent* collisions, int beginCount, float dt);
 
+    void handle_sensors(b2SensorBeginTouchEvent* collisions, int beginCount);
+
 public:
-    PhysicsEngine();
+    explicit PhysicsEngine(CheckpointManager& checkpointManager);
 
     void step(float dt, int velocityIterations);
 

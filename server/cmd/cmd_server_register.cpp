@@ -5,7 +5,7 @@ ServerRegisteredCommands::ServerRegisteredCommands():
         recv_registry(build_server_recv_command_registry()) {}
 
 const std::unordered_map<uint8_t,
-                         std::function<ClientToServerCmd_Server*(const std::vector<uint8_t>&)>>&
+                         std::function<ServerToClientCmd_Server*(const std::vector<uint8_t>&)>>&
         ServerRegisteredCommands::get_send_registry() const {
     return send_registry;
 }
@@ -16,10 +16,10 @@ const std::unordered_map<uint8_t,
     return recv_registry;
 }
 
-std::unordered_map<uint8_t, std::function<ClientToServerCmd_Server*(const std::vector<uint8_t>&)>>
+std::unordered_map<uint8_t, std::function<ServerToClientCmd_Server*(const std::vector<uint8_t>&)>>
         ServerRegisteredCommands::build_server_send_command_registry() {
     std::unordered_map<uint8_t,
-                       std::function<ClientToServerCmd_Server*(const std::vector<uint8_t>&)>>
+                       std::function<ServerToClientCmd_Server*(const std::vector<uint8_t>&)>>
             registry;
 
     // registry[ANOTHER_COMMAND] = [](const std::vector<uint8_t>& data) {

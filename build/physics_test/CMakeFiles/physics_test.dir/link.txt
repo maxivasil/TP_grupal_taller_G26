@@ -1,1 +1,1 @@
-/usr/bin/c++ -g CMakeFiles/physics_test.dir/physics.cpp.o CMakeFiles/physics_test.dir/physics_test.cpp.o -o physics_test  -lbox2d 
+/usr/bin/g++ -g CMakeFiles/physics_test.dir/physics.cpp.o CMakeFiles/physics_test.dir/physics_test.cpp.o -o physics_test  -Wl,-rpath,/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/box2d-build/bin ../_deps/box2d-build/bin/libbox2dd.so.3.1.1 

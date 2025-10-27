@@ -79,6 +79,11 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
+  include("/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/box2d-build/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
   include("/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/server/cmake_install.cmake")
 endif()
 

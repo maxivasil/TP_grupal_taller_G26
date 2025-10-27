@@ -1,6 +1,3 @@
-target_sources(taller_tests
-    PRIVATE
-    # .cpp files
-    PUBLIC
-    # .h files
-    )
+
+# Add this line at the end:
+add_subdirectory(physics/)

@@ -69,18 +69,50 @@ include CMakeFiles/taller_tests.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/taller_tests.dir/flags.make
 
+CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.o: CMakeFiles/taller_tests.dir/flags.make
+CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.o: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/tests/physics/physics_test.cpp
+CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.o: CMakeFiles/taller_tests.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.o"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.o -MF CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.o.d -o CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/tests/physics/physics_test.cpp
+
+CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/tests/physics/physics_test.cpp > CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.i
+
+CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/tests/physics/physics_test.cpp -o CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.s
+
+CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.o: CMakeFiles/taller_tests.dir/flags.make
+CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.o: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/tests/physics/car_physics_test.cpp
+CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.o: CMakeFiles/taller_tests.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.o"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.o -MF CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.o.d -o CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/tests/physics/car_physics_test.cpp
+
+CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/tests/physics/car_physics_test.cpp > CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.i
+
+CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/tests/physics/car_physics_test.cpp -o CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.s
+
 # Object files for target taller_tests
-taller_tests_OBJECTS =
+taller_tests_OBJECTS = \
+"CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.o" \
+"CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.o"
 
 # External object files for target taller_tests
 taller_tests_EXTERNAL_OBJECTS =
 
+taller_tests: CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.o
+taller_tests: CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.o
 taller_tests: CMakeFiles/taller_tests.dir/build.make
 taller_tests: libtaller_common.a
 taller_tests: lib/libgtest_main.so.1.12.1
 taller_tests: lib/libgtest.so.1.12.1
 taller_tests: CMakeFiles/taller_tests.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Linking CXX executable taller_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable taller_tests"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/taller_tests.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

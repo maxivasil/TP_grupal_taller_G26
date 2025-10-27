@@ -28,6 +28,10 @@ void Car::setShape(b2BodyId body) {
     b2ShapeId shape = b2CreatePolygonShape(body, &shape_def, &polygon);
     b2Shape_EnableContactEvents(shape, true);
     b2Body_ApplyMassFromShapes(body);
+    
+    
+    b2Body_SetLinearDamping(body, 0.3f);  
+    b2Body_SetAngularDamping(body, 0.5f);  
 }
 
 Car::Car(b2WorldId world, const CarStats& stats_, b2Vec2 position, b2Rot rotation) : stats(stats_) {

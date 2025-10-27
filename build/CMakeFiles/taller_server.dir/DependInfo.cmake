@@ -8,6 +8,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/server/Car.cpp" "CMakeFiles/taller_server.dir/server/Car.cpp.o" "gcc" "CMakeFiles/taller_server.dir/server/Car.cpp.o.d"
+  "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/server/PhysicsEngine.cpp" "CMakeFiles/taller_server.dir/server/PhysicsEngine.cpp.o" "gcc" "CMakeFiles/taller_server.dir/server/PhysicsEngine.cpp.o.d"
+  "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/server/StaticObject.cpp" "CMakeFiles/taller_server.dir/server/StaticObject.cpp.o" "gcc" "CMakeFiles/taller_server.dir/server/StaticObject.cpp.o.d"
+  "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/server/WorldContactListener.cpp" "CMakeFiles/taller_server.dir/server/WorldContactListener.cpp.o" "gcc" "CMakeFiles/taller_server.dir/server/WorldContactListener.cpp.o.d"
   "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/server/acceptor.cpp" "CMakeFiles/taller_server.dir/server/acceptor.cpp.o" "gcc" "CMakeFiles/taller_server.dir/server/acceptor.cpp.o.d"
   "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/server/client_handler.cpp" "CMakeFiles/taller_server.dir/server/client_handler.cpp.o" "gcc" "CMakeFiles/taller_server.dir/server/client_handler.cpp.o.d"
   "/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/server/gameloop.cpp" "CMakeFiles/taller_server.dir/server/gameloop.cpp.o" "gcc" "CMakeFiles/taller_server.dir/server/gameloop.cpp.o.d"

@@ -73,15 +73,15 @@ box_2d_demo/CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o: box_2d_demo/CMakeFiles/b
 box_2d_demo/CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/box_2d_demo/box2d_demo.cpp
 box_2d_demo/CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o: box_2d_demo/CMakeFiles/box2d_demo.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object box_2d_demo/CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/box_2d_demo && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT box_2d_demo/CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o -MF CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o.d -o CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/box_2d_demo/box2d_demo.cpp
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/box_2d_demo && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT box_2d_demo/CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o -MF CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o.d -o CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/box_2d_demo/box2d_demo.cpp
 
 box_2d_demo/CMakeFiles/box2d_demo.dir/box2d_demo.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/box2d_demo.dir/box2d_demo.cpp.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/box_2d_demo && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/box_2d_demo/box2d_demo.cpp > CMakeFiles/box2d_demo.dir/box2d_demo.cpp.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/box_2d_demo && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/box_2d_demo/box2d_demo.cpp > CMakeFiles/box2d_demo.dir/box2d_demo.cpp.i
 
 box_2d_demo/CMakeFiles/box2d_demo.dir/box2d_demo.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/box2d_demo.dir/box2d_demo.cpp.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/box_2d_demo && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/box_2d_demo/box2d_demo.cpp -o CMakeFiles/box2d_demo.dir/box2d_demo.cpp.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/box_2d_demo && /usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/box_2d_demo/box2d_demo.cpp -o CMakeFiles/box2d_demo.dir/box2d_demo.cpp.s
 
 # Object files for target box2d_demo
 box2d_demo_OBJECTS = \
@@ -92,6 +92,7 @@ box2d_demo_EXTERNAL_OBJECTS =
 
 box_2d_demo/box2d_demo: box_2d_demo/CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o
 box_2d_demo/box2d_demo: box_2d_demo/CMakeFiles/box2d_demo.dir/build.make
+box_2d_demo/box2d_demo: _deps/box2d-build/bin/libbox2dd.so.3.1.1
 box_2d_demo/box2d_demo: box_2d_demo/CMakeFiles/box2d_demo.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable box2d_demo"
 	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/box_2d_demo && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/box2d_demo.dir/link.txt --verbose=$(VERBOSE)

@@ -73,71 +73,71 @@ CMakeFiles/taller_client.dir/client/main.cpp.o: CMakeFiles/taller_client.dir/fla
 CMakeFiles/taller_client.dir/client/main.cpp.o: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/main.cpp
 CMakeFiles/taller_client.dir/client/main.cpp.o: CMakeFiles/taller_client.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/taller_client.dir/client/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_client.dir/client/main.cpp.o -MF CMakeFiles/taller_client.dir/client/main.cpp.o.d -o CMakeFiles/taller_client.dir/client/main.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/main.cpp
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_client.dir/client/main.cpp.o -MF CMakeFiles/taller_client.dir/client/main.cpp.o.d -o CMakeFiles/taller_client.dir/client/main.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/main.cpp
 
 CMakeFiles/taller_client.dir/client/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/taller_client.dir/client/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/main.cpp > CMakeFiles/taller_client.dir/client/main.cpp.i
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/main.cpp > CMakeFiles/taller_client.dir/client/main.cpp.i
 
 CMakeFiles/taller_client.dir/client/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/taller_client.dir/client/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/main.cpp -o CMakeFiles/taller_client.dir/client/main.cpp.s
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/main.cpp -o CMakeFiles/taller_client.dir/client/main.cpp.s
 
 CMakeFiles/taller_client.dir/client/parser.cpp.o: CMakeFiles/taller_client.dir/flags.make
 CMakeFiles/taller_client.dir/client/parser.cpp.o: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/parser.cpp
 CMakeFiles/taller_client.dir/client/parser.cpp.o: CMakeFiles/taller_client.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/taller_client.dir/client/parser.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_client.dir/client/parser.cpp.o -MF CMakeFiles/taller_client.dir/client/parser.cpp.o.d -o CMakeFiles/taller_client.dir/client/parser.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/parser.cpp
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_client.dir/client/parser.cpp.o -MF CMakeFiles/taller_client.dir/client/parser.cpp.o.d -o CMakeFiles/taller_client.dir/client/parser.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/parser.cpp
 
 CMakeFiles/taller_client.dir/client/parser.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/taller_client.dir/client/parser.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/parser.cpp > CMakeFiles/taller_client.dir/client/parser.cpp.i
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/parser.cpp > CMakeFiles/taller_client.dir/client/parser.cpp.i
 
 CMakeFiles/taller_client.dir/client/parser.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/taller_client.dir/client/parser.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/parser.cpp -o CMakeFiles/taller_client.dir/client/parser.cpp.s
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/parser.cpp -o CMakeFiles/taller_client.dir/client/parser.cpp.s
 
 CMakeFiles/taller_client.dir/client/client_receiver.cpp.o: CMakeFiles/taller_client.dir/flags.make
 CMakeFiles/taller_client.dir/client/client_receiver.cpp.o: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/client_receiver.cpp
 CMakeFiles/taller_client.dir/client/client_receiver.cpp.o: CMakeFiles/taller_client.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/taller_client.dir/client/client_receiver.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_client.dir/client/client_receiver.cpp.o -MF CMakeFiles/taller_client.dir/client/client_receiver.cpp.o.d -o CMakeFiles/taller_client.dir/client/client_receiver.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/client_receiver.cpp
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_client.dir/client/client_receiver.cpp.o -MF CMakeFiles/taller_client.dir/client/client_receiver.cpp.o.d -o CMakeFiles/taller_client.dir/client/client_receiver.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/client_receiver.cpp
 
 CMakeFiles/taller_client.dir/client/client_receiver.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/taller_client.dir/client/client_receiver.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/client_receiver.cpp > CMakeFiles/taller_client.dir/client/client_receiver.cpp.i
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/client_receiver.cpp > CMakeFiles/taller_client.dir/client/client_receiver.cpp.i
 
 CMakeFiles/taller_client.dir/client/client_receiver.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/taller_client.dir/client/client_receiver.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/client_receiver.cpp -o CMakeFiles/taller_client.dir/client/client_receiver.cpp.s
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/client_receiver.cpp -o CMakeFiles/taller_client.dir/client/client_receiver.cpp.s
 
 CMakeFiles/taller_client.dir/client/client_sender.cpp.o: CMakeFiles/taller_client.dir/flags.make
 CMakeFiles/taller_client.dir/client/client_sender.cpp.o: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/client_sender.cpp
 CMakeFiles/taller_client.dir/client/client_sender.cpp.o: CMakeFiles/taller_client.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/taller_client.dir/client/client_sender.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_client.dir/client/client_sender.cpp.o -MF CMakeFiles/taller_client.dir/client/client_sender.cpp.o.d -o CMakeFiles/taller_client.dir/client/client_sender.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/client_sender.cpp
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_client.dir/client/client_sender.cpp.o -MF CMakeFiles/taller_client.dir/client/client_sender.cpp.o.d -o CMakeFiles/taller_client.dir/client/client_sender.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/client_sender.cpp
 
 CMakeFiles/taller_client.dir/client/client_sender.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/taller_client.dir/client/client_sender.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/client_sender.cpp > CMakeFiles/taller_client.dir/client/client_sender.cpp.i
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/client_sender.cpp > CMakeFiles/taller_client.dir/client/client_sender.cpp.i
 
 CMakeFiles/taller_client.dir/client/client_sender.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/taller_client.dir/client/client_sender.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/client_sender.cpp -o CMakeFiles/taller_client.dir/client/client_sender.cpp.s
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/client_sender.cpp -o CMakeFiles/taller_client.dir/client/client_sender.cpp.s
 
 CMakeFiles/taller_client.dir/client/session.cpp.o: CMakeFiles/taller_client.dir/flags.make
 CMakeFiles/taller_client.dir/client/session.cpp.o: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/session.cpp
 CMakeFiles/taller_client.dir/client/session.cpp.o: CMakeFiles/taller_client.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/taller_client.dir/client/session.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_client.dir/client/session.cpp.o -MF CMakeFiles/taller_client.dir/client/session.cpp.o.d -o CMakeFiles/taller_client.dir/client/session.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/session.cpp
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_client.dir/client/session.cpp.o -MF CMakeFiles/taller_client.dir/client/session.cpp.o.d -o CMakeFiles/taller_client.dir/client/session.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/session.cpp
 
 CMakeFiles/taller_client.dir/client/session.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/taller_client.dir/client/session.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/session.cpp > CMakeFiles/taller_client.dir/client/session.cpp.i
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/session.cpp > CMakeFiles/taller_client.dir/client/session.cpp.i
 
 CMakeFiles/taller_client.dir/client/session.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/taller_client.dir/client/session.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/session.cpp -o CMakeFiles/taller_client.dir/client/session.cpp.s
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/client/session.cpp -o CMakeFiles/taller_client.dir/client/session.cpp.s
 
 # Object files for target taller_client
 taller_client_OBJECTS = \

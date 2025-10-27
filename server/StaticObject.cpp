@@ -2,7 +2,7 @@
 
 b2BodyDef StaticObject::initStaticObjectBodyDef(b2Vec2 position) {
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2_staticBody;
     bodyDef.position = position;
     bodyDef.userData = this;
     bodyDef.isAwake = true;

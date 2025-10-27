@@ -73,85 +73,85 @@ CMakeFiles/taller_common.dir/common/buffer_utils.cpp.o: CMakeFiles/taller_common
 CMakeFiles/taller_common.dir/common/buffer_utils.cpp.o: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/buffer_utils.cpp
 CMakeFiles/taller_common.dir/common/buffer_utils.cpp.o: CMakeFiles/taller_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/taller_common.dir/common/buffer_utils.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_common.dir/common/buffer_utils.cpp.o -MF CMakeFiles/taller_common.dir/common/buffer_utils.cpp.o.d -o CMakeFiles/taller_common.dir/common/buffer_utils.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/buffer_utils.cpp
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_common.dir/common/buffer_utils.cpp.o -MF CMakeFiles/taller_common.dir/common/buffer_utils.cpp.o.d -o CMakeFiles/taller_common.dir/common/buffer_utils.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/buffer_utils.cpp
 
 CMakeFiles/taller_common.dir/common/buffer_utils.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/taller_common.dir/common/buffer_utils.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/buffer_utils.cpp > CMakeFiles/taller_common.dir/common/buffer_utils.cpp.i
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/buffer_utils.cpp > CMakeFiles/taller_common.dir/common/buffer_utils.cpp.i
 
 CMakeFiles/taller_common.dir/common/buffer_utils.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/taller_common.dir/common/buffer_utils.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/buffer_utils.cpp -o CMakeFiles/taller_common.dir/common/buffer_utils.cpp.s
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/buffer_utils.cpp -o CMakeFiles/taller_common.dir/common/buffer_utils.cpp.s
 
 CMakeFiles/taller_common.dir/common/liberror.cpp.o: CMakeFiles/taller_common.dir/flags.make
 CMakeFiles/taller_common.dir/common/liberror.cpp.o: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/liberror.cpp
 CMakeFiles/taller_common.dir/common/liberror.cpp.o: CMakeFiles/taller_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/taller_common.dir/common/liberror.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_common.dir/common/liberror.cpp.o -MF CMakeFiles/taller_common.dir/common/liberror.cpp.o.d -o CMakeFiles/taller_common.dir/common/liberror.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/liberror.cpp
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_common.dir/common/liberror.cpp.o -MF CMakeFiles/taller_common.dir/common/liberror.cpp.o.d -o CMakeFiles/taller_common.dir/common/liberror.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/liberror.cpp
 
 CMakeFiles/taller_common.dir/common/liberror.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/taller_common.dir/common/liberror.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/liberror.cpp > CMakeFiles/taller_common.dir/common/liberror.cpp.i
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/liberror.cpp > CMakeFiles/taller_common.dir/common/liberror.cpp.i
 
 CMakeFiles/taller_common.dir/common/liberror.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/taller_common.dir/common/liberror.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/liberror.cpp -o CMakeFiles/taller_common.dir/common/liberror.cpp.s
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/liberror.cpp -o CMakeFiles/taller_common.dir/common/liberror.cpp.s
 
 CMakeFiles/taller_common.dir/common/protocol.cpp.o: CMakeFiles/taller_common.dir/flags.make
 CMakeFiles/taller_common.dir/common/protocol.cpp.o: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/protocol.cpp
 CMakeFiles/taller_common.dir/common/protocol.cpp.o: CMakeFiles/taller_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/taller_common.dir/common/protocol.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_common.dir/common/protocol.cpp.o -MF CMakeFiles/taller_common.dir/common/protocol.cpp.o.d -o CMakeFiles/taller_common.dir/common/protocol.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/protocol.cpp
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_common.dir/common/protocol.cpp.o -MF CMakeFiles/taller_common.dir/common/protocol.cpp.o.d -o CMakeFiles/taller_common.dir/common/protocol.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/protocol.cpp
 
 CMakeFiles/taller_common.dir/common/protocol.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/taller_common.dir/common/protocol.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/protocol.cpp > CMakeFiles/taller_common.dir/common/protocol.cpp.i
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/protocol.cpp > CMakeFiles/taller_common.dir/common/protocol.cpp.i
 
 CMakeFiles/taller_common.dir/common/protocol.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/taller_common.dir/common/protocol.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/protocol.cpp -o CMakeFiles/taller_common.dir/common/protocol.cpp.s
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/protocol.cpp -o CMakeFiles/taller_common.dir/common/protocol.cpp.s
 
 CMakeFiles/taller_common.dir/common/resolver.cpp.o: CMakeFiles/taller_common.dir/flags.make
 CMakeFiles/taller_common.dir/common/resolver.cpp.o: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/resolver.cpp
 CMakeFiles/taller_common.dir/common/resolver.cpp.o: CMakeFiles/taller_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/taller_common.dir/common/resolver.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_common.dir/common/resolver.cpp.o -MF CMakeFiles/taller_common.dir/common/resolver.cpp.o.d -o CMakeFiles/taller_common.dir/common/resolver.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/resolver.cpp
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_common.dir/common/resolver.cpp.o -MF CMakeFiles/taller_common.dir/common/resolver.cpp.o.d -o CMakeFiles/taller_common.dir/common/resolver.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/resolver.cpp
 
 CMakeFiles/taller_common.dir/common/resolver.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/taller_common.dir/common/resolver.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/resolver.cpp > CMakeFiles/taller_common.dir/common/resolver.cpp.i
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/resolver.cpp > CMakeFiles/taller_common.dir/common/resolver.cpp.i
 
 CMakeFiles/taller_common.dir/common/resolver.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/taller_common.dir/common/resolver.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/resolver.cpp -o CMakeFiles/taller_common.dir/common/resolver.cpp.s
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/resolver.cpp -o CMakeFiles/taller_common.dir/common/resolver.cpp.s
 
 CMakeFiles/taller_common.dir/common/resolvererror.cpp.o: CMakeFiles/taller_common.dir/flags.make
 CMakeFiles/taller_common.dir/common/resolvererror.cpp.o: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/resolvererror.cpp
 CMakeFiles/taller_common.dir/common/resolvererror.cpp.o: CMakeFiles/taller_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/taller_common.dir/common/resolvererror.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_common.dir/common/resolvererror.cpp.o -MF CMakeFiles/taller_common.dir/common/resolvererror.cpp.o.d -o CMakeFiles/taller_common.dir/common/resolvererror.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/resolvererror.cpp
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_common.dir/common/resolvererror.cpp.o -MF CMakeFiles/taller_common.dir/common/resolvererror.cpp.o.d -o CMakeFiles/taller_common.dir/common/resolvererror.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/resolvererror.cpp
 
 CMakeFiles/taller_common.dir/common/resolvererror.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/taller_common.dir/common/resolvererror.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/resolvererror.cpp > CMakeFiles/taller_common.dir/common/resolvererror.cpp.i
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/resolvererror.cpp > CMakeFiles/taller_common.dir/common/resolvererror.cpp.i
 
 CMakeFiles/taller_common.dir/common/resolvererror.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/taller_common.dir/common/resolvererror.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/resolvererror.cpp -o CMakeFiles/taller_common.dir/common/resolvererror.cpp.s
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/resolvererror.cpp -o CMakeFiles/taller_common.dir/common/resolvererror.cpp.s
 
 CMakeFiles/taller_common.dir/common/socket.cpp.o: CMakeFiles/taller_common.dir/flags.make
 CMakeFiles/taller_common.dir/common/socket.cpp.o: /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/socket.cpp
 CMakeFiles/taller_common.dir/common/socket.cpp.o: CMakeFiles/taller_common.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/taller_common.dir/common/socket.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_common.dir/common/socket.cpp.o -MF CMakeFiles/taller_common.dir/common/socket.cpp.o.d -o CMakeFiles/taller_common.dir/common/socket.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/socket.cpp
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/taller_common.dir/common/socket.cpp.o -MF CMakeFiles/taller_common.dir/common/socket.cpp.o.d -o CMakeFiles/taller_common.dir/common/socket.cpp.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/socket.cpp
 
 CMakeFiles/taller_common.dir/common/socket.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/taller_common.dir/common/socket.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/socket.cpp > CMakeFiles/taller_common.dir/common/socket.cpp.i
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/socket.cpp > CMakeFiles/taller_common.dir/common/socket.cpp.i
 
 CMakeFiles/taller_common.dir/common/socket.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/taller_common.dir/common/socket.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/socket.cpp -o CMakeFiles/taller_common.dir/common/socket.cpp.s
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/common/socket.cpp -o CMakeFiles/taller_common.dir/common/socket.cpp.s
 
 # Object files for target taller_common
 taller_common_OBJECTS = \

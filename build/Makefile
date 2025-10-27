@@ -357,6 +357,19 @@ SDL2pp/fast:
 .PHONY : SDL2pp/fast
 
 #=============================================================================
+# Target rules for targets named box2d
+
+# Build rule for target.
+box2d: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 box2d
+.PHONY : box2d
+
+# fast build rule for target.
+box2d/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/box2d-build/src/CMakeFiles/box2d.dir/build.make _deps/box2d-build/src/CMakeFiles/box2d.dir/build
+.PHONY : box2d/fast
+
+#=============================================================================
 # Target rules for targets named gmock
 
 # Build rule for target.
@@ -722,6 +735,102 @@ editor/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_editor.dir/build.make CMakeFiles/taller_editor.dir/editor/main.cpp.s
 .PHONY : editor/main.cpp.s
 
+server/Car.o: server/Car.cpp.o
+.PHONY : server/Car.o
+
+# target to build an object file
+server/Car.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_server.dir/build.make CMakeFiles/taller_server.dir/server/Car.cpp.o
+.PHONY : server/Car.cpp.o
+
+server/Car.i: server/Car.cpp.i
+.PHONY : server/Car.i
+
+# target to preprocess a source file
+server/Car.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_server.dir/build.make CMakeFiles/taller_server.dir/server/Car.cpp.i
+.PHONY : server/Car.cpp.i
+
+server/Car.s: server/Car.cpp.s
+.PHONY : server/Car.s
+
+# target to generate assembly for a file
+server/Car.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_server.dir/build.make CMakeFiles/taller_server.dir/server/Car.cpp.s
+.PHONY : server/Car.cpp.s
+
+server/PhysicsEngine.o: server/PhysicsEngine.cpp.o
+.PHONY : server/PhysicsEngine.o
+
+# target to build an object file
+server/PhysicsEngine.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_server.dir/build.make CMakeFiles/taller_server.dir/server/PhysicsEngine.cpp.o
+.PHONY : server/PhysicsEngine.cpp.o
+
+server/PhysicsEngine.i: server/PhysicsEngine.cpp.i
+.PHONY : server/PhysicsEngine.i
+
+# target to preprocess a source file
+server/PhysicsEngine.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_server.dir/build.make CMakeFiles/taller_server.dir/server/PhysicsEngine.cpp.i
+.PHONY : server/PhysicsEngine.cpp.i
+
+server/PhysicsEngine.s: server/PhysicsEngine.cpp.s
+.PHONY : server/PhysicsEngine.s
+
+# target to generate assembly for a file
+server/PhysicsEngine.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_server.dir/build.make CMakeFiles/taller_server.dir/server/PhysicsEngine.cpp.s
+.PHONY : server/PhysicsEngine.cpp.s
+
+server/StaticObject.o: server/StaticObject.cpp.o
+.PHONY : server/StaticObject.o
+
+# target to build an object file
+server/StaticObject.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_server.dir/build.make CMakeFiles/taller_server.dir/server/StaticObject.cpp.o
+.PHONY : server/StaticObject.cpp.o
+
+server/StaticObject.i: server/StaticObject.cpp.i
+.PHONY : server/StaticObject.i
+
+# target to preprocess a source file
+server/StaticObject.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_server.dir/build.make CMakeFiles/taller_server.dir/server/StaticObject.cpp.i
+.PHONY : server/StaticObject.cpp.i
+
+server/StaticObject.s: server/StaticObject.cpp.s
+.PHONY : server/StaticObject.s
+
+# target to generate assembly for a file
+server/StaticObject.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_server.dir/build.make CMakeFiles/taller_server.dir/server/StaticObject.cpp.s
+.PHONY : server/StaticObject.cpp.s
+
+server/WorldContactListener.o: server/WorldContactListener.cpp.o
+.PHONY : server/WorldContactListener.o
+
+# target to build an object file
+server/WorldContactListener.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_server.dir/build.make CMakeFiles/taller_server.dir/server/WorldContactListener.cpp.o
+.PHONY : server/WorldContactListener.cpp.o
+
+server/WorldContactListener.i: server/WorldContactListener.cpp.i
+.PHONY : server/WorldContactListener.i
+
+# target to preprocess a source file
+server/WorldContactListener.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_server.dir/build.make CMakeFiles/taller_server.dir/server/WorldContactListener.cpp.i
+.PHONY : server/WorldContactListener.cpp.i
+
+server/WorldContactListener.s: server/WorldContactListener.cpp.s
+.PHONY : server/WorldContactListener.s
+
+# target to generate assembly for a file
+server/WorldContactListener.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_server.dir/build.make CMakeFiles/taller_server.dir/server/WorldContactListener.cpp.s
+.PHONY : server/WorldContactListener.cpp.s
+
 server/acceptor.o: server/acceptor.cpp.o
 .PHONY : server/acceptor.o
 
@@ -914,6 +1023,54 @@ server/session.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_server.dir/build.make CMakeFiles/taller_server.dir/server/session.cpp.s
 .PHONY : server/session.cpp.s
 
+tests/physics/car_physics_test.o: tests/physics/car_physics_test.cpp.o
+.PHONY : tests/physics/car_physics_test.o
+
+# target to build an object file
+tests/physics/car_physics_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_tests.dir/build.make CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.o
+.PHONY : tests/physics/car_physics_test.cpp.o
+
+tests/physics/car_physics_test.i: tests/physics/car_physics_test.cpp.i
+.PHONY : tests/physics/car_physics_test.i
+
+# target to preprocess a source file
+tests/physics/car_physics_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_tests.dir/build.make CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.i
+.PHONY : tests/physics/car_physics_test.cpp.i
+
+tests/physics/car_physics_test.s: tests/physics/car_physics_test.cpp.s
+.PHONY : tests/physics/car_physics_test.s
+
+# target to generate assembly for a file
+tests/physics/car_physics_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_tests.dir/build.make CMakeFiles/taller_tests.dir/tests/physics/car_physics_test.cpp.s
+.PHONY : tests/physics/car_physics_test.cpp.s
+
+tests/physics/physics_test.o: tests/physics/physics_test.cpp.o
+.PHONY : tests/physics/physics_test.o
+
+# target to build an object file
+tests/physics/physics_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_tests.dir/build.make CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.o
+.PHONY : tests/physics/physics_test.cpp.o
+
+tests/physics/physics_test.i: tests/physics/physics_test.cpp.i
+.PHONY : tests/physics/physics_test.i
+
+# target to preprocess a source file
+tests/physics/physics_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_tests.dir/build.make CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.i
+.PHONY : tests/physics/physics_test.cpp.i
+
+tests/physics/physics_test.s: tests/physics/physics_test.cpp.s
+.PHONY : tests/physics/physics_test.s
+
+# target to generate assembly for a file
+tests/physics/physics_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/taller_tests.dir/build.make CMakeFiles/taller_tests.dir/tests/physics/physics_test.cpp.s
+.PHONY : tests/physics/physics_test.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -936,6 +1093,7 @@ help:
 	@echo "... SDL2_ttf"
 	@echo "... SDL2main"
 	@echo "... SDL2pp"
+	@echo "... box2d"
 	@echo "... box2d_demo"
 	@echo "... gmock"
 	@echo "... gmock_main"
@@ -983,6 +1141,18 @@ help:
 	@echo "... editor/main.o"
 	@echo "... editor/main.i"
 	@echo "... editor/main.s"
+	@echo "... server/Car.o"
+	@echo "... server/Car.i"
+	@echo "... server/Car.s"
+	@echo "... server/PhysicsEngine.o"
+	@echo "... server/PhysicsEngine.i"
+	@echo "... server/PhysicsEngine.s"
+	@echo "... server/StaticObject.o"
+	@echo "... server/StaticObject.i"
+	@echo "... server/StaticObject.s"
+	@echo "... server/WorldContactListener.o"
+	@echo "... server/WorldContactListener.i"
+	@echo "... server/WorldContactListener.s"
 	@echo "... server/acceptor.o"
 	@echo "... server/acceptor.i"
 	@echo "... server/acceptor.s"
@@ -1007,6 +1177,12 @@ help:
 	@echo "... server/session.o"
 	@echo "... server/session.i"
 	@echo "... server/session.s"
+	@echo "... tests/physics/car_physics_test.o"
+	@echo "... tests/physics/car_physics_test.i"
+	@echo "... tests/physics/car_physics_test.s"
+	@echo "... tests/physics/physics_test.o"
+	@echo "... tests/physics/physics_test.i"
+	@echo "... tests/physics/physics_test.s"
 .PHONY : help
 
 

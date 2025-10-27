@@ -73,15 +73,15 @@ _deps/sdl2_ttf-build/CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.o: _deps/sdl2_ttf-build/C
 _deps/sdl2_ttf-build/CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.o: _deps/sdl2_ttf-src/SDL_ttf.c
 _deps/sdl2_ttf-build/CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.o: _deps/sdl2_ttf-build/CMakeFiles/SDL2_ttf.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object _deps/sdl2_ttf-build/CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_ttf-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_ttf-build/CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.o -MF CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.o.d -o CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_ttf-src/SDL_ttf.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_ttf-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_ttf-build/CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.o -MF CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.o.d -o CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_ttf-src/SDL_ttf.c
 
 _deps/sdl2_ttf-build/CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_ttf-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_ttf-src/SDL_ttf.c > CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_ttf-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_ttf-src/SDL_ttf.c > CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.i
 
 _deps/sdl2_ttf-build/CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_ttf-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_ttf-src/SDL_ttf.c -o CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_ttf-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_ttf-src/SDL_ttf.c -o CMakeFiles/SDL2_ttf.dir/SDL_ttf.c.s
 
 # Object files for target SDL2_ttf
 SDL2_ttf_OBJECTS = \

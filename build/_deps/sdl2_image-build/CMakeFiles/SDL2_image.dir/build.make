@@ -73,281 +73,281 @@ _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG.c.o: _deps/sdl2_image-b
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG.c.o: _deps/sdl2_image-src/src/IMG.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG.c > CMakeFiles/SDL2_image.dir/src/IMG.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG.c > CMakeFiles/SDL2_image.dir/src/IMG.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG.c -o CMakeFiles/SDL2_image.dir/src/IMG.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG.c -o CMakeFiles/SDL2_image.dir/src/IMG.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.o: _deps/sdl2_image-src/src/IMG_WIC.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_WIC.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_WIC.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_WIC.c > CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_WIC.c > CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_WIC.c -o CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_WIC.c -o CMakeFiles/SDL2_image.dir/src/IMG_WIC.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_avif.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_avif.c.o: _deps/sdl2_image-src/src/IMG_avif.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_avif.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_avif.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_avif.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_avif.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_avif.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_avif.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_avif.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_avif.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_avif.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_avif.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_avif.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_avif.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_avif.c > CMakeFiles/SDL2_image.dir/src/IMG_avif.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_avif.c > CMakeFiles/SDL2_image.dir/src/IMG_avif.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_avif.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_avif.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_avif.c -o CMakeFiles/SDL2_image.dir/src/IMG_avif.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_avif.c -o CMakeFiles/SDL2_image.dir/src/IMG_avif.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.o: _deps/sdl2_image-src/src/IMG_bmp.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_bmp.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_bmp.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_bmp.c > CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_bmp.c > CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_bmp.c -o CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_bmp.c -o CMakeFiles/SDL2_image.dir/src/IMG_bmp.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_gif.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_gif.c.o: _deps/sdl2_image-src/src/IMG_gif.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_gif.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_gif.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_gif.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_gif.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_gif.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_gif.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_gif.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_gif.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_gif.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_gif.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_gif.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_gif.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_gif.c > CMakeFiles/SDL2_image.dir/src/IMG_gif.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_gif.c > CMakeFiles/SDL2_image.dir/src/IMG_gif.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_gif.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_gif.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_gif.c -o CMakeFiles/SDL2_image.dir/src/IMG_gif.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_gif.c -o CMakeFiles/SDL2_image.dir/src/IMG_gif.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.o: _deps/sdl2_image-src/src/IMG_jpg.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_jpg.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_jpg.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_jpg.c > CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_jpg.c > CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_jpg.c -o CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_jpg.c -o CMakeFiles/SDL2_image.dir/src/IMG_jpg.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.o: _deps/sdl2_image-src/src/IMG_jxl.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_jxl.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_jxl.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_jxl.c > CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_jxl.c > CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_jxl.c -o CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_jxl.c -o CMakeFiles/SDL2_image.dir/src/IMG_jxl.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.o: _deps/sdl2_image-src/src/IMG_lbm.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_lbm.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_lbm.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_lbm.c > CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_lbm.c > CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_lbm.c -o CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_lbm.c -o CMakeFiles/SDL2_image.dir/src/IMG_lbm.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.o: _deps/sdl2_image-src/src/IMG_pcx.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_pcx.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_pcx.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_pcx.c > CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_pcx.c > CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_pcx.c -o CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_pcx.c -o CMakeFiles/SDL2_image.dir/src/IMG_pcx.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_png.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_png.c.o: _deps/sdl2_image-src/src/IMG_png.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_png.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_png.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_png.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_png.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_png.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_png.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_png.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_png.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_png.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_png.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_png.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_png.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_png.c > CMakeFiles/SDL2_image.dir/src/IMG_png.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_png.c > CMakeFiles/SDL2_image.dir/src/IMG_png.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_png.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_png.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_png.c -o CMakeFiles/SDL2_image.dir/src/IMG_png.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_png.c -o CMakeFiles/SDL2_image.dir/src/IMG_png.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.o: _deps/sdl2_image-src/src/IMG_pnm.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_pnm.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_pnm.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_pnm.c > CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_pnm.c > CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_pnm.c -o CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_pnm.c -o CMakeFiles/SDL2_image.dir/src/IMG_pnm.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.o: _deps/sdl2_image-src/src/IMG_qoi.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_qoi.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_qoi.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_qoi.c > CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_qoi.c > CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_qoi.c -o CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_qoi.c -o CMakeFiles/SDL2_image.dir/src/IMG_qoi.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_stb.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_stb.c.o: _deps/sdl2_image-src/src/IMG_stb.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_stb.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_stb.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_stb.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_stb.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_stb.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_stb.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_stb.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_stb.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_stb.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_stb.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_stb.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_stb.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_stb.c > CMakeFiles/SDL2_image.dir/src/IMG_stb.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_stb.c > CMakeFiles/SDL2_image.dir/src/IMG_stb.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_stb.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_stb.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_stb.c -o CMakeFiles/SDL2_image.dir/src/IMG_stb.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_stb.c -o CMakeFiles/SDL2_image.dir/src/IMG_stb.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_svg.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_svg.c.o: _deps/sdl2_image-src/src/IMG_svg.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_svg.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_svg.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_svg.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_svg.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_svg.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_svg.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_svg.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_svg.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_svg.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_svg.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_svg.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_svg.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_svg.c > CMakeFiles/SDL2_image.dir/src/IMG_svg.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_svg.c > CMakeFiles/SDL2_image.dir/src/IMG_svg.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_svg.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_svg.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_svg.c -o CMakeFiles/SDL2_image.dir/src/IMG_svg.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_svg.c -o CMakeFiles/SDL2_image.dir/src/IMG_svg.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tga.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tga.c.o: _deps/sdl2_image-src/src/IMG_tga.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tga.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tga.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tga.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_tga.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_tga.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_tga.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tga.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_tga.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_tga.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_tga.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tga.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_tga.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_tga.c > CMakeFiles/SDL2_image.dir/src/IMG_tga.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_tga.c > CMakeFiles/SDL2_image.dir/src/IMG_tga.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tga.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_tga.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_tga.c -o CMakeFiles/SDL2_image.dir/src/IMG_tga.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_tga.c -o CMakeFiles/SDL2_image.dir/src/IMG_tga.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tif.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tif.c.o: _deps/sdl2_image-src/src/IMG_tif.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tif.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tif.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tif.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_tif.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_tif.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_tif.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tif.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_tif.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_tif.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_tif.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tif.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_tif.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_tif.c > CMakeFiles/SDL2_image.dir/src/IMG_tif.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_tif.c > CMakeFiles/SDL2_image.dir/src/IMG_tif.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_tif.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_tif.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_tif.c -o CMakeFiles/SDL2_image.dir/src/IMG_tif.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_tif.c -o CMakeFiles/SDL2_image.dir/src/IMG_tif.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_webp.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_webp.c.o: _deps/sdl2_image-src/src/IMG_webp.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_webp.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_webp.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_webp.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_webp.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_webp.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_webp.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_webp.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_webp.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_webp.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_webp.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_webp.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_webp.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_webp.c > CMakeFiles/SDL2_image.dir/src/IMG_webp.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_webp.c > CMakeFiles/SDL2_image.dir/src/IMG_webp.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_webp.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_webp.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_webp.c -o CMakeFiles/SDL2_image.dir/src/IMG_webp.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_webp.c -o CMakeFiles/SDL2_image.dir/src/IMG_webp.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.o: _deps/sdl2_image-src/src/IMG_xcf.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xcf.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xcf.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xcf.c > CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xcf.c > CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xcf.c -o CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xcf.c -o CMakeFiles/SDL2_image.dir/src/IMG_xcf.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.o: _deps/sdl2_image-src/src/IMG_xpm.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xpm.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xpm.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xpm.c > CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xpm.c > CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xpm.c -o CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xpm.c -o CMakeFiles/SDL2_image.dir/src/IMG_xpm.c.s
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xv.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/flags.make
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xv.c.o: _deps/sdl2_image-src/src/IMG_xv.c
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xv.c.o: _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building C object _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xv.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xv.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_xv.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_xv.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xv.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xv.c.o -MF CMakeFiles/SDL2_image.dir/src/IMG_xv.c.o.d -o CMakeFiles/SDL2_image.dir/src/IMG_xv.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xv.c
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xv.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2_image.dir/src/IMG_xv.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xv.c > CMakeFiles/SDL2_image.dir/src/IMG_xv.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xv.c > CMakeFiles/SDL2_image.dir/src/IMG_xv.c.i
 
 _deps/sdl2_image-build/CMakeFiles/SDL2_image.dir/src/IMG_xv.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2_image.dir/src/IMG_xv.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xv.c -o CMakeFiles/SDL2_image.dir/src/IMG_xv.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2_image-src/src/IMG_xv.c -o CMakeFiles/SDL2_image.dir/src/IMG_xv.c.s
 
 # Object files for target SDL2_image
 SDL2_image_OBJECTS = \

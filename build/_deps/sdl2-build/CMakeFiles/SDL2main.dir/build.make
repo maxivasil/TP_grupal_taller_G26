@@ -73,15 +73,15 @@ _deps/sdl2-build/CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.o: _dep
 _deps/sdl2-build/CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.o: _deps/sdl2-src/src/main/dummy/SDL_dummy_main.c
 _deps/sdl2-build/CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.o: _deps/sdl2-build/CMakeFiles/SDL2main.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object _deps/sdl2-build/CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.o"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2-build/CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.o -MF CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.o.d -o CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-src/src/main/dummy/SDL_dummy_main.c
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT _deps/sdl2-build/CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.o -MF CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.o.d -o CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.o -c /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-src/src/main/dummy/SDL_dummy_main.c
 
 _deps/sdl2-build/CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.i"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-src/src/main/dummy/SDL_dummy_main.c > CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.i
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-src/src/main/dummy/SDL_dummy_main.c > CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.i
 
 _deps/sdl2-build/CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.s"
-	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-build && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-src/src/main/dummy/SDL_dummy_main.c -o CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.s
+	cd /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-build && /usr/bin/gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/sdl2-src/src/main/dummy/SDL_dummy_main.c -o CMakeFiles/SDL2main.dir/src/main/dummy/SDL_dummy_main.c.s
 
 # Object files for target SDL2main
 SDL2main_OBJECTS = \

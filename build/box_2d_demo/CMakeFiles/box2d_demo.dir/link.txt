@@ -1,1 +1,1 @@
-/usr/bin/c++ -g CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o -o box2d_demo  -lbox2d 
+/usr/bin/g++ -g CMakeFiles/box2d_demo.dir/box2d_demo.cpp.o -o box2d_demo  -Wl,-rpath,/home/machi/AA_FIUBA/Taller/TP_grupal_taller_G26/build/_deps/box2d-build/bin ../_deps/box2d-build/bin/libbox2dd.so.3.1.1 

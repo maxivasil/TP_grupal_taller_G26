@@ -15,10 +15,11 @@ struct StaticObjectParam {
 class StaticObject : public Collidable {
 private:
     b2BodyId body;
+    float mass;
 
     b2BodyDef initStaticObjectBodyDef(b2Vec2 position);
 
-    void setShape(b2BodyId body, float width, float length, float mass);
+    void setShape(b2BodyId body, float width, float length);
 
 public:
     StaticObject(b2WorldId world, b2Vec2 position, StaticObjectParam& params);

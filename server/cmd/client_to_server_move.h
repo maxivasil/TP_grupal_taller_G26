@@ -3,12 +3,9 @@
 
 #include <vector>
 
-#include "cmd_base_server.h"
+#include "../../common/constants.h"
 
-#define MOVE_UP 0x01
-#define MOVE_DOWN 0x02
-#define MOVE_LEFT 0x03
-#define MOVE_RIGHT 0x04
+#include "cmd_base_server.h"
 
 class ClientToServerMove: public ClientToServerCmd_Server {
 public:

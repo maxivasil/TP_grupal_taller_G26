@@ -12,6 +12,7 @@ void ClientSender::run() {
             if (cmd) {
                 auto data = cmd->to_bytes();
                 protocol.send_message(data);
+                delete cmd;
             }
         }
     } catch (const ClosedQueue& e) {

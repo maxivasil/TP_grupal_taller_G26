@@ -19,7 +19,7 @@ public:
     void run() override;
     bool is_dead() const;
     void stop() override;
-    void send_message();
+    void send_message(ServerToClientCmd_Server* cmd);
 
 private:
     int client_id;

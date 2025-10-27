@@ -28,6 +28,8 @@ public:
     virtual ~ServerToClientCmd_Server() = default;
 
     virtual std::vector<uint8_t> to_bytes() const = 0;
+
+    virtual ServerToClientCmd_Server* clone() const = 0;
 };
 
 #endif  // CMD_BASE_SERVER_H

@@ -15,7 +15,7 @@
 class ServerProtectedClients {
 public:
     ServerProtectedClients();
-    void broadcast_message(int msg);
+    void broadcast(const ServerToClientCmd_Server& cmd);
     void add_client(ServerClientHandler* client);
     void stop_and_delete_dead();
     void stop_all_and_delete();

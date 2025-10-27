@@ -3,10 +3,10 @@
 ServerProtectedClients::ServerProtectedClients(): clients() {}
 
 
-void ServerProtectedClients::broadcast_message(int clients_with_nitro_activated, int msg) {
+void ServerProtectedClients::broadcast_message(int msg) {
     std::lock_guard<std::mutex> lock(m);
     for (auto* client: clients) {
-        client->send_message(clients_with_nitro_activated, msg);
+        client->send_message();
     }
     if (msg == INFORM_NITRO_ACTIVATED) {
         std::cout << "A car hit the nitro!" << std::endl;

@@ -16,16 +16,17 @@ struct actives_nitro_info {
 
 class ServerGameLoop: public Thread {
 public:
-    explicit ServerGameLoop(Queue<int>& gameloop_queue, ServerProtectedClients& protected_clients);
+    explicit ServerGameLoop(Queue<ClientToServerCmd_Server*>& gameloop_queue,
+                            ServerProtectedClients& protected_clients);
     void run() override;
 
 private:
-    Queue<int>& gameloop_queue;
+    Queue<ClientToServerCmd_Server*>& gameloop_queue;
     ServerProtectedClients& protected_clients;
     actives_nitro_info actives_nitro;
     const int nitro_duration_loops = 12;
-    void try_pop_and_activate_nitro();
-    void decrement_nitro_timers();
+    void process_pending_commands();
+    void update_game_state();
 };
 
 #endif

@@ -6,4 +6,7 @@
 #define INFORM_NITRO_EXPIRED 0x08
 #define SEND_CARS_WITH_NITRO 0x10
 
+#define MOVE_COMMAND 0x01
+#define UPDATE_POSITION 0x02
+
 #endif

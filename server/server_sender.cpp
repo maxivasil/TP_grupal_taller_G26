@@ -2,14 +2,18 @@
 
 #include <iostream>
 
-ThreadSender::ThreadSender(Protocol& protocol, Queue<std::vector<int>>& send_queue):
+ThreadSender::ThreadSender(Protocol& protocol, Queue<ServerToClientCmd_Server*>& send_queue):
         protocol(protocol), send_queue(send_queue) {}
 
 void ThreadSender::run() {
     try {
         while (should_keep_running()) {
-            std::vector<int> msg = send_queue.pop();
-            protocol.send_cars_with_nitro(msg[0], static_cast<uint8_t>(msg[1]));
+            ServerToClientCmd_Server* cmd = send_queue.pop();
+            if (cmd) {
+                auto data = cmd->to_bytes();
+                protocol.send_message(data);
+                delete cmd;
+            }
         }
     } catch (const ClosedQueue& e) {
         return;

@@ -38,7 +38,9 @@ public:
      * @return Un vector de bytes que contiene el mensaje completo. En caso de error, lanza una
      * excepción.
      */
-    std::vector<uint8_t> recv_full_message(Socket& skt) const;
+    std::vector<uint8_t> recv_full_message(Socket& skt);
+
+    std::vector<uint8_t> recv_full_message();
 
     /**
      * Envía un mensaje completo a través del socket `skt`.
@@ -47,6 +49,8 @@ public:
      * @return Número de bytes enviados. En caso de error, lanza una excepción.
      */
     int send_message(Socket& skt, const std::vector<uint8_t>& msg) const;
+
+    int send_message(const std::vector<uint8_t>& msg);
 
     bool is_connection_closed() const;
     void close_connection();

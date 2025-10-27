@@ -5,11 +5,13 @@
 #include "../common/constants.h"
 
 
-ServerClientHandler::ServerClientHandler(int client_id, Socket&& s, Queue<int>& gameloop_queue):
+ServerClientHandler::ServerClientHandler(int client_id, Socket&& s,
+                                         Queue<ClientToServerCmd_Server*>& gameloop_queue):
         client_id(client_id),
         protocol(std::move(s)),
-        send_queue(),
-        receiver(client_id, protocol, gameloop_queue),
+        send_queue(UINT32_MAX),
+        registered_commands(),
+        receiver(client_id, protocol, gameloop_queue, registered_commands.get_recv_registry()),
         sender(protocol, send_queue) {}
 
 void ServerClientHandler::run() {
@@ -45,7 +47,7 @@ bool ServerClientHandler::is_dead() const {
     return !should_keep_running() || protocol.is_connection_closed();
 }
 
-void ServerClientHandler::send_message(int cars_with_nitro, int msg) {
-    std::vector<int> message = {cars_with_nitro, msg};
+void ServerClientHandler::send_message() {
+    ServerToClientCmd_Server* message = nullptr;
     send_queue.push(message);
 }

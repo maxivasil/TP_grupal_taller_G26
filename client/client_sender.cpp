@@ -2,14 +2,17 @@
 
 #include <iostream>
 
-ClientSender::ClientSender(Protocol& protocol, Queue<int>& send_queue):
+ClientSender::ClientSender(Protocol& protocol, Queue<ClientToServerCmd_Client*>& send_queue):
         protocol(protocol), send_queue(send_queue) {}
 
 void ClientSender::run() {
     try {
         while (should_keep_running()) {
-            send_queue.pop();
-            protocol.send_activate_nitro();
+            const auto* cmd = send_queue.pop();
+            if (cmd) {
+                auto data = cmd->to_bytes();
+                protocol.send_message(data);
+            }
         }
     } catch (const ClosedQueue& e) {
         return;

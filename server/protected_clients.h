@@ -15,7 +15,7 @@
 class ServerProtectedClients {
 public:
     ServerProtectedClients();
-    void broadcast_message(int clients_with_nitro_activated, int msg);
+    void broadcast_message(int msg);
     void add_client(ServerClientHandler* client);
     void stop_and_delete_dead();
     void stop_all_and_delete();

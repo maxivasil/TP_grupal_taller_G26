@@ -1,3 +1,5 @@
+add_subdirectory(cmd)
+
 target_sources(taller_server
     PRIVATE
     # .cpp files
@@ -18,4 +20,9 @@ target_sources(taller_server
     session.h
     server_receiver.h
     server_sender.h
+    )
+
+target_link_libraries(taller_server 
+    PRIVATE 
+        server_cmd
     )

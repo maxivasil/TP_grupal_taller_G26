@@ -1,37 +1,40 @@
 #include "session.h"
 
-ClientSession::ClientSession(const char* hostname, const char* servname, Queue<int>& recv_queue):
+ClientSession::ClientSession(const char* hostname, const char* servname,
+                             Queue<ServerToClientCmd_Client*>& recv_queue):
         protocol(hostname, servname),
         parser(),
-        send_queue(),
+        registered_commands(),
+        send_queue(UINT32_MAX),
         receive_queue(recv_queue),
         sender(protocol, send_queue),
-        receiver(protocol, receive_queue) {}
+        receiver(protocol, receive_queue, registered_commands.get_recv_registry()) {}
 
 int ClientSession::run() {
     try {
         receiver.start();
         sender.start();
         while (true) {
-            int lines_to_read = 0;
-            cmd command = parser.parse_and_filter_line(lines_to_read);
-            if (command == EXIT) {
+            ParsedCommand parsed = parser.parse_and_filter_line();
+            if (parsed.type == EXIT) {
                 stop();
                 break;
-            } else if (command == NITRO) {
-                send_queue.try_push(0);
-            } else if (command == READ) {
+            } else if (parsed.type == READ) {
                 int i = 0;
-                while (i < lines_to_read) {
-                    int code;
-                    if (receive_queue.try_pop(code)) {
-                        if (code == INFORM_NITRO_ACTIVATED) {
-                            std::cout << "A car hit the nitro!" << std::endl;
-                        } else if (code == INFORM_NITRO_EXPIRED) {
-                            std::cout << "A car is out of juice." << std::endl;
+                while (i < parsed.lines_to_read) {
+                    ServerToClientCmd_Client* cmd;
+                    if (receive_queue.try_pop(cmd)) {
+                        if (cmd) {
+                            cmd->execute(*this);  // ejecutar el comando polimórfico
                         }
                         i++;
                     }
+                }
+            } else {
+                auto it = registered_commands.get_send_registry().find(parsed.type);
+                if (it != registered_commands.get_send_registry().end()) {
+                    auto cmd_ptr = it->second(parsed);
+                    send_queue.try_push(std::move(cmd_ptr));
                 }
             }
         }

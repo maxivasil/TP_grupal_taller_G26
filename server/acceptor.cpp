@@ -3,7 +3,7 @@
 #define SHUTDOWN 2
 
 Acceptor::Acceptor(const char* servname, ServerProtectedClients& protected_clients,
-                   Queue<int>& gameloop_queue):
+                   Queue<ClientToServerCmd_Server*>& gameloop_queue):
         skt(servname), protected_clients(protected_clients), gameloop_queue(gameloop_queue) {}
 
 void Acceptor::run() {

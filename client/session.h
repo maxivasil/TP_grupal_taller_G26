@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -10,6 +11,8 @@
 #include "../common/protocol.h"
 #include "../common/queue.h"
 #include "../common/socket.h"
+#include "cmd/cmd_base_client.h"
+#include "cmd/cmd_client_register.h"
 
 #include "client_receiver.h"
 #include "client_sender.h"
@@ -17,7 +20,8 @@
 
 class ClientSession {
 public:
-    explicit ClientSession(const char* hostname, const char* servname, Queue<int>& recv_queue);
+    explicit ClientSession(const char* hostname, const char* servname,
+                           Queue<ServerToClientCmd_Client*>& recv_queue);
     ~ClientSession() = default;
 
     /**
@@ -31,8 +35,9 @@ public:
 private:
     Protocol protocol;
     ClientParser parser;
-    Queue<int> send_queue;
-    Queue<int>& receive_queue;
+    ClientRegisteredCommands registered_commands;
+    Queue<ClientToServerCmd_Client*> send_queue;
+    Queue<ServerToClientCmd_Client*>& receive_queue;
     ClientSender sender;
     ClientReceiver receiver;
 };

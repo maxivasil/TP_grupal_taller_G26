@@ -19,6 +19,9 @@ size_t Protocol::compute_expected_size(uint8_t header) const {
         case ACTIVATE_NITRO:
             return sizeof(header);
 
+        case MOVE_COMMAND:
+            return sizeof(header) + sizeof(uint8_t);  // direction
+
         default:
             throw std::runtime_error("Unknown header");
     }
@@ -49,14 +52,25 @@ int Protocol::recv_cars_with_nitro(Socket& skt, std::vector<uint8_t>& buffer) co
     return ret;
 }
 
-std::vector<uint8_t> Protocol::recv_full_message(Socket& skt) const {
+std::vector<uint8_t> Protocol::recv_full_message(Socket& skt) {
     int ret;
     uint8_t header = recv_header(skt, ret);
     if (ret == 0)
         return {};  // connection closed
     std::vector<uint8_t> buffer{header};
+    if (header == 0) {
+        return {};
+    }
     if (header == ACTIVATE_NITRO) {
         return buffer;  // No payload
+    }
+    if (header == MOVE_COMMAND) {
+        uint8_t direction;
+        ret = skt.recvall(&direction, sizeof(direction));
+        if (ret <= 0)
+            throw std::runtime_error("Error receiving move command direction");
+        BufferUtils::append_bytes(buffer, &direction, sizeof(direction));
+        return buffer;
     }
     if (header == SEND_CARS_WITH_NITRO) {
         ret = recv_cars_with_nitro(skt, buffer);
@@ -68,12 +82,16 @@ std::vector<uint8_t> Protocol::recv_full_message(Socket& skt) const {
     return buffer;
 }
 
+std::vector<uint8_t> Protocol::recv_full_message() { return recv_full_message(skt); }
+
 int Protocol::send_message(Socket& skt, const std::vector<uint8_t>& msg) const {
     int bytes_sent = skt.sendall(msg.data(), msg.size());
     if (bytes_sent <= 0)
         throw std::runtime_error("Error sending message");
     return bytes_sent;
 }
+
+int Protocol::send_message(const std::vector<uint8_t>& msg) { return send_message(skt, msg); }
 
 void Protocol::close_connection() {
     skt.shutdown(SHUT_RDWR);

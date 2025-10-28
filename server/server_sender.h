@@ -2,6 +2,7 @@
 #define THREAD_SENDER_H
 
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "../common/protocol.h"
@@ -11,13 +12,13 @@
 
 class ThreadSender: public Thread {
 public:
-    ThreadSender(Protocol& protocol, Queue<ServerToClientCmd_Server*>& send_queue);
+    ThreadSender(Protocol& protocol, Queue<std::shared_ptr<ServerToClientCmd_Server>>& send_queue);
 
     void run() override;
 
 private:
     Protocol& protocol;
-    Queue<ServerToClientCmd_Server*>& send_queue;
+    Queue<std::shared_ptr<ServerToClientCmd_Server>>& send_queue;
 };
 
 #endif

@@ -2,6 +2,7 @@
 #define CLIENT_SENDER_H
 
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "../common/protocol.h"

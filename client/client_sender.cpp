@@ -8,11 +8,11 @@ ClientSender::ClientSender(Protocol& protocol, Queue<ClientToServerCmd_Client*>&
 void ClientSender::run() {
     try {
         while (should_keep_running()) {
-            const auto* cmd = send_queue.pop();
+            ClientToServerCmd_Client* raw = send_queue.pop();
+            std::unique_ptr<ClientToServerCmd_Client> cmd(raw);
             if (cmd) {
                 auto data = cmd->to_bytes();
                 protocol.send_message(data);
-                delete cmd;
             }
         }
     } catch (const ClosedQueue& e) {

@@ -22,11 +22,11 @@ int ClientSession::run() {
             } else if (parsed.type == READ) {
                 int i = 0;
                 while (i < parsed.lines_to_read) {
-                    ServerToClientCmd_Client* cmd;
-                    if (receive_queue.try_pop(cmd)) {
+                    ServerToClientCmd_Client* raw;
+                    if (receive_queue.try_pop(raw)) {
+                        std::unique_ptr<ServerToClientCmd_Client> cmd(raw);
                         if (cmd) {
                             cmd->execute(*this);  // ejecutar el comando polimórfico
-                            delete cmd;
                         }
                         i++;
                     }
@@ -61,10 +61,10 @@ int ClientSession::run() {
 }
 
 void ClientSession::stop() {
-    ServerToClientCmd_Client* cmd;
-    while (receive_queue.try_pop(cmd)) {
-        if (cmd) {
-            delete cmd;
+    ServerToClientCmd_Client* raw;
+    while (receive_queue.try_pop(raw)) {
+        if (raw) {
+            std::unique_ptr<ServerToClientCmd_Client> cmd(raw);
         }
     }
     receive_queue.close();

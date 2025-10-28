@@ -1,6 +1,7 @@
 #ifndef SERVER_CLIENT_HANDLER_H
 #define SERVER_CLIENT_HANDLER_H
 
+#include <memory>
 #include <vector>
 
 #include "../common/protocol.h"
@@ -19,13 +20,13 @@ public:
     void run() override;
     bool is_dead() const;
     void stop() override;
-    void send_message(ServerToClientCmd_Server* cmd);
+    void send_message(std::shared_ptr<ServerToClientCmd_Server> cmd);
 
 private:
     int client_id;
     Protocol protocol;
 
-    Queue<ServerToClientCmd_Server*> send_queue;
+    Queue<std::shared_ptr<ServerToClientCmd_Server>> send_queue;
     ServerRegisteredCommands registered_commands;
     ThreadReceiver receiver;
     ThreadSender sender;

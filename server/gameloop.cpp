@@ -9,11 +9,11 @@ ServerGameLoop::ServerGameLoop(Queue<ClientToServerCmd_Server*>& gameloop_queue,
         gameloop_queue(gameloop_queue), protected_clients(protected_clients) {}
 
 void ServerGameLoop::process_pending_commands() {
-    ClientToServerCmd_Server* cmd = nullptr;
-    while (gameloop_queue.try_pop(cmd)) {
-        if (cmd) {
+    ClientToServerCmd_Server* raw;
+    while (gameloop_queue.try_pop(raw)) {
+        if (raw) {
+            std::unique_ptr<ClientToServerCmd_Server> cmd(raw);
             cmd->execute();
-            delete cmd;
         }
     }
 }
@@ -25,13 +25,10 @@ void ServerGameLoop::update_game_state() {
     };
 
     // Crear comando Snapshot
-    auto snapshot_cmd = new ServerToClientSnapshot(snapshot_data);
+    auto snapshot_cmd = std::make_shared<ServerToClientSnapshot>(snapshot_data);
 
     // Broadcast a todos los clientes conectados
     protected_clients.broadcast(snapshot_cmd);
-
-    // IMPORTANTE: el broadcast hace una copia por cliente, así que liberamos el original
-    delete snapshot_cmd;
 }
 
 void ServerGameLoop::run() {

@@ -2,6 +2,7 @@
 #define SERVER_GAMELOOP_H
 
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "../common/queue.h"

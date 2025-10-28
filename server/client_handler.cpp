@@ -47,7 +47,7 @@ bool ServerClientHandler::is_dead() const {
     return !should_keep_running() || protocol.is_connection_closed();
 }
 
-void ServerClientHandler::send_message(ServerToClientCmd_Server* cmd) {
+void ServerClientHandler::send_message(std::shared_ptr<ServerToClientCmd_Server> cmd) {
     if (cmd)
         send_queue.push(cmd);
 }

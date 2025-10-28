@@ -3,8 +3,8 @@
 
 #include <box2d/box2d.h>
 
-#include "Car.h"
-#include "CheckpointManager.h"
+#include "car.h"
+#include "checkpoint_manager.h"
 
 class WorldContactListener {
 private:

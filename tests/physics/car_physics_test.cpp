@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "server/PhysicsEngine.h"
-#include "server/Car.h"
+#include "server/physics_engine.h"
+#include "server/car.h"
 
 class CarPhysicsTest : public ::testing::Test {
 protected:
@@ -8,7 +8,6 @@ protected:
     Car* car;
     
     void SetUp() override {
-        physics = new PhysicsEngine();
         
         CarStats stats = {
             .acceleration = 20.0f,

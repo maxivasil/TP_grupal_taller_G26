@@ -5,8 +5,6 @@
 
 #include <box2d/box2d.h>
 
-#include "Collidable.h"
-
 enum class Direction { FORWARD, LEFT, RIGHT };
 
 struct CarStats {
@@ -53,6 +51,25 @@ public:
     Car(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation);
     ~Car();
 
+      /**
+     * @brief Construye un nuevo Car en la posición indicada.
+     * @param x Posición X inicial en el mundo.
+     * @param y Posición Y inicial en el mundo.
+     */
+
+    /**
+     * @brief Actualiza la posición y estado del auto según la entrada del jugador.
+     * @param deltaTime Tiempo transcurrido desde el último frame (en segundos).
+     */
+    void update(float deltaTime);
+
+    /**
+     * @brief Renderiza el auto en pantalla.
+     * @param renderer Puntero al renderer de SDL.
+     * @param camera Cámara actual (para transformar coordenadas de mundo a pantalla).
+     */
+    void render(SDL_Renderer* renderer, const SDL_FRect& camera) const;
+
     void repair();
 
     void updatePhysics(const CarInput& input);
@@ -75,6 +92,8 @@ public:
                      const b2Vec2& contactNormal) override;
 
     b2Rot getRotation(const b2Vec2& contactNormal) const override;
+
+    float getAngle() const;
 };
 
 

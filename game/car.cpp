@@ -1,8 +1,8 @@
 #include "car.h"
-
 #include <algorithm>
-
-#include "CollisionCategories.h"
+#include <box2d/box2d.h>
+#include <SDL2/SDL.h>
+#include "collision_categories.h"
 
 #define DAMAGE_SCALING_FACTOR 100000
 
@@ -191,5 +191,40 @@ void Car::onCollision(Collidable* other, float approachSpeed, float deltaTime,
 }
 
 b2Rot Car::getRotation([[maybe_unused]] const b2Vec2& contactNormal) const { return getRotation(); }
+
+void Car::update(float deltaTime) {
+    const Uint8* state = SDL_GetKeyboardState(NULL);
+    const float accel = 300.0f * deltaTime;
+    const float decel = 200.0f * deltaTime;
+    const float turnSpeed = 120.0f * deltaTime;
+    
+    float speed = b2Length(b2Body_GetLinearVelocity(body));
+
+    if (state[SDL_SCANCODE_W]) speed += accel;
+    else if (state[SDL_SCANCODE_S]) speed -= accel;
+    float angle = b2Rot_GetAngle(b2Body_GetRotation(body)) * 180.0f / B2_PI;
+    if (state[SDL_SCANCODE_A]) angle -= turnSpeed;
+    if (state[SDL_SCANCODE_D]) angle += turnSpeed;
+
+    b2Vec2 pos = b2Body_GetPosition(body);
+    float x = pos.x;
+    float y = pos.y;
+    x += cosf(angle * M_PI / 180.0f) * speed * deltaTime;
+    y += sinf(angle * M_PI / 180.0f) * speed * deltaTime;
+    x += cosf(angle * M_PI / 180.0f) * speed * deltaTime;
+    y += sinf(angle * M_PI / 180.0f) * speed * deltaTime;
+}
+
+void Car::render(SDL_Renderer* renderer, const SDL_FRect& camera) const {
+    b2Vec2 pos = b2Body_GetPosition(body);
+    SDL_FRect rect = { pos.x - camera.x - 10, pos.y - camera.y - 10, 20, 20 };
+    SDL_SetRenderDrawColor(renderer, 255, 60, 60, 255);
+    SDL_RenderFillRectF(renderer, &rect);
+}
+
+float Car::getAngle() const {
+    b2Rot rotation = b2Body_GetRotation(body);
+    return b2Rot_GetAngle(rotation);
+}
 
 Car::~Car() {}

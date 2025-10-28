@@ -6,8 +6,8 @@
 
 #include <box2d/box2d.h>
 
-#include "Car.h"
-#include "PhysicalCheckpoint.h"
+#include "car.h"
+#include "physical_checkpoint.h"
 
 class CheckpointManager {
 private:

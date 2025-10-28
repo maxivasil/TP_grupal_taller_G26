@@ -1,6 +1,6 @@
-#include "CheckpointManager.h"
+#include "checkpoint_manager.h"
 
-#include "CollisionCategories.h"
+#include "collision_categories.h"
 
 CheckpointManager::CheckpointManager(): nextCheckpointId(0) {}
 

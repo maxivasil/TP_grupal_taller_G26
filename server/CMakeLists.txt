@@ -14,6 +14,7 @@ target_sources(taller_server
     WorldContactListener.cpp
     StaticObject.cpp
     CheckpointManager.cpp
+    Player.cpp
     PUBLIC
     # .h files
     acceptor.h
@@ -31,4 +32,5 @@ target_sources(taller_server
     Collidable.h
     PhysicalCheckpoint.h
     CheckpointManager.h
+    Player.h
     )

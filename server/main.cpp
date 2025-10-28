@@ -1,12 +1,14 @@
 #include <cstdint>
 #include <exception>
 #include <iostream>
+#include <memory>
 
 #include <box2d/box2d.h>
 
 #include "Car.h"
 #include "CheckpointManager.h"
 #include "PhysicsEngine.h"
+#include "Player.h"
 #include "StaticObject.h"
 #include "session.h"
 
@@ -37,6 +39,7 @@ int main() {
     CheckpointManager checkpointManager;
     PhysicsEngine physics(checkpointManager);
     b2WorldId world = physics.getWorld();
+    checkpointManager.createCheckpoint(world, b2Vec2{-10.0f, 0.0f}, 6.0f, 6.0f);
     checkpointManager.createCheckpoint(world, b2Vec2_zero, 6.0f, 6.0f);
 
     CarStats statsA = {.acceleration = 20.0f,
@@ -62,30 +65,40 @@ int main() {
     StaticObjectParam wall_params = {.length = 3.0f, .width = 3.0f, .mass = 10000.0f};
 
     float p = 20.0f;
-    Car carA(world, std::move(statsA), {-p, 0.0f}, b2MakeRot(0));
+    std::unique_ptr<Car> carA =
+            std::make_unique<Car>(world, std::move(statsA), b2Vec2{-p, 0.0f}, b2MakeRot(0));
     StaticObject wall(world, b2Vec2_zero, wall_params);
-    Car carB(world, std::move(statsB), {p, 0.0f}, b2MakeRot(B2_PI));
+    std::unique_ptr<Car> carB =
+            std::make_unique<Car>(world, std::move(statsB), b2Vec2{p, 0.0f}, b2MakeRot(B2_PI));
+
+    Player playerA("A");
+    Player playerB("B");
+
+    playerA.assignCar(std::move(carA));
+    playerB.assignCar(std::move(carB));
 
     const float timeStep = 1.0f / 60.0f;
 
     for (int i = 0; i < 180; ++i) {
-        CarInput inputA = {true, false, Direction::FORWARD};
-        CarInput inputB = {true, false, Direction::FORWARD};
-
-        carA.updatePhysics(inputA);
-        carB.updatePhysics(inputB);
+        playerA.accelerate();
+        playerB.accelerate();
 
         physics.step(timeStep, 4);
 
-        b2Vec2 posA = carA.getPosition();
-        b2Vec2 posB = carB.getPosition();
+        b2Vec2 posA = playerA.getPosition();
+        b2Vec2 posB = playerB.getPosition();
 
         std::cout << "Step " << i << ":\n";
         std::cout << "  CarA Pos (" << posA.x << ", " << posA.y
-                  << ") HP=" << carA.getCurrentHealth() << "\n";
+                  << ") HP=" << playerA.getCurrentHealth() << "\n";
         std::cout << "  CarB Pos (" << posB.x << ", " << posB.y
-                  << ") HP=" << carB.getCurrentHealth() << "\n\n";
+                  << ") HP=" << playerB.getCurrentHealth() << "\n\n";
     }
+
+    std::cout << (checkpointManager.hasCarFinished(*playerA.getCar()) ? "Termino" : "No termino")
+              << std::endl;
+    std::cout << (checkpointManager.hasCarFinished(*playerB.getCar()) ? "Termino" : "No termino")
+              << std::endl;
 
     return 0;
 }

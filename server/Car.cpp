@@ -37,7 +37,8 @@ void Car::setShape(b2BodyId body) {
     b2Body_ApplyMassFromShapes(body);
 }
 
-Car::Car(b2WorldId world, const CarStats& stats_, b2Vec2 position, b2Rot rotation): stats(stats_) {
+Car::Car(b2WorldId world, const CarStats& stats_, b2Vec2 position, b2Rot rotation):
+        stats(stats_), hasInfiniteHealth(false) {
     b2BodyDef bodyDef = initCarBodyDef(position, rotation);
     body = b2CreateBody(world, &bodyDef);
 
@@ -114,7 +115,9 @@ float getCollisionAngleDamageFactor(float angle_rad) {
 void Car::applyCollision(const CollisionInfo& info) {
     float angle_damage_factor = getCollisionAngleDamageFactor(info.angle);
 
-    float damage = info.impactForce * angle_damage_factor / DAMAGE_SCALING_FACTOR;
+    int infiniteHealthFactor = hasInfiniteHealth ? 0 : 1;
+    float damage =
+            infiniteHealthFactor * info.impactForce * angle_damage_factor / DAMAGE_SCALING_FACTOR;
     current_health -= damage;
     if (current_health < 0) {
         current_health = 0;
@@ -187,5 +190,7 @@ void Car::onCollision(Collidable* other, float approachSpeed, float deltaTime,
 }
 
 b2Rot Car::getRotation([[maybe_unused]] const b2Vec2& contactNormal) const { return getRotation(); }
+
+void Car::setInfiniteHealth() { hasInfiniteHealth = true; }
 
 Car::~Car() {}

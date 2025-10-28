@@ -41,7 +41,9 @@ bool CheckpointManager::hasCarFinished(Car& car) const {
 }
 
 void CheckpointManager::onCarEnterCheckpoint(Car* car, int checkpointId) {
-    int last = lastCheckpointPassed[car];
+    auto it = lastCheckpointPassed.find(car);
+    int last = (it == lastCheckpointPassed.end()) ? -1 : it->second;
+
     if (last + 1 == checkpointId) {
         lastCheckpointPassed[car] = checkpointId;
     }

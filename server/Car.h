@@ -30,6 +30,7 @@ private:
     b2BodyId body;
     CarStats stats;
     float current_health;
+    bool hasInfiniteHealth;
 
     b2BodyDef initCarBodyDef(b2Vec2 position, b2Rot rotation);
 
@@ -73,6 +74,8 @@ public:
                      const b2Vec2& contactNormal) override;
 
     b2Rot getRotation(const b2Vec2& contactNormal) const override;
+
+    void setInfiniteHealth();
 };
 
 

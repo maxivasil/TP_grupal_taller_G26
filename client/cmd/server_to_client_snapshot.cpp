@@ -31,15 +31,9 @@ ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint
     if (header != SNAPSHOT_COMMAND)
         throw std::runtime_error("Invalid header for snapshot");
 
-    // if (offset + sizeof(uint8_t) > data.size())
-    //     throw std::runtime_error("Incomplete snapshot: missing car count");
-
     uint8_t car_count;
     std::memcpy(&car_count, &data[offset], sizeof(uint8_t));
     offset += sizeof(uint8_t);
-
-    std::cout << "Data size: " << data.size() << ", offset: " << offset
-              << ", car_count: " << static_cast<int>(car_count) << std::endl;
 
     std::vector<CarSnapshot> cars;
     cars.reserve(car_count);

@@ -10,6 +10,7 @@
 #include "PhysicsEngine.h"
 #include "Player.h"
 #include "StaticObject.h"
+#include "Track.h"
 #include "session.h"
 
 // int argc, char* argv[]
@@ -36,11 +37,14 @@ int main() {
     }
     */
 
+    std::string trackFile = "tracks/track.yaml";
+    Track track(trackFile);
     CheckpointManager checkpointManager;
     PhysicsEngine physics(checkpointManager);
     b2WorldId world = physics.getWorld();
-    checkpointManager.createCheckpoint(world, b2Vec2{-10.0f, 0.0f}, 6.0f, 6.0f);
-    checkpointManager.createCheckpoint(world, b2Vec2_zero, 6.0f, 6.0f);
+    for (auto ckpt: track.getCheckpoints()) {
+        checkpointManager.createCheckpoint(world, {ckpt.x, ckpt.y}, ckpt.width, ckpt.height);
+    }
 
     CarStats statsA = {.acceleration = 20.0f,
                        .max_speed = 100.0f,

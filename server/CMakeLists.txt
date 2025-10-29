@@ -15,6 +15,7 @@ target_sources(taller_server
     StaticObject.cpp
     CheckpointManager.cpp
     Player.cpp
+    Track.cpp
     PUBLIC
     # .h files
     acceptor.h
@@ -33,4 +34,5 @@ target_sources(taller_server
     PhysicalCheckpoint.h
     CheckpointManager.h
     Player.h
+    Track.h
     )

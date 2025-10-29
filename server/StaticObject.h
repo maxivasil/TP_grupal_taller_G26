@@ -1,21 +1,23 @@
 #ifndef STATIC_OBJECT_H
 #define STATIC_OBJECT_H
 
-#include "Collidable.h"
-
 #include <box2d/box2d.h>
+
+#include "Collidable.h"
 
 struct StaticObjectParam {
     float length;
     float width;
     float mass;
+    bool onBridge;
 };
 
 
-class StaticObject : public Collidable {
+class StaticObject: public Collidable {
 private:
     b2BodyId body;
     float mass;
+    bool onBridge;
 
     b2BodyDef initStaticObjectBodyDef(b2Vec2 position);
 
@@ -24,7 +26,8 @@ private:
 public:
     StaticObject(b2WorldId world, b2Vec2 position, StaticObjectParam& params);
 
-    void onCollision(Collidable* other, float approachSpeed, float deltaTime, const b2Vec2& contactNormal) override;
+    void onCollision(Collidable* other, float approachSpeed, float deltaTime,
+                     const b2Vec2& contactNormal) override;
 
     virtual float getMass() const override;
 

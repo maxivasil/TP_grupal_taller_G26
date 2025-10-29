@@ -31,6 +31,7 @@ private:
     CarStats stats;
     float current_health;
     bool hasInfiniteHealth;
+    bool isOnBridge;
 
     b2BodyDef initCarBodyDef(b2Vec2 position, b2Rot rotation);
 
@@ -76,6 +77,10 @@ public:
     b2Rot getRotation(const b2Vec2& contactNormal) const override;
 
     void setInfiniteHealth();
+
+    void setLevel(bool onBridge);
+
+    bool getIsOnBridge() const;
 };
 
 

@@ -1,8 +1,8 @@
 #ifndef CHECKPOINT_MANAGER_H
 #define CHECKPOINT_MANAGER_H
 
+#include <list>
 #include <unordered_map>
-#include <vector>
 
 #include <box2d/box2d.h>
 
@@ -11,13 +11,13 @@
 
 class CheckpointManager {
 private:
-    std::vector<PhysicalCheckpoint> checkpoints;
+    std::list<PhysicalCheckpoint> checkpoints;
     std::unordered_map<Car*, int> lastCheckpointPassed;
     int nextCheckpointId;
 
     b2BodyDef initCheckpointBodyDef(b2Vec2 position);
 
-    void setShape(b2BodyId body, float width, float length, int id);
+    void setShape(b2BodyId body, float width, float length, PhysicalCheckpoint& ckpt);
 
 public:
     CheckpointManager();

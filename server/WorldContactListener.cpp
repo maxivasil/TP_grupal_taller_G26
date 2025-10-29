@@ -3,7 +3,7 @@
 #include <algorithm>
 
 #include "Collidable.h"
-
+#include "SensorData.h"
 
 WorldContactListener::WorldContactListener(CheckpointManager& checkpointManager):
         checkpointManager(checkpointManager) {}
@@ -27,14 +27,25 @@ void WorldContactListener::BeginTouch(const b2SensorBeginTouchEvent* sensor) {
     b2ShapeId otherShape = sensor->visitorShapeId;
 
     void* userData = b2Shape_GetUserData(sensorShape);
-    int checkpointId = (int)(intptr_t)userData;
+    if (!userData) {
+        return;
+    }
+
+    const SensorData* data = static_cast<SensorData*>(userData);
 
     b2BodyId otherBody = b2Shape_GetBody(otherShape);
     Car* car = reinterpret_cast<Car*>(b2Body_GetUserData(otherBody));
     if (!car)
         return;
 
-    checkpointManager.onCarEnterCheckpoint(car, checkpointId);
+    switch (data->type) {
+        case SensorType::Checkpoint:
+            checkpointManager.onCarEnterCheckpoint(car, data->id);
+            break;
+        case SensorType::BridgeLevel:
+            car->setLevel(!car->getIsOnBridge());
+            break;
+    }
 }
 
 WorldContactListener::~WorldContactListener() {}

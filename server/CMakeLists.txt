@@ -16,6 +16,8 @@ target_sources(taller_server
     CheckpointManager.cpp
     Player.cpp
     Track.cpp
+    City.cpp
+    BridgeSensorManager.cpp
     PUBLIC
     # .h files
     acceptor.h
@@ -35,4 +37,7 @@ target_sources(taller_server
     CheckpointManager.h
     Player.h
     Track.h
+    City.h
+    SensorData.h
+    BridgeSensorManager.h
     )

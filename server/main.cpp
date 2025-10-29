@@ -5,8 +5,10 @@
 
 #include <box2d/box2d.h>
 
+#include "BridgeSensorManager.h"
 #include "Car.h"
 #include "CheckpointManager.h"
+#include "City.h"
 #include "PhysicsEngine.h"
 #include "Player.h"
 #include "StaticObject.h"
@@ -39,11 +41,25 @@ int main() {
 
     std::string trackFile = "tracks/track.yaml";
     Track track(trackFile);
+    City city(CityName::LibertyCity);
     CheckpointManager checkpointManager;
+    BridgeSensorManager bridgeSensorManager;
     PhysicsEngine physics(checkpointManager);
     b2WorldId world = physics.getWorld();
     for (auto ckpt: track.getCheckpoints()) {
-        checkpointManager.createCheckpoint(world, {ckpt.x, ckpt.y}, ckpt.width, ckpt.height);
+        checkpointManager.createCheckpoint(world, b2Vec2{ckpt.x, ckpt.y}, ckpt.width, ckpt.height);
+    }
+    std::list<StaticObject> staticObjects;
+    for (auto staticObj: city.getStaticObjects()) {
+        StaticObjectParam params = {.length = staticObj.height,
+                                    .width = staticObj.width,
+                                    .mass = 10000.0f,
+                                    .onBridge = staticObj.isUp};
+        staticObjects.emplace_back(world, b2Vec2{staticObj.x, staticObj.y}, params);
+    }
+    for (auto bridgeSensor: city.getBridgeSensors()) {
+        bridgeSensorManager.createBridgeSensor(world, b2Vec2{bridgeSensor.x, bridgeSensor.y},
+                                               bridgeSensor.width, bridgeSensor.height);
     }
 
     CarStats statsA = {.acceleration = 20.0f,
@@ -53,8 +69,8 @@ int main() {
                        .brake_force = 15.0f,
                        .handling = 0.8f,
                        .health_max = 100.0f,
-                       .length = 2.0f,
-                       .width = 4.0f};
+                       .length = 2,
+                       .width = 1.5};
 
     CarStats statsB = {.acceleration = 20.0f,
                        .max_speed = 100.0f,
@@ -63,17 +79,13 @@ int main() {
                        .brake_force = 15.0f,
                        .handling = 0.8f,
                        .health_max = 100.0f,
-                       .length = 2.0f,
-                       .width = 4.0f};
+                       .length = 2,
+                       .width = 1.5};
 
-    StaticObjectParam wall_params = {.length = 3.0f, .width = 3.0f, .mass = 10000.0f};
-
-    float p = 20.0f;
     std::unique_ptr<Car> carA =
-            std::make_unique<Car>(world, std::move(statsA), b2Vec2{-p, 0.0f}, b2MakeRot(0));
-    StaticObject wall(world, b2Vec2_zero, wall_params);
+            std::make_unique<Car>(world, std::move(statsA), b2Vec2{57.3, 308.6}, b2MakeRot(0));
     std::unique_ptr<Car> carB =
-            std::make_unique<Car>(world, std::move(statsB), b2Vec2{p, 0.0f}, b2MakeRot(B2_PI));
+            std::make_unique<Car>(world, std::move(statsB), b2Vec2{85.1, 308.6}, b2MakeRot(B2_PI));
 
     Player playerA("A");
     Player playerB("B");
@@ -82,6 +94,8 @@ int main() {
     playerB.assignCar(std::move(carB));
 
     const float timeStep = 1.0f / 60.0f;
+    // 400 2400  -- ----- 57.3, 308.6
+    // 580 2400  -------- 83.1, 308.6
 
     for (int i = 0; i < 180; ++i) {
         playerA.accelerate();

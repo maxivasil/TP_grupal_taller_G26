@@ -2,6 +2,12 @@
 #include <cstdlib>
 
 World::World() {
+    // Crear el mundo de Box2D
+    b2WorldDef worldDef = b2DefaultWorldDef();
+    worldDef.gravity = {0.0f, 0.0f};  // Sin gravedad (vista top-down)
+    worldId = b2CreateWorld(&worldDef);
+    
+    // Generar edificios
     for (int i = 0; i < 50; ++i) {
         SDL_FRect b = { (float)(rand() % 2000), (float)(rand() % 2000), 80, 80 };
         buildings.push_back(b);
@@ -23,3 +29,9 @@ SDL_FRect World::getBounds() const {
 const std::vector<SDL_FRect>& World::getBuildings() const {
     return buildings;
 }
+
+b2WorldId World::getWorldId() const {
+    return worldId;
+}
+
+

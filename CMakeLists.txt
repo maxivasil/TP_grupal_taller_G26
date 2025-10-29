@@ -169,6 +169,36 @@ if(TALLER_EDITOR)
     target_link_libraries(taller_editor taller_common SDL2pp::SDL2pp)
 endif()
 
+# ------------------------------
+# Game demo (usando game/)
+# ------------------------------
+option(TALLER_GAME_DEMO "Enable game demo build." ON)
+
+if(TALLER_GAME_DEMO)
+    message(STATUS "Building game demo")
+    
+    add_executable(taller_game
+        main.cpp
+        game/gameloop.cpp
+        game/world.cpp
+        game/car.cpp
+        game/minimap_renderer.cpp
+        # ... otros archivos necesarios
+    )
+
+    add_dependencies(taller_game taller_common SDL2pp::SDL2pp box2d::box2d)
+    
+    set_project_warnings(taller_game ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
+    
+    target_include_directories(taller_game PRIVATE ${libSDL2pp_SOURCE_DIR})
+    
+    target_link_libraries(taller_game PRIVATE
+        taller_common
+        SDL2pp::SDL2pp
+        box2d::box2d
+    )
+endif()
+
 
 # Testing section
 # ---------------
@@ -227,13 +257,3 @@ if(TALLER_TESTS)
 
 endif()
 
-# ------------------------------
-# Demo de prueba de Box2D (onboarding)
-# ------------------------------
-option(TALLER_BOX2D_DEMO "Enable Box2D demo build." ON)
-
-if(TALLER_BOX2D_DEMO)
-    message(STATUS "Building Box2D demo (onboarding)")
-    add_subdirectory(box_2d_demo)
-    add_subdirectory(physics_test)
-endif()

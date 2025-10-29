@@ -3,7 +3,10 @@
 
 #include "collidable.h"
 
+#include <SDL2/SDL.h>
 #include <box2d/box2d.h>
+
+class World;
 
 enum class Direction { FORWARD, LEFT, RIGHT };
 
@@ -48,7 +51,7 @@ private:
     float getImpactAngle(const Collidable* other, const b2Vec2& contactNormal);
 
 public:
-    Car(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation);
+    Car(World& world);
     ~Car();
 
       /**

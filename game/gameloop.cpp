@@ -2,7 +2,7 @@
 
 GameLoop::GameLoop()
     : window(nullptr), renderer(nullptr), running(true),
-      world(), car(world.getWorld()), minimap(200) {
+      world(), car(world), minimap(200) {
     SDL_Init(SDL_INIT_VIDEO);
     window = SDL_CreateWindow("TP - Need for Speed",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,

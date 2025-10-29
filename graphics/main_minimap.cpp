@@ -18,7 +18,7 @@ struct Building {
 
 struct Car {
     float x, y;      // Posición en el mundo
-    float angle;     // Ángulo en grados
+    float angle;     // Ángulo en grados (0° = hacia arriba)
     float speed;     // Velocidad actual
 };
 
@@ -29,23 +29,10 @@ float deg2rad(float deg) {
     return deg * M_PI / 180.0f;
 }
 
-// Aplica rotación alrededor del centro del minimapa
-void rotatePoint(float& x, float& y, float cx, float cy, float angleDeg) {
-    float rad = deg2rad(angleDeg);
-    float s = sin(rad);
-    float c = cos(rad);
-    x -= cx;
-    y -= cy;
-    float xnew = x * c - y * s;
-    float ynew = x * s + y * c;
-    x = xnew + cx;
-    y = ynew + cy;
-}
-
 // === Programa principal ===
 int main() {
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_Window* window = SDL_CreateWindow("Minimapa Rotante",
+    SDL_Window* window = SDL_CreateWindow("Minimapa fijo + flecha rotando",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -58,6 +45,7 @@ int main() {
 
     // Auto del jugador
     Car car = { WORLD_WIDTH / 2.0f, WORLD_HEIGHT / 2.0f, 0.0f, 0.0f };
+
     const float maxSpeed = 8.0f;
     const float accel = 0.4f;
     const float decel = 0.2f;
@@ -86,10 +74,10 @@ int main() {
         if (state[SDL_SCANCODE_D])
             car.angle += turnSpeed * (car.speed / maxSpeed);
 
-        // Avanzar según el ángulo
-        car.x += cos(deg2rad(car.angle)) * car.speed;
-        car.y += sin(deg2rad(car.angle)) * car.speed;
-
+        // Avanzar según el ángulo (SDL: Y crece hacia abajo, 0° apunta arriba)
+        const float ang = deg2rad(car.angle);
+        car.x += std::sin(ang) * car.speed;   // X hacia la derecha
+        car.y -= std::cos(ang) * car.speed;   // Y hacia arriba (nota el '-')
         // Limitar dentro del mundo
         car.x = std::clamp(car.x, 0.0f, (float)(WORLD_WIDTH));
         car.y = std::clamp(car.y, 0.0f, (float)(WORLD_HEIGHT));
@@ -105,7 +93,7 @@ int main() {
             (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT
         };
 
-        // Dibujar edificios
+        // Dibujar edificios (vista principal)
         SDL_SetRenderDrawColor(renderer, 80, 100, 255, 255);
         for (auto& b : buildings) {
             SDL_FRect screenRect = {
@@ -116,36 +104,112 @@ int main() {
             SDL_RenderFillRectF(renderer, &screenRect);
         }
 
-        // Auto (centro de pantalla)
-        SDL_SetRenderDrawColor(renderer, 255, 60, 60, 255);
-        SDL_FRect carRect = { SCREEN_WIDTH / 2.0f - 10, SCREEN_HEIGHT / 2.0f - 10, 20, 20 };
-        SDL_RenderFillRectF(renderer, &carRect);
+        // Auto como triángulo rotado (vista principal)
+        float cx = SCREEN_WIDTH / 2.0f;
+        float cy = SCREEN_HEIGHT / 2.0f;
 
-        // ---- MINIMAPA ----
+        float halfWidth = 10.0f;
+        float halfLength = 15.0f;
+
+        float localPoints[3][2] = {
+            {0.0f, -halfLength},        // Punta delantera
+            {-halfWidth, halfLength},   // Trasera izquierda
+            {halfWidth, halfLength}     // Trasera derecha
+        };
+
+        SDL_Vertex vertices[3];
+        float angleRad = deg2rad(car.angle);
+        float cosA = std::cos(angleRad);
+        float sinA = std::sin(angleRad);
+
+        for (int i = 0; i < 3; ++i) {
+            float rotX = localPoints[i][0] * cosA - localPoints[i][1] * sinA;
+            float rotY = localPoints[i][0] * sinA + localPoints[i][1] * cosA;
+
+            vertices[i].position.x = cx + rotX;
+            vertices[i].position.y = cy + rotY;
+            vertices[i].color = SDL_Color{255, 60, 60, 255};  // Rojo
+            vertices[i].tex_coord = SDL_FPoint{0, 0};
+        }
+
+        int indices[3] = {0, 1, 2};
+        SDL_RenderGeometry(renderer, NULL, vertices, 3, indices, 3);
+
+        // Punto amarillo en el frente (punta del triángulo) en la vista principal
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        SDL_FRect frontDot = {
+            vertices[0].position.x - 3,
+            vertices[0].position.y - 3,
+            6, 6
+        };
+        SDL_RenderFillRectF(renderer, &frontDot);
+
+        // ---- MINIMAPA (FIJO, NORTH-UP) ----
         SDL_Rect minimapViewport = { SCREEN_WIDTH - MINIMAP_SIZE - 20, 20, MINIMAP_SIZE, MINIMAP_SIZE };
         SDL_RenderSetViewport(renderer, &minimapViewport);
 
+        // Fondo del minimapa
         SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
         SDL_RenderFillRect(renderer, NULL);
 
+        // Escala de mundo -> minimapa (sin rotación)
         float scaleX = (float)MINIMAP_SIZE / WORLD_WIDTH;
         float scaleY = (float)MINIMAP_SIZE / WORLD_HEIGHT;
 
-        // Dibujar edificios rotados
+        // Edificios como puntos (no rotados)
         SDL_SetRenderDrawColor(renderer, 100, 100, 255, 255);
         for (auto& b : buildings) {
-            float bx = (b.rect.x - car.x) * scaleX + MINIMAP_SIZE / 2;
-            float by = (b.rect.y - car.y) * scaleY + MINIMAP_SIZE / 2;
-            rotatePoint(bx, by, MINIMAP_SIZE / 2, MINIMAP_SIZE / 2, -car.angle);
+            float bx = (b.rect.x - car.x) * scaleX + MINIMAP_SIZE / 2.0f;
+            float by = (b.rect.y - car.y) * scaleY + MINIMAP_SIZE / 2.0f;
+
+            // Pequeño rectángulo/píxel en el minimapa
             SDL_Rect miniRect = { (int)bx, (int)by, 3, 3 };
             SDL_RenderFillRect(renderer, &miniRect);
         }
 
-        // Auto centrado
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_Rect miniCar = { MINIMAP_SIZE / 2 - 3, MINIMAP_SIZE / 2 - 3, 6, 6 };
-        SDL_RenderFillRect(renderer, &miniCar);
+        // Flecha del auto en el minimapa: triángulo centrado que SÍ rota con car.angle
+        float mCx = MINIMAP_SIZE / 2.0f;
+        float mCy = MINIMAP_SIZE / 2.0f;
 
+        // Triángulo pequeño en coords locales (apunta "arriba" en reposo)
+        float miniHalfW = 4.0f;
+        float miniHalfL = 6.0f;
+
+        float miniLocal[3][2] = {
+            {0.0f, -miniHalfL},        // Punta (frente)
+            {-miniHalfW, miniHalfL},   // Trasera izquierda
+            {miniHalfW, miniHalfL}     // Trasera derecha
+        };
+
+        float mCos = std::cos(angleRad);
+        float mSin = std::sin(angleRad);
+
+        SDL_FPoint miniPts[3];
+        for (int i = 0; i < 3; ++i) {
+            float rx = miniLocal[i][0] * mCos - miniLocal[i][1] * mSin;
+            float ry = miniLocal[i][0] * mSin + miniLocal[i][1] * mCos;
+            miniPts[i].x = mCx + rx;
+            miniPts[i].y = mCy + ry;
+        }
+
+        // Dibujar el triángulo del auto en el minimapa
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        for (int i = 0; i < 3; ++i) {
+            int nex = (i + 1) % 3;
+            SDL_RenderDrawLineF(renderer, miniPts[i].x, miniPts[i].y, miniPts[nex].x, miniPts[nex].y);
+        }
+        SDL_RenderDrawLineF(renderer, miniPts[2].x, miniPts[2].y, miniPts[0].x, miniPts[0].y);
+
+        // Punto amarillo en la punta del triángulo del minimapa
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        SDL_FRect miniFrontDot = {
+            miniPts[0].x - 2,
+            miniPts[0].y - 2,
+            4, 4
+        };
+        SDL_RenderFillRectF(renderer, &miniFrontDot);
+
+        // Restablecer viewport y presentar
         SDL_RenderSetViewport(renderer, NULL);
         SDL_RenderPresent(renderer);
 

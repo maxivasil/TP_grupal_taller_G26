@@ -1,9 +1,6 @@
 #include "minimap_renderer.h"
 #include <cmath>
 
-#include "minimap_renderer.h"
-#include <cmath>
-
 MinimapRenderer::MinimapRenderer(int size)
     : size(size), renderTarget(nullptr) {}
 

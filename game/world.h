@@ -2,6 +2,7 @@
 #define WORLD_H
 
 #include <SDL2/SDL.h>
+#include <box2d/box2d.h>  // Add this line
 #include <vector>
 
 /**
@@ -22,13 +23,15 @@ public:
      */
     void render(SDL_Renderer* renderer, const SDL_FRect& camera) const;
 
-    /// Devuelve el tamaño total del mundo.
     SDL_FRect getBounds() const;
 
-    const std::vector<SDL_FRect>& World::getBuildings() const;
+    const std::vector<SDL_FRect>& getBuildings() const;
+
+    b2WorldId getWorldId() const;
 
 private:
     std::vector<SDL_FRect> buildings; ///< Lista de edificios del mundo.
+    b2WorldId worldId;
 };
 
 #endif // WORLD_H

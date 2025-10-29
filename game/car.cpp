@@ -45,9 +45,10 @@ void Car::setShape(b2BodyId body) {
     shape_def.enableSensorEvents = true;
     shape_def.density = stats.mass / (stats.width * stats.length);
     shape_def.isSensor = false;
-    shape_def.filter.categoryBits = CollisionCategories::CategoryDynamic;
-    shape_def.filter.maskBits = CollisionCategories::CategoryAll;
-    shape_def.filter.groupIndex = 0;
+    shape_def.filter.categoryBits = CollisionCategories::CategoryGroundCar;
+    shape_def.filter.maskBits =
+            CollisionCategories::CategoryGroundObj | CollisionCategories::CategoryGroundCar |
+            CollisionCategories::CategoryCheckpoint | CollisionCategories::CategoryBridgeSensor;
     b2ShapeId shape = b2CreatePolygonShape(body, &shape_def, &polygon);
     b2Shape_EnableContactEvents(shape, true);
     b2Body_ApplyMassFromShapes(body);
@@ -55,6 +56,16 @@ void Car::setShape(b2BodyId body) {
     
     b2Body_SetLinearDamping(body, 0.3f);  
     b2Body_SetAngularDamping(body, 0.5f);  
+}
+
+Car::Car(b2WorldId world, const CarStats& stats_, b2Vec2 position, b2Rot rotation):
+        stats(stats_), hasInfiniteHealth(false), isOnBridge(false) {
+    b2BodyDef bodyDef = initCarBodyDef(position, rotation);
+    body = b2CreateBody(world, &bodyDef);
+
+    setShape(body);
+
+    current_health = stats_.health_max;
 }
 
 void Car::handleAccelerating(bool accelerating, float speed, b2Vec2 forward) {
@@ -125,7 +136,9 @@ float getCollisionAngleDamageFactor(float angle_rad) {
 void Car::applyCollision(const CollisionInfo& info) {
     float angle_damage_factor = getCollisionAngleDamageFactor(info.angle);
 
-    float damage = info.impactForce * angle_damage_factor / DAMAGE_SCALING_FACTOR;
+    int infiniteHealthFactor = hasInfiniteHealth ? 0 : 1;
+    float damage =
+            infiniteHealthFactor * info.impactForce * angle_damage_factor / DAMAGE_SCALING_FACTOR;
     current_health -= damage;
     if (current_health < 0) {
         current_health = 0;
@@ -249,5 +262,32 @@ float Car::getAngle() const {
     b2Rot rotation = b2Body_GetRotation(body);
     return b2Rot_GetAngle(rotation);
 }
+void Car::setInfiniteHealth() { hasInfiniteHealth = true; }
+
+void Car::setLevel(bool onBridge) {
+    isOnBridge = onBridge;
+
+    b2ShapeId shapes[1];
+    int count = b2Body_GetShapes(body, shapes, 1);
+    if (count > 0) {
+        b2Filter filter = b2Shape_GetFilter(shapes[0]);
+        if (onBridge) {
+            filter.categoryBits = CollisionCategories::CategoryBridgeCar;
+            filter.maskBits = CollisionCategories::CategoryBridgeObj |
+                              CollisionCategories::CategoryBridgeCar |
+                              CollisionCategories::CategoryCheckpoint |
+                              CollisionCategories::CategoryBridgeSensor;
+        } else {
+            filter.categoryBits = CollisionCategories::CategoryGroundCar;
+            filter.maskBits = CollisionCategories::CategoryGroundObj |
+                              CollisionCategories::CategoryGroundCar |
+                              CollisionCategories::CategoryCheckpoint |
+                              CollisionCategories::CategoryBridgeSensor;
+        }
+        b2Shape_SetFilter(shapes[0], filter);
+    }
+}
+
+bool Car::getIsOnBridge() const { return isOnBridge; }
 
 Car::~Car() {}

@@ -14,6 +14,10 @@ target_sources(taller_server
     WorldContactListener.cpp
     StaticObject.cpp
     CheckpointManager.cpp
+    Player.cpp
+    Track.cpp
+    City.cpp
+    BridgeSensorManager.cpp
     PUBLIC
     # .h files
     acceptor.h
@@ -31,4 +35,9 @@ target_sources(taller_server
     Collidable.h
     PhysicalCheckpoint.h
     CheckpointManager.h
+    Player.h
+    Track.h
+    City.h
+    SensorData.h
+    BridgeSensorManager.h
     )

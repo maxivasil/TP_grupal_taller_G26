@@ -1,6 +1,7 @@
 #include "checkpoint_manager.h"
 
 #include "collision_categories.h"
+#include "sensor_data.h"
 
 CheckpointManager::CheckpointManager(): nextCheckpointId(0) {}
 
@@ -12,15 +13,17 @@ b2BodyDef CheckpointManager::initCheckpointBodyDef(b2Vec2 position) {
     return bodyDef;
 }
 
-void CheckpointManager::setShape(b2BodyId body, float width, float length, int id) {
+void CheckpointManager::setShape(b2BodyId body, float width, float length,
+                                 PhysicalCheckpoint& ckpt) {
     b2Polygon box = b2MakeBox(width / 2, length / 2);
     b2ShapeDef shape_def = b2DefaultShapeDef();
     shape_def.isSensor = true;
     shape_def.enableSensorEvents = true;
-    shape_def.filter.categoryBits = CollisionCategories::CategorySensor;
-    shape_def.filter.maskBits = CollisionCategories::CategoryDynamic;
+    shape_def.filter.categoryBits = CollisionCategories::CategoryCheckpoint;
+    shape_def.filter.maskBits = CollisionCategories::CategoryAll;
     shape_def.filter.groupIndex = 0;
-    shape_def.userData = reinterpret_cast<void*>(static_cast<intptr_t>(id));
+    ckpt.sensorData = std::make_unique<SensorData>(SensorType::Checkpoint, ckpt.id);
+    shape_def.userData = ckpt.sensorData.get();
     b2CreatePolygonShape(body, &shape_def, &box);
 }
 
@@ -28,8 +31,14 @@ void CheckpointManager::createCheckpoint(b2WorldId world, b2Vec2 position, float
                                          float length) {
     b2BodyDef bodyDef = initCheckpointBodyDef(position);
     b2BodyId body = b2CreateBody(world, &bodyDef);
-    setShape(body, width, length, nextCheckpointId);
-    checkpoints.push_back({nextCheckpointId, body, position});
+
+    PhysicalCheckpoint ckpt;
+    ckpt.id = nextCheckpointId;
+    ckpt.body = body;
+    ckpt.position = position;
+
+    setShape(body, width, length, ckpt);
+    checkpoints.push_back(std::move(ckpt));
     nextCheckpointId++;
 }
 
@@ -41,7 +50,9 @@ bool CheckpointManager::hasCarFinished(Car& car) const {
 }
 
 void CheckpointManager::onCarEnterCheckpoint(Car* car, int checkpointId) {
-    int last = lastCheckpointPassed[car];
+    auto it = lastCheckpointPassed.find(car);
+    int last = (it == lastCheckpointPassed.end()) ? -1 : it->second;
+
     if (last + 1 == checkpointId) {
         lastCheckpointPassed[car] = checkpointId;
     }

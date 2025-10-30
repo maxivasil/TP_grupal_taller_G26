@@ -6,7 +6,7 @@
 
 #include <box2d/box2d.h>
 
-#include "SensorData.h"
+#include "sensor_data.h"
 
 struct PhysicalBridgeSensor {
     int id;

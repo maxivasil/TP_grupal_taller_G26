@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <box2d/box2d.h>
 #include <SDL2/SDL.h>
+#include <iostream>
 #include "collision_categories.h"
 
 #define DAMAGE_SCALING_FACTOR 100000
@@ -22,21 +23,14 @@ b2BodyDef Car::initCarBodyDef(b2Vec2 position, b2Rot rotation) {
     bodyDef.isAwake = true;
     return bodyDef;
 }
-
-Car::Car(World& world) {
-    // Usar el mundo real del juego
-    b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
-    bodyDef.position = {400.0f, 300.0f};
-    body = b2CreateBody(world.getWorldId(), &bodyDef); // <--- usar el mundo real
-
-    // Crear forma del auto
-    b2Polygon box = b2MakeBox(20.0f, 40.0f);
-    b2ShapeDef shapeDef = b2DefaultShapeDef();
-    shapeDef.density = 1.0f;
-    b2CreatePolygonShape(body, &shapeDef, &box);
+Car::Car(b2WorldId world, const CarStats& stats_, b2Vec2 position, b2Rot rotation):
+        stats(stats_), hasInfiniteHealth(false), isOnBridge(false) {
+    
+    b2BodyDef bodyDef = initCarBodyDef(position, rotation);
+    body = b2CreateBody(world, &bodyDef);
+    setShape(body);
+    current_health = stats.health_max;
 }
-
 
 void Car::setShape(b2BodyId body) {
     b2Polygon polygon = b2MakeBox(stats.width / 2, stats.length / 2);
@@ -58,16 +52,6 @@ void Car::setShape(b2BodyId body) {
     b2Body_SetAngularDamping(body, 0.5f);  
 }
 
-Car::Car(b2WorldId world, const CarStats& stats_, b2Vec2 position, b2Rot rotation):
-        stats(stats_), hasInfiniteHealth(false), isOnBridge(false) {
-    b2BodyDef bodyDef = initCarBodyDef(position, rotation);
-    body = b2CreateBody(world, &bodyDef);
-
-    setShape(body);
-
-    current_health = stats_.health_max;
-}
-
 void Car::handleAccelerating(bool accelerating, float speed, b2Vec2 forward) {
     if (accelerating && speed < stats.max_speed) {
         b2Vec2 force = b2MulSV(stats.acceleration * b2Body_GetMass(body), forward);
@@ -84,7 +68,7 @@ void Car::handleBraking(bool braking, b2Vec2 velocity) {
 }
 
 void Car::handleTurning(Direction turn_direction, float speed) {
-    if (speed > 0.1f && turn_direction != Direction::FORWARD) {
+    if (speed > 0.1f && turn_direction != Direction::NONE) {
         int turn = 0;
         switch (turn_direction) {
             case Direction::LEFT:
@@ -93,13 +77,16 @@ void Car::handleTurning(Direction turn_direction, float speed) {
             case Direction::RIGHT:
                 turn = 1;
                 break;
-            case Direction::FORWARD:
+            case Direction::NONE:
             default:
                 turn = 0;
                 break;
         }
-        float torque = turn * stats.turn_speed * (stats.handling);
+        // Reducir el factor multiplicador
+        float torque = turn * stats.turn_speed * stats.handling;  
         b2Body_SetAngularVelocity(body, torque);
+    } else {
+        b2Body_SetAngularVelocity(body, 0.0f);
     }
 }
 
@@ -237,25 +224,42 @@ void Car::update(float deltaTime) {
 
 void Car::render(SDL_Renderer* renderer, const SDL_FRect& camera) const {
     b2Vec2 pos = b2Body_GetPosition(body);
-    float angle = getAngle();
-    
-    // Dibujar rectángulo rojo
-    SDL_FRect rect = { pos.x - camera.x - 10, pos.y - camera.y - 20, 20, 40 };
-    SDL_SetRenderDrawColor(renderer, 255, 60, 60, 255);
-    SDL_RenderFillRectF(renderer, &rect);
-    
-    // Línea amarilla en el frente
     b2Rot rot = b2Body_GetRotation(body);
-    b2Vec2 frontOffset = b2RotateVector(rot, {0.0f, -20.0f});
-    b2Vec2 leftOffset = b2RotateVector(rot, {-10.0f, -20.0f});
-    b2Vec2 rightOffset = b2RotateVector(rot, {10.0f, -20.0f});
     
+    // Definir triángulo en coordenadas locales (apuntando hacia arriba)
+    float halfWidth = 10.0f;
+    float halfLength = 15.0f;
+    
+    b2Vec2 localPoints[3] = {
+        {0.0f, -halfLength},        // Punta delantera
+        {-halfWidth, halfLength},   // Trasera izquierda
+        {halfWidth, halfLength}     // Trasera derecha
+    };
+    
+    // Rotar y trasladar cada punto
+    SDL_Vertex vertices[3];
+    for (int i = 0; i < 3; ++i) {
+        // Rotar el punto local con la rotación del body
+        b2Vec2 rotated = b2RotateVector(rot, localPoints[i]);
+        
+        // Trasladar a posición mundial y luego a pantalla
+        vertices[i].position.x = pos.x + rotated.x - camera.x;
+        vertices[i].position.y = pos.y + rotated.y - camera.y;
+        vertices[i].color = {255, 60, 60, 255};  // Rojo
+        vertices[i].tex_coord = {0, 0};
+    }
+    
+    int indices[3] = {0, 1, 2};
+    SDL_RenderGeometry(renderer, nullptr, vertices, 3, indices, 3);
+    
+    // Punto amarillo en el frente (ya rotado)
     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-    SDL_RenderDrawLineF(renderer,
-        pos.x + leftOffset.x - camera.x,
-        pos.y + leftOffset.y - camera.y,
-        pos.x + rightOffset.x - camera.x,
-        pos.y + rightOffset.y - camera.y);
+    SDL_FRect frontDot = {
+        vertices[0].position.x - 3,
+        vertices[0].position.y - 3,
+        6, 6
+    };
+    SDL_RenderFillRectF(renderer, &frontDot);
 }
 
 float Car::getAngle() const {

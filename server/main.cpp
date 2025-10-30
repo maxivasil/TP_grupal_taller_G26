@@ -10,10 +10,10 @@
 #include "checkpoint_manager.h"
 #include "city.h"
 #include "track.h"
-
 #include "session.h"
 #include "physics_engine.h"
 #include "static_object.h"
+#include "player.h"
 //int argc, char* argv[]
 int main() {
     /*

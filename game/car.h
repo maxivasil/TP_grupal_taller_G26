@@ -8,7 +8,7 @@
 
 class World;
 
-enum class Direction { FORWARD, LEFT, RIGHT };
+enum class Direction { FORWARD, LEFT, RIGHT, BACKWARD, NONE };
 
 struct CarStats {
     float acceleration;
@@ -53,7 +53,7 @@ private:
     float getImpactAngle(const Collidable* other, const b2Vec2& contactNormal);
 
 public:
-    Car(World& world);
+    Car(b2WorldId world, const CarStats& stats_, b2Vec2 position, b2Rot rotation);
     ~Car();
 
       /**
@@ -103,6 +103,8 @@ public:
     void setLevel(bool onBridge);
 
     bool getIsOnBridge() const;
+
+    float getAngle() const;
 };
 
 

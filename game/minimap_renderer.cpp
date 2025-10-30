@@ -22,24 +22,37 @@ void MinimapRenderer::render(SDL_Renderer* renderer, const World& world, const C
 
     b2Vec2 carPos = car.getPosition();
 
-    // Dibujar edificios (necesitás un getter público para buildings)
+    // Dibujar edificios (posición relativa al auto)
     SDL_SetRenderDrawColor(renderer, 100, 100, 255, 255);
     for (const auto& building : world.getBuildings()) {
         float bx = (building.x - carPos.x) * scale + size / 2;
         float by = (building.y - carPos.y) * scale + size / 2;
-        SDL_Rect miniRect = { (int)bx, (int)by, 
-                              std::max(2, (int)(building.w * scale)), 
-                              std::max(2, (int)(building.h * scale)) };
+        SDL_Rect miniRect = { 
+            (int)bx, (int)by, 
+            std::max(2, (int)(building.w * scale)), 
+            std::max(2, (int)(building.h * scale)) 
+        };
         SDL_RenderFillRect(renderer, &miniRect);
     }
 
-    // Auto centrado
+    // Auto centrado (triángulo pequeño apuntando arriba)
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_Rect carRect = { size / 2 - 3, size / 2 - 3, 6, 6 };
-    SDL_RenderFillRect(renderer, &carRect);
+    SDL_Point miniTriangle[4] = {
+        {size / 2, size / 2 - 6},       // Punta
+        {size / 2 - 4, size / 2 + 4},   // Izquierda
+        {size / 2 + 4, size / 2 + 4},   // Derecha
+        {size / 2, size / 2 - 6}        // Cierra el triángulo
+    };
+    SDL_RenderDrawLines(renderer, miniTriangle, 4);
+    
+    // Punto amarillo en el frente del auto en minimapa
+    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+    SDL_Rect miniDot = {size / 2 - 2, size / 2 - 8, 4, 4};
+    SDL_RenderFillRect(renderer, &miniDot);
 
     SDL_SetRenderTarget(renderer, nullptr);
+    
+    // Renderizar minimapa SIN rotación
     SDL_Rect dest = { 20, 20, size, size };
-    SDL_RenderCopyEx(renderer, renderTarget, nullptr, &dest, 
-                     -car.getAngle() * 180.0 / M_PI, nullptr, SDL_FLIP_NONE);
+    SDL_RenderCopy(renderer, renderTarget, nullptr, &dest);  // Sin SDL_RenderCopyEx
 }

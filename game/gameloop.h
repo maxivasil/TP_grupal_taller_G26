@@ -24,6 +24,17 @@ private:
     bool running;
 
     World world;
+    CarStats carStats{
+    .acceleration = 5000.0f,      // ← Aumentado de 50
+    .max_speed = 3000.0f,           // ← Reducido (velocidad en m/s de Box2D)
+    .turn_speed = 3.0f,           // ← Ajustado
+    .mass = 1500.0f,
+    .brake_force = 3000.0f,       // ← Aumentado de 80
+    .handling = 1.0f,
+    .health_max = 100.0f,
+    .length = 4.0f,
+    .width = 2.0f
+    };
     Car car;
     MinimapRenderer minimap;
 

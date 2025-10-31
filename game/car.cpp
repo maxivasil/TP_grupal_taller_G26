@@ -18,9 +18,9 @@ b2BodyDef Car::initCarBodyDef(b2Vec2 position, b2Rot rotation) {
     b2BodyDef bodyDef = b2DefaultBodyDef();
     bodyDef.type = b2_dynamicBody;
     bodyDef.position = position;
-    bodyDef.rotation = rotation;
-    bodyDef.userData = this;
-    bodyDef.isAwake = true;
+    bodyDef.rotation = rotation;  // Asegurate que esto esté
+    bodyDef.linearDamping = 1.0f;
+    bodyDef.angularDamping = 2.0f;
     return bodyDef;
 }
 Car::Car(b2WorldId world, const CarStats& stats_, b2Vec2 position, b2Rot rotation):
@@ -100,7 +100,10 @@ void Car::verifyMaxSpeed(b2Vec2 velocity, float speed) {
 void Car::updatePhysics(const CarInput& input) {
     b2Vec2 velocity = b2Body_GetLinearVelocity(body);
     float speed = b2Length(velocity);
-    b2Vec2 forward = b2Normalize(b2RotateVector(b2Body_GetRotation(body), {1, 0}));
+    
+    // Forward = hacia donde apunta el auto (norte en coordenadas locales)
+    b2Rot rot = b2Body_GetRotation(body);
+    b2Vec2 forward = b2RotateVector(rot, {0.0f, -1.0f});  // Hacia arriba (norte)
 
     handleAccelerating(input.accelerating, speed, forward);
     handleBraking(input.braking, velocity);
@@ -226,12 +229,12 @@ void Car::render(SDL_Renderer* renderer, const SDL_FRect& camera) const {
     b2Vec2 pos = b2Body_GetPosition(body);
     b2Rot rot = b2Body_GetRotation(body);
     
-    // Definir triángulo en coordenadas locales (apuntando hacia arriba)
+    // Definir triángulo apuntando HACIA ARRIBA (norte = Y negativo)
     float halfWidth = 10.0f;
     float halfLength = 15.0f;
     
     b2Vec2 localPoints[3] = {
-        {0.0f, -halfLength},        // Punta delantera
+        {0.0f, -halfLength},        // Punta delantera (norte)
         {-halfWidth, halfLength},   // Trasera izquierda
         {halfWidth, halfLength}     // Trasera derecha
     };

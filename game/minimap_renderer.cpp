@@ -35,24 +35,49 @@ void MinimapRenderer::render(SDL_Renderer* renderer, const World& world, const C
         SDL_RenderFillRect(renderer, &miniRect);
     }
 
-    // Auto centrado (triángulo pequeño apuntando arriba)
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_Point miniTriangle[4] = {
-        {size / 2, size / 2 - 6},       // Punta
-        {size / 2 - 4, size / 2 + 4},   // Izquierda
-        {size / 2 + 4, size / 2 + 4},   // Derecha
-        {size / 2, size / 2 - 6}        // Cierra el triángulo
+    // Auto centrado con rotación
+    float carAngle = car.getAngle();  // Ángulo en radianes de Box2D
+    float cx = size / 2.0f;
+    float cy = size / 2.0f;
+    
+    // Triángulo en coordenadas locales (apuntando hacia arriba en Box2D: Y negativo)
+    float localPoints[3][2] = {
+        {0.0f, -6.0f},    // Punta delantera
+        {-4.0f, 4.0f},    // Trasera izquierda
+        {4.0f, 4.0f}      // Trasera derecha
     };
+    
+    // Rotar cada punto según el ángulo del auto
+    SDL_Point miniTriangle[4];
+    float cosA = std::cos(carAngle);
+    float sinA = std::sin(carAngle);
+    
+    for (int i = 0; i < 3; ++i) {
+        // Rotar punto local
+        float rotX = localPoints[i][0] * cosA - localPoints[i][1] * sinA;
+        float rotY = localPoints[i][0] * sinA + localPoints[i][1] * cosA;
+        
+        // Trasladar al centro del minimapa
+        miniTriangle[i].x = (int)(cx + rotX);
+        miniTriangle[i].y = (int)(cy + rotY);
+    }
+    miniTriangle[3] = miniTriangle[0];  // Cerrar el triángulo
+    
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_RenderDrawLines(renderer, miniTriangle, 4);
     
-    // Punto amarillo en el frente del auto en minimapa
+    // Punto amarillo en el frente (ya rotado)
     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-    SDL_Rect miniDot = {size / 2 - 2, size / 2 - 8, 4, 4};
+    SDL_Rect miniDot = {
+        miniTriangle[0].x - 2, 
+        miniTriangle[0].y - 2, 
+        4, 4
+    };
     SDL_RenderFillRect(renderer, &miniDot);
 
     SDL_SetRenderTarget(renderer, nullptr);
     
-    // Renderizar minimapa SIN rotación
+    // Renderizar minimapa
     SDL_Rect dest = { 20, 20, size, size };
-    SDL_RenderCopy(renderer, renderTarget, nullptr, &dest);  // Sin SDL_RenderCopyEx
+    SDL_RenderCopy(renderer, renderTarget, nullptr, &dest);
 }

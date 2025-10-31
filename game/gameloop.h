@@ -1,29 +1,24 @@
-#ifndef GAME_LOOP_H
-#define GAME_LOOP_H
+#ifndef GAMELOOP_H
+#define GAMELOOP_H
 
 #include <SDL2/SDL.h>
 #include "world.h"
 #include "car.h"
 #include "minimap_renderer.h"
+#include "city.h"  // ✅ Agregar
 
 /**
  * @class GameLoop
  * @brief Controla el flujo principal del juego: eventos, actualización y renderizado.
  */
 class GameLoop {
-public:
-    GameLoop();
-    ~GameLoop();
-
-    /// Ejecuta el loop principal del juego.
-    void run();
-
 private:
     SDL_Window* window;
     SDL_Renderer* renderer;
     bool running;
-
+    
     World world;
+    City city;  // ✅ Agregar
     CarStats carStats{
     .acceleration = 5000.0f,      // ← Aumentado de 50
     .max_speed = 3000.0f,           // ← Reducido (velocidad en m/s de Box2D)
@@ -37,10 +32,15 @@ private:
     };
     Car car;
     MinimapRenderer minimap;
-
+    
     void handleEvents();
     void update(float deltaTime);
     void render();
+
+public:
+    GameLoop();
+    ~GameLoop();
+    void run();
 };
 
-#endif // GAME_LOOP_H
+#endif

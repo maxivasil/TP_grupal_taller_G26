@@ -3,22 +3,21 @@
 
 #include <string>
 #include <vector>
+#include <SDL2/SDL.h>
 
-enum CityName { LibertyCity, SanAndreas, ViceCity };
+enum CityName {
+    LibertyCity,
+    SanAndreas,
+    ViceCity
+};
 
 struct StaticObjectData {
-    float x;
-    float y;
-    float width;
-    float height;
-    bool isUp;
+    float x, y, width, height;
+    bool isUp;  // true = CollisionUp, false = CollisionDown
 };
 
 struct BridgeSensorData {
-    float x;
-    float y;
-    float width;
-    float height;
+    float x, y, width, height;
 };
 
 class City {
@@ -26,17 +25,17 @@ private:
     CityName name;
     std::vector<StaticObjectData> staticObjects;
     std::vector<BridgeSensorData> bridgeSensors;
-
+    
     std::string getYamlFileName() const;
 
 public:
-    explicit City(CityName name);
+    City(CityName name);
     ~City();
-
-    const std::vector<StaticObjectData> getStaticObjects() const;
-
+    
+    const std::vector<StaticObjectData>& getStaticObjects() const;
     const std::vector<BridgeSensorData>& getBridgeSensors() const;
+    
+    void render(SDL_Renderer* renderer, const SDL_FRect& camera) const;
 };
-
 
 #endif

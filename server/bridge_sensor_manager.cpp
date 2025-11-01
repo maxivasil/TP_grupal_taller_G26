@@ -1,8 +1,8 @@
-#include "BridgeSensorManager.h"
+#include "bridge_sensor_manager.h"
 
 #include <utility>
 
-#include "CollisionCategories.h"
+#include "collision_categories.h"
 
 BridgeSensorManager::BridgeSensorManager() {}
 

@@ -2,6 +2,7 @@
 #define SERVER_PROTECTED_CLIENTS_H
 
 #include <list>
+#include <memory>
 #include <mutex>
 #include <utility>
 #include <vector>
@@ -15,7 +16,7 @@
 class ServerProtectedClients {
 public:
     ServerProtectedClients();
-    void broadcast_message(int clients_with_nitro_activated, int msg);
+    void broadcast(std::shared_ptr<ServerToClientCmd_Server> cmd);
     void add_client(ServerClientHandler* client);
     void stop_and_delete_dead();
     void stop_all_and_delete();

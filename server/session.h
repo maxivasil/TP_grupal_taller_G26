@@ -19,7 +19,7 @@ public:
 
 private:
     const char* servname;
-    Queue<int> gameloop_queue;
+    Queue<ClientToServerCmd_Server*> gameloop_queue;
     ServerProtectedClients protected_clients;
     ServerGameLoop server_gameloop{gameloop_queue, protected_clients};
     Acceptor acceptor{servname, protected_clients, gameloop_queue};

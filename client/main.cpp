@@ -35,7 +35,7 @@ int main(int argc, const char* argv[]) {
         }
         const char* hostname = argv[1];
         const char* servname = argv[2];
-        Queue<int> recv_queue;
+        Queue<ServerToClientCmd_Client*> recv_queue(UINT32_MAX);
         ClientSession session(hostname, servname, recv_queue);
         ret = session.run();
         return ret;

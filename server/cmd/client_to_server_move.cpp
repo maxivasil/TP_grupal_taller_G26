@@ -4,14 +4,36 @@
 #include <stdexcept>
 #include <vector>
 
-ClientToServerMove::ClientToServerMove(uint8_t direction): direction(direction) {}
+#include "../game_logic/Race.h"
 
-void ClientToServerMove::execute() {
-    std::cout << "Ejecutando movimiento en dirección: " << static_cast<int>(direction) << std::endl;
+ClientToServerMove::ClientToServerMove(uint8_t direction, int client_id):
+        direction(direction), ClientToServerCmd_Server(client_id) {}
+
+void ClientToServerMove::execute(ServerContext& ctx) {
+    std::cout << "Ejecutando movimiento en dirección: " << static_cast<int>(direction)
+              << " del cliente con id: " << client_id << std::endl;
+
+    switch (direction) {
+        case MOVE_UP:
+            ctx.race->acceleratePlayer(client_id);
+            break;
+        case MOVE_DOWN:
+            ctx.race->brakePlayer(client_id);
+            break;
+        case MOVE_LEFT:
+            ctx.race->turnPlayer(client_id, Direction::LEFT);
+            break;
+        case MOVE_RIGHT:
+            ctx.race->turnPlayer(client_id, Direction::RIGHT);
+            break;
+        default:
+            break;
+    }
 }
 
 // Deserialización desde bytes
-ClientToServerMove* ClientToServerMove::from_bytes(const std::vector<uint8_t>& data) {
+ClientToServerMove* ClientToServerMove::from_bytes(const std::vector<uint8_t>& data,
+                                                   const int client_id) {
     if (data.size() < 2) {
         throw std::runtime_error("MoveCmd: datos insuficientes");
     }
@@ -22,5 +44,5 @@ ClientToServerMove* ClientToServerMove::from_bytes(const std::vector<uint8_t>& d
     }
 
     uint8_t dir = static_cast<uint8_t>(dir_value);
-    return new ClientToServerMove(dir);
+    return new ClientToServerMove(dir, client_id);
 }

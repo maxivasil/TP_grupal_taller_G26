@@ -1,5 +1,7 @@
+#include <cstdint>
 #include <exception>
 #include <iostream>
+#include <memory>
 
 #include "session.h"
 

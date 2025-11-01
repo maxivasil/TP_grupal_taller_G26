@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "../common/constants.h"
+
 ParsedCommand ClientParser::parse_and_filter_line() const {
     std::string cmd;
     if (!(std::cin >> cmd) || cmd == "exit") {
@@ -20,13 +22,13 @@ ParsedCommand ClientParser::parse_cmd_move() const {
 
     int dir = -1;
     if (dir_str == "up")
-        dir = 0;
+        dir = MOVE_UP;
     else if (dir_str == "down")
-        dir = 1;
+        dir = MOVE_DOWN;
     else if (dir_str == "left")
-        dir = 2;
+        dir = MOVE_LEFT;
     else if (dir_str == "right")
-        dir = 3;
+        dir = MOVE_RIGHT;
 
     if (dir == -1)
         return {INVALID};

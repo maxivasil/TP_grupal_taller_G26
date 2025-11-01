@@ -21,8 +21,8 @@ public:
 private:
     Queue<ClientToServerCmd_Server*>& gameloop_queue;
     ServerProtectedClients& protected_clients;
-    void process_pending_commands();
-    void update_game_state();
+    void process_pending_commands(ServerContext& ctx);
+    void update_game_state(Race& race);
 };
 
 #endif

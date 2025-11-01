@@ -15,8 +15,8 @@ public:
     ThreadReceiver(
             int id, Protocol& protocol, Queue<ClientToServerCmd_Server*>& receive_queue,
             const std::unordered_map<
-                    uint8_t, std::function<ClientToServerCmd_Server*(const std::vector<uint8_t>&)>>&
-                    registry);
+                    uint8_t, std::function<ClientToServerCmd_Server*(
+                                     const std::vector<uint8_t>&, const int client_id)>>& registry);
 
     void run() override;
 
@@ -24,8 +24,8 @@ private:
     int client_id;
     Protocol& protocol;
     Queue<ClientToServerCmd_Server*>& receive_queue;
-    const std::unordered_map<uint8_t,
-                             std::function<ClientToServerCmd_Server*(const std::vector<uint8_t>&)>>&
+    const std::unordered_map<uint8_t, std::function<ClientToServerCmd_Server*(
+                                              const std::vector<uint8_t>&, const int client_id)>>&
             registry;
 };
 

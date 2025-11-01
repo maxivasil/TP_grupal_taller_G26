@@ -1,3 +1,4 @@
+add_subdirectory(game_logic)
 add_subdirectory(cmd)
 
 target_sources(taller_server
@@ -11,6 +12,7 @@ target_sources(taller_server
     session.cpp
     server_receiver.cpp
     server_sender.cpp
+    
     PUBLIC
     # .h files
     acceptor.h
@@ -20,9 +22,11 @@ target_sources(taller_server
     session.h
     server_receiver.h
     server_sender.h
+    
     )
 
 target_link_libraries(taller_server 
     PRIVATE 
         server_cmd
+        server_game_logic
     )

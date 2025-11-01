@@ -150,6 +150,21 @@ endif()
 
 if(TALLER_SERVER)
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
+    include(FetchContent)
+
+    FetchContent_Declare(
+        box2d
+        GIT_REPOSITORY https://github.com/erincatto/box2d.git
+        GIT_TAG v3.1.1
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(box2d)
+
+    # BEFORE COMPILING: you need to install
+    # sudo apt install libyaml-cpp-dev
+    find_package(yaml-cpp REQUIRED)
+
     add_executable(taller_server)
 
     # Make them depend on taller_common lib
@@ -166,6 +181,7 @@ if(TALLER_SERVER)
         PRIVATE
             taller_common
             server_cmd
+            server_game_logic
             )
 endif()
 

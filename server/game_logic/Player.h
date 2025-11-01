@@ -9,13 +9,15 @@
 class Player {
 private:
     std::string name;
+    int id;
     std::unique_ptr<Car> car;
+    CarStats stats;
 
 public:
-    explicit Player(std::string name);
+    Player(std::string name, int id, CarStats& stats);
     ~Player();
 
-    void assignCar(std::unique_ptr<Car> newCar);
+    void initCar(b2WorldId world, b2Vec2 startPos, b2Rot rot);
 
     void accelerate();
 
@@ -30,6 +32,10 @@ public:
     float getCurrentHealth() const;
 
     Car* getCar() const;
+
+    const CarStats getCarStats() const;
+
+    int getId() const;
 };
 
 

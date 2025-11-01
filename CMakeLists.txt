@@ -161,8 +161,7 @@ if(TALLER_SERVER)
         PRIVATE
             taller_common
             server_cmd
-            box2d::box2d 
-            yaml-cpp
+            server_game_logic
             )
 endif()
 

@@ -1,15 +1,16 @@
 #ifndef COLLIDABLE_H
 #define COLLIDABLE_H
 
-#include "CollisionInfo.h"
-
 #include <box2d/box2d.h>
+
+#include "CollisionInfo.h"
 
 class Collidable {
 public:
     virtual ~Collidable() = default;
 
-    virtual void onCollision(Collidable* other, float approachSpeed, float deltaTime, const b2Vec2& contactNormal) = 0;
+    virtual void onCollision(Collidable* other, float approachSpeed, float deltaTime,
+                             const b2Vec2& contactNormal) = 0;
 
     virtual float getMass() const = 0;
 

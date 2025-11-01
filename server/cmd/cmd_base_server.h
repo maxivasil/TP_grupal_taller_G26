@@ -7,6 +7,10 @@
 #include <unordered_map>
 #include <vector>
 
+struct ServerContext {
+    class Race* race;
+};
+
 // Aquí van las definiciones de comandos del cliente al servidor
 class ClientToServerCmd_Server {
 protected:
@@ -17,7 +21,7 @@ public:
     virtual ~ClientToServerCmd_Server() = default;
 
     // Ejecuta el comando en el contexto del servidor (desde el cliente)
-    virtual void execute() = 0;  // ServerSession& server, ClientSession& client
+    virtual void execute(ServerContext& ctx) = 0;  // ServerSession& server, ClientSession& client
 
     // Fábrica estática para crear comandos desde bytes
     static ClientToServerCmd_Server* from_bytes(

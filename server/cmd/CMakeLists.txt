@@ -10,10 +10,11 @@ add_library(server_cmd
     server_to_client_snapshot.cpp
 )
 
-target_link_libraries(server_cmd PRIVATE taller_common)
+target_link_libraries(server_cmd PRIVATE server_game_logic taller_common)
 
 target_include_directories(server_cmd 
     PUBLIC 
         ${CMAKE_SOURCE_DIR}
-        ${CMAKE_SOURCE_DIR}/common    
+        ${CMAKE_SOURCE_DIR}/common
+        ${CMAKE_SOURCE_DIR}/server/game_logic
     )

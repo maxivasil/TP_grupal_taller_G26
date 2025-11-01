@@ -2,9 +2,12 @@
 
 #include <utility>
 
-Player::Player(std::string name): name(std::move(name)), car(nullptr) {}
+Player::Player(std::string name, int id, CarStats& stats):
+        name(std::move(name)), id(id), car(nullptr), stats(std::move(stats)) {}
 
-void Player::assignCar(std::unique_ptr<Car> newCar) { car = std::move(newCar); }
+void Player::initCar(b2WorldId world, b2Vec2 startPos, b2Rot rot) {
+    car = std::make_unique<Car>(world, stats, startPos, rot);
+}
 
 void Player::accelerate() {
     if (!car) {
@@ -41,5 +44,9 @@ b2Vec2 Player::getPosition() const { return car ? car->getPosition() : b2Vec2_ze
 float Player::getCurrentHealth() const { return car ? car->getCurrentHealth() : 0.0f; }
 
 Car* Player::getCar() const { return car.get(); }
+
+const CarStats Player::getCarStats() const { return stats; }
+
+int Player::getId() const { return id; }
 
 Player::~Player() {}

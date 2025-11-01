@@ -4,12 +4,31 @@
 #include <stdexcept>
 #include <vector>
 
+#include "../game_logic/Race.h"
+
 ClientToServerMove::ClientToServerMove(uint8_t direction, int client_id):
         direction(direction), ClientToServerCmd_Server(client_id) {}
 
-void ClientToServerMove::execute() {
+void ClientToServerMove::execute(ServerContext& ctx) {
     std::cout << "Ejecutando movimiento en dirección: " << static_cast<int>(direction)
               << " del cliente con id: " << client_id << std::endl;
+
+    switch (direction) {
+        case MOVE_UP:
+            ctx.race->acceleratePlayer(client_id);
+            break;
+        case MOVE_DOWN:
+            ctx.race->brakePlayer(client_id);
+            break;
+        case MOVE_LEFT:
+            ctx.race->turnPlayer(client_id, Direction::LEFT);
+            break;
+        case MOVE_RIGHT:
+            ctx.race->turnPlayer(client_id, Direction::RIGHT);
+            break;
+        default:
+            break;
+    }
 }
 
 // Deserialización desde bytes

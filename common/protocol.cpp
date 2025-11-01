@@ -7,8 +7,6 @@
 
 #include <arpa/inet.h>  // htonl, ntohl
 
-#include "../server/cmd/server_to_client_snapshot.h"
-
 Protocol::Protocol(Socket&& socket): skt(std::move(socket)) {}
 Protocol::Protocol(const char* hostname, const char* servname): skt(hostname, servname) {}
 

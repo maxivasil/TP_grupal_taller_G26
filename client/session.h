@@ -12,6 +12,7 @@
 #include "../common/protocol.h"
 #include "../common/queue.h"
 #include "../common/socket.h"
+#include "../common/thread.h"
 #include "cmd/cmd_base_client.h"
 #include "cmd/cmd_client_register.h"
 
@@ -19,19 +20,18 @@
 #include "client_sender.h"
 #include "parser.h"
 
-class ClientSession {
+class ClientSession: public Thread {
 public:
     explicit ClientSession(const char* hostname, const char* servname,
                            Queue<ServerToClientCmd_Client*>& recv_queue);
-    ~ClientSession() = default;
 
     /**
      * Inicia la sesión del cliente, leyendo comandos desde stdin y
      * ejecutándolos hasta recibir el comando "exit".
      * @return 0 si la sesión finalizó correctamente, 1 en caso de error
      */
-    int run();
-    void stop();
+    void run() override;
+    void stop() override;
 
 private:
     Protocol protocol;

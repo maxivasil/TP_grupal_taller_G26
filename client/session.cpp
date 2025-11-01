@@ -10,38 +10,12 @@ ClientSession::ClientSession(const char* hostname, const char* servname,
         sender(protocol, send_queue),
         receiver(protocol, receive_queue, registered_commands.get_recv_registry()) {}
 
-int ClientSession::run() {
+void ClientSession::run() {
     try {
         receiver.start();
         sender.start();
-        while (true) {
-            ParsedCommand parsed = parser.parse_and_filter_line();
-            if (parsed.type == EXIT) {
-                stop();
-                break;
-            } else if (parsed.type == READ) {
-                int i = 0;
-                while (i < parsed.lines_to_read) {
-                    ServerToClientCmd_Client* raw;
-                    if (receive_queue.try_pop(raw)) {
-                        std::unique_ptr<ServerToClientCmd_Client> cmd(raw);
-                        if (cmd) {
-                            cmd->execute(*this);  // ejecutar el comando polimórfico
-                        }
-                        i++;
-                    }
-                }
-            } else if (parsed.type == MOVE) {
-                auto* cmd = new ClientToServerMove(static_cast<uint8_t>(parsed.direction));
-                send_queue.try_push(cmd);
-            } else {
-                continue;
-            }
-        }
-        protocol.close_connection();
         receiver.join();
         sender.join();
-        return 0;
     } catch (const std::exception& e) {
         if (!receiver.is_alive() || !sender.is_alive() || protocol.is_connection_closed()) {
             if (receiver.is_alive()) {
@@ -53,10 +27,8 @@ int ClientSession::run() {
             if (!protocol.is_connection_closed()) {
                 protocol.close_connection();
             }
-            return 0;
         }
         std::cerr << "Unexpected exception in ClientHandler" << e.what() << std::endl;
-        return 1;
     }
 }
 
@@ -69,6 +41,8 @@ void ClientSession::stop() {
     }
     receive_queue.close();
     receiver.stop();
+    protocol.close_connection();
     send_queue.close();
     sender.stop();
+    Thread::stop();
 }

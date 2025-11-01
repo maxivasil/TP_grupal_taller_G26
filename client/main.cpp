@@ -1,9 +1,6 @@
 #include <exception>
 #include <iostream>
 
-#include <SDL2/SDL.h>
-#include <SDL2pp/SDL2pp.hh>
-
 #include "../common/queue.h"
 
 #include "client_game.h"
@@ -20,9 +17,11 @@ int main(int argc, const char* argv[]) {
         const char* servname = argv[2];
         Queue<ServerToClientCmd_Client*> recv_queue(UINT32_MAX);
         ClientSession session(hostname, servname, recv_queue);
+        session.start();
         Game game(session);
         game.start();
-        ret = session.run();
+        session.stop();
+        session.join();
         return ret;
     } catch (const std::exception& err) {
         std::cerr << "Something went wrong and an exception was caught: " << err.what() << "\n";

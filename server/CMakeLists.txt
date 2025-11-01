@@ -1,3 +1,5 @@
+add_subdirectory(cmd)
+
 target_sources(taller_server
     PRIVATE
     # .cpp files
@@ -40,4 +42,9 @@ target_sources(taller_server
     City.h
     SensorData.h
     BridgeSensorManager.h
+    )
+
+target_link_libraries(taller_server 
+    PRIVATE 
+        server_cmd
     )

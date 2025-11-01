@@ -2,16 +2,27 @@
 
 #include <iostream>
 
-ClientReceiver::ClientReceiver(Protocol& protocol, Queue<int>& receive_queue):
-        protocol(protocol), receive_queue(receive_queue) {}
+ClientReceiver::ClientReceiver(
+        Protocol& protocol, Queue<ServerToClientCmd_Client*>& receive_queue,
+        const std::unordered_map<
+                uint8_t, std::function<ServerToClientCmd_Client*(const std::vector<uint8_t>&)>>&
+                registry):
+        protocol(protocol), receive_queue(receive_queue), registry(registry) {}
 
 void ClientReceiver::run() {
     try {
         while (should_keep_running()) {
-            int code = protocol.receive_cars_with_nitro();
-            if (code <= 0)
+            std::vector<uint8_t> full_message = protocol.recv_full_message();
+            if (full_message.empty())
                 break;
-            receive_queue.push(code);
+
+            uint8_t header = full_message[0];
+            if (header == ServerToClientCmd_Client::INVALID)
+                break;
+
+            auto cmd = ServerToClientCmd_Client::from_bytes(full_message, registry);
+            if (cmd)
+                receive_queue.push(std::move(cmd));
         }
     } catch (const std::exception& e) {
         if (!should_keep_running() || protocol.is_connection_closed()) {

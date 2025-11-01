@@ -27,7 +27,7 @@ message(CMAKE_CXX_COMPILER_ID="${CMAKE_CXX_COMPILER_ID}")
 # Define target: lib common between client, server and editor programs
 # HEY TODO XXX: change the name to something that you like
 add_library(taller_common STATIC)
-
+set_target_properties(taller_common PROPERTIES POSITION_INDEPENDENT_CODE ON)
 # add the source files that make the lib
 # HEY!! TODO XXX: add more subfolders here
 add_subdirectory(common/)
@@ -47,7 +47,7 @@ target_include_directories(taller_common PUBLIC .)
 #
 # In xubuntu 24.04 these are:
 #
-# sudo apt-get install libopus-dev libopusfile-dev libxmp-dev libfluidsynth-dev fluidsynth libwavpack1 libwavpack-dev libfreetype-dev wavpack
+# sudo apt-get install libopus-dev libopusfile-dev libxmp-dev libfluidsynth-dev fluidsynth libwavpack1 libwavpack-dev libfreetype-dev wavpack sudo apt install qtbase5-dev qtbase5-dev-tools qtchooser qt5-qmake qttools5-dev qttools5-dev-tools
 #
 
 # Install libSDL2 and libSDL2pp (for client or editor)
@@ -102,6 +102,8 @@ endif()
 # Program section
 # ---------------
 if(TALLER_CLIENT)
+    find_package(Qt5Widgets)
+
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
     add_executable(taller_client)
 
@@ -118,7 +120,12 @@ if(TALLER_CLIENT)
     target_include_directories(taller_client PRIVATE ${libSDL2pp_SOURCE_DIR})
 
     # Link the taller_common lib target
-    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp)
+    target_link_libraries(taller_client 
+        PRIVATE
+            taller_common 
+            client_cmd
+            SDL2pp::SDL2pp 
+            Qt5::Widgets)
 endif()
 
 if(TALLER_SERVER)
@@ -150,7 +157,13 @@ if(TALLER_SERVER)
     set_project_warnings(taller_server ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # Link the taller_common lib target
-    target_link_libraries(taller_server taller_common box2d::box2d yaml-cpp)
+    target_link_libraries(taller_server 
+        PRIVATE
+            taller_common
+            server_cmd
+            box2d::box2d 
+            yaml-cpp
+            )
 endif()
 
 if(TALLER_EDITOR)

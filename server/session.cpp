@@ -2,7 +2,7 @@
 
 ServerSession::ServerSession(const char* servname):
         servname(servname),
-        gameloop_queue(),
+        gameloop_queue(UINT32_MAX),
         protected_clients(),
         server_gameloop(gameloop_queue, protected_clients),
         acceptor(servname, protected_clients, gameloop_queue) {}

@@ -2,30 +2,27 @@
 #define SERVER_GAMELOOP_H
 
 #include <map>
+#include <memory>
+#include <vector>
 
 #include "../common/queue.h"
 #include "../common/socket.h"
 #include "../common/thread.h"
+#include "cmd/server_to_client_snapshot.h"
 
 #include "protected_clients.h"
 
-struct actives_nitro_info {
-    std::map<int, int> nitro_timers;
-    int count;
-};
-
 class ServerGameLoop: public Thread {
 public:
-    explicit ServerGameLoop(Queue<int>& gameloop_queue, ServerProtectedClients& protected_clients);
+    explicit ServerGameLoop(Queue<ClientToServerCmd_Server*>& gameloop_queue,
+                            ServerProtectedClients& protected_clients);
     void run() override;
 
 private:
-    Queue<int>& gameloop_queue;
+    Queue<ClientToServerCmd_Server*>& gameloop_queue;
     ServerProtectedClients& protected_clients;
-    actives_nitro_info actives_nitro;
-    const int nitro_duration_loops = 12;
-    void try_pop_and_activate_nitro();
-    void decrement_nitro_timers();
+    void process_pending_commands();
+    void update_game_state();
 };
 
 #endif

@@ -4,37 +4,37 @@
 
 #include "../common/constants.h"
 
-ServerGameLoop::ServerGameLoop(Queue<int>& gameloop_queue,
+ServerGameLoop::ServerGameLoop(Queue<ClientToServerCmd_Server*>& gameloop_queue,
                                ServerProtectedClients& protected_clients):
-        gameloop_queue(gameloop_queue), protected_clients(protected_clients), actives_nitro() {}
+        gameloop_queue(gameloop_queue), protected_clients(protected_clients) {}
 
-void ServerGameLoop::try_pop_and_activate_nitro() {
-    int client_id;
-    while (gameloop_queue.try_pop(client_id)) {
-        if (actives_nitro.nitro_timers[client_id] == 0) {
-            actives_nitro.nitro_timers[client_id] = nitro_duration_loops;
-            actives_nitro.count++;
-            protected_clients.broadcast_message(actives_nitro.count, INFORM_NITRO_ACTIVATED);
+void ServerGameLoop::process_pending_commands() {
+    ClientToServerCmd_Server* raw;
+    while (gameloop_queue.try_pop(raw)) {
+        if (raw) {
+            std::unique_ptr<ClientToServerCmd_Server> cmd(raw);
+            cmd->execute();
         }
     }
 }
 
-void ServerGameLoop::decrement_nitro_timers() {
-    for (auto& [id, timer]: actives_nitro.nitro_timers) {
-        if (timer > 0) {
-            timer--;
-            if (timer == 0) {
-                actives_nitro.count--;
-                protected_clients.broadcast_message(actives_nitro.count, INFORM_NITRO_EXPIRED);
-            }
-        }
-    }
+void ServerGameLoop::update_game_state() {
+    std::vector<CarSnapshot> snapshot_data = {
+            {1, 10.0f, 15.5f, false, 100.0f, 2.0f, 0},
+            {2, 20.5f, 25.0f, false, 90.0f, 2.5f, 1},
+    };
+
+    // Crear comando Snapshot
+    auto snapshot_cmd = std::make_shared<ServerToClientSnapshot>(snapshot_data);
+
+    // Broadcast a todos los clientes conectados
+    protected_clients.broadcast(snapshot_cmd);
 }
 
 void ServerGameLoop::run() {
     while (should_keep_running()) {
-        try_pop_and_activate_nitro();
-        decrement_nitro_timers();
+        process_pending_commands();
+        update_game_state();
         std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
 }

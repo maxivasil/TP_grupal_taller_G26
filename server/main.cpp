@@ -3,16 +3,6 @@
 #include <iostream>
 #include <memory>
 
-#include <box2d/box2d.h>
-
-#include "BridgeSensorManager.h"
-#include "Car.h"
-#include "CheckpointManager.h"
-#include "City.h"
-#include "PhysicsEngine.h"
-#include "Player.h"
-#include "StaticObject.h"
-#include "Track.h"
 #include "session.h"
 
 int main(int argc, char* argv[]) {

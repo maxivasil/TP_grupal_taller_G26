@@ -9,6 +9,7 @@ if (NOT DEFINED CMAKE_CXX_STANDARD)
 endif()
 
 set(CMAKE_CXX_EXTENSIONS ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(taller_tp
     VERSION 1.0
@@ -96,6 +97,15 @@ if(TALLER_CLIENT OR TALLER_EDITOR)
         URL https://github.com/libSDL2pp/libSDL2pp/archive/cc198c9a5657048bee67ece82de620b2d5661084.zip
     )
 
+    set(SDL2IMAGE_SDL2 ON)
+    set(SDL2IMAGE_VENDORED TRUE)
+    set(SDL2IMAGE_PNG ON)
+    set(SDL2IMAGE_JPG ON)
+    set(SDL2IMAGE_TIF OFF)
+    set(SDL2PP_WITH_IMAGE ON CACHE BOOL "" FORCE)
+    set(SDL2PP_WITH_MIXER ON CACHE BOOL "" FORCE)
+    set(SDL2PP_WITH_TTF ON CACHE BOOL "" FORCE)
+
     FetchContent_MakeAvailable(SDL2 SDL2_image SDL2_mixer SDL2_ttf libSDL2pp)
 endif()
 
@@ -117,7 +127,14 @@ if(TALLER_CLIENT)
     set_project_warnings(taller_client ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # add libSDL2pp's headers
-    target_include_directories(taller_client PRIVATE ${libSDL2pp_SOURCE_DIR})
+    target_include_directories(taller_client
+        PRIVATE
+            ${SDL2_SOURCE_DIR}/include
+            ${SDL2_image_SOURCE_DIR}
+            ${SDL2_mixer_SOURCE_DIR}/include
+            ${SDL2_ttf_SOURCE_DIR}/include
+            ${libSDL2pp_SOURCE_DIR}/include
+    )
 
     # Link the taller_common lib target
     target_link_libraries(taller_client 
@@ -125,6 +142,9 @@ if(TALLER_CLIENT)
             taller_common 
             client_cmd
             SDL2pp::SDL2pp 
+            SDL2_image::SDL2_image
+            SDL2_mixer::SDL2_mixer
+            SDL2_ttf::SDL2_ttf
             Qt5::Widgets)
 endif()
 

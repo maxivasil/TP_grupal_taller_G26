@@ -4,12 +4,16 @@ target_sources(taller_client
     PRIVATE
     # .cpp files
     main.cpp
+    camera.cpp
+    client_game.cpp
     parser.cpp
     client_receiver.cpp
     client_sender.cpp
     session.cpp
     PUBLIC
     # .h files
+    camera.h
+    client_game.h
     parser.h
     client_receiver.h
     client_sender.h

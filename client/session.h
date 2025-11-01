@@ -33,6 +33,8 @@ public:
     void run() override;
     void stop() override;
 
+    void send_command(ClientToServerCmd_Client* cmd);
+
 private:
     Protocol protocol;
     ClientParser parser;

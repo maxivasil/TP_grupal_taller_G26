@@ -46,3 +46,5 @@ void ClientSession::stop() {
     sender.stop();
     Thread::stop();
 }
+
+void ClientSession::send_command(ClientToServerCmd_Client* cmd) { send_queue.push(cmd); }

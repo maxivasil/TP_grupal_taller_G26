@@ -89,18 +89,22 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
                     return true;
 
                 case SDLK_RIGHT:
+                    client_session.send_command(new ClientToServerMove(MOVE_RIGHT));
                     carWorldX += speed;
                     break;
 
                 case SDLK_LEFT:
+                    client_session.send_command(new ClientToServerMove(MOVE_LEFT));
                     carWorldX -= speed;
                     break;
 
                 case SDLK_UP:
+                    client_session.send_command(new ClientToServerMove(MOVE_UP));
                     carWorldY -= speed;
                     break;
 
                 case SDLK_DOWN:
+                    client_session.send_command(new ClientToServerMove(MOVE_DOWN));
                     carWorldY += speed;
                     break;
             }

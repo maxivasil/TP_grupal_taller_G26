@@ -37,8 +37,11 @@ void ServerClientHandler::run() {
 }
 
 void ServerClientHandler::stop() {
-    receiver.stop();
     send_queue.close();
+    if (!protocol.is_connection_closed()) {
+        protocol.close_connection();
+    }
+    receiver.stop();
     sender.stop();
     Thread::stop();
 }

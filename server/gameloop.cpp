@@ -63,7 +63,7 @@ void ServerGameLoop::run() {
         Race race(CityName::LibertyCity, trackFile, players);
         ServerContext ctx;
         ctx.race = &race;
-        while (!race.isFinished()) {
+        while (!race.isFinished() && should_keep_running()) {
             process_pending_commands(ctx);
 
             race.updatePhysics(0.25);

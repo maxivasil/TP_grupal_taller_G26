@@ -14,6 +14,7 @@ void ServerProtectedClients::add_client(ServerClientHandler* client) {
     std::lock_guard<std::mutex> lock(m);
     clients.push_back(client);
 }
+#include <iostream>
 
 void ServerProtectedClients::stop_all_and_delete() {
     std::lock_guard<std::mutex> lock(m);
@@ -21,7 +22,9 @@ void ServerProtectedClients::stop_all_and_delete() {
         if (client == nullptr)
             continue;
         client->stop();
+        std::cout << "stopeo" << std::endl;
         client->join();
+        std::cout << "joineo" << std::endl;
         delete client;
     }
 }

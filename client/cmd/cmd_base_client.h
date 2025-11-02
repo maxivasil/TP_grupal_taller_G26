@@ -8,7 +8,7 @@
 
 #include "../parser.h"
 
-class ClientSession;  // Declaración adelantada
+class Game;
 
 class ClientToServerCmd_Client {
 public:
@@ -23,7 +23,7 @@ public:
     virtual ~ServerToClientCmd_Client() = default;
 
     // Ejecuta el comando en el cliente (desde el servidor)
-    virtual void execute(ClientSession& client) = 0;  // ClientSession& client
+    virtual void execute(Game& game) = 0;  // ClientSession& client
 
     static ServerToClientCmd_Client* from_bytes(
             const std::vector<uint8_t>& data,

@@ -48,3 +48,5 @@ void ClientSession::stop() {
 }
 
 void ClientSession::send_command(ClientToServerCmd_Client* cmd) { send_queue.push(cmd); }
+
+Queue<ServerToClientCmd_Client*>& ClientSession::get_recv_queue() { return receive_queue; }

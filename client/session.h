@@ -34,6 +34,7 @@ public:
     void stop() override;
 
     void send_command(ClientToServerCmd_Client* cmd);
+    Queue<ServerToClientCmd_Client*>& get_recv_queue();
 
 private:
     Protocol protocol;

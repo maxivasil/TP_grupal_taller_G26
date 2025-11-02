@@ -27,6 +27,8 @@ int Game::start() {
         auto t1 = SDL_GetTicks();
         auto rate = FPS;
 
+        Queue<ServerToClientCmd_Client*>& recv_queue = client_session.get_recv_queue();
+
         while (true) {
             t1 = SDL_GetTicks();  // t1 guarda el tiempo actual en milisegundos
 
@@ -34,7 +36,16 @@ int Game::start() {
                 return 0;
             }
 
-            update(renderer);
+            ServerToClientCmd_Client* raw_cmd;
+            while (recv_queue.try_pop(raw_cmd)) {
+                std::unique_ptr<ServerToClientCmd_Client> cmd(raw_cmd);
+
+                auto* snapshot_cmd = dynamic_cast<ServerToClientSnapshot*>(cmd.get());
+                if (snapshot_cmd) {
+                    snapshot_cmd->execute(*this);
+                    update(renderer, *snapshot_cmd);
+                }
+            }
 
             render(renderer);
 
@@ -113,10 +124,20 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
     return false;
 }
 
-bool Game::update(SDL2pp::Renderer& renderer) {
+bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapshot) {
+    cmd_snapshot.execute(*this);
+
     // Obtener tamaño de la textura original
     int texW = textures[0]->GetWidth();
     int texH = textures[0]->GetHeight();
+
+    auto it = std::find_if(snapshots.begin(), snapshots.end(),
+                           [&](const CarSnapshot& car) { return car.id == client_id; });
+
+    if (it != snapshots.end()) {
+        carWorldX = (it->pos_x * 62) / 8.9;
+        carWorldY = (it->pos_y * 24) / 3.086;
+    }
 
     camera.follow(carWorldX, carWorldY);
 
@@ -162,4 +183,8 @@ void Game::init_textures(SDL2pp::Renderer& renderer) {
                             true,
                             SDL_MapRGB(SDL2pp::Surface(DATA_PATH "cars/Cars.png").Get()->format,
                                        163, 163, 13)));
+}
+
+void Game::update_snapshots(const std::vector<CarSnapshot>& snapshots) {
+    this->snapshots = snapshots;
 }

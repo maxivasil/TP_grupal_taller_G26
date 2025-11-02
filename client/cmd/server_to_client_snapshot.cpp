@@ -5,10 +5,14 @@
 
 #include <arpa/inet.h>
 
+#include "../client_game.h"
+
 ServerToClientSnapshot::ServerToClientSnapshot(std::vector<CarSnapshot> cars):
         cars_snapshot(std::move(cars)) {}
 
-void ServerToClientSnapshot::execute(ClientSession& client) {
+void ServerToClientSnapshot::execute(Game& game) {
+    game.update_snapshots(cars_snapshot);
+
     std::cout << "[Snapshot recibido] Autos en escena: " << cars_snapshot.size() << std::endl;
 
     for (const auto& car: cars_snapshot) {

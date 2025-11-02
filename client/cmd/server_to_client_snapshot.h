@@ -25,7 +25,7 @@ private:
 public:
     explicit ServerToClientSnapshot(std::vector<CarSnapshot> cars);
 
-    virtual void execute(ClientSession& client) override;  // ClientSession& client
+    virtual void execute(Game& game) override;
 
     static ServerToClientSnapshot from_bytes(const std::vector<uint8_t>& data);
 };

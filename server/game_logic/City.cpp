@@ -36,7 +36,7 @@ std::string City::getYamlFileName() const {
     return "";
 }
 
-const std::vector<StaticObjectData> City::getStaticObjects() const { return staticObjects; }
+const std::vector<StaticObjectData>& City::getStaticObjects() const { return staticObjects; }
 
 const std::vector<BridgeSensorData>& City::getBridgeSensors() const { return bridgeSensors; }
 

@@ -6,26 +6,39 @@ GameLoop::GameLoop()
       renderer(nullptr),
       running(true),
       world(),
-      city(LibertyCity),  // ✅ Cargar Liberty City
+      map(5000, 5000, 42),
+      city(LibertyCity),
+      track("liberty_city"),  // ✅ Cargar track
+      player(),  // ✅ Crear jugador
+      currentCity(LibertyCity),
       carStats{
-    .acceleration = 12000.0f,     // ✅ Aumentar aceleración
-    .max_speed = 100.0f,          // ✅ Aumentar velocidad máxima
-    .turn_speed = 3.5f,           // ✅ Girar un poco más rápido
-    .mass = 1500.0f,
-    .brake_force = 6000.0f,       // ✅ Freno más potente
-    .handling = 1.0f,
-    .health_max = 100.0f,
-    .length = 4.0f,
-    .width = 2.0f
-},
+          .acceleration = 12000.0f,
+          .max_speed = 100.0f,
+          .turn_speed = 3.5f,
+          .mass = 1500.0f,
+          .brake_force = 6000.0f,
+          .handling = 1.0f,
+          .health_max = 100.0f,
+          .length = 4.0f,
+          .width = 2.0f
+      },
       car(world.getWorldId(), carStats, {400.0f, 300.0f}, b2MakeRot(0.0f)),
-      minimap(200) {
+      minimap(300) {  // ✅ Aumentar minimap a 300
     
     SDL_Init(SDL_INIT_VIDEO);
     window = SDL_CreateWindow("Taller Game - Liberty City",
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        800, 600, 0);
+        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, 0);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    
+    map.addToPhysicsWorld(world.getWorldId());
+    
+    // ✅ Inicializar player con cantidad de checkpoints
+    player.setTotalCheckpoints(track.getCheckpoints().size());
+    
+    // ✅ Posicionar auto en el inicio del track
+    float startX, startY;
+    track.getStartPosition(startX, startY);
+    // Aquí habría que reiniciar el auto en startX, startY
 }
 
 GameLoop::~GameLoop() {
@@ -34,14 +47,52 @@ GameLoop::~GameLoop() {
     SDL_Quit();
 }
 
+// ✅ Nuevo método para cambiar ciudad
+void GameLoop::changeCity(CityName newCity) {
+    if (currentCity == newCity) return;
+    
+    currentCity = newCity;
+    city = City(newCity);
+    
+    // Cargar track de la nueva ciudad
+    std::string cityNames[] = {"liberty_city", "san_andreas", "vice_city"};
+    track = Track(cityNames[newCity]);
+    
+    // Reiniciar player
+    player.reset();
+    player.setTotalCheckpoints(track.getCheckpoints().size());
+    
+    // Cambiar título de la ventana
+    std::string titles[] = {"Liberty City", "San Andreas", "Vice City"};
+    std::string title = std::string("Taller Game - ") + titles[newCity];
+    SDL_SetWindowTitle(window, title.c_str());
+    
+    std::cout << "Changed city to " << titles[newCity] << std::endl;
+}
+
 void GameLoop::handleEvents() {
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT) {
             running = false;
         }
-        if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
-            running = false;
+        if (e.type == SDL_KEYDOWN) {
+            switch (e.key.keysym.sym) {
+                case SDLK_ESCAPE:
+                    running = false;
+                    break;
+                case SDLK_1:  // ✅ Tecla 1 = Liberty City
+                    changeCity(LibertyCity);
+                    break;
+                case SDLK_2:  // ✅ Tecla 2 = San Andreas
+                    changeCity(SanAndreas);
+                    break;
+                case SDLK_3:  // ✅ Tecla 3 = Vice City
+                    changeCity(ViceCity);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
@@ -64,24 +115,49 @@ void GameLoop::update(float deltaTime) {
     car.updatePhysics(input);
     b2World_Step(world.getWorldId(), deltaTime, 4);
     car.update(deltaTime);
+    
+    // ✅ Detectar checkpoints
+    b2Vec2 carPos = car.getPosition();
+    int checkpointId = track.checkpointAtPosition(
+        carPos.x, carPos.y,
+        carStats.width, carStats.length
+    );
+    
+    if (checkpointId >= 0) {
+        if (!player.hasCompletedCheckpoint(checkpointId)) {
+            player.completeCheckpoint(checkpointId);
+            
+            // Si es el final, terminar la carrera
+            if (track.isCheckpointFinish(checkpointId)) {
+                player.finishRace();
+            }
+        }
+    }
 }
 
 void GameLoop::render() {
-    // Fondo verde césped
-    SDL_SetRenderDrawColor(renderer, 34, 139, 34, 255);
+    SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
     SDL_RenderClear(renderer);
     
     b2Vec2 carPos = car.getPosition();
     SDL_FRect camera = { carPos.x - 400, carPos.y - 300, 800, 600 };
     
-    // ✅ 1. Renderizar el mapa de la ciudad
-    city.render(renderer, camera);
-    
-    // ✅ 2. Renderizar el auto encima
+    map.render(renderer, camera);
     car.render(renderer, camera);
     
-    // ✅ 3. Minimapa al final
-    minimap.render(renderer, world, car);
+    // ✅ Renderizar track (checkpoints)
+    track.render(renderer, camera);
+    
+    minimap.render(renderer, world, car, city);
+    
+    // ✅ Mostrar estadísticas del jugador en pantalla
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    
+    // Nota: Aquí necesitarías una librería de fuentes (SDL_ttf) para texto
+    // Por ahora solo imprimimos en consola
+    if (player.getCheckpointsCompleted() % 10 == 0 && player.getCheckpointsCompleted() > 0) {
+        // Parpadea cada 10 checkpoints (efecto visual temporal)
+    }
     
     SDL_RenderPresent(renderer);
 }

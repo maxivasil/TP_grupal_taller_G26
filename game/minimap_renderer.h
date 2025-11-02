@@ -2,8 +2,9 @@
 #define MINIMAP_RENDERER_H
 
 #include <SDL2/SDL.h>
-#include "car.h"
 #include "world.h"
+#include "car.h"
+#include "city.h"  // ✅ Agregar
 
 /**
  * @class MinimapRenderer
@@ -16,14 +17,16 @@ public:
      * @param size Tamaño en píxeles del minimapa cuadrado.
      */
     explicit MinimapRenderer(int size);
+    ~MinimapRenderer();
 
     /**
      * @brief Renderiza el minimapa sobre el renderer principal.
      * @param renderer Renderer de SDL.
      * @param world Referencia al mundo actual.
      * @param car Referencia al auto del jugador.
+     * @param city Referencia a la ciudad actual.
      */
-    void render(SDL_Renderer* renderer, const World& world, const Car& car);
+    void render(SDL_Renderer* renderer, const World& world, const Car& car, const City& city);  // ✅ Agregar parámetro City
 
 private:
     int size; ///< Tamaño (en píxeles) del minimapa cuadrado.

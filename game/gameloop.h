@@ -5,7 +5,10 @@
 #include "world.h"
 #include "car.h"
 #include "minimap_renderer.h"
-#include "city.h"  // ✅ Agregar
+#include "procedural_map.h"
+#include "city.h"
+#include "track.h"
+#include "player.h"
 
 /**
  * @class GameLoop
@@ -18,7 +21,12 @@ private:
     bool running;
     
     World world;
-    City city;  // ✅ Agregar
+    ProceduralMap map;
+    City city;
+    Track track;
+    Player player;
+    CityName currentCity;  // ✅ Agregar
+    
     CarStats carStats{
     .acceleration = 5000.0f,      // ← Aumentado de 50
     .max_speed = 3000.0f,           // ← Reducido (velocidad en m/s de Box2D)
@@ -36,6 +44,7 @@ private:
     void handleEvents();
     void update(float deltaTime);
     void render();
+    void changeCity(CityName newCity);  // ✅ Agregar método
 
 public:
     GameLoop();

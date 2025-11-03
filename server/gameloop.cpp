@@ -10,6 +10,8 @@
 #include "Player.h"
 #include "Race.h"
 
+#define FPS 60
+
 ServerGameLoop::ServerGameLoop(Queue<ClientToServerCmd_Server*>& gameloop_queue,
                                ServerProtectedClients& protected_clients):
         gameloop_queue(gameloop_queue), protected_clients(protected_clients) {}
@@ -63,13 +65,27 @@ void ServerGameLoop::run() {
         Race race(CityName::LibertyCity, trackFile, players);
         ServerContext ctx;
         ctx.race = &race;
+        race.start();
+
+        const std::chrono::milliseconds frameDuration(1000 / FPS);
+        auto t1 = std::chrono::high_resolution_clock::now();
         while (!race.isFinished() && should_keep_running()) {
             process_pending_commands(ctx);
 
-            race.updatePhysics(0.25);
+            race.updatePhysics(std::chrono::duration<float>(frameDuration).count());
 
             update_game_state(race);
-            std::this_thread::sleep_for(std::chrono::milliseconds(250));
+
+            auto t2 = std::chrono::high_resolution_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+
+            if (elapsed < frameDuration) {
+                std::this_thread::sleep_for(frameDuration - elapsed);
+                t1 += frameDuration;
+            } else {
+                auto lostFrames = elapsed / frameDuration;
+                t1 += lostFrames * frameDuration;
+            }
         }
         stop();
         /*

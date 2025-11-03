@@ -24,7 +24,7 @@ public:
 
     void createCheckpoint(b2WorldId world, b2Vec2 position, float width, float length);
 
-    bool hasCarFinished(Car& car) const;
+    bool hasCarFinished(Car* car) const;
 
     void onCarEnterCheckpoint(Car* car, int checkpointId);
 

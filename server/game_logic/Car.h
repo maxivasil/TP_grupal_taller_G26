@@ -32,6 +32,7 @@ private:
     float current_health;
     bool hasInfiniteHealth;
     bool isOnBridge;
+    bool reverseMode;
 
     b2BodyDef initCarBodyDef(b2Vec2 position, b2Rot rotation);
 

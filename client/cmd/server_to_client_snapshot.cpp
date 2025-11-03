@@ -20,8 +20,7 @@ void ServerToClientSnapshot::execute(Game& game) {
                   << ")"
                   << " | Colisión: " << (car.collision ? "sí" : "no")
                   << " | Vida: " << static_cast<int>(car.health) << " | Velocidad: " << car.speed
-                  << "angulo" << car.angle
-                  << ")" << std::endl;
+                  << " | Ángulo: " << car.angle << ")" << std::endl;
     }
 }
 

@@ -39,8 +39,8 @@ private:
     PhysicsEngine physics;
     std::vector<std::unique_ptr<Player>>& players;
 
-    // std::chrono::steady_clock::time_point startTime;
-    // std::unordered_map<int, float> finishTimes;
+    std::chrono::steady_clock::time_point startTime;
+    std::unordered_map<int, float> playerFinishTimes;
     bool finished;
 
     void checkFinishConditions();
@@ -53,17 +53,21 @@ public:
     Race(CityName cityName, std::string& trackFile, std::vector<std::unique_ptr<Player>>& players);
     ~Race();
 
-    // void applyCommand(const Command& cmd);
+    void start();
 
     void updatePhysics(float dt);
 
     bool isFinished() const;
 
     void turnPlayer(int playerId, Direction dir);
+
     void acceleratePlayer(int playerId);
+
     void brakePlayer(int playerId);
+
     std::vector<CarSnapshot> getSnapshot() const;
-    // std::unordered_map<int, float> getFinishTimes() const { return finishTimes; }
+
+    const std::unordered_map<int, float>& getFinishTimes() const;
 };
 
 

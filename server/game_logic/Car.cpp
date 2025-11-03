@@ -19,6 +19,8 @@ b2BodyDef Car::initCarBodyDef(b2Vec2 position, b2Rot rotation) {
     bodyDef.rotation = rotation;
     bodyDef.userData = this;
     bodyDef.isAwake = true;
+    bodyDef.linearDamping = 0.8f;
+    bodyDef.angularDamping = 3.0f;
     return bodyDef;
 }
 
@@ -39,7 +41,7 @@ void Car::setShape(b2BodyId body) {
 }
 
 Car::Car(b2WorldId world, const CarStats& stats_, b2Vec2 position, b2Rot rotation):
-        stats(stats_), hasInfiniteHealth(false), isOnBridge(false) {
+        stats(stats_), hasInfiniteHealth(false), isOnBridge(false), reverseMode(false) {
     b2BodyDef bodyDef = initCarBodyDef(position, rotation);
     body = b2CreateBody(world, &bodyDef);
 
@@ -56,31 +58,56 @@ void Car::handleAccelerating(bool accelerating, float speed, b2Vec2 forward) {
 }
 
 void Car::handleBraking(bool braking, b2Vec2 velocity) {
+    float speed = b2Length(velocity);
+    const float reverseThreshold = 0.05f;
+
     if (braking) {
-        b2Vec2 brake_force =
-                b2MulSV(b2Body_GetMass(body) * stats.brake_force, -b2Normalize(velocity));
-        b2Body_ApplyForceToCenter(body, brake_force, true);
+        if (!reverseMode) {
+            if (speed > reverseThreshold) {
+                b2Vec2 brake_force =
+                        b2MulSV(b2Body_GetMass(body) * stats.brake_force, -b2Normalize(velocity));
+                b2Body_ApplyForceToCenter(body, brake_force, true);
+            } else {
+                reverseMode = true;
+            }
+        } else {
+            float reverseSpeedFactor = std::clamp(speed / stats.max_speed, 0.5f, 1.0f);
+            b2Vec2 backward = b2RotateVector(b2Body_GetRotation(body), {-1, 0});
+            b2Vec2 reverse_force = b2MulSV(
+                    b2Body_GetMass(body) * (stats.acceleration * reverseSpeedFactor), backward);
+            b2Body_ApplyForceToCenter(body, reverse_force, true);
+        }
+    }
+
+    if (reverseMode && braking == false &&
+        b2Dot(velocity, b2RotateVector(b2Body_GetRotation(body), {1, 0})) > 0) {
+        reverseMode = false;
     }
 }
 
 void Car::handleTurning(Direction turn_direction, float speed) {
-    if (speed > 0.1f && turn_direction != Direction::FORWARD) {
-        int turn = 0;
-        switch (turn_direction) {
-            case Direction::LEFT:
-                turn = -1;
-                break;
-            case Direction::RIGHT:
-                turn = 1;
-                break;
-            case Direction::FORWARD:
-            default:
-                turn = 0;
-                break;
-        }
-        float torque = turn * stats.turn_speed * (stats.handling);
-        b2Body_SetAngularVelocity(body, torque);
+    const float minSpeedForTurning = 0.05f;
+
+    if (speed < minSpeedForTurning || turn_direction == Direction::FORWARD) {
+        b2Body_SetAngularDamping(body, 3.0f);
+        return;
     }
+
+    b2Vec2 velocity = b2Body_GetLinearVelocity(body);
+    b2Vec2 forward = b2RotateVector(b2Body_GetRotation(body), {1, 0});
+    float dot = b2Dot(velocity, forward);
+
+    bool movingBackward = (dot < -0.2f);
+
+    int turn = (turn_direction == Direction::LEFT) ? -1 : 1;
+
+    if (movingBackward) {
+        turn = -turn;
+    }
+
+    float speedFactor = std::clamp(speed / stats.max_speed, 0.2f, 1.0f);
+    float torque = turn * stats.turn_speed * stats.handling * speedFactor * 1500.0f;
+    b2Body_ApplyTorque(body, torque, true);
 }
 
 void Car::verifyMaxSpeed(b2Vec2 velocity, float speed) {

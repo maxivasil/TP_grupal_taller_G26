@@ -45,8 +45,8 @@ void CheckpointManager::createCheckpoint(b2WorldId world, b2Vec2 position, float
     nextCheckpointId++;
 }
 
-bool CheckpointManager::hasCarFinished(Car& car) const {
-    auto it = lastCheckpointPassed.find(&car);
+bool CheckpointManager::hasCarFinished(Car* car) const {
+    auto it = lastCheckpointPassed.find(car);
     if (it != lastCheckpointPassed.end())
         return nextCheckpointId - 1 == it->second;
     return false;

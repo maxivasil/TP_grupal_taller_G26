@@ -32,9 +32,9 @@ void Race::initBridgeSensors(b2WorldId world) {
 void Race::initCars(b2WorldId world) {
     const auto& checkpoints = track.getCheckpoints();
     if (!checkpoints.empty()) {
-        const auto& start = checkpoints.front();
+        const auto& startCheckpoint = checkpoints.front();
 
-        b2Vec2 basePos{start.x, start.y};
+        b2Vec2 basePos{startCheckpoint.x, startCheckpoint.y};
 
         InitialDirection dir = track.getInitialDirection();
         b2Vec2 direction = {dir.x, dir.y};
@@ -47,9 +47,9 @@ void Race::initCars(b2WorldId world) {
             b2Vec2 pos = basePos - offset * direction;
 
             if (i % 2 == 1) {
-                pos.y += start.height / 4.0f;
+                pos.y += startCheckpoint.height / 4.0f;
             } else {
-                pos.y -= start.height / 4.0f;
+                pos.y -= startCheckpoint.height / 4.0f;
             }
 
             p->initCar(world, pos, b2MakeRot(0));
@@ -71,7 +71,33 @@ Race::Race(CityName cityName, std::string& trackFile,
     initCars(world);
 }
 
-void Race::updatePhysics(float dt) { physics.step(dt, VELOCITY_ITERATIONS); }
+void Race::start() {
+    startTime = std::chrono::steady_clock::now();
+    finished = false;
+}
+
+void Race::checkFinishConditions() {
+    for (const auto& player: players) {
+        if (checkpointManager.hasCarFinished(player->getCar()) &&
+            !playerFinishTimes.count(player->getId())) {
+
+            auto now = std::chrono::steady_clock::now();
+            float elapsed = std::chrono::duration<float>(now - startTime).count();
+            playerFinishTimes[player->getId()] = elapsed;
+        }
+    }
+
+    if (playerFinishTimes.size() == players.size() ||
+        std::chrono::duration<float>(std::chrono::steady_clock::now() - startTime).count() >=
+                MAX_RACE_TIME) {
+        finished = true;
+    }
+}
+
+void Race::updatePhysics(float dt) {
+    physics.step(dt, VELOCITY_ITERATIONS);
+    checkFinishConditions();
+}
 
 bool Race::isFinished() const { return finished; }
 
@@ -118,5 +144,8 @@ std::vector<CarSnapshot> Race::getSnapshot() const {
 
     return snapshot;
 }
+
+
+const std::unordered_map<int, float>& Race::getFinishTimes() const { return playerFinishTimes; }
 
 Race::~Race() {}

@@ -20,7 +20,8 @@ void ServerToClientSnapshot::execute(Game& game) {
                   << ")"
                   << " | Colisión: " << (car.collision ? "sí" : "no")
                   << " | Vida: " << static_cast<int>(car.health) << " | Velocidad: " << car.speed
-                  << " | Dirección: " << static_cast<int>(car.direction) << std::endl;
+                  << "angulo" << car.angle
+                  << ")" << std::endl;
     }
 }
 
@@ -46,7 +47,7 @@ ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint
         CarSnapshot car;
 
         if (offset + sizeof(car.id) + sizeof(car.pos_x) + sizeof(car.pos_y) + sizeof(uint8_t) +
-                    sizeof(car.health) + sizeof(car.speed) + sizeof(car.direction) >
+                    sizeof(car.health) + sizeof(car.speed) + sizeof(car.angle) >
             data.size())
             throw std::runtime_error("Incomplete snapshot: missing car data");
 
@@ -68,8 +69,8 @@ ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint
         std::memcpy(&car.speed, &data[offset], sizeof(car.speed));
         offset += sizeof(car.speed);
 
-        std::memcpy(&car.direction, &data[offset], sizeof(car.direction));
-        offset += sizeof(car.direction);
+        std::memcpy(&car.angle, &data[offset], sizeof(car.angle));
+        offset += sizeof(car.angle);
 
         cars.push_back(car);
     }

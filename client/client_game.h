@@ -33,6 +33,7 @@ private:
     SDL_Rect dst;
     SDL_Rect carSrc;
     SDL_Rect carDst;
+    float carAngle = 0.0f;
 
     bool handleEvents(SDL2pp::Renderer& renderer);
 

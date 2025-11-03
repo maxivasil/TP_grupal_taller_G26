@@ -1,6 +1,7 @@
 #include "client_game.h"
 
 #include <unistd.h>
+#include <cmath>
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
@@ -137,6 +138,8 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
     if (it != snapshots.end()) {
         carWorldX = (it->pos_x * 62) / 8.9;
         carWorldY = (it->pos_y * 24) / 3.086;
+
+        carAngle = it->angle;
     }
 
     camera.follow(carWorldX, carWorldY);
@@ -168,7 +171,7 @@ void Game::render(SDL2pp::Renderer& renderer) {
     renderer.Clear();
 
     renderer.Copy(*textures[0], src, dst);
-    renderer.Copy(*textures[1], carSrc, carDst);
+    renderer.Copy(*textures[1], carSrc, carDst, carAngle, SDL2pp::NullOpt, SDL_FLIP_NONE);
 
     renderer.Present();
 }

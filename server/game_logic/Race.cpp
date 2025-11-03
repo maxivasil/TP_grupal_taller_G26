@@ -110,8 +110,10 @@ std::vector<CarSnapshot> Race::getSnapshot() const {
 
     for (const auto& player: players) {
         b2Vec2 pos = player->getPosition();
+        b2Rot rot = player->getRotation();
+        float angle = b2Rot_GetAngle(rot) * 180.0f / B2_PI;
         snapshot.push_back(CarSnapshot{(uint8_t)player->getId(), pos.x, pos.y, false,
-                                       player->getCurrentHealth(), 0, 0});
+                                       player->getCurrentHealth(), 0, angle});
     }
 
     return snapshot;

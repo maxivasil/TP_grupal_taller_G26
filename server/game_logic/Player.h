@@ -36,6 +36,8 @@ public:
     const CarStats getCarStats() const;
 
     int getId() const;
+
+    b2Rot getRotation() const;
 };
 
 

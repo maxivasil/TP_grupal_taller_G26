@@ -1,7 +1,7 @@
 #include "server_to_client_snapshot.h"
 
 /**
- * <HEADER>;<CANT_AUTOS>;<ID_AUTO>;<POS_X>;<POS_Y>;<COLISION¿?>;<HEALTH>;<SPEED>;<DIRECTION>
+ * <HEADER>;<CANT_AUTOS>;<ID_AUTO>;<POS_X>;<POS_Y>;<COLISION¿?>;<HEALTH>;<SPEED>;<ANGLE>
  */
 ServerToClientSnapshot::ServerToClientSnapshot(const std::vector<CarSnapshot>& cars): cars(cars) {}
 
@@ -24,7 +24,7 @@ std::vector<uint8_t> ServerToClientSnapshot::to_bytes() const {
 
         BufferUtils::append_bytes(data, &car.health, sizeof(car.health));
         BufferUtils::append_bytes(data, &car.speed, sizeof(car.speed));
-        BufferUtils::append_bytes(data, &car.direction, sizeof(car.direction));
+        BufferUtils::append_bytes(data, &car.angle, sizeof(car.angle));
     }
 
     return data;

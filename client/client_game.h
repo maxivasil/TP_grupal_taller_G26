@@ -28,7 +28,6 @@ private:
 
     float carWorldX = 1000.0f;
     float carWorldY = 1000.0f;
-    float speed = 5.0f;  // pixeles por frame
     SDL_Rect src;
     SDL_Rect dst;
     SDL_Rect carSrc;

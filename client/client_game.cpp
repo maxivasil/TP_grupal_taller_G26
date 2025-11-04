@@ -1,7 +1,8 @@
 #include "client_game.h"
 
-#include <unistd.h>
 #include <cmath>
+
+#include <unistd.h>
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
@@ -91,35 +92,21 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
                     camera.setDimensions(renderer.GetOutputWidth(), renderer.GetOutputHeight());
                 }
         }
-
-        if (event.type == SDL_KEYDOWN) {
-
-            switch (event.key.keysym.sym) {
-
-                case SDLK_ESCAPE:
-                case SDLK_q:
-                    return true;
-
-                case SDLK_RIGHT:
-                    client_session.send_command(new ClientToServerMove(MOVE_RIGHT));
-                    carWorldX += speed;
-                    break;
-
-                case SDLK_LEFT:
-                    client_session.send_command(new ClientToServerMove(MOVE_LEFT));
-                    carWorldX -= speed;
-                    break;
-
-                case SDLK_UP:
-                    client_session.send_command(new ClientToServerMove(MOVE_UP));
-                    carWorldY -= speed;
-                    break;
-
-                case SDLK_DOWN:
-                    client_session.send_command(new ClientToServerMove(MOVE_DOWN));
-                    carWorldY += speed;
-                    break;
-            }
+        const Uint8* state = SDL_GetKeyboardState(NULL);
+        if (state[SDL_SCANCODE_ESCAPE] || state[SDL_SCANCODE_Q]) {
+            return true;
+        }
+        if (state[SDL_SCANCODE_RIGHT]) {
+            client_session.send_command(new ClientToServerMove(MOVE_RIGHT));
+        }
+        if (state[SDL_SCANCODE_LEFT]) {
+            client_session.send_command(new ClientToServerMove(MOVE_LEFT));
+        }
+        if (state[SDL_SCANCODE_UP]) {
+            client_session.send_command(new ClientToServerMove(MOVE_UP));
+        }
+        if (state[SDL_SCANCODE_DOWN]) {
+            client_session.send_command(new ClientToServerMove(MOVE_DOWN));
         }
     }
     return false;

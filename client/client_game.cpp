@@ -113,43 +113,50 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
 }
 
 bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapshot) {
+    carsToRender.clear();
     cmd_snapshot.execute(*this);
-
-    // Obtener tamaño de la textura original
-    int texW = textures[0]->GetWidth();
-    int texH = textures[0]->GetHeight();
 
     auto it = std::find_if(snapshots.begin(), snapshots.end(),
                            [&](const CarSnapshot& car) { return car.id == client_id; });
 
     if (it != snapshots.end()) {
-        carWorldX = (it->pos_x * 62) / 8.9;
-        carWorldY = (it->pos_y * 24) / 3.086;
-
-        carAngle = it->angle;
+        float worldX = (it->pos_x * 62) / 8.9;
+        float worldY = (it->pos_y * 24) / 3.086;
+        camera.follow(worldX, worldY);
     }
 
-    camera.follow(carWorldX, carWorldY);
-
+    int texW = textures[0]->GetWidth();
+    int texH = textures[0]->GetHeight();
     src = camera.getSrcRect(texW, texH);
-    dst = {0, 0, renderer.GetOutputWidth(), renderer.GetOutputHeight()};
 
-    float scale = float(dst.w) / float(src.w);
+    dst = {0, 0, renderer.GetOutputWidth(), renderer.GetOutputHeight()};
 
     // Sprite del primer auto verde
     int carW = textures[1]->GetWidth() / 12;
     int carH = textures[1]->GetHeight() / 16;
 
-    // Posición relativa a cámara
-    float relX = (carWorldX - src.x) * scale;
-    float relY = (carWorldY - src.y) * scale;
+    float scale = float(dst.w) / float(src.w);
 
-    // Rectángulo destino (en pantalla)
-    carDst = {int(relX - (carW * scale) / 2), int(relY - (carH * scale) / 2), int(carW * scale),
-              int(carH * scale)};
+    for (const auto& car: snapshots) {
+        float worldX = (car.pos_x * 62) / 8.9;
+        float worldY = (car.pos_y * 24) / 3.086;
 
-    // Asumimos primer coche en sprite sheet
-    carSrc = {0, 0, carW, carH};
+        float relX = (worldX - src.x) * scale;
+        float relY = (worldY - src.y) * scale;
+
+        RenderCar rc;
+        rc.dst = {int(relX - (carW * scale) / 2), int(relY - (carH * scale) / 2), int(carW * scale),
+                  int(carH * scale)};
+
+        // TODO: usar sprite según id o dirección
+        rc.src = {0, 0, carW, carH};
+        rc.angle = car.angle;
+
+        if (car.id == client_id) {
+            camera.follow(worldX, worldY);
+        }
+        carsToRender.push_back(rc);
+    }
 
     return false;  // Aca quizas haya que devolver true una vez que termine la partida?
 }
@@ -158,7 +165,9 @@ void Game::render(SDL2pp::Renderer& renderer) {
     renderer.Clear();
 
     renderer.Copy(*textures[0], src, dst);
-    renderer.Copy(*textures[1], carSrc, carDst, carAngle, SDL2pp::NullOpt, SDL_FLIP_NONE);
+    for (const auto& rc: carsToRender) {
+        renderer.Copy(*textures[1], rc.src, rc.dst, rc.angle, SDL2pp::NullOpt, SDL_FLIP_NONE);
+    }
 
     renderer.Present();
 }

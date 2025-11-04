@@ -16,6 +16,12 @@
 #include "camera.h"
 #include "session.h"
 
+struct RenderCar {
+    SDL_Rect src;
+    SDL_Rect dst;
+    float angle;
+};
+
 class Game {
 private:
     ClientSession& client_session;
@@ -25,14 +31,10 @@ private:
     std::map<int, std::shared_ptr<SDL2pp::Texture>> textures;
 
     std::vector<CarSnapshot> snapshots;
+    std::vector<RenderCar> carsToRender;
 
-    float carWorldX = 1000.0f;
-    float carWorldY = 1000.0f;
     SDL_Rect src;
     SDL_Rect dst;
-    SDL_Rect carSrc;
-    SDL_Rect carDst;
-    float carAngle = 0.0f;
 
     bool handleEvents(SDL2pp::Renderer& renderer);
 

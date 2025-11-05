@@ -5,6 +5,7 @@
 
 #include "../common/socket.h"
 
+#include "LobbiesMonitor.h"
 #include "acceptor.h"
 #include "gameloop.h"
 #include "protected_clients.h"
@@ -19,10 +20,8 @@ public:
 
 private:
     const char* servname;
-    Queue<ClientToServerCmd_Server*> gameloop_queue;
-    ServerProtectedClients protected_clients;
-    ServerGameLoop server_gameloop{gameloop_queue, protected_clients};
-    Acceptor acceptor{servname, protected_clients, gameloop_queue};
+    LobbiesMonitor lobbiesMonitor;
+    Acceptor acceptor;
 };
 
 #endif

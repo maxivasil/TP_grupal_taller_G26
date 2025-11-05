@@ -12,16 +12,13 @@
 
 class Acceptor: public Thread {
 public:
-    explicit Acceptor(const char* servname, ServerProtectedClients& protected_clients,
-                      Queue<ClientToServerCmd_Server*>& gameloop_queue);
+    Acceptor(const char* servname, LobbiesMonitor& lobbiesMonitor);
     void run() override;
     void stop() override;
 
 private:
     Socket skt;
-    ServerProtectedClients& protected_clients;
-    Queue<ClientToServerCmd_Server*>& gameloop_queue;
-    void reap();
+    LobbiesMonitor& lobbiesMonitor;
     int next_client_id = {0};
 };
 

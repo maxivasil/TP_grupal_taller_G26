@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "common/liberror.h"
+
 ThreadSender::ThreadSender(Protocol& protocol,
                            Queue<std::shared_ptr<ServerToClientCmd_Server>>& send_queue):
         protocol(protocol), send_queue(send_queue) {}
@@ -16,6 +18,8 @@ void ThreadSender::run() {
             }
         }
     } catch (const ClosedQueue& e) {
+        return;
+    } catch (const LibError& e) {
         return;
     } catch (const std::exception& e) {
         std::cerr << "ThreadSender: exception occurred.\n" << e.what() << std::endl;

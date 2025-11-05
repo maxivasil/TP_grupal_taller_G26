@@ -20,5 +20,9 @@ std::unordered_map<uint8_t, std::function<ClientToServerCmd_Server*(const std::v
         return ClientToServerMove::from_bytes(data, client_id);
     };
 
+    registry[JOIN_COMMAND] = [](const std::vector<uint8_t>& data, const int client_id) {
+        return ClientToServerJoinLobby::from_bytes(data, client_id);
+    };
+
     return registry;
 }

@@ -1,5 +1,7 @@
 #include "session.h"
 
+#include "cmd/client_to_server_lobby.h"
+
 ClientSession::ClientSession(const char* hostname, const char* servname,
                              Queue<ServerToClientCmd_Client*>& recv_queue):
         protocol(hostname, servname),
@@ -12,6 +14,11 @@ ClientSession::ClientSession(const char* hostname, const char* servname,
 
 void ClientSession::run() {
     try {
+        // HARCODEADO (luego modificar y eliminar)
+        auto cmd = std::make_unique<ClientToServerLobby>(std::string("ABCDEF"), true);
+        auto data = cmd->to_bytes();
+        protocol.send_message(data);
+        //
         receiver.start();
         sender.start();
         receiver.join();

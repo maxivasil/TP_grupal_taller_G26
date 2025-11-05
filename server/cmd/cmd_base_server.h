@@ -9,6 +9,8 @@
 
 struct ServerContext {
     class Race* race;
+    class ServerClientHandler* client;
+    bool* inLobby;
 };
 
 // Aquí van las definiciones de comandos del cliente al servidor

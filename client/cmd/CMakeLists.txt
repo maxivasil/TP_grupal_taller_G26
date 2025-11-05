@@ -4,12 +4,16 @@ add_library(client_cmd
     cmd_base_client.h
     client_to_server_move.h
     server_to_client_snapshot.h
+    client_to_server_lobby.h
+    server_to_client_lobbyResponse.h  
     
     ../client_game.cpp
     cmd_client_register.cpp
     cmd_base_client.cpp
     client_to_server_move.cpp
     server_to_client_snapshot.cpp  
+    client_to_server_lobby.cpp
+    server_to_client_lobbyResponse.cpp  
 )
 
 target_link_libraries(client_cmd PUBLIC SDL2pp::SDL2pp taller_common)

@@ -12,6 +12,7 @@ target_sources(taller_server
     session.cpp
     server_receiver.cpp
     server_sender.cpp
+    LobbiesMonitor.cpp
     
     PUBLIC
     # .h files
@@ -22,6 +23,9 @@ target_sources(taller_server
     session.h
     server_receiver.h
     server_sender.h
+    LobbiesMonitor.h
+    Lobby.h
+    LobbyStatus.h
     
     )
 

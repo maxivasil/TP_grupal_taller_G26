@@ -2,6 +2,7 @@
 #define SERVER_CLIENT_HANDLER_H
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "../common/protocol.h"
@@ -13,14 +14,18 @@
 #include "server_receiver.h"
 #include "server_sender.h"
 
+class LobbiesMonitor;
+
 class ServerClientHandler: public Thread {
 public:
-    explicit ServerClientHandler(int client_id, Socket&& s,
-                                 Queue<ClientToServerCmd_Server*>& gameloop_queue);
+    explicit ServerClientHandler(int client_id, Socket&& s, LobbiesMonitor& lobbiesMonitor);
     void run() override;
     bool is_dead() const;
     void stop() override;
     void send_message(std::shared_ptr<ServerToClientCmd_Server> cmd);
+    bool createLobby(const std::string& lobbyId);
+    Queue<ClientToServerCmd_Server*>* joinLobby(const std::string& lobbyId);
+    void initReceiver(Queue<ClientToServerCmd_Server*>& gameloop_queue);
 
 private:
     int client_id;
@@ -28,8 +33,9 @@ private:
 
     Queue<std::shared_ptr<ServerToClientCmd_Server>> send_queue;
     ServerRegisteredCommands registered_commands;
-    ThreadReceiver receiver;
+    std::unique_ptr<ThreadReceiver> receiver;
     ThreadSender sender;
+    LobbiesMonitor& lobbiesMonitor;
 };
 
 #endif

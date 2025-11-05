@@ -13,8 +13,8 @@
 #define FPS 60
 
 ServerGameLoop::ServerGameLoop(Queue<ClientToServerCmd_Server*>& gameloop_queue,
-                               ServerProtectedClients& protected_clients):
-        gameloop_queue(gameloop_queue), protected_clients(protected_clients) {}
+                               ServerProtectedClients& protected_clients, LobbyStatus& status):
+        gameloop_queue(gameloop_queue), protected_clients(protected_clients), status(status) {}
 
 void ServerGameLoop::process_pending_commands(ServerContext& ctx) {
     ClientToServerCmd_Server* raw;
@@ -38,33 +38,34 @@ void ServerGameLoop::update_game_state(Race& race) {
 
 void ServerGameLoop::run() {
     while (should_keep_running()) {
+        // HARCODEADO (luego modificar y eliminar)
         CarStats statsA = {.acceleration = 20.0f,
                            .max_speed = 100.0f,
                            .turn_speed = 5.0f,
                            .mass = 1200.0f,
                            .brake_force = 15.0f,
-                           .handling = 0.8f,
+                           .handling = 1.8f,
                            .health_max = 100.0f,
-                           .length = 2,
-                           .width = 1.5};
+                           .length = 4.4f,
+                           .width = 2.5714f};
 
         CarStats statsB = {.acceleration = 20.0f,
                            .max_speed = 100.0f,
                            .turn_speed = 5.0f,
                            .mass = 1200.0f,
                            .brake_force = 15.0f,
-                           .handling = 0.8f,
+                           .handling = 1.8f,
                            .health_max = 100.0f,
-                           .length = 2,
-                           .width = 1.5};
+                           .length = 4.4f,
+                           .width = 2.5714f};
 
         std::string trackFile = "tracks/track.yaml";
         std::vector<std::unique_ptr<Player>> players;
         players.emplace_back(std::make_unique<Player>("A", 0, statsA));
         players.emplace_back(std::make_unique<Player>("B", 1, statsB));
         Race race(CityName::LibertyCity, trackFile, players);
-        ServerContext ctx;
-        ctx.race = &race;
+        bool inLobby = true;
+        ServerContext ctx = {.race = &race, .client = nullptr, .inLobby = &inLobby};
         race.start();
 
         const std::chrono::milliseconds frameDuration(1000 / FPS);

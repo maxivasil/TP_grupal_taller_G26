@@ -1,31 +1,46 @@
 #include "client_handler.h"
 
+#include <string>
 #include <utility>
 
 #include "../common/constants.h"
 
+#include "LobbiesMonitor.h"
+#include "client_handler.h"
 
-ServerClientHandler::ServerClientHandler(int client_id, Socket&& s,
-                                         Queue<ClientToServerCmd_Server*>& gameloop_queue):
+ServerClientHandler::ServerClientHandler(int client_id, Socket&& s, LobbiesMonitor& lobbiesMonitor):
         client_id(client_id),
         protocol(std::move(s)),
         send_queue(UINT32_MAX),
         registered_commands(),
-        receiver(client_id, protocol, gameloop_queue, registered_commands.get_recv_registry()),
-        sender(protocol, send_queue) {}
+        receiver(nullptr),
+        sender(protocol, send_queue),
+        lobbiesMonitor(lobbiesMonitor) {}
 
 void ServerClientHandler::run() {
     try {
-        receiver.start();
+        bool inLobby = false;
+        auto registry = registered_commands.get_recv_registry();
+        ServerContext ctx = {.race = nullptr, .client = this, .inLobby = &inLobby};
+        while (should_keep_running() && !inLobby) {
+            std::vector<uint8_t> data = protocol.recv_full_message();
+            if (data.empty())
+                continue;
+            std::unique_ptr<ClientToServerCmd_Server> cmd(
+                    ClientToServerCmd_Server::from_bytes(data, registry, client_id));
+            cmd->execute(ctx);
+        }
+
+        receiver->start();
         sender.start();
 
-        receiver.join();
+        receiver->join();
         sender.join();
         protocol.close_connection();
     } catch (const std::exception& e) {
         if (!should_keep_running()) {
-            if (receiver.is_alive()) {
-                receiver.join();
+            if (receiver->is_alive()) {
+                receiver->join();
             }
             if (sender.is_alive()) {
                 sender.join();
@@ -37,12 +52,12 @@ void ServerClientHandler::run() {
 }
 
 void ServerClientHandler::stop() {
+    receiver->stop();
+    sender.stop();
     send_queue.close();
     if (!protocol.is_connection_closed()) {
         protocol.close_connection();
     }
-    receiver.stop();
-    sender.stop();
     Thread::stop();
 }
 
@@ -53,4 +68,17 @@ bool ServerClientHandler::is_dead() const {
 void ServerClientHandler::send_message(std::shared_ptr<ServerToClientCmd_Server> cmd) {
     if (cmd)
         send_queue.push(cmd);
+}
+
+bool ServerClientHandler::createLobby(const std::string& lobbyId) {
+    return lobbiesMonitor.createLobby(lobbyId);
+}
+
+Queue<ClientToServerCmd_Server*>* ServerClientHandler::joinLobby(const std::string& lobbyId) {
+    return lobbiesMonitor.joinLobby(lobbyId, this);
+}
+
+void ServerClientHandler::initReceiver(Queue<ClientToServerCmd_Server*>& gameloop_queue) {
+    receiver = std::make_unique<ThreadReceiver>(client_id, protocol, gameloop_queue,
+                                                registered_commands.get_recv_registry());
 }

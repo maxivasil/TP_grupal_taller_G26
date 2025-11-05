@@ -10,8 +10,9 @@
 #include "../common/queue.h"
 #include "../common/socket.h"
 #include "../common/thread.h"
+#include "cmd/cmd_base_server.h"
 
-#include "client_handler.h"
+class ServerClientHandler;
 
 class ServerProtectedClients {
 public:

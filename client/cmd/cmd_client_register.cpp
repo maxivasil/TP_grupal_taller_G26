@@ -20,5 +20,10 @@ std::unordered_map<uint8_t, std::function<ServerToClientCmd_Client*(const std::v
         return new ServerToClientSnapshot(std::move(snapshot));
     };
 
+    registry[JOIN_RESPONSE_COMMAND] = [](const std::vector<uint8_t>& data) {
+        auto snapshot = ServerToClientLobbyResponse::from_bytes(data);
+        return new ServerToClientLobbyResponse(std::move(snapshot));
+    };
+
     return registry;
 }

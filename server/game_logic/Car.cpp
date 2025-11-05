@@ -19,8 +19,8 @@ b2BodyDef Car::initCarBodyDef(b2Vec2 position, b2Rot rotation) {
     bodyDef.rotation = rotation;
     bodyDef.userData = this;
     bodyDef.isAwake = true;
-    bodyDef.linearDamping = 0.8f;
-    bodyDef.angularDamping = 3.0f;
+    bodyDef.linearDamping = 0.7f;
+    bodyDef.angularDamping = 1.0f;
     return bodyDef;
 }
 
@@ -89,7 +89,6 @@ void Car::handleTurning(Direction turn_direction, float speed) {
     const float minSpeedForTurning = 0.05f;
 
     if (speed < minSpeedForTurning || turn_direction == Direction::FORWARD) {
-        b2Body_SetAngularDamping(body, 3.0f);
         return;
     }
 

@@ -7,6 +7,7 @@
 
 #include "client_to_server_move.h"
 #include "cmd_base_client.h"
+#include "server_to_client_lobbyResponse.h"
 #include "server_to_client_snapshot.h"
 
 class ClientRegisteredCommands {

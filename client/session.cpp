@@ -1,6 +1,9 @@
 #include "session.h"
 
+//
 #include "cmd/client_to_server_lobby.h"
+#include "cmd/client_to_server_readyToStart.h"
+//
 
 ClientSession::ClientSession(const char* hostname, const char* servname,
                              Queue<ServerToClientCmd_Client*>& recv_queue):
@@ -14,10 +17,13 @@ ClientSession::ClientSession(const char* hostname, const char* servname,
 
 void ClientSession::run() {
     try {
-        // HARCODEADO (luego modificar y eliminar)
+        // HARCODEADO (luego modificar y eliminar) (lo haria el lobby de QT)
         auto cmd = std::make_unique<ClientToServerLobby>(std::string("ABCDEF"), true);
         auto data = cmd->to_bytes();
         protocol.send_message(data);
+        auto cmd_ = std::make_unique<ClientToServerReady>();
+        auto data_ = cmd_->to_bytes();
+        protocol.send_message(data_);
         //
         receiver.start();
         sender.start();

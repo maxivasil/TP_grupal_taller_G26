@@ -6,8 +6,6 @@
 
 #include "../../common/constants.h"
 
-#include "client_to_server_joinLobby.h"
-#include "client_to_server_move.h"
 #include "cmd_base_server.h"
 
 class ServerRegisteredCommands {

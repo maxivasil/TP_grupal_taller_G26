@@ -1,6 +1,7 @@
 #include "gameloop.h"
 
 #include <chrono>
+#include <set>
 #include <string>
 
 #include "../common/constants.h"
@@ -39,6 +40,20 @@ void ServerGameLoop::update_game_state(Race& race) {
 void ServerGameLoop::run() {
     while (should_keep_running()) {
         // HARCODEADO (luego modificar y eliminar)
+        bool inLobby = true;
+        std::set<int> clientsReady;
+        ServerContext ctx = {.race = nullptr,
+                             .client = nullptr,
+                             .inLobby = &inLobby,
+                             .clientsReady = &clientsReady};
+        while (should_keep_running() && status == LobbyStatus::WAITING_PLAYERS &&
+               clientsReady.size() < protected_clients.size()) {
+            process_pending_commands(ctx);
+            std::this_thread::sleep_for(std::chrono::milliseconds(250));
+            // Seguramente necesite broadcastear el estado del lobby a los clientes (para que lo
+            // puedan mostrar)
+        }
+        status = LobbyStatus::IN_GAME;
         CarStats statsA = {.acceleration = 20.0f,
                            .max_speed = 100.0f,
                            .turn_speed = 5.0f,
@@ -64,8 +79,10 @@ void ServerGameLoop::run() {
         players.emplace_back(std::make_unique<Player>("A", 0, statsA));
         players.emplace_back(std::make_unique<Player>("B", 1, statsB));
         Race race(CityName::LibertyCity, trackFile, players);
-        bool inLobby = true;
-        ServerContext ctx = {.race = &race, .client = nullptr, .inLobby = &inLobby};
+        ctx = {.race = &race,
+               .client = nullptr,
+               .inLobby = &inLobby,
+               .clientsReady = &clientsReady};
         race.start();
 
         const std::chrono::milliseconds frameDuration(1000 / FPS);
@@ -88,32 +105,7 @@ void ServerGameLoop::run() {
                 t1 += lostFrames * frameDuration;
             }
         }
+        status = LobbyStatus::FINISHED;
         stop();
-        /*
-
-
-        const float timeStep = 1.0f / 60.0f;
-        // 400 2400  -- ----- 57.3, 308.6
-        // 580 2400  -------- 83.1, 308.6
-        // 62 828    -------- 8.9   106.5
-
-        for (int i = 0; i < 180; ++i) {
-            for (auto& p: players) {
-                p->accelerate();
-            }
-
-            race.updatePhysics(timeStep);
-
-            b2Vec2 posA = players[0]->getPosition();
-            b2Vec2 posB = players[1]->getPosition();
-
-            std::cout << "Step " << i << ":\n";
-            std::cout << "  CarA Pos (" << posA.x << ", " << posA.y
-            << ") HP=" << players[0]->getCurrentHealth() << "\n";
-            std::cout << "  CarB Pos (" << posB.x << ", " << posB.y
-            << ") HP=" << players[0]->getCurrentHealth() << "\n\n";
-        }
-        stop();
-        */
     }
 }

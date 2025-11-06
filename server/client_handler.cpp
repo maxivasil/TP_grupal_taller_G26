@@ -21,7 +21,8 @@ void ServerClientHandler::run() {
     try {
         bool inLobby = false;
         auto registry = registered_commands.get_recv_registry();
-        ServerContext ctx = {.race = nullptr, .client = this, .inLobby = &inLobby};
+        ServerContext ctx = {
+                .race = nullptr, .client = this, .inLobby = &inLobby, .clientsReady = nullptr};
         while (should_keep_running() && !inLobby) {
             std::vector<uint8_t> data = protocol.recv_full_message();
             if (data.empty())

@@ -1,5 +1,9 @@
 #include "cmd_server_register.h"
 
+#include "client_to_server_joinLobby.h"
+#include "client_to_server_move.h"
+#include "client_to_server_readyToStart.h"
+
 ServerRegisteredCommands::ServerRegisteredCommands():
         recv_registry(build_server_recv_command_registry()) {}
 
@@ -22,6 +26,10 @@ std::unordered_map<uint8_t, std::function<ClientToServerCmd_Server*(const std::v
 
     registry[JOIN_COMMAND] = [](const std::vector<uint8_t>& data, const int client_id) {
         return ClientToServerJoinLobby::from_bytes(data, client_id);
+    };
+
+    registry[READY_TO_START_COMMAND] = [](const std::vector<uint8_t>& data, const int client_id) {
+        return ClientToServerReady::from_bytes(data, client_id);
     };
 
     return registry;

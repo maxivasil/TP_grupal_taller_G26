@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <set>
 #include <unordered_map>
 #include <vector>
 
@@ -11,6 +12,7 @@ struct ServerContext {
     class Race* race;
     class ServerClientHandler* client;
     bool* inLobby;
+    std::set<int>* clientsReady;
 };
 
 // Aquí van las definiciones de comandos del cliente al servidor

@@ -3,7 +3,7 @@
 
 // Constants for server communication protocol
 #define SNAPSHOT_COMMAND 0x01
-#define JOIN_RESPONSE_COMMAND 0x03
+#define JOIN_RESPONSE_COMMAND 0x04
 
 // Constants for ERROR_CODE de JOIN_RESPONSE_COMMAND
 #define LOBBY_NOT_FOUND 0x01
@@ -17,6 +17,7 @@
 // Constants for client communication protocol
 #define MOVE_COMMAND 0x02
 #define JOIN_COMMAND 0x03
+#define READY_TO_START_COMMAND 0x05
 
 // Constants for JOIN_COMMAND type
 #define TYPE_JOIN 0

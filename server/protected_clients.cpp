@@ -51,3 +51,8 @@ void ServerProtectedClients::stop_and_delete_dead() {
         delete c;
     }
 }
+
+size_t ServerProtectedClients::size() {
+    std::lock_guard<std::mutex> lock(m);
+    return clients.size();
+}

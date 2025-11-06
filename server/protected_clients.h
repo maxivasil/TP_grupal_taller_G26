@@ -21,6 +21,7 @@ public:
     void add_client(ServerClientHandler* client);
     void stop_and_delete_dead();
     void stop_all_and_delete();
+    size_t size();
 
 private:
     std::list<ServerClientHandler*> clients;

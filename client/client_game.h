@@ -15,6 +15,7 @@
 
 #include "camera.h"
 #include "session.h"
+#include "minimap.h"
 
 struct RenderCar {
     SDL_Rect src;
@@ -28,10 +29,17 @@ private:
 
     uint8_t client_id = 0;
     Camera camera;
+    Minimap minimap;
     std::map<int, std::shared_ptr<SDL2pp::Texture>> textures;
 
     std::vector<CarSnapshot> snapshots;
     std::vector<RenderCar> carsToRender;
+    
+    // Para testing del minimap sin snapshots
+    float testPlayerX = 350.0f;
+    float testPlayerY = 300.0f;
+    float testPlayerAngle = 0.0f;
+    bool showMinimap = true;  // Toggle con M
 
     SDL_Rect src;
     SDL_Rect dst;

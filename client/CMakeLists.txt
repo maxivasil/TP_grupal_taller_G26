@@ -10,6 +10,7 @@ target_sources(taller_client
     client_receiver.cpp
     client_sender.cpp
     session.cpp
+    minimap.cpp
     PUBLIC
     # .h files
     camera.h
@@ -18,6 +19,7 @@ target_sources(taller_client
     client_receiver.h
     client_sender.h
     session.h
+    minimap.h
     )
 
 target_link_libraries(taller_client 

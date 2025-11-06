@@ -12,7 +12,9 @@
 #define DATA_PATH "assets/"
 
 Game::Game(ClientSession& client_session):
-        client_session(client_session), camera(WINDOW_WIDTH, WINDOW_HEIGHT) {}
+        client_session(client_session), camera(WINDOW_WIDTH, WINDOW_HEIGHT), minimap(150) {
+    minimap.loadCityData("cities/liberty_city.yaml");
+}
 
 int Game::start() {
     try {
@@ -108,6 +110,10 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
         if (state[SDL_SCANCODE_DOWN]) {
             client_session.send_command(new ClientToServerMove(MOVE_DOWN));
         }
+        if (state[SDL_SCANCODE_M]) {
+            showMinimap = !showMinimap;
+            std::cout << "Minimap: " << (showMinimap ? "ON" : "OFF") << "\n";
+        }
     }
     return false;
 }
@@ -167,6 +173,63 @@ void Game::render(SDL2pp::Renderer& renderer) {
     renderer.Copy(*textures[0], src, dst);
     for (const auto& rc: carsToRender) {
         renderer.Copy(*textures[1], rc.src, rc.dst, rc.angle, SDL2pp::NullOpt, SDL_FLIP_NONE);
+    }
+
+    // Render minimap
+    auto it = std::find_if(snapshots.begin(), snapshots.end(),
+                           [&](const CarSnapshot& car) { return car.id == client_id; });
+    
+    MinimapPlayer localPlayer;
+    std::vector<MinimapPlayer> otherPlayers;
+    
+    if (it != snapshots.end()) {
+        // Tenemos datos reales del servidor
+        float worldX = (it->pos_x * 62) / 8.9;
+        float worldY = (it->pos_y * 24) / 3.086;
+        
+        localPlayer.x = worldX;
+        localPlayer.y = worldY;
+        localPlayer.angle = it->angle;
+        localPlayer.playerId = client_id;
+        localPlayer.health = it->health;
+        localPlayer.isLocal = true;
+        
+        // Otros jugadores
+        for (const auto& car : snapshots) {
+            if (car.id != client_id) {
+                MinimapPlayer mp;
+                mp.x = (car.pos_x * 62) / 8.9;
+                mp.y = (car.pos_y * 24) / 3.086;
+                mp.angle = car.angle;
+                mp.playerId = car.id;
+                mp.health = car.health;
+                mp.isLocal = false;
+                otherPlayers.push_back(mp);
+            }
+        }
+    } else {
+        // Sin datos reales - animar posición de test para demostración
+        // Esto permite ver el minimap funcionando aunque no haya datos del servidor
+        testPlayerX += 2.0f;
+        testPlayerY += 1.5f;
+        testPlayerAngle += 5.0f;  // Rotar constantemente
+        
+        // Wrap around si llega al borde
+        if (testPlayerX > 700.0f) testPlayerX = 0.0f;
+        if (testPlayerY > 600.0f) testPlayerY = 0.0f;
+        if (testPlayerAngle >= 360.0f) testPlayerAngle = 0.0f;
+        
+        localPlayer.x = testPlayerX;
+        localPlayer.y = testPlayerY;
+        localPlayer.angle = testPlayerAngle;  // IMPORTANTE: usar ángulo dinámico
+        localPlayer.playerId = 0;
+        localPlayer.health = 100.0f;
+        localPlayer.isLocal = true;
+    }
+    
+    // Render minimap solo si está habilitado (presiona M para toggle)
+    if (showMinimap) {
+        minimap.render(renderer, localPlayer, otherPlayers);
     }
 
     renderer.Present();

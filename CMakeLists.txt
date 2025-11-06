@@ -112,7 +112,8 @@ endif()
 # Program section
 # ---------------
 if(TALLER_CLIENT)
-    find_package(Qt5Widgets)
+    # Qt5Widgets es opcional - comentado para no bloquear compilación
+    # find_package(Qt5Widgets)
 
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
     add_executable(taller_client)
@@ -130,7 +131,6 @@ if(TALLER_CLIENT)
     target_include_directories(taller_client
         PRIVATE
             ${SDL2_SOURCE_DIR}/include
-            ${SDL2_image_SOURCE_DIR}
             ${SDL2_mixer_SOURCE_DIR}/include
             ${SDL2_ttf_SOURCE_DIR}/include
             ${libSDL2pp_SOURCE_DIR}/include
@@ -142,10 +142,9 @@ if(TALLER_CLIENT)
             taller_common 
             client_cmd
             SDL2pp::SDL2pp 
-            SDL2_image::SDL2_image
             SDL2_mixer::SDL2_mixer
             SDL2_ttf::SDL2_ttf
-            Qt5::Widgets)
+            yaml-cpp)
 endif()
 
 if(TALLER_SERVER)

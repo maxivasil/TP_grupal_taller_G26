@@ -1,6 +1,7 @@
 #include "client_game.h"
 
 #include <cmath>
+#include <filesystem>
 
 #include <unistd.h>
 
@@ -13,7 +14,28 @@
 
 Game::Game(ClientSession& client_session):
         client_session(client_session), camera(WINDOW_WIDTH, WINDOW_HEIGHT), minimap(150) {
-    minimap.loadCityData("cities/liberty_city.yaml");
+    // Try to load city data from multiple paths
+    std::vector<std::string> paths = {
+        "cities/liberty_city.yaml",
+        "../cities/liberty_city.yaml",
+        "../../cities/liberty_city.yaml",
+    };
+    
+    bool loaded = false;
+    for (const auto& path : paths) {
+        if (std::filesystem::exists(path)) {
+            std::cout << "Loading minimap from: " << path << std::endl;
+            minimap.loadCityData(path);
+            loaded = true;
+            break;
+        }
+    }
+    
+    if (!loaded) {
+        std::cerr << "ERROR: Could not find cities/liberty_city.yaml in any standard location\n";
+        std::cerr << "Current working directory: " << std::filesystem::current_path() << std::endl;
+    }
+    minimap.setZoomForArrow(8, 20.0f);
 }
 
 int Game::start() {
@@ -182,6 +204,7 @@ void Game::render(SDL2pp::Renderer& renderer) {
     MinimapPlayer localPlayer;
     std::vector<MinimapPlayer> otherPlayers;
     
+    static int debugFrameCount = 0;
     if (it != snapshots.end()) {
         // Tenemos datos reales del servidor
         float worldX = (it->pos_x * 62) / 8.9;
@@ -193,6 +216,10 @@ void Game::render(SDL2pp::Renderer& renderer) {
         localPlayer.playerId = client_id;
         localPlayer.health = it->health;
         localPlayer.isLocal = true;
+        
+        if (debugFrameCount++ % 60 == 0) {
+            std::cout << "DEBUG: Player at world (" << worldX << ", " << worldY << ")" << std::endl;
+        }
         
         // Otros jugadores
         for (const auto& car : snapshots) {

@@ -16,12 +16,14 @@ Minimap::~Minimap() = default;
 
 void Minimap::loadCityData(const std::string& yamlPath) {
     try {
+        std::cout << "DEBUG: Attempting to load YAML from: " << yamlPath << std::endl;
         YAML::Node config = YAML::LoadFile(yamlPath);
         if (!config["objects"]) {
             std::cerr << "No 'objects' section\n";
             return;
         }
         buildings.clear();
+        int count = 0;
         for (const auto& obj : config["objects"]) {
             float x = obj["x"].as<float>();
             float y = obj["y"].as<float>();
@@ -35,8 +37,14 @@ void Minimap::loadCityData(const std::string& yamlPath) {
             buildings.back().width = width;
             buildings.back().height = height;
             buildings.back().isWater = isWater;
+            count++;
         }
         std::cout << "Loaded " << buildings.size() << " buildings\n";
+        std::cout << "DEBUG: First 3 buildings: ";
+        for (int i = 0; i < std::min(3, (int)buildings.size()); i++) {
+            std::cout << "(" << buildings[i].x << "," << buildings[i].y << ") ";
+        }
+        std::cout << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "Error loading city: " << e.what() << "\n";
     }
@@ -70,22 +78,25 @@ float Minimap::worldToMinimapY(float worldY, float playerY) const {
 
 void Minimap::renderBuilding(SDL2pp::Renderer& renderer, const Building& b,
                             float playerX, float playerY) {
-    int screenX = 640 - size - 10;
+    // Use actual renderer output width so minimap stays anchored to the window
+    int screenX = renderer.GetOutputWidth() - size - 10;
     int screenY = 10;
-    
+
     float minimapX = worldToMinimapX(b.x, playerX);
     float minimapY = worldToMinimapY(b.y, playerY);
-    
+
     float scaleX = static_cast<float>(size) / zoomWidth;
     float scaleY = static_cast<float>(size) / zoomHeight;
     int minimapWidth = std::max(1, static_cast<int>(b.width * scaleX));
     int minimapHeight = std::max(1, static_cast<int>(b.height * scaleY));
-    
-    int screenMinimapX = screenX + static_cast<int>(minimapX);
-    int screenMinimapY = screenY + static_cast<int>(minimapY);
-    
-    if (screenMinimapX < screenX - 100 || screenMinimapX > screenX + size + 100 ||
-        screenMinimapY < screenY - 100 || screenMinimapY > screenY + size + 100) {
+
+    // Convert minimap coords to screen coords and treat building x,y as center -> shift by half size
+    int screenMinimapX = screenX + static_cast<int>(minimapX) - minimapWidth / 2;
+    int screenMinimapY = screenY + static_cast<int>(minimapY) - minimapHeight / 2;
+
+    // Clipping: if the rect is entirely outside the minimap area, skip drawing
+    if (screenMinimapX + minimapWidth < screenX || screenMinimapX > screenX + size ||
+        screenMinimapY + minimapHeight < screenY || screenMinimapY > screenY + size) {
         return;
     }
     
@@ -97,26 +108,36 @@ void Minimap::renderBuilding(SDL2pp::Renderer& renderer, const Building& b,
     
     SDL_Rect rect{ screenMinimapX, screenMinimapY, minimapWidth, minimapHeight };
     renderer.FillRect(rect);
+    
+    // DEBUG: Draw a small white dot at the exact center position
+    renderer.SetDrawColor(200, 200, 200, 128);
+    int cx = screenX + static_cast<int>(minimapX);
+    int cy = screenY + static_cast<int>(minimapY);
+    for (int dx = -1; dx <= 1; dx++) {
+        for (int dy = -1; dy <= 1; dy++) {
+            renderer.DrawPoint(cx + dx, cy + dy);
+        }
+    }
 }
 
 void Minimap::renderCheckpoint(SDL2pp::Renderer& renderer, const RaceCheckpoint& cp,
                               float playerX, float playerY) {
-    int screenX = 640 - size - 10;
+    int screenX = renderer.GetOutputWidth() - size - 10;
     int screenY = 10;
-    
+
     float minimapX = worldToMinimapX(cp.x, playerX);
     float minimapY = worldToMinimapY(cp.y, playerY);
-    
+
     float scaleX = static_cast<float>(size) / zoomWidth;
     float scaleY = static_cast<float>(size) / zoomHeight;
     int minimapWidth = std::max(2, static_cast<int>(cp.width * scaleX));
     int minimapHeight = std::max(2, static_cast<int>(cp.height * scaleY));
-    
-    int screenMinimapX = screenX + static_cast<int>(minimapX);
-    int screenMinimapY = screenY + static_cast<int>(minimapY);
-    
-    if (screenMinimapX < screenX - 100 || screenMinimapX > screenX + size + 100 ||
-        screenMinimapY < screenY - 100 || screenMinimapY > screenY + size + 100) {
+
+    int screenMinimapX = screenX + static_cast<int>(minimapX) - minimapWidth / 2;
+    int screenMinimapY = screenY + static_cast<int>(minimapY) - minimapHeight / 2;
+
+    if (screenMinimapX + minimapWidth < screenX || screenMinimapX > screenX + size ||
+        screenMinimapY + minimapHeight < screenY || screenMinimapY > screenY + size) {
         return;
     }
     
@@ -132,13 +153,13 @@ void Minimap::renderCheckpoint(SDL2pp::Renderer& renderer, const RaceCheckpoint&
 
 void Minimap::renderPlayer(SDL2pp::Renderer& renderer, const MinimapPlayer& p,
                           float playerX, float playerY, bool isLocal) {
-    int screenX = 640 - size - 10;
+    int screenX = renderer.GetOutputWidth() - size - 10;
     int screenY = 10;
-    
+
     float minimapX = worldToMinimapX(p.x, playerX);
     float minimapY = worldToMinimapY(p.y, playerY);
-    
-    // Convertir a pantalla
+
+    // Convert to screen
     int screenMinimapX = screenX + static_cast<int>(minimapX);
     int screenMinimapY = screenY + static_cast<int>(minimapY);
     
@@ -150,7 +171,7 @@ void Minimap::renderPlayer(SDL2pp::Renderer& renderer, const MinimapPlayer& p,
     if (isLocal) {
         // Jugador local - triángulo blanco que ROTA según dirección
         renderer.SetDrawColor(COLOR_PLAYER_R, COLOR_PLAYER_G, COLOR_PLAYER_B, 255);
-        int radius = 6;
+        int radius = arrowPixelSize;
         
         // Calcular rotación según ángulo del jugador
         float angleRad = p.angle * 3.14159265f / 180.0f;
@@ -183,7 +204,7 @@ void Minimap::renderPlayer(SDL2pp::Renderer& renderer, const MinimapPlayer& p,
     } else {
         // Otros jugadores - triángulo azul con dirección
         renderer.SetDrawColor(COLOR_OTHER_R, COLOR_OTHER_G, COLOR_OTHER_B, 255);
-        int radius = 4;
+        int radius = std::max(3, arrowPixelSize * 2 / 3);
         float angleRad = p.angle * 3.14159265f / 180.0f;
         float cos_a = std::cos(angleRad);
         float sin_a = std::sin(angleRad);
@@ -204,12 +225,45 @@ void Minimap::renderPlayer(SDL2pp::Renderer& renderer, const MinimapPlayer& p,
     }
 }
 
+void Minimap::setZoomRegion(float worldW, float worldH) {
+    if (worldW <= 0.1f || worldH <= 0.1f) return;
+    zoomWidth = worldW;
+    zoomHeight = worldH;
+}
+
+void Minimap::setZoomForArrow(int desiredPixelSize, float arrowWorldLen) {
+    if (desiredPixelSize <= 0 || arrowWorldLen <= 0.0f) return;
+    // Compute zoomWidth so that arrowWorldLen (world units) -> desiredPixelSize (pixels)
+    // desiredPixelSize = arrowWorldLen * (size / zoomWidth)
+    // => zoomWidth = arrowWorldLen * size / desiredPixelSize
+    float computedZoomW = (arrowWorldLen * static_cast<float>(size)) / static_cast<float>(desiredPixelSize);
+    // Clamp to reasonable bounds (not larger than world, not too small)
+    computedZoomW = std::max(10.0f, std::min(computedZoomW, worldWidth));
+    zoomWidth = computedZoomW;
+    // Preserve aspect ratio of world when setting zoomHeight
+    zoomHeight = zoomWidth * (worldHeight / worldWidth);
+    // Store arrow pixel size preference
+    arrowPixelSize = std::max(1, desiredPixelSize);
+}
+
+void Minimap::setArrowPixelSize(int pixels) {
+    if (pixels > 0) arrowPixelSize = pixels;
+}
+
 void Minimap::render(SDL2pp::Renderer& renderer,
                     const MinimapPlayer& localPlayer,
                     const std::vector<MinimapPlayer>& otherPlayers) {
     // Posición: esquina superior derecha (pequeño, sin tapar el juego)
-    int screenX = 640 - size - 10;
+    int screenX = renderer.GetOutputWidth() - size - 10;
     int screenY = 10;
+    
+    // DEBUG: Print zoom and building count once every 60 frames (approx 2 seconds at 30 FPS)
+    static int frameCounter = 0;
+    if (frameCounter++ % 60 == 0) {
+        std::cout << "DEBUG render(): buildings.size()=" << buildings.size() 
+                  << ", zoomWidth=" << zoomWidth << ", zoomHeight=" << zoomHeight 
+                  << ", playerPos=(" << localPlayer.x << "," << localPlayer.y << ")" << std::endl;
+    }
     
     // Fondo del minimap - gris oscuro en lugar de negro puro para mejor contraste
     renderer.SetDrawColor(20, 20, 30, 255);
@@ -223,9 +277,46 @@ void Minimap::render(SDL2pp::Renderer& renderer,
         renderer.DrawRect(border);
     }
     
+    // TEST: Draw a white rectangle if buildings vector is empty
+    if (buildings.empty()) {
+        renderer.SetDrawColor(255, 255, 255, 255);
+        SDL_Rect testRect{ screenX + 10, screenY + 10, 50, 50 };
+        renderer.FillRect(testRect);
+        std::cout << "WARNING: Buildings vector is EMPTY! Drawing test rectangle.\n";
+    }
+    
     // Dibujar todos los edificios
+    int drawnBuildings = 0;
+    int visibleBuildings = 0;
+    
     for (const auto& building : buildings) {
+        // Check if building is within visible zoom region
+        float minimapX = worldToMinimapX(building.x, localPlayer.x);
+        float minimapY = worldToMinimapY(building.y, localPlayer.y);
+        
+        // Is it inside the minimap bounds?
+        if (minimapX >= 0 && minimapX <= size && minimapY >= 0 && minimapY <= size) {
+            visibleBuildings++;
+        }
+        
         renderBuilding(renderer, building, localPlayer.x, localPlayer.y);
+        drawnBuildings++;
+    }
+    
+    // AUTO-ZOOM: If no buildings are visible, zoom out progressively
+    static float autoZoomCounter = 0;
+    if (visibleBuildings == 0 && autoZoomCounter < 2000.0f) {
+        autoZoomCounter += 5.0f;
+        zoomWidth = 700.0f + autoZoomCounter;
+        zoomHeight = 600.0f + autoZoomCounter * (600.0f / 700.0f);
+    } else if (visibleBuildings > 10) {
+        // Reset auto-zoom when enough buildings are visible
+        autoZoomCounter = 0;
+    }
+    
+    static int frameCounter2 = 0;
+    if (frameCounter2++ % 60 == 0) {
+        std::cout << "DEBUG: Visible buildings=" << visibleBuildings << ", autoZoomCounter=" << autoZoomCounter << std::endl;
     }
     
     // Dibujar todos los checkpoints

@@ -35,8 +35,9 @@ private:
     float worldHeight = 600.0f;
     
    
-    float zoomWidth = 100.0f;
-    float zoomHeight = 100.0f;
+    float zoomWidth = 200.0f;
+    float zoomHeight = 200.0f;
+    int arrowPixelSize = 6;
     
     void renderBuilding(SDL2pp::Renderer& renderer, const Building& b,
                        float playerX, float playerY);
@@ -62,6 +63,13 @@ public:
     void render(SDL2pp::Renderer& renderer,
                const MinimapPlayer& localPlayer,
                const std::vector<MinimapPlayer>& otherPlayers);
+
+    void setZoomRegion(float worldW, float worldH);
+
+    
+    void setZoomForArrow(int desiredPixelSize, float arrowWorldLen = 20.0f);
+
+    void setArrowPixelSize(int pixels);
 };
 
 #endif

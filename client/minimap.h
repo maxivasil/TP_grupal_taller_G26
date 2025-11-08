@@ -48,7 +48,7 @@ private:
     int worldToMinimapX(float serverX) const;
     int worldToMinimapY(float serverY) const;
 
-    void renderCheckpoints(SDL2pp::Renderer& renderer);
+    void renderCheckpoints(SDL2pp::Renderer& renderer, int nextCheckpointId = 0);
     void renderPlayer(SDL2pp::Renderer& renderer, const MinimapPlayer& p, bool isLocal);
 
 public:
@@ -74,7 +74,8 @@ public:
 
     void render(SDL2pp::Renderer& renderer,
                 const MinimapPlayer& localPlayer,
-                const std::vector<MinimapPlayer>& otherPlayers);
+                const std::vector<MinimapPlayer>& otherPlayers,
+                int nextCheckpointId = 0);
 };
 
 #endif

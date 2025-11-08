@@ -59,6 +59,13 @@ int Game::start() {
                 break;
             }
         }
+        
+        // Set up checkpoints for the race (Liberty City circuit)
+        std::vector<RaceCheckpoint> checkpoints = {
+            {0, 8.9f, 106.5f, 6.0f, 6.0f, false},      // Start checkpoint
+            {1, 120.0f, 106.5f, 6.0f, 6.0f, true},     // Finish line
+        };
+        minimap.setCheckpoints(checkpoints);
 
         auto t1 = SDL_GetTicks();
         auto rate = FPS;
@@ -258,7 +265,7 @@ void Game::render(SDL2pp::Renderer& renderer) {
     }
     
     if (showMinimap) {
-        minimap.render(renderer, localPlayer, otherPlayers);
+        minimap.render(renderer, localPlayer, otherPlayers, currentCheckpoint);
     }
 
     // Render HUD

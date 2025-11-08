@@ -3,8 +3,8 @@
 #include <cmath>
 #include <filesystem>
 
-#include <unistd.h>
 #include <SDL_ttf.h>
+#include <unistd.h>
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
@@ -14,7 +14,10 @@
 #define DATA_PATH "assets/"
 
 Game::Game(ClientSession& client_session):
-        client_session(client_session), camera(WINDOW_WIDTH, WINDOW_HEIGHT), minimap(150), hud(WINDOW_WIDTH, WINDOW_HEIGHT) {
+        client_session(client_session),
+        camera(WINDOW_WIDTH, WINDOW_HEIGHT),
+        minimap(150),
+        hud(WINDOW_WIDTH, WINDOW_HEIGHT) {
     raceStartTime = SDL_GetTicks() / 1000.0f;  // Iniciar timer de carrera
 }
 
@@ -30,40 +33,41 @@ int Game::start() {
 
         SDL2pp::Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         init_textures(renderer);
-        
+
         // Load HUD font
         std::vector<std::string> font_paths = {
-            "assets/fonts/arial.ttf",
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+                "assets/fonts/arial.ttf",
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
         };
-        for (const auto& path : font_paths) {
-            if (std::filesystem::exists(path)) {
-                hud.loadFont(path, 18);
-                break;
-            }
+
+        auto it = std::find_if(font_paths.begin(), font_paths.end(),
+                               [](const auto& path) { return std::filesystem::exists(path); });
+
+        if (it != font_paths.end()) {
+            hud.loadFont(*it, 18);
         }
-        
+
         std::vector<std::string> map_paths = {
-            "assets/cities/Liberty_City.png",
-            "../assets/cities/Liberty_City.png",
-            "../../assets/cities/Liberty_City.png",
+                "assets/cities/Liberty_City.png",
+                "../assets/cities/Liberty_City.png",
+                "../../assets/cities/Liberty_City.png",
         };
-        
-        for (const auto& path : map_paths) {
-            if (std::filesystem::exists(path)) {
-                std::cout << "Loading minimap from: " << path << std::endl;
-                minimap.loadMapImage(renderer, path);
-                minimap.setWorldScale(62.0f / 8.9f, 24.0f / 3.086f);
-                minimap.setZoomPixels(900.0f, 900.0f);
-                break;
-            }
+
+        auto it2 = std::find_if(map_paths.begin(), map_paths.end(),
+                                [](const auto& path) { return std::filesystem::exists(path); });
+
+        if (it2 != map_paths.end()) {
+            std::cout << "Loading minimap from: " << *it2 << std::endl;
+            minimap.loadMapImage(renderer, *it2);
+            minimap.setWorldScale(62.0f / 8.9f, 24.0f / 3.086f);
+            minimap.setZoomPixels(900.0f, 900.0f);
         }
-        
+
         // Set up checkpoints for the race (Liberty City circuit)
         std::vector<RaceCheckpoint> checkpoints = {
-            {0, 8.9f, 106.5f, 6.0f, 6.0f, false},      // Start checkpoint
-            {1, 120.0f, 106.5f, 6.0f, 6.0f, true},     // Finish line
+                {0, 8.9f, 106.5f, 6.0f, 6.0f, false},   // Start checkpoint
+                {1, 120.0f, 106.5f, 6.0f, 6.0f, true},  // Finish line
         };
         minimap.setCheckpoints(checkpoints);
 
@@ -124,36 +128,40 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
-
             case SDL_QUIT:
                 return true;
-
             case SDL_WINDOWEVENT:
                 if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
                     camera.setDimensions(renderer.GetOutputWidth(), renderer.GetOutputHeight());
                 }
-        }
-        const Uint8* state = SDL_GetKeyboardState(NULL);
-        if (state[SDL_SCANCODE_ESCAPE] || state[SDL_SCANCODE_Q]) {
-            return true;
-        }
-        if (state[SDL_SCANCODE_RIGHT]) {
-            client_session.send_command(new ClientToServerMove(MOVE_RIGHT));
-        }
-        if (state[SDL_SCANCODE_LEFT]) {
-            client_session.send_command(new ClientToServerMove(MOVE_LEFT));
-        }
-        if (state[SDL_SCANCODE_UP]) {
-            client_session.send_command(new ClientToServerMove(MOVE_UP));
-        }
-        if (state[SDL_SCANCODE_DOWN]) {
-            client_session.send_command(new ClientToServerMove(MOVE_DOWN));
-        }
-        if (state[SDL_SCANCODE_M]) {
-            showMinimap = !showMinimap;
-            std::cout << "Minimap: " << (showMinimap ? "ON" : "OFF") << "\n";
+                break;
+            case SDL_KEYDOWN:
+                if (event.key.keysym.sym == SDLK_m) {
+                    showMinimap = !showMinimap;
+                    std::cout << "Minimap: " << (showMinimap ? "ON" : "OFF") << "\n";
+                }
+                break;
         }
     }
+
+    const Uint8* state = SDL_GetKeyboardState(NULL);
+
+    if (state[SDL_SCANCODE_ESCAPE] || state[SDL_SCANCODE_Q]) {
+        return true;
+    }
+    if (state[SDL_SCANCODE_RIGHT]) {
+        client_session.send_command(new ClientToServerMove(MOVE_RIGHT));
+    }
+    if (state[SDL_SCANCODE_LEFT]) {
+        client_session.send_command(new ClientToServerMove(MOVE_LEFT));
+    }
+    if (state[SDL_SCANCODE_UP]) {
+        client_session.send_command(new ClientToServerMove(MOVE_UP));
+    }
+    if (state[SDL_SCANCODE_DOWN]) {
+        client_session.send_command(new ClientToServerMove(MOVE_DOWN));
+    }
+
     return false;
 }
 
@@ -216,25 +224,25 @@ void Game::render(SDL2pp::Renderer& renderer) {
 
     auto it = std::find_if(snapshots.begin(), snapshots.end(),
                            [&](const CarSnapshot& car) { return car.id == client_id; });
-    
+
     MinimapPlayer localPlayer;
     std::vector<MinimapPlayer> otherPlayers;
-    
+
     if (it != snapshots.end()) {
         float serverX = it->pos_x;
         float serverY = it->pos_y;
-        
+
         std::cout << "SERVER: pos=(" << serverX << ", " << serverY << ")" << std::endl;
 
-        
+
         localPlayer.x = serverX;
-        localPlayer.y = serverY;  
+        localPlayer.y = serverY;
         localPlayer.angle = it->angle;
         localPlayer.playerId = client_id;
         localPlayer.health = it->health;
         localPlayer.isLocal = true;
 
-        for (const auto& car : snapshots) {
+        for (const auto& car: snapshots) {
             if (car.id != client_id) {
                 MinimapPlayer mp;
                 mp.x = car.pos_x;  // Coordenadas del servidor
@@ -251,19 +259,22 @@ void Game::render(SDL2pp::Renderer& renderer) {
         // Esto permite ver el minimap funcionando aunque no haya datos del servidor
         testPlayerX += 2.0f;
         testPlayerY += 1.5f;
-        testPlayerAngle += 5.0f; 
-        if (testPlayerX > 700.0f) testPlayerX = 0.0f;
-        if (testPlayerY > 600.0f) testPlayerY = 0.0f;
-        if (testPlayerAngle >= 360.0f) testPlayerAngle = 0.0f;
-        
+        testPlayerAngle += 5.0f;
+        if (testPlayerX > 700.0f)
+            testPlayerX = 0.0f;
+        if (testPlayerY > 600.0f)
+            testPlayerY = 0.0f;
+        if (testPlayerAngle >= 360.0f)
+            testPlayerAngle = 0.0f;
+
         localPlayer.x = testPlayerX;
         localPlayer.y = testPlayerY;
-        localPlayer.angle = testPlayerAngle;  
+        localPlayer.angle = testPlayerAngle;
         localPlayer.playerId = 0;
         localPlayer.health = 100.0f;
         localPlayer.isLocal = true;
     }
-    
+
     if (showMinimap) {
         minimap.render(renderer, localPlayer, otherPlayers, currentCheckpoint);
     }
@@ -272,11 +283,11 @@ void Game::render(SDL2pp::Renderer& renderer) {
     HUDData hudData;
     hudData.speed = 0.0f;  // Default to 0 if no local player
     hudData.health = 100.0f;
-    
+
     // Use the first car's data (assumed to be the local player)
     if (!snapshots.empty()) {
         hudData.health = snapshots[0].health;
-        
+
         // Calculate speed from position change if server speed is 0
         if (snapshots[0].speed > 0.0f) {
             hudData.speed = snapshots[0].speed;
@@ -284,7 +295,8 @@ void Game::render(SDL2pp::Renderer& renderer) {
             // Client-side speed calculation based on position delta
             Uint32 currentTime = SDL_GetTicks();
             if (lastSpeedUpdateTime > 0) {
-                float timeDelta = (currentTime - lastSpeedUpdateTime) / 1000.0f;  // Convert to seconds
+                float timeDelta =
+                        (currentTime - lastSpeedUpdateTime) / 1000.0f;  // Convert to seconds
                 if (timeDelta > 0.0f) {
                     float posX = snapshots[0].pos_x;
                     float posY = snapshots[0].pos_y;
@@ -299,7 +311,7 @@ void Game::render(SDL2pp::Renderer& renderer) {
             lastSpeedUpdateTime = currentTime;
         }
     }
-    
+
     hudData.checkpointCurrent = currentCheckpoint;
     hudData.checkpointTotal = totalCheckpoints;
     hudData.raceTime = (SDL_GetTicks() / 1000.0f) - raceStartTime;

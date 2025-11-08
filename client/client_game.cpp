@@ -208,6 +208,7 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
         if (car.id == client_id) {
             camera.follow(worldX, worldY);
         }
+        rc.onBridge = car.onBridge;
         carsToRender.push_back(rc);
     }
 
@@ -219,7 +220,15 @@ void Game::render(SDL2pp::Renderer& renderer) {
 
     renderer.Copy(*textures[0], src, dst);
     for (const auto& rc: carsToRender) {
-        renderer.Copy(*textures[1], rc.src, rc.dst, rc.angle, SDL2pp::NullOpt, SDL_FLIP_NONE);
+        if (!rc.onBridge) {
+            renderer.Copy(*textures[1], rc.src, rc.dst, rc.angle, SDL2pp::NullOpt, SDL_FLIP_NONE);
+        }
+    }
+    renderer.Copy(*textures[2], src, dst);
+    for (const auto& rc: carsToRender) {
+        if (rc.onBridge) {
+            renderer.Copy(*textures[1], rc.src, rc.dst, rc.angle, SDL2pp::NullOpt, SDL_FLIP_NONE);
+        }
     }
 
     auto it = std::find_if(snapshots.begin(), snapshots.end(),
@@ -330,6 +339,9 @@ void Game::init_textures(SDL2pp::Renderer& renderer) {
                             true,
                             SDL_MapRGB(SDL2pp::Surface(DATA_PATH "cars/Cars.png").Get()->format,
                                        163, 163, 13)));
+    textures[2] = std::make_shared<SDL2pp::Texture>(
+            renderer,
+            SDL2pp::Surface(DATA_PATH "cities/Liberty_City_bridges.png").SetColorKey(true, 0));
 }
 
 void Game::update_snapshots(const std::vector<CarSnapshot>& snapshots) {

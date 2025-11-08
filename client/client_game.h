@@ -14,14 +14,15 @@
 #include <SDL_image.h>
 
 #include "camera.h"
-#include "session.h"
-#include "minimap.h"
 #include "hud.h"
+#include "minimap.h"
+#include "session.h"
 
 struct RenderCar {
     SDL_Rect src;
     SDL_Rect dst;
     float angle;
+    bool onBridge;
 };
 
 class Game {
@@ -36,18 +37,18 @@ private:
 
     std::vector<CarSnapshot> snapshots;
     std::vector<RenderCar> carsToRender;
-    
+
     // Para testing del minimap sin snapshots
     float testPlayerX = 350.0f;
     float testPlayerY = 300.0f;
     float testPlayerAngle = 0.0f;
     bool showMinimap = true;  // Toggle con M
-    
+
     // HUD tracking
     int currentCheckpoint = 0;
     int totalCheckpoints = 2;
     float raceStartTime = 0.0f;
-    
+
     // Speed calculation (client-side)
     float lastPlayerX = 0.0f;
     float lastPlayerY = 0.0f;

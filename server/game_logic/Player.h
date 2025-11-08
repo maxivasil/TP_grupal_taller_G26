@@ -38,6 +38,8 @@ public:
     int getId() const;
 
     b2Rot getRotation() const;
+
+    bool isOnBridge() const;
 };
 
 

@@ -139,7 +139,7 @@ std::vector<CarSnapshot> Race::getSnapshot() const {
         b2Rot rot = player->getRotation();
         float angle = b2Rot_GetAngle(rot) * 180.0f / B2_PI;
         snapshot.push_back(CarSnapshot{(uint8_t)player->getId(), pos.x, pos.y, false,
-                                       player->getCurrentHealth(), 0, angle});
+                                       player->getCurrentHealth(), 0, angle, player->isOnBridge()});
     }
 
     return snapshot;

@@ -39,6 +39,7 @@ int Game::start() {
                 std::cout << "Loading minimap from: " << path << std::endl;
                 minimap.loadMapImage(renderer, path);
                 minimap.setWorldScale(62.0f / 8.9f, 24.0f / 3.086f);
+                minimap.setZoomPixels(900.0f, 900.0f);
                 break;
             }
         }

@@ -15,7 +15,7 @@ struct RaceCheckpoint {
 };
 
 struct MinimapPlayer {
-    float x, y, angle;  // Coordenadas del servidor (sin transformar)
+    float x, y, angle;  // Coordenadas del servidor
     int playerId;
     float health;
     bool isLocal;
@@ -23,23 +23,33 @@ struct MinimapPlayer {
 
 class Minimap {
 private:
-    int size;  // Tamaño del minimap en píxeles (150x150)
+    int size;  // tamaño cuadrado del minimapa en píxeles
     int arrowPixelSize = 8;
-    std::unique_ptr<SDL2pp::Texture> mapTexture;  // PNG del mapa escalado
+
+    std::unique_ptr<SDL2pp::Texture> mapTexture;
+
     std::vector<RaceCheckpoint> checkpoints;
 
-    // Dimensiones reales del mapa en píxeles (se toman del PNG al cargar)
+    // Dimensiones reales del PNG del mapa
     float mapWidth = 0.0f;
     float mapHeight = 0.0f;
 
-    // Transformación de coordenadas del servidor -> píxeles del mapa
-    // pixel = server * scale + offset
+    // Transformación servidor -> píxeles del mapa
     float scaleX = 1.0f;
     float scaleY = 1.0f;
     float offsetX = 0.0f;
     float offsetY = 0.0f;
 
-    // Conversión de coordenadas del servidor a píxeles del minimap (usa transform y dims de mapa)
+    // Viewport (sub-rectángulo dentro del mapa) centrado en el jugador
+    float zoomPixelWidth  = 800.0f;  // ancho del área visible del mundo en píxeles del mapa
+    float zoomPixelHeight = 800.0f;  // alto del área visible
+    float viewLeft = 0.0f;
+    float viewTop  = 0.0f;
+
+    // Calcula y clampa el viewport alrededor del jugador (en píxeles del mapa)
+    void updateViewport(float playerMapX, float playerMapY);
+
+    // Conversión world(server) -> minimap (usa viewport)
     int worldToMinimapX(float serverX) const;
     int worldToMinimapY(float serverY) const;
 
@@ -57,11 +67,18 @@ public:
 
     void loadMapImage(SDL2pp::Renderer& renderer, const std::string& imagePath);
 
-    // Configurar cómo pasar de coordenadas del servidor a píxeles del mapa
+    // Configurar transformación servidor->mapa
     void setWorldScale(float sx, float sy) { scaleX = sx; scaleY = sy; }
     void setWorldOffset(float ox, float oy) { offsetX = ox; offsetY = oy; }
 
+    // Ajustar zoom (dimensiones del viewport en píxeles del mapa)
+    void setZoomPixels(float w, float h) {
+        zoomPixelWidth  = std::max(50.0f, w);
+        zoomPixelHeight = std::max(50.0f, h);
+    }
+
     void setCheckpoints(const std::vector<RaceCheckpoint>& cp);
+
     void render(SDL2pp::Renderer& renderer,
                 const MinimapPlayer& localPlayer,
                 const std::vector<MinimapPlayer>& otherPlayers);

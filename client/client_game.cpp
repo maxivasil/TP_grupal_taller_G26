@@ -4,6 +4,7 @@
 #include <filesystem>
 
 #include <unistd.h>
+#include <SDL_ttf.h>
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
@@ -13,12 +14,14 @@
 #define DATA_PATH "assets/"
 
 Game::Game(ClientSession& client_session):
-        client_session(client_session), camera(WINDOW_WIDTH, WINDOW_HEIGHT), minimap(150) {
+        client_session(client_session), camera(WINDOW_WIDTH, WINDOW_HEIGHT), minimap(150), hud(WINDOW_WIDTH, WINDOW_HEIGHT) {
+    raceStartTime = SDL_GetTicks() / 1000.0f;  // Iniciar timer de carrera
 }
 
 int Game::start() {
     try {
         SDL2pp::SDL sdl(SDL_INIT_VIDEO);
+        TTF_Init();  // Initialize SDL2_ttf
 
         std::string titulo = "NFS-2D";
 
@@ -27,6 +30,19 @@ int Game::start() {
 
         SDL2pp::Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         init_textures(renderer);
+        
+        // Load HUD font
+        std::vector<std::string> font_paths = {
+            "assets/fonts/arial.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        };
+        for (const auto& path : font_paths) {
+            if (std::filesystem::exists(path)) {
+                hud.loadFont(path, 18);
+                break;
+            }
+        }
         
         std::vector<std::string> map_paths = {
             "assets/cities/Liberty_City.png",
@@ -244,6 +260,43 @@ void Game::render(SDL2pp::Renderer& renderer) {
     if (showMinimap) {
         minimap.render(renderer, localPlayer, otherPlayers);
     }
+
+    // Render HUD
+    HUDData hudData;
+    hudData.speed = 0.0f;  // Default to 0 if no local player
+    hudData.health = 100.0f;
+    
+    // Use the first car's data (assumed to be the local player)
+    if (!snapshots.empty()) {
+        hudData.health = snapshots[0].health;
+        
+        // Calculate speed from position change if server speed is 0
+        if (snapshots[0].speed > 0.0f) {
+            hudData.speed = snapshots[0].speed;
+        } else {
+            // Client-side speed calculation based on position delta
+            Uint32 currentTime = SDL_GetTicks();
+            if (lastSpeedUpdateTime > 0) {
+                float timeDelta = (currentTime - lastSpeedUpdateTime) / 1000.0f;  // Convert to seconds
+                if (timeDelta > 0.0f) {
+                    float posX = snapshots[0].pos_x;
+                    float posY = snapshots[0].pos_y;
+                    float dx = posX - lastPlayerX;
+                    float dy = posY - lastPlayerY;
+                    float distance = std::sqrt(dx * dx + dy * dy);
+                    hudData.speed = distance / timeDelta;  // units per second
+                }
+            }
+            lastPlayerX = snapshots[0].pos_x;
+            lastPlayerY = snapshots[0].pos_y;
+            lastSpeedUpdateTime = currentTime;
+        }
+    }
+    
+    hudData.checkpointCurrent = currentCheckpoint;
+    hudData.checkpointTotal = totalCheckpoints;
+    hudData.raceTime = (SDL_GetTicks() / 1000.0f) - raceStartTime;
+    hud.render(renderer, hudData);
 
     renderer.Present();
 }

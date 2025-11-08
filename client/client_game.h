@@ -16,6 +16,7 @@
 #include "camera.h"
 #include "session.h"
 #include "minimap.h"
+#include "hud.h"
 
 struct RenderCar {
     SDL_Rect src;
@@ -30,6 +31,7 @@ private:
     uint8_t client_id = 0;
     Camera camera;
     Minimap minimap;
+    HUD hud;
     std::map<int, std::shared_ptr<SDL2pp::Texture>> textures;
 
     std::vector<CarSnapshot> snapshots;
@@ -40,6 +42,16 @@ private:
     float testPlayerY = 300.0f;
     float testPlayerAngle = 0.0f;
     bool showMinimap = true;  // Toggle con M
+    
+    // HUD tracking
+    int currentCheckpoint = 0;
+    int totalCheckpoints = 2;
+    float raceStartTime = 0.0f;
+    
+    // Speed calculation (client-side)
+    float lastPlayerX = 0.0f;
+    float lastPlayerY = 0.0f;
+    Uint32 lastSpeedUpdateTime = 0;
 
     SDL_Rect src;
     SDL_Rect dst;

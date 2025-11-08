@@ -45,14 +45,12 @@ void Minimap::updateViewport(float playerMapX, float playerMapY) {
         viewLeft = viewTop = 0.0f;
         return;
     }
-    // Centro deseado del viewport
     float halfW = zoomPixelWidth  * 0.5f;
     float halfH = zoomPixelHeight * 0.5f;
 
     float left = playerMapX - halfW;
     float top  = playerMapY - halfH;
 
-    // Clamp: evitar salir de los límites del mapa
     if (left < 0.0f) left = 0.0f;
     if (top  < 0.0f) top  = 0.0f;
 
@@ -134,7 +132,6 @@ void Minimap::renderPlayer(SDL2pp::Renderer& renderer, const MinimapPlayer& p, b
         renderer.DrawLines(pts, 3);
         renderer.DrawLine(pts[2], pts[0]);
 
-        // Punto amarillo en la punta
         renderer.SetDrawColor(255, 255, 0, 255);
         SDL_Rect dot{pts[0].x - 2, pts[0].y - 2, 4, 4};
         renderer.FillRect(dot);
@@ -152,17 +149,14 @@ void Minimap::render(SDL2pp::Renderer& renderer,
     int screenX = renderer.GetOutputWidth() - size - 10;
     int screenY = 10;
 
-    // Fondo + borde
     renderer.SetDrawColor(20, 20, 30, 255);
     SDL_Rect bg{screenX - 2, screenY - 2, size + 4, size + 4};
     renderer.FillRect(bg);
 
-    // Actualizar viewport centrado en el jugador local
     float playerMapX = localPlayer.x * scaleX + offsetX;
     float playerMapY = localPlayer.y * scaleY + offsetY;
     updateViewport(playerMapX, playerMapY);
 
-    // Dibujar la porción recortada del mapa
     if (mapTexture) {
         SDL_Rect src{
             int(viewLeft),
@@ -178,21 +172,18 @@ void Minimap::render(SDL2pp::Renderer& renderer,
         renderer.FillRect(placeholder);
     }
 
-    // Dibujar checkpoints y otros jugadores (usando viewport)
     renderCheckpoints(renderer);
     for (const auto& p : otherPlayers) {
         renderPlayer(renderer, p, false);
     }
     renderPlayer(renderer, localPlayer, true);
 
-    // Marco
     renderer.SetDrawColor(0, 255, 255, 255);
     for (int i = 0; i < 2; i++) {
         SDL_Rect border{screenX - 2 - i, screenY - 2 - i, size + 4 + (i * 2), size + 4 + (i * 2)};
         renderer.DrawRect(border);
     }
 
-    // Debug cada 120 frames
     static int frame = 0;
     if (frame++ % 120 == 0) {
         std::cout << "[Minimap] view=(" << viewLeft << "," << viewTop << ") "

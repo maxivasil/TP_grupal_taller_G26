@@ -14,28 +14,6 @@
 
 Game::Game(ClientSession& client_session):
         client_session(client_session), camera(WINDOW_WIDTH, WINDOW_HEIGHT), minimap(150) {
-    // Try to load city data from multiple paths
-    std::vector<std::string> paths = {
-        "cities/liberty_city.yaml",
-        "../cities/liberty_city.yaml",
-        "../../cities/liberty_city.yaml",
-    };
-    
-    bool loaded = false;
-    for (const auto& path : paths) {
-        if (std::filesystem::exists(path)) {
-            std::cout << "Loading minimap from: " << path << std::endl;
-            minimap.loadCityData(path);
-            loaded = true;
-            break;
-        }
-    }
-    
-    if (!loaded) {
-        std::cerr << "ERROR: Could not find cities/liberty_city.yaml in any standard location\n";
-        std::cerr << "Current working directory: " << std::filesystem::current_path() << std::endl;
-    }
-    minimap.setZoomForArrow(8, 20.0f);
 }
 
 int Game::start() {
@@ -49,6 +27,21 @@ int Game::start() {
 
         SDL2pp::Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         init_textures(renderer);
+        
+        std::vector<std::string> map_paths = {
+            "assets/cities/Liberty_City.png",
+            "../assets/cities/Liberty_City.png",
+            "../../assets/cities/Liberty_City.png",
+        };
+        
+        for (const auto& path : map_paths) {
+            if (std::filesystem::exists(path)) {
+                std::cout << "Loading minimap from: " << path << std::endl;
+                minimap.loadMapImage(renderer, path);
+                minimap.setWorldScale(62.0f / 8.9f, 24.0f / 3.086f);
+                break;
+            }
+        }
 
         auto t1 = SDL_GetTicks();
         auto rate = FPS;
@@ -197,36 +190,31 @@ void Game::render(SDL2pp::Renderer& renderer) {
         renderer.Copy(*textures[1], rc.src, rc.dst, rc.angle, SDL2pp::NullOpt, SDL_FLIP_NONE);
     }
 
-    // Render minimap
     auto it = std::find_if(snapshots.begin(), snapshots.end(),
                            [&](const CarSnapshot& car) { return car.id == client_id; });
     
     MinimapPlayer localPlayer;
     std::vector<MinimapPlayer> otherPlayers;
     
-    static int debugFrameCount = 0;
     if (it != snapshots.end()) {
-        // Tenemos datos reales del servidor
-        float worldX = (it->pos_x * 62) / 8.9;
-        float worldY = (it->pos_y * 24) / 3.086;
+        float serverX = it->pos_x;
+        float serverY = it->pos_y;
         
-        localPlayer.x = worldX;
-        localPlayer.y = worldY;
+        std::cout << "SERVER: pos=(" << serverX << ", " << serverY << ")" << std::endl;
+
+        
+        localPlayer.x = serverX;
+        localPlayer.y = serverY;  
         localPlayer.angle = it->angle;
         localPlayer.playerId = client_id;
         localPlayer.health = it->health;
         localPlayer.isLocal = true;
-        
-        if (debugFrameCount++ % 60 == 0) {
-            std::cout << "DEBUG: Player at world (" << worldX << ", " << worldY << ")" << std::endl;
-        }
-        
-        // Otros jugadores
+
         for (const auto& car : snapshots) {
             if (car.id != client_id) {
                 MinimapPlayer mp;
-                mp.x = (car.pos_x * 62) / 8.9;
-                mp.y = (car.pos_y * 24) / 3.086;
+                mp.x = car.pos_x;  // Coordenadas del servidor
+                mp.y = car.pos_y;  // Ajuste si es necesario
                 mp.angle = car.angle;
                 mp.playerId = car.id;
                 mp.health = car.health;
@@ -239,22 +227,19 @@ void Game::render(SDL2pp::Renderer& renderer) {
         // Esto permite ver el minimap funcionando aunque no haya datos del servidor
         testPlayerX += 2.0f;
         testPlayerY += 1.5f;
-        testPlayerAngle += 5.0f;  // Rotar constantemente
-        
-        // Wrap around si llega al borde
+        testPlayerAngle += 5.0f; 
         if (testPlayerX > 700.0f) testPlayerX = 0.0f;
         if (testPlayerY > 600.0f) testPlayerY = 0.0f;
         if (testPlayerAngle >= 360.0f) testPlayerAngle = 0.0f;
         
         localPlayer.x = testPlayerX;
         localPlayer.y = testPlayerY;
-        localPlayer.angle = testPlayerAngle;  // IMPORTANTE: usar ángulo dinámico
+        localPlayer.angle = testPlayerAngle;  
         localPlayer.playerId = 0;
         localPlayer.health = 100.0f;
         localPlayer.isLocal = true;
     }
     
-    // Render minimap solo si está habilitado (presiona M para toggle)
     if (showMinimap) {
         minimap.render(renderer, localPlayer, otherPlayers);
     }

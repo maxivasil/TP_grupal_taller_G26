@@ -2,15 +2,11 @@
 #define CLIENT_MINIMAP_H
 
 #include <SDL2pp/SDL2pp.hh>
+#include <memory>
 #include <vector>
 #include <string>
-#include <yaml-cpp/yaml.h>
 #include <cmath>
-
-struct Building {
-    float x, y, width, height;
-    bool isWater;
-};
+#include <algorithm>
 
 struct RaceCheckpoint {
     int id;
@@ -19,7 +15,7 @@ struct RaceCheckpoint {
 };
 
 struct MinimapPlayer {
-    float x, y, angle;
+    float x, y, angle;  // Coordenadas del servidor (sin transformar)
     int playerId;
     float health;
     bool isLocal;
@@ -27,49 +23,48 @@ struct MinimapPlayer {
 
 class Minimap {
 private:
-    int size;
-    std::vector<Building> buildings;
+    int size;  // Tamaño del minimap en píxeles (150x150)
+    int arrowPixelSize = 8;
+    std::unique_ptr<SDL2pp::Texture> mapTexture;  // PNG del mapa escalado
     std::vector<RaceCheckpoint> checkpoints;
-    
-    float worldWidth = 700.0f;
-    float worldHeight = 600.0f;
-    
-   
-    float zoomWidth = 200.0f;
-    float zoomHeight = 200.0f;
-    int arrowPixelSize = 6;
-    
-    void renderBuilding(SDL2pp::Renderer& renderer, const Building& b,
-                       float playerX, float playerY);
-    void renderCheckpoint(SDL2pp::Renderer& renderer, const RaceCheckpoint& cp,
-                         float playerX, float playerY);
-    void renderPlayer(SDL2pp::Renderer& renderer, const MinimapPlayer& p,
-                     float playerX, float playerY, bool isLocal);
-    
-    float worldToMinimapX(float worldX, float playerX) const;
-    float worldToMinimapY(float worldY, float playerY) const;
+
+    // Dimensiones reales del mapa en píxeles (se toman del PNG al cargar)
+    float mapWidth = 0.0f;
+    float mapHeight = 0.0f;
+
+    // Transformación de coordenadas del servidor -> píxeles del mapa
+    // pixel = server * scale + offset
+    float scaleX = 1.0f;
+    float scaleY = 1.0f;
+    float offsetX = 0.0f;
+    float offsetY = 0.0f;
+
+    // Conversión de coordenadas del servidor a píxeles del minimap (usa transform y dims de mapa)
+    int worldToMinimapX(float serverX) const;
+    int worldToMinimapY(float serverY) const;
+
+    void renderCheckpoints(SDL2pp::Renderer& renderer);
+    void renderPlayer(SDL2pp::Renderer& renderer, const MinimapPlayer& p, bool isLocal);
 
 public:
     explicit Minimap(int size);
     ~Minimap();
-    
+
     Minimap(const Minimap&) = delete;
     Minimap& operator=(const Minimap&) = delete;
     Minimap(Minimap&&) = default;
     Minimap& operator=(Minimap&&) = default;
-    
-    void loadCityData(const std::string& yamlPath);
+
+    void loadMapImage(SDL2pp::Renderer& renderer, const std::string& imagePath);
+
+    // Configurar cómo pasar de coordenadas del servidor a píxeles del mapa
+    void setWorldScale(float sx, float sy) { scaleX = sx; scaleY = sy; }
+    void setWorldOffset(float ox, float oy) { offsetX = ox; offsetY = oy; }
+
     void setCheckpoints(const std::vector<RaceCheckpoint>& cp);
     void render(SDL2pp::Renderer& renderer,
-               const MinimapPlayer& localPlayer,
-               const std::vector<MinimapPlayer>& otherPlayers);
-
-    void setZoomRegion(float worldW, float worldH);
-
-    
-    void setZoomForArrow(int desiredPixelSize, float arrowWorldLen = 20.0f);
-
-    void setArrowPixelSize(int pixels);
+                const MinimapPlayer& localPlayer,
+                const std::vector<MinimapPlayer>& otherPlayers);
 };
 
 #endif

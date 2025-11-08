@@ -1,33 +1,33 @@
 #include "minimap.h"
-#include <iostream>
+
 #include <cmath>
+#include <iostream>
 
-static inline int clampi(int v, int lo, int hi) {
-    return std::max(lo, std::min(v, hi));
-}
+static inline int clampi(int v, int lo, int hi) { return std::max(lo, std::min(v, hi)); }
 
-Minimap::Minimap(int size)
-    : size(size),
-      arrowPixelSize(8),
-      mapWidth(0.0f),
-      mapHeight(0.0f),
-      scaleX(1.0f),
-      scaleY(1.0f),
-      offsetX(0.0f),
-      offsetY(0.0f),
-      zoomPixelWidth(800.0f),
-      zoomPixelHeight(800.0f),
-      viewLeft(0.0f),
-      viewTop(0.0f) {}
+Minimap::Minimap(int size):
+        size(size),
+        arrowPixelSize(8),
+        mapWidth(0.0f),
+        mapHeight(0.0f),
+        scaleX(1.0f),
+        scaleY(1.0f),
+        offsetX(0.0f),
+        offsetY(0.0f),
+        zoomPixelWidth(800.0f),
+        zoomPixelHeight(800.0f),
+        viewLeft(0.0f),
+        viewTop(0.0f) {}
 
 Minimap::~Minimap() = default;
 
 void Minimap::loadMapImage(SDL2pp::Renderer& renderer, const std::string& imagePath) {
     try {
         mapTexture = std::make_unique<SDL2pp::Texture>(renderer, imagePath);
-        mapWidth  = static_cast<float>(mapTexture->GetWidth());
+        mapWidth = static_cast<float>(mapTexture->GetWidth());
         mapHeight = static_cast<float>(mapTexture->GetHeight());
-        std::cout << "Minimap: Loaded map image " << imagePath << " (" << mapWidth << "x" << mapHeight << ")\n";
+        std::cout << "Minimap: Loaded map image " << imagePath << " (" << mapWidth << "x"
+                  << mapHeight << ")\n";
     } catch (const std::exception& e) {
         std::cerr << "Error loading minimap image: " << e.what() << "\n";
         mapTexture = nullptr;
@@ -45,14 +45,16 @@ void Minimap::updateViewport(float playerMapX, float playerMapY) {
         viewLeft = viewTop = 0.0f;
         return;
     }
-    float halfW = zoomPixelWidth  * 0.5f;
+    float halfW = zoomPixelWidth * 0.5f;
     float halfH = zoomPixelHeight * 0.5f;
 
     float left = playerMapX - halfW;
-    float top  = playerMapY - halfH;
+    float top = playerMapY - halfH;
 
-    if (left < 0.0f) left = 0.0f;
-    if (top  < 0.0f) top  = 0.0f;
+    if (left < 0.0f)
+        left = 0.0f;
+    if (top < 0.0f)
+        top = 0.0f;
 
     if (left + zoomPixelWidth > mapWidth)
         left = mapWidth - zoomPixelWidth;
@@ -60,19 +62,21 @@ void Minimap::updateViewport(float playerMapX, float playerMapY) {
         top = mapHeight - zoomPixelHeight;
 
     viewLeft = left;
-    viewTop  = top;
+    viewTop = top;
 }
 
 int Minimap::worldToMinimapX(float serverX) const {
-    if (mapWidth <= 0.0f) return 0;
-    float px = serverX * scaleX + offsetX;          // píxel absoluto del mapa
-    float rel = (px - viewLeft) / zoomPixelWidth;   // normalizado respecto al viewport
+    if (mapWidth <= 0.0f)
+        return 0;
+    float px = serverX * scaleX + offsetX;         // píxel absoluto del mapa
+    float rel = (px - viewLeft) / zoomPixelWidth;  // normalizado respecto al viewport
     int mx = static_cast<int>(rel * size);
     return clampi(mx, 0, size - 1);
 }
 
 int Minimap::worldToMinimapY(float serverY) const {
-    if (mapHeight <= 0.0f) return 0;
+    if (mapHeight <= 0.0f)
+        return 0;
     float py = serverY * scaleY + offsetY;
     float rel = (py - viewTop) / zoomPixelHeight;
     int my = static_cast<int>(rel * size);
@@ -106,12 +110,12 @@ void Minimap::renderCheckpoints(SDL2pp::Renderer& renderer, int nextCheckpointId
 
         bool isNext = (int)i == nextCheckpointId;
         int radius = 4;
-        
+
         if (cp.isFinish) {
             renderer.SetDrawColor(255, 50, 50, 255);  // Red for finish
             radius = isNext ? 7 : 5;
         } else if (i == 0) {
-            renderer.SetDrawColor(0, 255, 0, 255);   // Bright green for first
+            renderer.SetDrawColor(0, 255, 0, 255);  // Bright green for first
             radius = isNext ? 7 : 5;
         } else {
             renderer.SetDrawColor(100, 255, 100, 255);  // Light green for others
@@ -120,13 +124,13 @@ void Minimap::renderCheckpoints(SDL2pp::Renderer& renderer, int nextCheckpointId
 
         SDL_Rect rect{screenMinimapX - radius, screenMinimapY - radius, radius * 2, radius * 2};
         renderer.FillRect(rect);
-        
+
         // Draw stronger border for next checkpoint
         if (isNext) {
             renderer.SetDrawColor(255, 255, 0, 255);  // Yellow for next checkpoint
             for (int j = 0; j < 2; ++j) {
-                SDL_Rect borderRect{screenMinimapX - radius - j, screenMinimapY - radius - j, 
-                                   (radius + j) * 2, (radius + j) * 2};
+                SDL_Rect borderRect{screenMinimapX - radius - j, screenMinimapY - radius - j,
+                                    (radius + j) * 2, (radius + j) * 2};
                 renderer.DrawRect(borderRect);
             }
         } else {
@@ -155,13 +159,9 @@ void Minimap::renderPlayer(SDL2pp::Renderer& renderer, const MinimapPlayer& p, b
 
         int r = arrowPixelSize;
         SDL2pp::Point pts[3] = {
-            SDL2pp::Point(screenMinimapX + int(r * cos_a),
-                          screenMinimapY + int(r * sin_a)),
-            SDL2pp::Point(screenMinimapX - int(r * sin_a),
-                          screenMinimapY + int(r * cos_a)),
-            SDL2pp::Point(screenMinimapX + int(r * sin_a),
-                          screenMinimapY - int(r * cos_a))
-        };
+                SDL2pp::Point(screenMinimapX + int(r * cos_a), screenMinimapY + int(r * sin_a)),
+                SDL2pp::Point(screenMinimapX - int(r * sin_a), screenMinimapY + int(r * cos_a)),
+                SDL2pp::Point(screenMinimapX + int(r * sin_a), screenMinimapY - int(r * cos_a))};
 
         renderer.DrawLines(pts, 3);
         renderer.DrawLine(pts[2], pts[0]);
@@ -177,10 +177,10 @@ void Minimap::renderPlayer(SDL2pp::Renderer& renderer, const MinimapPlayer& p, b
     }
 }
 
-void Minimap::render(SDL2pp::Renderer& renderer,
-                     const MinimapPlayer& localPlayer,
-                     const std::vector<MinimapPlayer>& otherPlayers,
-                     int nextCheckpointId) {
+void Minimap::render(SDL2pp::Renderer& renderer, const MinimapPlayer& localPlayer,
+                     const std::vector<MinimapPlayer>& otherPlayers, int nextCheckpointId) {
+    Uint8 r, g, b, a;
+    renderer.GetDrawColor(r, g, b, a);
     int screenX = renderer.GetOutputWidth() - size - 10;
     int screenY = 10;
 
@@ -193,12 +193,8 @@ void Minimap::render(SDL2pp::Renderer& renderer,
     updateViewport(playerMapX, playerMapY);
 
     if (mapTexture) {
-        SDL_Rect src{
-            int(viewLeft),
-            int(viewTop),
-            int(std::min(zoomPixelWidth,  mapWidth)),
-            int(std::min(zoomPixelHeight, mapHeight))
-        };
+        SDL_Rect src{int(viewLeft), int(viewTop), int(std::min(zoomPixelWidth, mapWidth)),
+                     int(std::min(zoomPixelHeight, mapHeight))};
         SDL_Rect dst{screenX, screenY, size, size};
         renderer.Copy(*mapTexture, src, dst);
     } else {
@@ -208,7 +204,7 @@ void Minimap::render(SDL2pp::Renderer& renderer,
     }
 
     renderCheckpoints(renderer, nextCheckpointId);
-    for (const auto& p : otherPlayers) {
+    for (const auto& p: otherPlayers) {
         renderPlayer(renderer, p, false);
     }
     renderPlayer(renderer, localPlayer, true);
@@ -225,4 +221,5 @@ void Minimap::render(SDL2pp::Renderer& renderer,
                   << "zoom=(" << zoomPixelWidth << "x" << zoomPixelHeight << ") "
                   << "playerMap=(" << playerMapX << "," << playerMapY << ")\n";
     }
+    renderer.SetDrawColor(r, g, b, a);
 }

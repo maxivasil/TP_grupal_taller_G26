@@ -68,6 +68,11 @@ public:
     std::vector<CarSnapshot> getSnapshot() const;
 
     const std::unordered_map<int, float>& getFinishTimes() const;
+
+    // Métodos para cheats
+    void activateInfiniteHealthCheat(int playerId);
+    void forceWinCheat(int playerId);
+    void forceLoseCheat(int playerId);
 };
 
 

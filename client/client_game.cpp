@@ -6,6 +6,9 @@
 #include <SDL_ttf.h>
 #include <unistd.h>
 
+#include "cmd/client_to_server_cheat.h"
+#include "cmd/client_to_server_move.h"
+
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
 
@@ -149,6 +152,21 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
     if (state[SDL_SCANCODE_ESCAPE] || state[SDL_SCANCODE_Q]) {
         return true;
     }
+    
+    // CHEATS
+    if (state[SDL_SCANCODE_LCTRL]) {
+        if (state[SDL_SCANCODE_H]) {
+            client_session.send_command(new ClientToServerCheat(CHEAT_INFINITE_HEALTH));
+            std::cout << "CHEAT: Vida infinita activada\n";
+        } else if (state[SDL_SCANCODE_W]) {
+            client_session.send_command(new ClientToServerCheat(CHEAT_WIN));
+            std::cout << "CHEAT: Victoria automática\n";
+        } else if (state[SDL_SCANCODE_L]) {
+            client_session.send_command(new ClientToServerCheat(CHEAT_LOSE));
+            std::cout << "CHEAT: Derrota automática\n";
+        }
+    }
+    
     if (state[SDL_SCANCODE_RIGHT]) {
         client_session.send_command(new ClientToServerMove(MOVE_RIGHT));
     }

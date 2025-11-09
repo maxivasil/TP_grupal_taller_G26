@@ -1,5 +1,6 @@
 #include "cmd_server_register.h"
 
+#include "client_to_server_cheat.h"
 #include "client_to_server_joinLobby.h"
 #include "client_to_server_move.h"
 #include "client_to_server_readyToStart.h"
@@ -30,6 +31,10 @@ std::unordered_map<uint8_t, std::function<ClientToServerCmd_Server*(const std::v
 
     registry[READY_TO_START_COMMAND] = [](const std::vector<uint8_t>& data, const int client_id) {
         return ClientToServerReady::from_bytes(data, client_id);
+    };
+
+    registry[CHEAT_COMMAND] = [](const std::vector<uint8_t>& data, const int client_id) {
+        return ClientToServerCheat::from_bytes(data, client_id);
     };
 
     return registry;

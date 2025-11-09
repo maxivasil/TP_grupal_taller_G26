@@ -18,6 +18,7 @@
 #define MOVE_COMMAND 0x02
 #define JOIN_COMMAND 0x03
 #define READY_TO_START_COMMAND 0x05
+#define CHEAT_COMMAND 0x06
 
 // Constants for JOIN_COMMAND type
 #define TYPE_JOIN 0
@@ -28,5 +29,10 @@
 #define MOVE_DOWN 0x02
 #define MOVE_LEFT 0x03
 #define MOVE_RIGHT 0x04
+
+// Constants for cheat types
+#define CHEAT_INFINITE_HEALTH 0x01
+#define CHEAT_WIN 0x02
+#define CHEAT_LOSE 0x03
 
 #endif

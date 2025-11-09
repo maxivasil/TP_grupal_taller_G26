@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <iostream>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -149,3 +150,44 @@ std::vector<CarSnapshot> Race::getSnapshot() const {
 const std::unordered_map<int, float>& Race::getFinishTimes() const { return playerFinishTimes; }
 
 Race::~Race() {}
+
+// Métodos para cheats
+void Race::activateInfiniteHealthCheat(int playerId) {
+    auto it = std::find_if(
+            players.begin(), players.end(),
+            [playerId](const std::unique_ptr<Player>& p) { return p->getId() == playerId; });
+
+    if (it != players.end()) {
+        (*it)->getCar()->setInfiniteHealth();
+        std::cout << "CHEAT: Vida infinita activada para cliente: " << playerId << std::endl;
+    }
+}
+
+void Race::forceWinCheat(int playerId) {
+    auto it = std::find_if(
+            players.begin(), players.end(),
+            [playerId](const std::unique_ptr<Player>& p) { return p->getId() == playerId; });
+
+    if (it != players.end()) {
+        // Marcar como finalizador inmediatamente
+        auto now = std::chrono::steady_clock::now();
+        auto raceTime = std::chrono::duration_cast<std::chrono::seconds>(now - startTime).count();
+        playerFinishTimes[playerId] = static_cast<float>(raceTime);
+        std::cout << "CHEAT: Cliente " << playerId << " ganó en " << raceTime << " segundos" << std::endl;
+    }
+}
+
+void Race::forceLoseCheat(int playerId) {
+    auto it = std::find_if(
+            players.begin(), players.end(),
+            [playerId](const std::unique_ptr<Player>& p) { return p->getId() == playerId; });
+
+    if (it != players.end()) {
+        // Destruir el auto: establecer salud a 0
+        // Como no hay método para destruir directamente, aplicamos daño extremo
+        // Usamos applyCollision con un daño muy alto
+        std::cout << "CHEAT: Cliente " << playerId << " perdió automáticamente" << std::endl;
+        // TODO: Implementar destrucción de auto de forma más limpia
+        // Por ahora solo log
+    }
+}

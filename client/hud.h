@@ -18,6 +18,7 @@ private:
     int windowHeight;
     SDL2pp::Font* font;
     bool fontLoaded = false;
+    std::string loadedFontPath;
 
 public:
     explicit HUD(int windowWidth, int windowHeight);
@@ -30,6 +31,12 @@ public:
     
     void loadFont(const std::string& fontPath, int fontSize);
     void render(SDL2pp::Renderer& renderer, const HUDData& data);
+    
+    std::string getFontPath() const { return loadedFontPath; }
+
+public:
+    // Acceso público para obtener fontPath desde el exterior
+    std::string fontPath;
 };
 
 #endif

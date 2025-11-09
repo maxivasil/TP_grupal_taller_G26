@@ -14,6 +14,7 @@ void HUD::loadFont(const std::string& fontPath, int fontSize) {
     try {
         font = new SDL2pp::Font(fontPath, fontSize);
         fontLoaded = true;
+        this->fontPath = fontPath;
         std::cout << "HUD: Font loaded successfully from " << fontPath << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "HUD: Failed to load font: " << e.what() << std::endl;

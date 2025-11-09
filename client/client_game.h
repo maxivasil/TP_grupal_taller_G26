@@ -25,6 +25,8 @@ struct RenderCar {
     bool onBridge;
 };
 
+enum class GameState { PLAYING, WON, LOST };
+
 class Game {
 private:
     ClientSession& client_session;
@@ -54,6 +56,11 @@ private:
     float lastPlayerY = 0.0f;
     Uint32 lastSpeedUpdateTime = 0;
 
+    // Game state
+    GameState gameState = GameState::PLAYING;
+    std::string endGameMessage = "";
+    Uint32 endGameTime = 0;
+
     SDL_Rect src;
     SDL_Rect dst;
 
@@ -64,6 +71,12 @@ private:
     bool update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapshot);
 
     void render(SDL2pp::Renderer& renderer);
+
+    void renderEndGameScreen(SDL2pp::Renderer& renderer);
+
+    void setWon();
+
+    void setLost();
 
 public:
     explicit Game(ClientSession& client_session);

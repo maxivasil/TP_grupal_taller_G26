@@ -5,6 +5,7 @@
 
 #include <SDL_ttf.h>
 #include <unistd.h>
+#include <SDL2pp/SDL2pp.hh>
 
 #include "cmd/client_to_server_cheat.h"
 #include "cmd/client_to_server_move.h"
@@ -161,9 +162,11 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
         } else if (state[SDL_SCANCODE_W]) {
             client_session.send_command(new ClientToServerCheat(CHEAT_WIN));
             std::cout << "CHEAT: Victoria automática\n";
+            setWon();
         } else if (state[SDL_SCANCODE_L]) {
             client_session.send_command(new ClientToServerCheat(CHEAT_LOSE));
             std::cout << "CHEAT: Derrota automática\n";
+            setLost();
         }
     }
     
@@ -344,6 +347,11 @@ void Game::render(SDL2pp::Renderer& renderer) {
     hudData.raceTime = (SDL_GetTicks() / 1000.0f) - raceStartTime;
     hud.render(renderer, hudData);
 
+    // Render end game screen if game is over
+    if (gameState != GameState::PLAYING) {
+        renderEndGameScreen(renderer);
+    }
+
     renderer.Present();
 }
 
@@ -365,3 +373,72 @@ void Game::init_textures(SDL2pp::Renderer& renderer) {
 void Game::update_snapshots(const std::vector<CarSnapshot>& snapshots) {
     this->snapshots = snapshots;
 }
+
+void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
+    int width = renderer.GetOutputWidth();
+    int height = renderer.GetOutputHeight();
+
+    // Crear un rectángulo semi-transparente como fondo
+    SDL_Rect bgRect = {0, 0, width, height};
+    renderer.SetDrawColor(0, 0, 0, 200);
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.FillRect(bgRect);
+
+    // Restaurar blend mode normal
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+
+    // Título
+    SDL2pp::Font titleFont(hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+                                                 : hud.fontPath,
+                           48);
+    SDL_Color titleColor;
+    std::string titleText;
+
+    if (gameState == GameState::WON) {
+        titleColor = {0, 255, 0, 255};
+        titleText = "GANASTE!";
+    } else {
+        titleColor = {255, 0, 0, 255};
+        titleText = "GAME OVER";
+    }
+
+    auto titleSurface = titleFont.RenderText_Solid(titleText, titleColor);
+    SDL2pp::Texture titleTexture(renderer, titleSurface);
+
+    int titleX = (width - titleTexture.GetWidth()) / 2;
+    int titleY = height / 4;
+    SDL_Rect titleRect = {titleX, titleY, titleTexture.GetWidth(), titleTexture.GetHeight()};
+    renderer.Copy(titleTexture, SDL2pp::NullOpt, titleRect);
+
+    // Mensaje adicional
+    SDL2pp::Font msgFont(hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+                                               : hud.fontPath,
+                         24);
+    SDL_Color msgColor = {255, 255, 255, 255};
+
+    std::string msgText;
+    msgText = "Presiona ESC para volver al lobby";
+
+    auto msgSurface = msgFont.RenderText_Solid(msgText, msgColor);
+    SDL2pp::Texture msgTexture(renderer, msgSurface);
+
+    int msgX = (width - msgTexture.GetWidth()) / 2;
+    int msgY = height / 2;
+    SDL_Rect msgRect = {msgX, msgY, msgTexture.GetWidth(), msgTexture.GetHeight()};
+    renderer.Copy(msgTexture, SDL2pp::NullOpt, msgRect);
+}
+
+void Game::setWon() {
+    gameState = GameState::WON;
+    endGameMessage = "¡GANASTE!";
+    endGameTime = SDL_GetTicks();
+    std::cout << "¡VICTORIA! Presiona ESC para volver al lobby\n";
+}
+
+void Game::setLost() {
+    gameState = GameState::LOST;
+    endGameMessage = "GAME OVER";
+    endGameTime = SDL_GetTicks();
+    std::cout << "DERROTA. Presiona ESC para volver al lobby\n";
+}
+

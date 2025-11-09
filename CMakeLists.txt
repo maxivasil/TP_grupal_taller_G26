@@ -113,7 +113,12 @@ endif()
 # ---------------
 if(TALLER_CLIENT)
     # Qt5Widgets es opcional - comentado para no bloquear compilación
-    # find_package(Qt5Widgets)
+    find_package(Qt5Widgets)
+    set(CMAKE_AUTOUIC ON)
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTORCC ON)
+    find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
     add_executable(taller_client)

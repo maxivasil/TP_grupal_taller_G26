@@ -11,6 +11,8 @@ target_sources(taller_client
     client_sender.cpp
     session.cpp
     minimap.cpp
+    UI/resources.qrc
+    UI/mainwindow.cpp
     PUBLIC
     # .h files
     camera.h
@@ -20,9 +22,11 @@ target_sources(taller_client
     client_sender.h
     session.h
     minimap.h
+    UI/mainwindow.h
     )
 
 target_link_libraries(taller_client 
     PRIVATE 
         client_cmd
+        Qt${QT_VERSION_MAJOR}::Widgets
     )

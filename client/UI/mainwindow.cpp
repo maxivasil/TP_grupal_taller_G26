@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
 	setFixedSize(width, height);
 	move((screenSize.width() - width)/2, (screenSize.height() - height)/2);
 
-	QPixmap bg(":/new/prefix1/Background.png");
+    QPixmap bg(":/new/prefix1/Assets/Background.png");
 	bg = bg.scaled(this->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
 
 	QPalette palette;

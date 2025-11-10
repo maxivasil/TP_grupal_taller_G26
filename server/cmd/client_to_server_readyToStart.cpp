@@ -9,6 +9,13 @@ ClientToServerReady::ClientToServerReady(int client_id, std::string car): Client
 void ClientToServerReady::execute(ServerContext& ctx) {
     std::cout << "Cliente con id: " << client_id << " está listo para comenzar la carrera con el auto " << car
               << std::endl;
+    
+    // Store the selected car in the lobby
+    if (ctx.lobby) {
+        ctx.lobby->clientCarSelection[client_id] = car;
+        std::cout << "Auto guardado para cliente " << client_id << ": " << car << std::endl;
+    }
+    
     if (!ctx.inLobby || !*(ctx.inLobby) || !ctx.clientsReady) {
         return;
     }

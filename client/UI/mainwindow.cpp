@@ -6,6 +6,7 @@
 #include <QResizeEvent>
 #include <QScreen>
 #include <QGuiApplication>
+#include <iostream>
 #include "../cmd/client_to_server_readyToStart.h"
 
 MainWindow::MainWindow(ClientSession& client_session, QWidget *parent)
@@ -46,6 +47,7 @@ void MainWindow::selector(){
 	QPushButton* senderButton = qobject_cast<QPushButton*>(sender());
 	QLabel* labelOut = findChild<QLabel*>("intro_text");
 	QString carName = senderButton->property("car_name").toString();
+	std::cout << "Client selecting car: " << carName.toStdString() << std::endl;
 	client_session.send_command(new ClientToServerReady(carName.toStdString()));
 	labelOut->setText("Has seleccionado un " + carName + "\n\n Esperando al resto de jugadores...");
 }

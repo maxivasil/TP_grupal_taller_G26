@@ -13,6 +13,7 @@ struct ServerContext {
     class ServerClientHandler* client;
     bool* inLobby;
     std::set<int>* clientsReady;
+    struct Lobby* lobby;  // Pointer to the current lobby for car selection storage
 };
 
 // Aquí van las definiciones de comandos del cliente al servidor

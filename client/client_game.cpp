@@ -51,6 +51,8 @@ int Game::start() {
 
         if (it != font_paths.end()) {
             hud.loadFont(*it, 18);
+            // Also pass the font to hints for cardinal labels
+            hints.setHUDFont(new SDL2pp::Font(*it, 12), *it);
         }
 
         std::vector<std::string> map_paths = {
@@ -204,7 +206,8 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
             // Asumir que tenemos checkpoints en (8.9, 106.5) -> (120.0, 106.5)
             float checkpointX = (currentCheckpoint == 0) ? 8.9f : 120.0f;
             float checkpointY = 106.5f;
-            hints.updateHint(it->pos_x, it->pos_y, checkpointX, checkpointY);
+            // Pass player heading for camera-relative needle
+            hints.updateHint(it->pos_x, it->pos_y, checkpointX, checkpointY, it->angle);
             
             // Detectar si pasamos el checkpoint (distancia < radio de 5 unidades)
             float dx = checkpointX - it->pos_x;

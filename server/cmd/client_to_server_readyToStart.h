@@ -5,6 +5,7 @@
 #include <string>
 
 #include "../../common/constants.h"
+#include "../Lobby.h"
 
 #include "cmd_base_server.h"
 

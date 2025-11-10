@@ -51,9 +51,9 @@ target_include_directories(taller_common PUBLIC .)
 # sudo apt-get install libopus-dev libopusfile-dev libxmp-dev libfluidsynth-dev fluidsynth libwavpack1 libwavpack-dev libfreetype-dev wavpack sudo apt install qtbase5-dev qtbase5-dev-tools qtchooser qt5-qmake qttools5-dev qttools5-dev-tools
 #
 
-# Install libSDL2 and libSDL2pp (for client or editor)
+# Install libSDL2 and libSDL2pp (for client)
 # HEY!! TODO XXX: add more dependendies (either for client, server or editor)
-if(TALLER_CLIENT OR TALLER_EDITOR)
+if(TALLER_CLIENT)
     include(FetchContent)
     FetchContent_Declare(
         SDL2
@@ -191,11 +191,19 @@ if(TALLER_SERVER)
 endif()
 
 if(TALLER_EDITOR)
+    # Qt5Widgets es opcional - comentado para no bloquear compilación
+    find_package(Qt5Widgets)
+    set(CMAKE_AUTOUIC ON)
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTORCC ON)
+    find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+    
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
     add_executable(taller_editor)
 
     # Make them depend on taller_common lib
-    add_dependencies(taller_editor taller_common SDL2pp::SDL2pp)
+    add_dependencies(taller_editor taller_common)
 
     # Add source files and enable warnings
     # HEY!! TODO XXX: add more subfolders here
@@ -203,11 +211,8 @@ if(TALLER_EDITOR)
 
     set_project_warnings(taller_editor ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
-    # add libSDL2pp's headers
-    target_include_directories(taller_editor PRIVATE ${libSDL2pp_SOURCE_DIR})
-
     # Link the taller_common lib target
-    target_link_libraries(taller_editor taller_common SDL2pp::SDL2pp)
+    target_link_libraries(taller_editor taller_common Qt${QT_VERSION_MAJOR}::Widgets)
 endif()
 
 

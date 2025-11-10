@@ -21,7 +21,8 @@ Game::Game(ClientSession& client_session):
         client_session(client_session),
         camera(WINDOW_WIDTH, WINDOW_HEIGHT),
         minimap(150),
-        hud(WINDOW_WIDTH, WINDOW_HEIGHT) {
+        hud(WINDOW_WIDTH, WINDOW_HEIGHT),
+        hints(WINDOW_WIDTH, WINDOW_HEIGHT) {
     raceStartTime = SDL_GetTicks() / 1000.0f;  // Iniciar timer de carrera
 }
 
@@ -197,6 +198,30 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
         float worldX = (it->pos_x * 62) / 8.9;
         float worldY = (it->pos_y * 24) / 3.086;
         camera.follow(worldX, worldY);
+        
+        // Actualizar hints hacia el próximo checkpoint
+        if (currentCheckpoint < totalCheckpoints) {
+            // Asumir que tenemos checkpoints en (8.9, 106.5) -> (120.0, 106.5)
+            float checkpointX = (currentCheckpoint == 0) ? 8.9f : 120.0f;
+            float checkpointY = 106.5f;
+            hints.updateHint(it->pos_x, it->pos_y, checkpointX, checkpointY);
+            
+            // Detectar si pasamos el checkpoint (distancia < radio de 5 unidades)
+            float dx = checkpointX - it->pos_x;
+            float dy = checkpointY - it->pos_y;
+            float distToCheckpoint = std::sqrt(dx * dx + dy * dy);
+            
+            const float CHECKPOINT_RADIUS = 5.0f; // Radio de detección
+            if (distToCheckpoint < CHECKPOINT_RADIUS && currentCheckpoint == 0) {
+                // Pasamos el checkpoint de salida, ir al siguiente
+                currentCheckpoint = 1;
+                std::cout << "Checkpoint cruzado: " << currentCheckpoint << std::endl;
+            } else if (distToCheckpoint < CHECKPOINT_RADIUS && currentCheckpoint == 1) {
+                // Completamos la carrera - llamar al cheat de victoria automático
+                std::cout << "Carrera completada!" << std::endl;
+                setWon();
+            }
+        }
     }
 
     int texW = textures[0]->GetWidth();
@@ -346,6 +371,15 @@ void Game::render(SDL2pp::Renderer& renderer) {
     hudData.checkpointTotal = totalCheckpoints;
     hudData.raceTime = (SDL_GetTicks() / 1000.0f) - raceStartTime;
     hud.render(renderer, hudData);
+
+    // Render hints (directional arrow to checkpoint)
+    if (!snapshots.empty()) {
+        auto it = std::find_if(snapshots.begin(), snapshots.end(),
+                               [&](const CarSnapshot& car) { return car.id == client_id; });
+        if (it != snapshots.end()) {
+            hints.render(renderer);
+        }
+    }
 
     // Render end game screen if game is over
     if (gameState != GameState::PLAYING) {

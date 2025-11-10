@@ -2,7 +2,6 @@
 
 //
 #include "cmd/client_to_server_lobby.h"
-#include "cmd/client_to_server_readyToStart.h"
 //
 
 ClientSession::ClientSession(const char* hostname, const char* servname,
@@ -21,9 +20,6 @@ void ClientSession::run() {
         auto cmd = std::make_unique<ClientToServerLobby>(std::string("ABCDEF"), true);
         auto data = cmd->to_bytes();
         protocol.send_message(data);
-        auto cmd_ = std::make_unique<ClientToServerReady>();
-        auto data_ = cmd_->to_bytes();
-        protocol.send_message(data_);
         //
         receiver.start();
         sender.start();

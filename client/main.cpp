@@ -15,15 +15,15 @@ int main(int argc, const char* argv[]) {
             std::cerr << "Bad program call. Expected " << argv[0] << " <hostname> <servicename>\n";
             return ret;
         }
-        QApplication a(argc, nullptr);
-	    MainWindow w;
-	    w.show();
-        a.exec();
         const char* hostname = argv[1];
         const char* servname = argv[2];
         Queue<ServerToClientCmd_Client*> recv_queue(UINT32_MAX);
         ClientSession session(hostname, servname, recv_queue);
         session.start();
+        QApplication menu_display(argc, nullptr);
+	    MainWindow selector_window(session);
+	    selector_window.show();
+        menu_display.exec();
         Game game(session);
         game.start();
         session.stop();

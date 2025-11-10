@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "../session.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -14,11 +15,13 @@ class MainWindow : public QMainWindow {
 	Q_OBJECT
 
     private:
+	ClientSession& client_session;
 	Ui::MainWindow *ui;
+
 	void selector();
 
     public:
-	MainWindow(QWidget *parent = nullptr);
+	MainWindow(ClientSession& client_session, QWidget *parent = nullptr);
 	~MainWindow();
 
 	void connectEvents();

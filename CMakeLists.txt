@@ -149,7 +149,8 @@ if(TALLER_CLIENT)
             SDL2pp::SDL2pp 
             SDL2_mixer::SDL2_mixer
             SDL2_ttf::SDL2_ttf
-            yaml-cpp)
+            yaml-cpp
+            Qt${QT_VERSION_MAJOR}::Widgets)
 endif()
 
 if(TALLER_SERVER)

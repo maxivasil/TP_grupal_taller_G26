@@ -11,6 +11,7 @@ target_sources(taller_client
     client_sender.cpp
     session.cpp
     minimap.cpp
+    hud.cpp
     UI/resources.qrc
     UI/mainwindow.cpp
     PUBLIC
@@ -22,6 +23,7 @@ target_sources(taller_client
     client_sender.h
     session.h
     minimap.h
+    hud.h
     UI/mainwindow.h
     )
 

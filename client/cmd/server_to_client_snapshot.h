@@ -16,6 +16,7 @@ struct CarSnapshot {
     float health;
     float speed;
     float angle;
+    bool onBridge;
 };
 
 class ServerToClientSnapshot: public ServerToClientCmd_Client {

@@ -3,7 +3,12 @@
 #include <cmath>
 #include <filesystem>
 
+#include <SDL_ttf.h>
 #include <unistd.h>
+#include <SDL2pp/SDL2pp.hh>
+
+#include "cmd/client_to_server_cheat.h"
+#include "cmd/client_to_server_move.h"
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
@@ -13,34 +18,17 @@
 #define DATA_PATH "assets/"
 
 Game::Game(ClientSession& client_session):
-        client_session(client_session), camera(WINDOW_WIDTH, WINDOW_HEIGHT), minimap(150) {
-    // Try to load city data from multiple paths
-    std::vector<std::string> paths = {
-        "cities/liberty_city.yaml",
-        "../cities/liberty_city.yaml",
-        "../../cities/liberty_city.yaml",
-    };
-    
-    bool loaded = false;
-    for (const auto& path : paths) {
-        if (std::filesystem::exists(path)) {
-            std::cout << "Loading minimap from: " << path << std::endl;
-            minimap.loadCityData(path);
-            loaded = true;
-            break;
-        }
-    }
-    
-    if (!loaded) {
-        std::cerr << "ERROR: Could not find cities/liberty_city.yaml in any standard location\n";
-        std::cerr << "Current working directory: " << std::filesystem::current_path() << std::endl;
-    }
-    minimap.setZoomForArrow(8, 20.0f);
+        client_session(client_session),
+        camera(WINDOW_WIDTH, WINDOW_HEIGHT),
+        minimap(150),
+        hud(WINDOW_WIDTH, WINDOW_HEIGHT) {
+    raceStartTime = SDL_GetTicks() / 1000.0f;  // Iniciar timer de carrera
 }
 
 int Game::start() {
     try {
         SDL2pp::SDL sdl(SDL_INIT_VIDEO);
+        TTF_Init();  // Initialize SDL2_ttf
 
         std::string titulo = "NFS-2D";
 
@@ -49,6 +37,43 @@ int Game::start() {
 
         SDL2pp::Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         init_textures(renderer);
+
+        // Load HUD font
+        std::vector<std::string> font_paths = {
+                "assets/fonts/arial.ttf",
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        };
+
+        auto it = std::find_if(font_paths.begin(), font_paths.end(),
+                               [](const auto& path) { return std::filesystem::exists(path); });
+
+        if (it != font_paths.end()) {
+            hud.loadFont(*it, 18);
+        }
+
+        std::vector<std::string> map_paths = {
+                "assets/cities/Liberty_City.png",
+                "../assets/cities/Liberty_City.png",
+                "../../assets/cities/Liberty_City.png",
+        };
+
+        auto it2 = std::find_if(map_paths.begin(), map_paths.end(),
+                                [](const auto& path) { return std::filesystem::exists(path); });
+
+        if (it2 != map_paths.end()) {
+            std::cout << "Loading minimap from: " << *it2 << std::endl;
+            minimap.loadMapImage(renderer, *it2);
+            minimap.setWorldScale(62.0f / 8.9f, 24.0f / 3.086f);
+            minimap.setZoomPixels(900.0f, 900.0f);
+        }
+
+        // Set up checkpoints for the race (Liberty City circuit)
+        std::vector<RaceCheckpoint> checkpoints = {
+                {0, 8.9f, 106.5f, 6.0f, 6.0f, false},   // Start checkpoint
+                {1, 120.0f, 106.5f, 6.0f, 6.0f, true},  // Finish line
+        };
+        minimap.setCheckpoints(checkpoints);
 
         auto t1 = SDL_GetTicks();
         auto rate = FPS;
@@ -107,36 +132,57 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
-
             case SDL_QUIT:
                 return true;
-
             case SDL_WINDOWEVENT:
                 if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
                     camera.setDimensions(renderer.GetOutputWidth(), renderer.GetOutputHeight());
                 }
-        }
-        const Uint8* state = SDL_GetKeyboardState(NULL);
-        if (state[SDL_SCANCODE_ESCAPE] || state[SDL_SCANCODE_Q]) {
-            return true;
-        }
-        if (state[SDL_SCANCODE_RIGHT]) {
-            client_session.send_command(new ClientToServerMove(MOVE_RIGHT));
-        }
-        if (state[SDL_SCANCODE_LEFT]) {
-            client_session.send_command(new ClientToServerMove(MOVE_LEFT));
-        }
-        if (state[SDL_SCANCODE_UP]) {
-            client_session.send_command(new ClientToServerMove(MOVE_UP));
-        }
-        if (state[SDL_SCANCODE_DOWN]) {
-            client_session.send_command(new ClientToServerMove(MOVE_DOWN));
-        }
-        if (state[SDL_SCANCODE_M]) {
-            showMinimap = !showMinimap;
-            std::cout << "Minimap: " << (showMinimap ? "ON" : "OFF") << "\n";
+                break;
+            case SDL_KEYDOWN:
+                if (event.key.keysym.sym == SDLK_m) {
+                    showMinimap = !showMinimap;
+                    std::cout << "Minimap: " << (showMinimap ? "ON" : "OFF") << "\n";
+                }
+                break;
         }
     }
+
+    const Uint8* state = SDL_GetKeyboardState(NULL);
+
+    if (state[SDL_SCANCODE_ESCAPE] || state[SDL_SCANCODE_Q]) {
+        return true;
+    }
+    
+    // CHEATS
+    if (state[SDL_SCANCODE_LCTRL]) {
+        if (state[SDL_SCANCODE_H]) {
+            client_session.send_command(new ClientToServerCheat(CHEAT_INFINITE_HEALTH));
+            std::cout << "CHEAT: Vida infinita activada\n";
+        } else if (state[SDL_SCANCODE_W]) {
+            client_session.send_command(new ClientToServerCheat(CHEAT_WIN));
+            std::cout << "CHEAT: Victoria automática\n";
+            setWon();
+        } else if (state[SDL_SCANCODE_L]) {
+            client_session.send_command(new ClientToServerCheat(CHEAT_LOSE));
+            std::cout << "CHEAT: Derrota automática\n";
+            setLost();
+        }
+    }
+    
+    if (state[SDL_SCANCODE_RIGHT]) {
+        client_session.send_command(new ClientToServerMove(MOVE_RIGHT));
+    }
+    if (state[SDL_SCANCODE_LEFT]) {
+        client_session.send_command(new ClientToServerMove(MOVE_LEFT));
+    }
+    if (state[SDL_SCANCODE_UP]) {
+        client_session.send_command(new ClientToServerMove(MOVE_UP));
+    }
+    if (state[SDL_SCANCODE_DOWN]) {
+        client_session.send_command(new ClientToServerMove(MOVE_DOWN));
+    }
+
     return false;
 }
 
@@ -183,6 +229,7 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
         if (car.id == client_id) {
             camera.follow(worldX, worldY);
         }
+        rc.onBridge = car.onBridge;
         carsToRender.push_back(rc);
     }
 
@@ -194,39 +241,42 @@ void Game::render(SDL2pp::Renderer& renderer) {
 
     renderer.Copy(*textures[0], src, dst);
     for (const auto& rc: carsToRender) {
-        renderer.Copy(*textures[1], rc.src, rc.dst, rc.angle, SDL2pp::NullOpt, SDL_FLIP_NONE);
+        if (!rc.onBridge) {
+            renderer.Copy(*textures[1], rc.src, rc.dst, rc.angle, SDL2pp::NullOpt, SDL_FLIP_NONE);
+        }
+    }
+    renderer.Copy(*textures[2], src, dst);
+    for (const auto& rc: carsToRender) {
+        if (rc.onBridge) {
+            renderer.Copy(*textures[1], rc.src, rc.dst, rc.angle, SDL2pp::NullOpt, SDL_FLIP_NONE);
+        }
     }
 
-    // Render minimap
     auto it = std::find_if(snapshots.begin(), snapshots.end(),
                            [&](const CarSnapshot& car) { return car.id == client_id; });
-    
+
     MinimapPlayer localPlayer;
     std::vector<MinimapPlayer> otherPlayers;
-    
-    static int debugFrameCount = 0;
+
     if (it != snapshots.end()) {
-        // Tenemos datos reales del servidor
-        float worldX = (it->pos_x * 62) / 8.9;
-        float worldY = (it->pos_y * 24) / 3.086;
-        
-        localPlayer.x = worldX;
-        localPlayer.y = worldY;
+        float serverX = it->pos_x;
+        float serverY = it->pos_y;
+
+        std::cout << "SERVER: pos=(" << serverX << ", " << serverY << ")" << std::endl;
+
+
+        localPlayer.x = serverX;
+        localPlayer.y = serverY;
         localPlayer.angle = it->angle;
         localPlayer.playerId = client_id;
         localPlayer.health = it->health;
         localPlayer.isLocal = true;
-        
-        if (debugFrameCount++ % 60 == 0) {
-            std::cout << "DEBUG: Player at world (" << worldX << ", " << worldY << ")" << std::endl;
-        }
-        
-        // Otros jugadores
-        for (const auto& car : snapshots) {
+
+        for (const auto& car: snapshots) {
             if (car.id != client_id) {
                 MinimapPlayer mp;
-                mp.x = (car.pos_x * 62) / 8.9;
-                mp.y = (car.pos_y * 24) / 3.086;
+                mp.x = car.pos_x;  // Coordenadas del servidor
+                mp.y = car.pos_y;  // Ajuste si es necesario
                 mp.angle = car.angle;
                 mp.playerId = car.id;
                 mp.health = car.health;
@@ -239,24 +289,67 @@ void Game::render(SDL2pp::Renderer& renderer) {
         // Esto permite ver el minimap funcionando aunque no haya datos del servidor
         testPlayerX += 2.0f;
         testPlayerY += 1.5f;
-        testPlayerAngle += 5.0f;  // Rotar constantemente
-        
-        // Wrap around si llega al borde
-        if (testPlayerX > 700.0f) testPlayerX = 0.0f;
-        if (testPlayerY > 600.0f) testPlayerY = 0.0f;
-        if (testPlayerAngle >= 360.0f) testPlayerAngle = 0.0f;
-        
+        testPlayerAngle += 5.0f;
+        if (testPlayerX > 700.0f)
+            testPlayerX = 0.0f;
+        if (testPlayerY > 600.0f)
+            testPlayerY = 0.0f;
+        if (testPlayerAngle >= 360.0f)
+            testPlayerAngle = 0.0f;
+
         localPlayer.x = testPlayerX;
         localPlayer.y = testPlayerY;
-        localPlayer.angle = testPlayerAngle;  // IMPORTANTE: usar ángulo dinámico
+        localPlayer.angle = testPlayerAngle;
         localPlayer.playerId = 0;
         localPlayer.health = 100.0f;
         localPlayer.isLocal = true;
     }
-    
-    // Render minimap solo si está habilitado (presiona M para toggle)
+
     if (showMinimap) {
-        minimap.render(renderer, localPlayer, otherPlayers);
+        minimap.render(renderer, localPlayer, otherPlayers, currentCheckpoint);
+    }
+
+    // Render HUD
+    HUDData hudData;
+    hudData.speed = 0.0f;  // Default to 0 if no local player
+    hudData.health = 100.0f;
+
+    // Use the first car's data (assumed to be the local player)
+    if (!snapshots.empty()) {
+        hudData.health = snapshots[0].health;
+
+        // Calculate speed from position change if server speed is 0
+        if (snapshots[0].speed > 0.0f) {
+            hudData.speed = snapshots[0].speed;
+        } else {
+            // Client-side speed calculation based on position delta
+            Uint32 currentTime = SDL_GetTicks();
+            if (lastSpeedUpdateTime > 0) {
+                float timeDelta =
+                        (currentTime - lastSpeedUpdateTime) / 1000.0f;  // Convert to seconds
+                if (timeDelta > 0.0f) {
+                    float posX = snapshots[0].pos_x;
+                    float posY = snapshots[0].pos_y;
+                    float dx = posX - lastPlayerX;
+                    float dy = posY - lastPlayerY;
+                    float distance = std::sqrt(dx * dx + dy * dy);
+                    hudData.speed = distance / timeDelta;  // units per second
+                }
+            }
+            lastPlayerX = snapshots[0].pos_x;
+            lastPlayerY = snapshots[0].pos_y;
+            lastSpeedUpdateTime = currentTime;
+        }
+    }
+
+    hudData.checkpointCurrent = currentCheckpoint;
+    hudData.checkpointTotal = totalCheckpoints;
+    hudData.raceTime = (SDL_GetTicks() / 1000.0f) - raceStartTime;
+    hud.render(renderer, hudData);
+
+    // Render end game screen if game is over
+    if (gameState != GameState::PLAYING) {
+        renderEndGameScreen(renderer);
     }
 
     renderer.Present();
@@ -272,8 +365,80 @@ void Game::init_textures(SDL2pp::Renderer& renderer) {
                             true,
                             SDL_MapRGB(SDL2pp::Surface(DATA_PATH "cars/Cars.png").Get()->format,
                                        163, 163, 13)));
+    textures[2] = std::make_shared<SDL2pp::Texture>(
+            renderer,
+            SDL2pp::Surface(DATA_PATH "cities/Liberty_City_bridges.png").SetColorKey(true, 0));
 }
 
 void Game::update_snapshots(const std::vector<CarSnapshot>& snapshots) {
     this->snapshots = snapshots;
 }
+
+void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
+    int width = renderer.GetOutputWidth();
+    int height = renderer.GetOutputHeight();
+
+    // Crear un rectángulo semi-transparente como fondo
+    SDL_Rect bgRect = {0, 0, width, height};
+    renderer.SetDrawColor(0, 0, 0, 200);
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.FillRect(bgRect);
+
+    // Restaurar blend mode normal
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+
+    // Título
+    SDL2pp::Font titleFont(hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+                                                 : hud.fontPath,
+                           48);
+    SDL_Color titleColor;
+    std::string titleText;
+
+    if (gameState == GameState::WON) {
+        titleColor = {0, 255, 0, 255};
+        titleText = "GANASTE!";
+    } else {
+        titleColor = {255, 0, 0, 255};
+        titleText = "GAME OVER";
+    }
+
+    auto titleSurface = titleFont.RenderText_Solid(titleText, titleColor);
+    SDL2pp::Texture titleTexture(renderer, titleSurface);
+
+    int titleX = (width - titleTexture.GetWidth()) / 2;
+    int titleY = height / 4;
+    SDL_Rect titleRect = {titleX, titleY, titleTexture.GetWidth(), titleTexture.GetHeight()};
+    renderer.Copy(titleTexture, SDL2pp::NullOpt, titleRect);
+
+    // Mensaje adicional
+    SDL2pp::Font msgFont(hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+                                               : hud.fontPath,
+                         24);
+    SDL_Color msgColor = {255, 255, 255, 255};
+
+    std::string msgText;
+    msgText = "Presiona ESC para volver al lobby";
+
+    auto msgSurface = msgFont.RenderText_Solid(msgText, msgColor);
+    SDL2pp::Texture msgTexture(renderer, msgSurface);
+
+    int msgX = (width - msgTexture.GetWidth()) / 2;
+    int msgY = height / 2;
+    SDL_Rect msgRect = {msgX, msgY, msgTexture.GetWidth(), msgTexture.GetHeight()};
+    renderer.Copy(msgTexture, SDL2pp::NullOpt, msgRect);
+}
+
+void Game::setWon() {
+    gameState = GameState::WON;
+    endGameMessage = "¡GANASTE!";
+    endGameTime = SDL_GetTicks();
+    std::cout << "¡VICTORIA! Presiona ESC para volver al lobby\n";
+}
+
+void Game::setLost() {
+    gameState = GameState::LOST;
+    endGameMessage = "GAME OVER";
+    endGameTime = SDL_GetTicks();
+    std::cout << "DERROTA. Presiona ESC para volver al lobby\n";
+}
+

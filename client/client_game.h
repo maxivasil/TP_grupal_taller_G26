@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <SDL2/SDL.h>
@@ -15,6 +16,7 @@
 
 #include "camera.h"
 #include "checkpoint_arrow.h"
+#include "collision_explosion.h"
 #include "hud.h"
 #include "minimap.h"
 #include "session.h"
@@ -38,6 +40,7 @@ private:
     Minimap minimap;
     HUD hud;
     CheckpointArrow arrow;
+    CollisionExplosion explosion;
     std::map<int, std::shared_ptr<SDL2pp::Texture>> textures;
 
     std::vector<CarSnapshot> snapshots;
@@ -56,6 +59,12 @@ private:
     
     // Checkpoints for the race
     std::vector<RaceCheckpoint> trackCheckpoints;
+
+    // Collision tracking (to detect transition from no collision to collision)
+    std::unordered_map<int, bool> previousCollisionState;
+
+    // Health tracking (to detect when player takes damage)
+    std::unordered_map<int, float> previousHealthState;
 
     // Speed calculation (client-side)
     float lastPlayerX = 0.0f;

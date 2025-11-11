@@ -89,11 +89,14 @@ int Game::start() {
 
         auto t1 = SDL_GetTicks();
         auto rate = FPS;
+        Uint32 prevTime = t1;
 
         Queue<ServerToClientCmd_Client*>& recv_queue = client_session.get_recv_queue();
 
         while (true) {
-            t1 = SDL_GetTicks();  // t1 guarda el tiempo actual en milisegundos
+            t1 = SDL_GetTicks();
+            float deltaTime = (t1 - prevTime) / 1000.0f;
+            prevTime = t1;
 
             if (handleEvents(renderer)) {
                 return 0;
@@ -116,6 +119,9 @@ int Game::start() {
                     cmd->execute(ctx);
                 }
             }
+
+            // Update explosion animation
+            explosion.update(deltaTime);
 
             render(renderer);
 
@@ -210,6 +216,14 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
     ClientContext ctx = {.game = this, .mainwindow = nullptr};
     cmd_snapshot.execute(ctx);
 
+    // Pre-calculate camera and scale parameters needed for explosions
+    int texW = textures[0]->GetWidth();
+    int texH = textures[0]->GetHeight();
+    src = camera.getSrcRect(texW, texH);
+    
+    dst = {0, 0, renderer.GetOutputWidth(), renderer.GetOutputHeight()};
+    float scale = float(dst.w) / float(src.w);
+
     auto it = std::find_if(snapshots.begin(), snapshots.end(),
                            [&](const CarSnapshot& car) { return car.id == client_id; });
 
@@ -217,6 +231,24 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
         float worldX = (it->pos_x * 62) / 8.9;
         float worldY = (it->pos_y * 24) / 3.086;
         camera.follow(worldX, worldY);
+
+        // Detect health loss (damage taken)
+        float previousHealth = previousHealthState[it->id];
+        
+        // Initialize health on first frame
+        if (previousHealth == 0.0f && it->health > 0.0f) {
+            previousHealth = it->health;  // First time, set as baseline
+        }
+        
+        // Check if health decreased (damage taken)
+        if (it->health < previousHealth && previousHealth > 0.0f) {
+            // Health decreased - player took damage!
+            // Pass camera and scale info for proper coordinate transformation
+            explosion.trigger(worldX, worldY, src.x, src.y, scale);
+            std::cout << "[DAMAGE] Car " << (int)it->id << " took damage! Health: " 
+                      << it->health << " (was " << previousHealth << ")" << std::endl;
+        }
+        previousHealthState[it->id] = it->health;
 
         // Actualizar flecha hacia el próximo checkpoint
         if (currentCheckpoint < totalCheckpoints) {
@@ -250,17 +282,9 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
         }
     }
 
-    int texW = textures[0]->GetWidth();
-    int texH = textures[0]->GetHeight();
-    src = camera.getSrcRect(texW, texH);
-
-    dst = {0, 0, renderer.GetOutputWidth(), renderer.GetOutputHeight()};
-
     // Sprite del primer auto verde
     int carW = 28;
     int carH = 22;
-
-    float scale = float(dst.w) / float(src.w);
 
     for (const auto& car: snapshots) {
         float worldX = (car.pos_x * 62) / 8.9;
@@ -359,6 +383,9 @@ void Game::render(SDL2pp::Renderer& renderer) {
     if (showMinimap) {
         minimap.render(renderer, localPlayer, otherPlayers, currentCheckpoint);
     }
+
+    // Render explosion particles
+    explosion.render(renderer);
 
     // Render HUD
     HUDData hudData;

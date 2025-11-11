@@ -14,6 +14,7 @@ target_sources(taller_client
     hud.cpp
     checkpoint_arrow.cpp
     track_loader.cpp
+    collision_explosion.cpp
     UI/resources.qrc
     UI/mainwindow.cpp
     PUBLIC
@@ -28,6 +29,7 @@ target_sources(taller_client
     hud.h
     checkpoint_arrow.h
     track_loader.h
+    collision_explosion.h
     UI/mainwindow.h
     )
 

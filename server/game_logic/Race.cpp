@@ -85,13 +85,21 @@ void Race::checkFinishConditions() {
             auto now = std::chrono::steady_clock::now();
             float elapsed = std::chrono::duration<float>(now - startTime).count();
             playerFinishTimes[player->getId()] = elapsed;
+            
+            std::cout << "[RACE] Player " << player->getId() << " (" << player->getName() 
+                      << ") finished in " << elapsed << "s" << std::endl;
         }
     }
+
+    std::cout << "[RACE] Finish check: " << playerFinishTimes.size() << "/" << players.size() 
+              << " players finished" << std::endl;
 
     if (playerFinishTimes.size() == players.size() ||
         std::chrono::duration<float>(std::chrono::steady_clock::now() - startTime).count() >=
                 MAX_RACE_TIME) {
         finished = true;
+        std::cout << "[RACE] RACE FINISHED! Reason: " 
+                  << (playerFinishTimes.size() == players.size() ? "All players done" : "Time limit") << std::endl;
     }
 }
 
@@ -148,6 +156,8 @@ std::vector<CarSnapshot> Race::getSnapshot() const {
 
 
 const std::unordered_map<int, float>& Race::getFinishTimes() const { return playerFinishTimes; }
+
+const std::vector<std::unique_ptr<Player>>& Race::getPlayers() const { return players; }
 
 Race::~Race() {}
 

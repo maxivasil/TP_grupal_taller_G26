@@ -49,6 +49,8 @@ const CarStats Player::getCarStats() const { return stats; }
 
 int Player::getId() const { return id; }
 
+const std::string& Player::getName() const { return name; }
+
 b2Rot Player::getRotation() const { return car ? car->getRotation() : b2Rot_identity; }
 
 bool Player::isOnBridge() const { return car ? car->getIsOnBridge() : false; }

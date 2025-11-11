@@ -4,6 +4,7 @@
 #include "client_to_server_joinLobby.h"
 #include "client_to_server_move.h"
 #include "client_to_server_readyToStart.h"
+#include "client_to_server_finishRace.h"
 
 ServerRegisteredCommands::ServerRegisteredCommands():
         recv_registry(build_server_recv_command_registry()) {}
@@ -35,6 +36,10 @@ std::unordered_map<uint8_t, std::function<ClientToServerCmd_Server*(const std::v
 
     registry[CHEAT_COMMAND] = [](const std::vector<uint8_t>& data, const int client_id) {
         return ClientToServerCheat::from_bytes(data, client_id);
+    };
+
+    registry[CLIENT_TO_SERVER_FINISH_RACE] = [](const std::vector<uint8_t>& data, const int client_id) {
+        return ClientToServerFinishRace::from_bytes(data, client_id);
     };
 
     return registry;

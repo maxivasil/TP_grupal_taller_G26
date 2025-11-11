@@ -69,6 +69,8 @@ public:
 
     const std::unordered_map<int, float>& getFinishTimes() const;
 
+    const std::vector<std::unique_ptr<Player>>& getPlayers() const;
+
     // Métodos para cheats
     void activateInfiniteHealthCheat(int playerId);
     void forceWinCheat(int playerId);

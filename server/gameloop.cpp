@@ -1,10 +1,12 @@
 #include "gameloop.h"
 
+#include <algorithm>
 #include <chrono>
 #include <set>
 #include <string>
 
 #include "../cmd/server_to_client_gameStarting.h"
+#include "../cmd/server_to_client_raceResults.h"
 #include "../common/constants.h"
 
 #include "Car.h"
@@ -157,7 +159,69 @@ void ServerGameLoop::run() {
                 t1 += lostFrames * frameDuration;
             }
         }
-        status = LobbyStatus::FINISHED;
-        stop();
+
+        // Send race results to all clients
+        // Send when at least one player finished (for testing/single player mode)
+        // Or when all players finished (normal multiplayer)
+        // Or when MAX_RACE_TIME is reached
+        bool shouldSendResults = false;
+        
+        if (!race.getFinishTimes().empty()) {
+            // At least one player finished - send immediately for demo
+            shouldSendResults = true;
+        }
+        
+        if (shouldSendResults) {
+            const auto& finishTimes = race.getFinishTimes();
+            std::vector<PlayerResult> results;
+            
+            // Create a list of players with their finish times
+            std::vector<std::pair<int, float>> playerTimesPairs;
+            for (const auto& [playerId, finishTime] : finishTimes) {
+                playerTimesPairs.emplace_back(playerId, finishTime);
+            }
+            
+            // Sort by finish time to determine positions
+            std::sort(playerTimesPairs.begin(), playerTimesPairs.end(),
+                      [](const auto& a, const auto& b) { return a.second < b.second; });
+            
+            // Create results with positions
+            for (uint8_t position = 0; position < playerTimesPairs.size(); ++position) {
+                int playerId = playerTimesPairs[position].first;
+                float finishTime = playerTimesPairs[position].second;
+                
+                // Find player by ID to get name
+                std::string playerName = "Unknown";
+                for (const auto& player : race.getPlayers()) {
+                    if (player->getId() == playerId) {
+                        playerName = player->getName();
+                        break;
+                    }
+                }
+                
+                results.emplace_back(static_cast<uint8_t>(playerId), playerName, finishTime, position + 1);
+            }
+            
+            auto raceResultsCmd = std::make_shared<ServerToClientRaceResults>(results, race.isFinished());
+            auto bytes = raceResultsCmd->to_bytes();
+            
+            std::cout << "\n=== RACE RESULTS BROADCAST ===" << std::endl;
+            std::cout << "Serialized to " << bytes.size() << " bytes" << std::endl;
+            std::cout << "First byte (command): " << static_cast<int>(bytes[0]) << " (should be 0x08)" << std::endl;
+            std::cout << "Race Officially Finished: " << (race.isFinished() ? "YES" : "NO") << std::endl;
+            std::cout << "Number of results: " << results.size() << std::endl;
+            for (const auto& result : results) {
+                std::cout << "  Position " << static_cast<int>(result.position) << ": "
+                          << result.playerName << " (ID:" << static_cast<int>(result.playerId) << ") - " 
+                          << result.finishTime << "s" << std::endl;
+            }
+            std::cout << "==============================\n" << std::endl;
+            
+            protected_clients.broadcast(raceResultsCmd);
+            
+            // Exit after sending results for demo
+            status = LobbyStatus::FINISHED;
+            stop();
+        }
     }
 }

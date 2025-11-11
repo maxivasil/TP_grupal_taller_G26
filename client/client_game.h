@@ -18,6 +18,7 @@
 #include "hud.h"
 #include "minimap.h"
 #include "session.h"
+#include "cmd/server_to_client_raceResults.h"
 
 struct RenderCar {
     SDL_Rect src;
@@ -65,6 +66,10 @@ private:
     GameState gameState = GameState::PLAYING;
     std::string endGameMessage = "";
     Uint32 endGameTime = 0;
+    
+    // Race results
+    std::vector<ClientPlayerResult> raceResults;
+    bool hasRaceResults = false;
 
     SDL_Rect src;
     SDL_Rect dst;
@@ -88,6 +93,8 @@ public:
 
     int start();
     void update_snapshots(const std::vector<CarSnapshot>& snapshots);
+    void setRaceResults(const std::vector<ClientPlayerResult>& results);
+
 };
 
 #endif

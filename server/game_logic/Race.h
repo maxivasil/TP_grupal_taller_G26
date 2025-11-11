@@ -70,6 +70,9 @@ public:
     const std::unordered_map<int, float>& getFinishTimes() const;
 
     const std::vector<std::unique_ptr<Player>>& getPlayers() const;
+    
+    // Get current elapsed time since race start
+    float getCurrentElapsedTime() const;
 
     // Métodos para cheats
     void activateInfiniteHealthCheat(int playerId);

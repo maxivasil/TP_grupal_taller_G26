@@ -110,6 +110,11 @@ void Race::updatePhysics(float dt) {
 
 bool Race::isFinished() const { return finished; }
 
+float Race::getCurrentElapsedTime() const {
+    auto now = std::chrono::steady_clock::now();
+    return std::chrono::duration<float>(now - startTime).count();
+}
+
 void Race::turnPlayer(int playerId, Direction dir) {
     auto it = std::find_if(
             players.begin(), players.end(),

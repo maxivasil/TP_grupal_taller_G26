@@ -337,9 +337,6 @@ void Game::render(SDL2pp::Renderer& renderer) {
         float serverX = it->pos_x;
         float serverY = it->pos_y;
 
-        std::cout << "SERVER: pos=(" << serverX << ", " << serverY << ")" << std::endl;
-
-
         localPlayer.x = serverX;
         localPlayer.y = serverY;
         localPlayer.angle = it->angle;
@@ -384,23 +381,20 @@ void Game::render(SDL2pp::Renderer& renderer) {
         minimap.render(renderer, localPlayer, otherPlayers, currentCheckpoint);
     }
 
-    // Render explosion particles
+    
     explosion.render(renderer);
 
-    // Render HUD
+   
     HUDData hudData;
-    hudData.speed = 0.0f;  // Default to 0 if no local player
+    hudData.speed = 0.0f; 
     hudData.health = 100.0f;
 
-    // Use the first car's data (assumed to be the local player)
     if (!snapshots.empty()) {
         hudData.health = snapshots[0].health;
 
-        // Calculate speed from position change if server speed is 0
         if (snapshots[0].speed > 0.0f) {
             hudData.speed = snapshots[0].speed;
         } else {
-            // Client-side speed calculation based on position delta
             Uint32 currentTime = SDL_GetTicks();
             if (lastSpeedUpdateTime > 0) {
                 float timeDelta =
@@ -499,7 +493,9 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
     renderer.Copy(titleTexture, SDL2pp::NullOpt, titleRect);
 
     // Si hay resultados, mostrar la tabla
-    if (hasRaceResults && !raceResults.empty()) {
+    // TEMPORAL: Comentado check de múltiples autos para testing con un solo auto
+    if (hasRaceResults && !raceResults.empty()) { // if (hasRaceResults) { // TEMPORAL: mostrar siempre si hay resultados
+        std::cout << "[RENDER] Mostrando tabla de resultados con " << raceResults.size() << " resultados\n";
         SDL2pp::Font resultsFont(
                 hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
                 20);
@@ -594,5 +590,11 @@ void Game::setLost() {
 void Game::setRaceResults(const std::vector<ClientPlayerResult>& results) {
     raceResults = results;
     hasRaceResults = true;
-    std::cout << "Resultados de carrera recibidos: " << results.size() << " jugadores\n";
+    std::cout << "\n=== GAME::setRaceResults LLAMADO ===" << std::endl;
+    std::cout << "Resultados de carrera recibidos: " << results.size() << " jugadores" << std::endl;
+    for (const auto& result : results) {
+        std::cout << "  - " << result.playerName << " (Position: " << (int)result.position 
+                  << ", Time: " << result.finishTime << "s)" << std::endl;
+    }
+    std::cout << "==================================\n" << std::endl;
 }

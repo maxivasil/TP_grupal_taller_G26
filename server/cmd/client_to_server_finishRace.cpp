@@ -18,10 +18,6 @@ void ClientToServerFinishRace::execute(ServerContext& ctx) {
     }
     
     // Record the finish time for this player
-    // Access the race's internal data to register this player's finish time
-    // Since we don't have direct access to startTime, we'll let the race calculate it
-    // by checking if the player is already registered
-    
     auto& finishTimes = const_cast<std::unordered_map<int, float>&>(ctx.race->getFinishTimes());
     
     // Check if already registered
@@ -33,13 +29,17 @@ void ClientToServerFinishRace::execute(ServerContext& ctx) {
     // Find player and calculate time
     for (const auto& player : ctx.race->getPlayers()) {
         if (player->getId() == client_id) {
-            // We don't have access to start time here, so we'll set a placeholder
-            // The actual time will be calculated when needed
+            // Calculate the elapsed time from race start to now
+            float finishTime = ctx.race->getCurrentElapsedTime();
+            
             std::cout << "[SERVER] Registering client " << client_id << " (" << player->getName() 
-                      << ") as finished!" << std::endl;
-            finishTimes[client_id] = 0.0f;  // Placeholder - will be updated by checkFinishConditions
+                      << ") as finished in " << finishTime << "s!" << std::endl;
+            
+            finishTimes[client_id] = finishTime;
             break;
         }
     }
 }
+
+
 

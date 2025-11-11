@@ -7,6 +7,7 @@
 #include <QScreen>
 #include "../session.h"
 #include <QGuiApplication>
+#include <iostream>
 #include "../cmd/client_to_server_readyToStart.h"
 #include "../cmd/server_to_client_gameStarting.h"
 

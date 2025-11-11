@@ -16,13 +16,15 @@
 class ServerGameLoop: public Thread {
 public:
     explicit ServerGameLoop(Queue<ClientToServerCmd_Server*>& gameloop_queue,
-                            ServerProtectedClients& protected_clients, LobbyStatus& status);
+                            ServerProtectedClients& protected_clients, LobbyStatus& status,
+                            struct Lobby* lobby);
     void run() override;
 
 private:
     Queue<ClientToServerCmd_Server*>& gameloop_queue;
     ServerProtectedClients& protected_clients;
     LobbyStatus& status;
+    struct Lobby* lobby;
 
     void process_pending_commands(ServerContext& ctx);
     void update_game_state(Race& race);

@@ -12,6 +12,7 @@ target_sources(taller_client
     session.cpp
     minimap.cpp
     hud.cpp
+    hints.cpp
     UI/resources.qrc
     UI/mainwindow.cpp
     PUBLIC
@@ -24,11 +25,16 @@ target_sources(taller_client
     session.h
     minimap.h
     hud.h
+    hints.h
     UI/mainwindow.h
     )
 
 target_link_libraries(taller_client 
     PRIVATE 
         client_cmd
-        Qt${QT_VERSION_MAJOR}::Widgets
-    )
+)
+
+# Link to Qt Widgets if it was found by the top-level CMake (guard against missing Qt)
+if(DEFINED QT_VERSION_MAJOR AND TARGET Qt${QT_VERSION_MAJOR}::Widgets)
+    target_link_libraries(taller_client PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+endif()

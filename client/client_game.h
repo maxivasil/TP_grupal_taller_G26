@@ -14,6 +14,7 @@
 #include <SDL_image.h>
 
 #include "camera.h"
+#include "hints.h"
 #include "hud.h"
 #include "minimap.h"
 #include "session.h"
@@ -35,6 +36,7 @@ private:
     Camera camera;
     Minimap minimap;
     HUD hud;
+    Hints hints;
     std::map<int, std::shared_ptr<SDL2pp::Texture>> textures;
 
     std::vector<CarSnapshot> snapshots;

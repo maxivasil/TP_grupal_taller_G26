@@ -12,7 +12,7 @@ ServerToClientLobbyResponse::ServerToClientLobbyResponse(uint8_t status, std::st
         status(status), lobbyId(lobbyId), errorCode(errorCode) {}
 
 
-void ServerToClientLobbyResponse::execute(Game& game) {
+void ServerToClientLobbyResponse::execute(ClientContext& ctx) {
     std::cout << "RESPUESTA RECIBIDA: " << std::endl;
 }
 

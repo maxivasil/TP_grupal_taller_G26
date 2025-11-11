@@ -5,10 +5,14 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
-
+#include "../UI/mainwindow.h"
 #include "../parser.h"
 
-class Game;
+struct ClientContext {
+    class Game* game;
+    MainWindow* mainwindow;
+};
+
 
 class ClientToServerCmd_Client {
 public:
@@ -23,7 +27,7 @@ public:
     virtual ~ServerToClientCmd_Client() = default;
 
     // Ejecuta el comando en el cliente (desde el servidor)
-    virtual void execute(Game& game) = 0;  // ClientSession& client
+    virtual void execute(ClientContext& ctx) = 0;  // ClientSession& client
 
     static ServerToClientCmd_Client* from_bytes(
             const std::vector<uint8_t>& data,

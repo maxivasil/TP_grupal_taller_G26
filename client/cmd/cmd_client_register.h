@@ -9,6 +9,7 @@
 #include "cmd_base_client.h"
 #include "server_to_client_lobbyResponse.h"
 #include "server_to_client_snapshot.h"
+#include "server_to_client_gameStarting.h"
 
 class ClientRegisteredCommands {
 public:

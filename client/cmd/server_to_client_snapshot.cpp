@@ -10,8 +10,8 @@
 ServerToClientSnapshot::ServerToClientSnapshot(std::vector<CarSnapshot> cars):
         cars_snapshot(std::move(cars)) {}
 
-void ServerToClientSnapshot::execute(Game& game) {
-    game.update_snapshots(cars_snapshot);
+void ServerToClientSnapshot::execute(ClientContext& ctx) {
+    ctx.game->update_snapshots(cars_snapshot);
 
     std::cout << "[Snapshot recibido] Autos en escena: " << cars_snapshot.size() << std::endl;
 

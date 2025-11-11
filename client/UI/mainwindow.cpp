@@ -5,8 +5,10 @@
 #include <QLabel>
 #include <QResizeEvent>
 #include <QScreen>
+#include "../session.h"
 #include <QGuiApplication>
 #include "../cmd/client_to_server_readyToStart.h"
+#include "../cmd/server_to_client_gameStarting.h"
 
 MainWindow::MainWindow(ClientSession& client_session, QWidget *parent)
 	:  QMainWindow(parent)
@@ -41,16 +43,40 @@ MainWindow::MainWindow(ClientSession& client_session, QWidget *parent)
 
 }
 
+void MainWindow::ready(){
+	QLabel* labelOut = findChild<QLabel*>("intro_text");
+	labelOut->setText("Has seleccionado un " + QString::fromStdString(car) + "\n\n Esperando al resto de jugadores...");
+	ServerToClientCmd_Client* raw_cmd;
+	Queue<ServerToClientCmd_Client*>& recv_queue = client_session.get_recv_queue();
+	client_session.send_command(new ClientToServerReady(car));
+	while (true) {
+		if(recv_queue.try_pop(raw_cmd)){
+			std::unique_ptr<ServerToClientCmd_Client> cmd(raw_cmd);
+			auto* start_cmd = dynamic_cast<ServerToClientGameStarting*>(cmd.get());
+			if (start_cmd) {
+				ClientContext ctx = {.game = nullptr,
+				.mainwindow = (this)};
+				start_cmd->execute(ctx);
+				break;
+			}
+    	}
+	}
+}
+
 
 void MainWindow::selector(){
 	QPushButton* senderButton = qobject_cast<QPushButton*>(sender());
 	QLabel* labelOut = findChild<QLabel*>("intro_text");
 	QString carName = senderButton->property("car_name").toString();
-	client_session.send_command(new ClientToServerReady(carName.toStdString()));
-	labelOut->setText("Has seleccionado un " + carName + "\n\n Esperando al resto de jugadores...");
+	labelOut->setText("Has seleccionado un " + carName);
+	car = carName.toStdString();
 }
 
 void MainWindow::connectEvents() {
+	QPushButton* ready = findChild<QPushButton*>("Ready");
+	QObject::connect(ready, &QPushButton::clicked,
+			 this, &MainWindow::ready);
+
 	QPushButton* celeste = findChild<QPushButton*>("Celeste");
 	celeste->setProperty("car_name", "Chevrolet Corsa");
 	QObject::connect(celeste, &QPushButton::clicked,

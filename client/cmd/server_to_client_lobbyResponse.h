@@ -18,7 +18,7 @@ private:
 public:
     ServerToClientLobbyResponse(uint8_t status, std::string lobbyId, uint8_t errorCode);
 
-    virtual void execute(Game& game) override;
+    virtual void execute(ClientContext& ctx) override;
 
     static ServerToClientLobbyResponse from_bytes(const std::vector<uint8_t>& data);
 };

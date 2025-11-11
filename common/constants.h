@@ -4,6 +4,7 @@
 // Constants for server communication protocol
 #define SNAPSHOT_COMMAND 0x01
 #define JOIN_RESPONSE_COMMAND 0x04
+#define GAME_STARTING_COMMAND 0x07
 
 // Constants for ERROR_CODE de JOIN_RESPONSE_COMMAND
 #define LOBBY_NOT_FOUND 0x01

@@ -25,5 +25,11 @@ std::unordered_map<uint8_t, std::function<ServerToClientCmd_Client*(const std::v
         return new ServerToClientLobbyResponse(std::move(snapshot));
     };
 
+
+    registry[GAME_STARTING_COMMAND] = [](const std::vector<uint8_t>& data) {
+        auto snapshot = ServerToClientGameStarting::from_bytes(data);
+        return new ServerToClientGameStarting(std::move(snapshot));
+    };
+
     return registry;
 }

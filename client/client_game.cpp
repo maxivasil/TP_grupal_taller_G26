@@ -93,7 +93,6 @@ int Game::start() {
 
                 auto* snapshot_cmd = dynamic_cast<ServerToClientSnapshot*>(cmd.get());
                 if (snapshot_cmd) {
-                    snapshot_cmd->execute(*this);
                     update(renderer, *snapshot_cmd);
                 }
             }
@@ -188,7 +187,9 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
 
 bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapshot) {
     carsToRender.clear();
-    cmd_snapshot.execute(*this);
+    ClientContext ctx = {.game = this,
+    .mainwindow = nullptr};
+    cmd_snapshot.execute(ctx);
 
     auto it = std::find_if(snapshots.begin(), snapshots.end(),
                            [&](const CarSnapshot& car) { return car.id == client_id; });

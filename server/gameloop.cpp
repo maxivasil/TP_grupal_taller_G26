@@ -5,6 +5,7 @@
 #include <string>
 
 #include "../common/constants.h"
+#include "../cmd/server_to_client_gameStarting.h"
 
 #include "Car.h"
 #include "City.h"
@@ -50,9 +51,10 @@ void ServerGameLoop::run() {
                clientsReady.size() < protected_clients.size()) {
             process_pending_commands(ctx);
             std::this_thread::sleep_for(std::chrono::milliseconds(250));
-            // Seguramente necesite broadcastear el estado del lobby a los clientes (para que lo
-            // puedan mostrar)
         }
+        std::cout << "Starting Game" << std::endl;
+        auto starting_cmd = std::make_shared<ServerToClientGameStarting>();
+        protected_clients.broadcast(starting_cmd);
         status = LobbyStatus::IN_GAME;
         CarStats statsA = {.acceleration = 20.0f,
                            .max_speed = 100.0f,

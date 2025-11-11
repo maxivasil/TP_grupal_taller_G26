@@ -13,6 +13,7 @@ target_sources(taller_client
     minimap.cpp
     hud.cpp
     checkpoint_arrow.cpp
+    track_loader.cpp
     UI/resources.qrc
     UI/mainwindow.cpp
     PUBLIC
@@ -26,12 +27,14 @@ target_sources(taller_client
     minimap.h
     hud.h
     checkpoint_arrow.h
+    track_loader.h
     UI/mainwindow.h
     )
 
 target_link_libraries(taller_client 
     PRIVATE 
         client_cmd
+        yaml-cpp
 )
 
 # Link to Qt Widgets if it was found by the top-level CMake (guard against missing Qt)

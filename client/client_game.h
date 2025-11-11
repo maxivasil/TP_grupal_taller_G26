@@ -50,8 +50,11 @@ private:
 
     // HUD tracking
     int currentCheckpoint = 0;
-    int totalCheckpoints = 2;
+    int totalCheckpoints = 4;
     float raceStartTime = 0.0f;
+    
+    // Checkpoints for the race
+    std::vector<RaceCheckpoint> trackCheckpoints;
 
     // Speed calculation (client-side)
     float lastPlayerX = 0.0f;

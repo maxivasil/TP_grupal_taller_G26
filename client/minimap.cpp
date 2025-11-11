@@ -87,7 +87,6 @@ void Minimap::renderCheckpoints(SDL2pp::Renderer& renderer, int nextCheckpointId
     int screenX = renderer.GetOutputWidth() - size - 10;
     int screenY = 10;
 
-    // Only draw the next checkpoint (no connection lines, no previous checkpoints)
     if (nextCheckpointId < (int)checkpoints.size()) {
         const auto& cp = checkpoints[nextCheckpointId];
         int minimapX = worldToMinimapX(cp.x);
@@ -99,15 +98,14 @@ void Minimap::renderCheckpoints(SDL2pp::Renderer& renderer, int nextCheckpointId
         int radius = 7;
         
         if (cp.isFinish) {
-            renderer.SetDrawColor(255, 50, 50, 255);  // Red for finish
+            renderer.SetDrawColor(255, 50, 50, 255);  
         } else {
-            renderer.SetDrawColor(0, 255, 0, 255);   // Green for checkpoint
+            renderer.SetDrawColor(0, 255, 0, 255);   
         }
 
         SDL_Rect rect{screenMinimapX - radius, screenMinimapY - radius, radius * 2, radius * 2};
         renderer.FillRect(rect);
 
-        // Draw yellow border to highlight
         renderer.SetDrawColor(255, 255, 0, 255);
         for (int j = 0; j < 3; ++j) {
             SDL_Rect borderRect{screenMinimapX - radius - j, screenMinimapY - radius - j,
@@ -181,7 +179,6 @@ void Minimap::render(SDL2pp::Renderer& renderer, const MinimapPlayer& localPlaye
     }
 
     renderCheckpoints(renderer, nextCheckpointId);
-    // Only render local player, hide other players
     renderPlayer(renderer, localPlayer, true);
 
     renderer.SetDrawColor(0, 255, 255, 255);

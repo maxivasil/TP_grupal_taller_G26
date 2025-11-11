@@ -9,6 +9,7 @@
 
 #include "cmd/client_to_server_cheat.h"
 #include "cmd/client_to_server_move.h"
+#include "track_loader.h"
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
@@ -69,12 +70,21 @@ int Game::start() {
             minimap.setZoomPixels(900.0f, 900.0f);
         }
 
-        // Set up checkpoints for the race (Liberty City circuit)
-        std::vector<RaceCheckpoint> checkpoints = {
-                {0, 8.9f, 106.5f, 6.0f, 6.0f, false},   // Start checkpoint
-                {1, 120.0f, 106.5f, 6.0f, 6.0f, true},  // Finish line
-        };
-        minimap.setCheckpoints(checkpoints);
+        std::string trackName = "track_four_checkpoints_vice_city";
+        trackCheckpoints = TrackLoader::loadTrackCheckpoints(trackName);
+        
+        if (trackCheckpoints.empty()) {
+            std::cerr << "ERROR: No checkpoints loaded! Using fallback..." << std::endl;
+            trackCheckpoints = {
+                    {0, 13.8f, 192.6f, 18.2f, 9.1f, false},
+                    {1, 231.7f, 192.9f, 17.5f, 10.9f, false},
+                    {2, 240.5f, 107.3f, 18.9f, 11.5f, false},
+                    {3, 439.8f, 107.0f, 20.2f, 13.3f, true},
+            };
+        }
+        
+        totalCheckpoints = trackCheckpoints.size();
+        minimap.setCheckpoints(trackCheckpoints);
 
         auto t1 = SDL_GetTicks();
         auto rate = FPS;
@@ -201,26 +211,28 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
 
         // Actualizar flecha hacia el próximo checkpoint
         if (currentCheckpoint < totalCheckpoints) {
-            // Asumir que tenemos checkpoints en (8.9, 106.5) -> (120.0, 106.5)
-            float checkpointX = (currentCheckpoint == 0) ? 8.9f : 120.0f;
-            float checkpointY = 106.5f;
-            // Pass player heading for arrow direction
+            const RaceCheckpoint& current = trackCheckpoints[currentCheckpoint];
+            float checkpointX = current.x;
+            float checkpointY = current.y;
+            
             arrow.updateTarget(it->pos_x, it->pos_y, checkpointX, checkpointY, it->angle);
 
-            // Detectar si pasamos el checkpoint (distancia < radio de 5 unidades)
+            // Detectar si pasamos el checkpoint (distancia < radio de detección)
             float dx = checkpointX - it->pos_x;
             float dy = checkpointY - it->pos_y;
             float distToCheckpoint = std::sqrt(dx * dx + dy * dy);
 
             const float CHECKPOINT_RADIUS = 5.0f;  // Radio de detección
-            if (distToCheckpoint < CHECKPOINT_RADIUS && currentCheckpoint == 0) {
-                // Pasamos el checkpoint de salida, ir al siguiente
-                currentCheckpoint = 1;
-                std::cout << "Checkpoint cruzado: " << currentCheckpoint << std::endl;
-            } else if (distToCheckpoint < CHECKPOINT_RADIUS && currentCheckpoint == 1) {
-                // Completamos la carrera - llamar al cheat de victoria automático
-                std::cout << "Carrera completada!" << std::endl;
-                setWon();
+            if (distToCheckpoint < CHECKPOINT_RADIUS) {
+                if (currentCheckpoint == totalCheckpoints - 1) {
+                    // Completamos la carrera - último checkpoint
+                    std::cout << "Carrera completada!" << std::endl;
+                    setWon();
+                } else {
+                    // Pasamos a siguiente checkpoint
+                    currentCheckpoint++;
+                    std::cout << "Checkpoint cruzado: " << currentCheckpoint << std::endl;
+                }
             }
         }
     }

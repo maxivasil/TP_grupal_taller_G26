@@ -1,0 +1,21 @@
+initial_direction:
+  x: 0.707
+  y: 0.707
+
+checkpoints:
+  - x: 13.8
+    y: 192.6
+    width: 18.2
+    height: 9.1
+  - x: 231.7
+    y: 192.9
+    width: 17.5
+    height: 10.9
+  - x: 240.5
+    y: 107.3
+    width: 18.9
+    height: 11.5
+  - x: 439.8
+    y: 107.0
+    width: 20.2
+    height: 13.3

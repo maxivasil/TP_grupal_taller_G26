@@ -11,7 +11,6 @@ CheckpointArrow::CheckpointArrow(int windowWidth, int windowHeight) :
 void CheckpointArrow::updateTarget(float playerX, float playerY,
                                    float checkpointX, float checkpointY,
                                    float playerHeading) {
-    // Calculate distance and direction to checkpoint
     float dx = checkpointX - playerX;
     float dy = checkpointY - playerY;
     
@@ -19,8 +18,6 @@ void CheckpointArrow::updateTarget(float playerX, float playerY,
     hasTarget = distanceToCheckpoint > 0.0f;
     
     if (hasTarget) {
-        // Calculate angle to checkpoint in WORLD space
-        // Swap X and Y to correct the axis orientation
         angleToCheckpoint = std::atan2(dx, -dy);
         
         std::cout << "Arrow: distance=" << distanceToCheckpoint 
@@ -31,21 +28,17 @@ void CheckpointArrow::updateTarget(float playerX, float playerY,
 
 void CheckpointArrow::drawArrow(SDL2pp::Renderer& renderer, float centerX, float centerY,
                                float angle, int size) {
-    // Simple arrow style: → (right-pointing arrow)
-    // Rotated by angle
     
     float cos_a = std::cos(angle);
     float sin_a = std::sin(angle);
     
-    // Arrow pointing right (→): tip on right, base on left
-    // Main shaft
+    
     float tipX = centerX + sin_a * size;
     float tipY = centerY - cos_a * size;
     
     float baseX = centerX - sin_a * size;
     float baseY = centerY + cos_a * size;
     
-    // Arrow head points (two lines forming arrowhead)
     float arrowLen = size * 0.4f;
     float arrowWidth = size * 0.3f;
     
@@ -55,26 +48,22 @@ void CheckpointArrow::drawArrow(SDL2pp::Renderer& renderer, float centerX, float
     float headLowerX = tipX - sin_a * arrowLen + cos_a * arrowWidth;
     float headLowerY = tipY + cos_a * arrowLen + sin_a * arrowWidth;
     
-    // Draw main arrow line (gold/yellow)
-    renderer.SetDrawColor(255, 200, 0, 255);  // Gold
+    renderer.SetDrawColor(255, 200, 0, 255); 
     renderer.DrawLine(SDL2pp::Point(int(baseX), int(baseY)),
                      SDL2pp::Point(int(tipX), int(tipY)));
     
-    // Draw arrowhead (two lines)
     renderer.DrawLine(SDL2pp::Point(int(tipX), int(tipY)),
                      SDL2pp::Point(int(headUpperX), int(headUpperY)));
     renderer.DrawLine(SDL2pp::Point(int(tipX), int(tipY)),
                      SDL2pp::Point(int(headLowerX), int(headLowerY)));
     
-    // Draw thicker lines by drawing multiple parallel lines
     for (int offset = -1; offset <= 1; offset++) {
-        // Perpendicular offset for thickness
         float perpX = -cos_a * offset * 1.5f;
         float perpY = -sin_a * offset * 1.5f;
         
-        if (offset == 0) continue;  // Skip center (already drawn)
+        if (offset == 0) continue;  
         
-        renderer.SetDrawColor(255, 200, 0, 200);  // Slightly transparent
+        renderer.SetDrawColor(255, 200, 0, 200);  
         renderer.DrawLine(SDL2pp::Point(int(baseX + perpX), int(baseY + perpY)),
                          SDL2pp::Point(int(tipX + perpX), int(tipY + perpY)));
     }

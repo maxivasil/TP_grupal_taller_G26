@@ -3,9 +3,9 @@
 #include <cmath>
 #include <filesystem>
 
+#include <SDL2pp/SDL2pp.hh>
 #include <SDL_ttf.h>
 #include <unistd.h>
-#include <SDL2pp/SDL2pp.hh>
 
 #include "cmd/client_to_server_cheat.h"
 #include "cmd/client_to_server_move.h"
@@ -94,7 +94,7 @@ int Game::start() {
             while (recv_queue.try_pop(raw_cmd)) {
                 std::unique_ptr<ServerToClientCmd_Client> cmd(raw_cmd);
 
-                auto* snapshot_cmd = dynamic_cast<ServerToClientSnapshot*>(cmd.get());
+                auto const* snapshot_cmd = dynamic_cast<ServerToClientSnapshot*>(cmd.get());
                 if (snapshot_cmd) {
                     update(renderer, *snapshot_cmd);
                 }
@@ -155,7 +155,7 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
     if (state[SDL_SCANCODE_ESCAPE] || state[SDL_SCANCODE_Q]) {
         return true;
     }
-    
+
     // CHEATS
     if (state[SDL_SCANCODE_LCTRL]) {
         if (state[SDL_SCANCODE_H]) {
@@ -171,7 +171,7 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
             setLost();
         }
     }
-    
+
     if (state[SDL_SCANCODE_RIGHT]) {
         client_session.send_command(new ClientToServerMove(MOVE_RIGHT));
     }
@@ -190,8 +190,7 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
 
 bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapshot) {
     carsToRender.clear();
-    ClientContext ctx = {.game = this,
-    .mainwindow = nullptr};
+    ClientContext ctx = {.game = this, .mainwindow = nullptr};
     cmd_snapshot.execute(ctx);
 
     auto it = std::find_if(snapshots.begin(), snapshots.end(),
@@ -201,7 +200,7 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
         float worldX = (it->pos_x * 62) / 8.9;
         float worldY = (it->pos_y * 24) / 3.086;
         camera.follow(worldX, worldY);
-        
+
         // Actualizar hints hacia el próximo checkpoint
         if (currentCheckpoint < totalCheckpoints) {
             // Asumir que tenemos checkpoints en (8.9, 106.5) -> (120.0, 106.5)
@@ -209,13 +208,13 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
             float checkpointY = 106.5f;
             // Pass player heading for camera-relative needle
             hints.updateHint(it->pos_x, it->pos_y, checkpointX, checkpointY, it->angle);
-            
+
             // Detectar si pasamos el checkpoint (distancia < radio de 5 unidades)
             float dx = checkpointX - it->pos_x;
             float dy = checkpointY - it->pos_y;
             float distToCheckpoint = std::sqrt(dx * dx + dy * dy);
-            
-            const float CHECKPOINT_RADIUS = 5.0f; // Radio de detección
+
+            const float CHECKPOINT_RADIUS = 5.0f;  // Radio de detección
             if (distToCheckpoint < CHECKPOINT_RADIUS && currentCheckpoint == 0) {
                 // Pasamos el checkpoint de salida, ir al siguiente
                 currentCheckpoint = 1;
@@ -235,8 +234,8 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
     dst = {0, 0, renderer.GetOutputWidth(), renderer.GetOutputHeight()};
 
     // Sprite del primer auto verde
-    int carW = textures[1]->GetWidth() / 12;
-    int carH = textures[1]->GetHeight() / 16;
+    int carW = 28;
+    int carH = 22;
 
     float scale = float(dst.w) / float(src.w);
 
@@ -252,7 +251,7 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
                   int(carH * scale)};
 
         // TODO: usar sprite según id o dirección
-        rc.src = {0, 0, carW, carH};
+        rc.src = {2, 5, carW, carH};
         rc.angle = car.angle;
 
         if (car.id == client_id) {
@@ -378,9 +377,9 @@ void Game::render(SDL2pp::Renderer& renderer) {
 
     // Render hints (directional arrow to checkpoint)
     if (!snapshots.empty()) {
-        auto it = std::find_if(snapshots.begin(), snapshots.end(),
-                               [&](const CarSnapshot& car) { return car.id == client_id; });
-        if (it != snapshots.end()) {
+        auto it2 = std::find_if(snapshots.begin(), snapshots.end(),
+                                [&](const CarSnapshot& car) { return car.id == client_id; });
+        if (it2 != snapshots.end()) {
             hints.render(renderer);
         }
     }
@@ -426,8 +425,9 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
     renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
 
     // Título
-    SDL2pp::Font titleFont(hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-                                                 : hud.fontPath,
+    SDL2pp::Font titleFont(hud.fontPath.empty() ?
+                                   "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" :
+                                   hud.fontPath,
                            48);
     SDL_Color titleColor;
     std::string titleText;
@@ -449,9 +449,9 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
     renderer.Copy(titleTexture, SDL2pp::NullOpt, titleRect);
 
     // Mensaje adicional
-    SDL2pp::Font msgFont(hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-                                               : hud.fontPath,
-                         24);
+    SDL2pp::Font msgFont(
+            hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
+            24);
     SDL_Color msgColor = {255, 255, 255, 255};
 
     std::string msgText;
@@ -479,4 +479,3 @@ void Game::setLost() {
     endGameTime = SDL_GetTicks();
     std::cout << "DERROTA. Presiona ESC para volver al lobby\n";
 }
-

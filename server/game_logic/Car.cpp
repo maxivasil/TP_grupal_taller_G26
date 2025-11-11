@@ -59,10 +59,16 @@ void Car::handleAccelerating(bool accelerating, float speed, b2Vec2 forward) {
 
 void Car::handleBraking(bool braking, b2Vec2 velocity) {
     float speed = b2Length(velocity);
-    const float reverseThreshold = 0.05f;
+    const float reverseThreshold = 15.0f;
 
     if (braking) {
-        if (!reverseMode) {
+        if (reverseMode) {
+            float reverseSpeedFactor = std::clamp(speed / stats.max_speed, 0.5f, 1.0f);
+            b2Vec2 backward = b2RotateVector(b2Body_GetRotation(body), {-1, 0});
+            b2Vec2 reverse_force = b2MulSV(
+                    b2Body_GetMass(body) * (stats.acceleration * reverseSpeedFactor), backward);
+            b2Body_ApplyForceToCenter(body, reverse_force, true);
+        } else {
             if (speed > reverseThreshold) {
                 b2Vec2 brake_force =
                         b2MulSV(b2Body_GetMass(body) * stats.brake_force, -b2Normalize(velocity));
@@ -70,16 +76,10 @@ void Car::handleBraking(bool braking, b2Vec2 velocity) {
             } else {
                 reverseMode = true;
             }
-        } else {
-            float reverseSpeedFactor = std::clamp(speed / stats.max_speed, 0.5f, 1.0f);
-            b2Vec2 backward = b2RotateVector(b2Body_GetRotation(body), {-1, 0});
-            b2Vec2 reverse_force = b2MulSV(
-                    b2Body_GetMass(body) * (stats.acceleration * reverseSpeedFactor), backward);
-            b2Body_ApplyForceToCenter(body, reverse_force, true);
         }
     }
 
-    if (reverseMode && braking == false &&
+    if (reverseMode && !braking &&
         b2Dot(velocity, b2RotateVector(b2Body_GetRotation(body), {1, 0})) > 0) {
         reverseMode = false;
     }
@@ -104,8 +104,8 @@ void Car::handleTurning(Direction turn_direction, float speed) {
         turn = -turn;
     }
 
-    float speedFactor = std::clamp(speed / stats.max_speed, 0.2f, 1.0f);
-    float torque = turn * stats.turn_speed * stats.handling * speedFactor * 1500.0f;
+    float speedFactor = std::clamp(speed / stats.max_speed, 0.3f, 1.0f);
+    float torque = turn * stats.turn_speed * stats.handling * speedFactor * 1700.0f;
     b2Body_ApplyTorque(body, torque, true);
 }
 

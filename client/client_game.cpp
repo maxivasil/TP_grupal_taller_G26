@@ -26,6 +26,7 @@ Game::Game(ClientSession& client_session):
         hud(WINDOW_WIDTH, WINDOW_HEIGHT),
         arrow(WINDOW_WIDTH, WINDOW_HEIGHT) {
     raceStartTime = SDL_GetTicks() / 1000.0f;  // Iniciar timer de carrera
+    explosion.setSoundEngine(&carSoundEngine);  // Link collision audio to car sound engine
 }
 
 int Game::start() {

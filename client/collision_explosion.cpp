@@ -1,97 +1,24 @@
 #include "collision_explosion.h"
+#include "car_sound_engine.h"
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
 #include <cstring>
 
 CollisionExplosion::CollisionExplosion() 
-    : explosionSound(nullptr), audioInitialized(false) {
-    // Audio will be initialized on first explosion (lazy init)
+    : soundEngine(nullptr) {
+    // Sound engine will be set from outside
 }
 
 CollisionExplosion::~CollisionExplosion() {
-    if (explosionSound) {
-        Mix_FreeChunk(explosionSound);
-    }
-    if (audioInitialized) {
-        Mix_CloseAudio();
-    }
+    // Sound engine is owned by Game, not by CollisionExplosion
 }
 
 float CollisionExplosion::randomFloat(float min, float max) {
     return min + (max - min) * (float)rand() / RAND_MAX;
 }
 
-void CollisionExplosion::initAudio() {
-    if (audioInitialized) return;
-    
-    // Initialize SDL_mixer
-    if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) < 0) {
-        std::cerr << "Failed to initialize SDL_mixer: " << Mix_GetError() << std::endl;
-        return;
-    }
-    
-    std::cout << "[EXPLOSION AUDIO] SDL_mixer initialized" << std::endl;
-    audioInitialized = true;
-    
-    // Create explosion sound
-    explosionSound = createExplosionSound();
-    if (!explosionSound) {
-        std::cerr << "Failed to create explosion sound" << std::endl;
-    } else {
-        std::cout << "[EXPLOSION AUDIO] Sound created successfully" << std::endl;
-    }
-}
-
-Mix_Chunk* CollisionExplosion::createExplosionSound() {
-    // Create a low-frequency "boom" sound for explosion
-    int sampleRate = 22050;
-    int duration = 300;  // milliseconds - longer than collision sound
-    int samples = (sampleRate * duration) / 1000;
-    
-    // Allocate audio buffer
-    Uint8* buffer = new Uint8[samples * 2];  // 16-bit mono
-    
-    // Generate a complex explosion sound with pitch sweep
-    int16_t* samples16 = (int16_t*)buffer;
-    float startFrequency = 150.0f;   // Start low
-    float endFrequency = 50.0f;      // End even lower
-    float amplitude = 20000.0f;
-    
-    for (int i = 0; i < samples; ++i) {
-        // Frequency sweep from high to low
-        float progress = (float)i / samples;
-        float frequency = startFrequency + (endFrequency - startFrequency) * progress;
-        
-        float phase = (2.0f * 3.14159f * frequency * i) / sampleRate;
-        
-        // Envelope: attack + decay
-        float envelope;
-        if (progress < 0.1f) {
-            envelope = progress / 0.1f;  // Attack
-        } else {
-            envelope = 1.0f - (progress - 0.1f) / 0.9f;  // Decay
-        }
-        
-        samples16[i] = (int16_t)(amplitude * std::sin(phase) * envelope);
-    }
-    
-    // Create chunk
-    Mix_Chunk* chunk = new Mix_Chunk();
-    chunk->allocated = 1;
-    chunk->abuf = buffer;
-    chunk->alen = samples * 2;
-    chunk->volume = MIX_MAX_VOLUME;
-    
-    return chunk;
-}
-
 void CollisionExplosion::trigger(float worldX, float worldY, float camX, float camY, float scale) {
-    // Initialize audio on first explosion if not already done
-    if (!audioInitialized) {
-        initAudio();
-    }
-    
     particles.clear();
     
     // Transform world coordinates to screen coordinates using camera and scale
@@ -118,12 +45,9 @@ void CollisionExplosion::trigger(float worldX, float worldY, float camX, float c
         particles.push_back(p);
     }
     
-    // Play explosion sound
-    if (explosionSound) {
-        Mix_PlayChannel(-1, explosionSound, 0);
-        std::cout << "[EXPLOSION SOUND] Played!" << std::endl;
-    } else {
-        std::cout << "[EXPLOSION SOUND] WARNING: No explosion sound available" << std::endl;
+    // Play explosion sound using CarSoundEngine
+    if (soundEngine) {
+        soundEngine->playCollisionSound();
     }
     
     std::cout << "[EXPLOSION] Triggered at screen (" << relX << ", " << relY << ") with " 

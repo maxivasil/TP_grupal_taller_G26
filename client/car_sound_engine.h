@@ -21,10 +21,12 @@ private:
     Mix_Chunk* engineSound;
     Mix_Chunk* turnSound;
     Mix_Chunk* brakeSound;
+    Mix_Chunk* collisionSound;
     
     int engineChannel = -1;
     int turnChannel = -1;
     int brakeChannel = -1;
+    int collisionChannel = -1;
     
     // Track if sounds are currently playing
     bool enginePlaying = false;
@@ -39,6 +41,7 @@ private:
     Mix_Chunk* createEngineSound(float pitch);
     Mix_Chunk* createTurnSound();
     Mix_Chunk* createBrakeSound();
+    Mix_Chunk* createCollisionSound();
     
 public:
     CarSoundEngine();
@@ -52,6 +55,7 @@ public:
     void playAcceleration();
     void playTurnSound();
     void playBrakeSound();
+    void playCollisionSound();
     void stopAcceleration();
     void stopTurn();
     void stopBrake();

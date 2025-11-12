@@ -8,7 +8,8 @@ CarSoundEngine::CarSoundEngine()
     : audioInitialized(false),
       engineSound(nullptr),
       turnSound(nullptr),
-      brakeSound(nullptr) {
+      brakeSound(nullptr),
+      collisionSound(nullptr) {
     initAudio();
 }
 
@@ -16,6 +17,7 @@ CarSoundEngine::~CarSoundEngine() {
     if (engineSound) Mix_FreeChunk(engineSound);
     if (turnSound) Mix_FreeChunk(turnSound);
     if (brakeSound) Mix_FreeChunk(brakeSound);
+    if (collisionSound) Mix_FreeChunk(collisionSound);
     if (audioInitialized) {
         Mix_CloseAudio();
     }
@@ -43,7 +45,7 @@ void CarSoundEngine::initAudio() {
         "./assets/sounds/"
     };
     
-    bool engineLoaded = false, turnLoaded = false, brakeLoaded = false;
+    bool engineLoaded = false, turnLoaded = false, brakeLoaded = false, collisionLoaded = false;
     
     for (const auto& basePath : basePaths) {
         if (!engineLoaded) {
@@ -70,7 +72,15 @@ void CarSoundEngine::initAudio() {
             }
         }
         
-        if (engineLoaded && turnLoaded && brakeLoaded) break;
+        if (!collisionLoaded) {
+            collisionSound = loadSound(basePath + "collision_sound.mp3");
+            if (collisionSound) {
+                std::cout << "[CarSoundEngine] ✓ Collision sound loaded from " << basePath << std::endl;
+                collisionLoaded = true;
+            }
+        }
+        
+        if (engineLoaded && turnLoaded && brakeLoaded && collisionLoaded) break;
     }
     
     // If any sound files weren't loaded, generate them procedurally as fallback
@@ -89,9 +99,15 @@ void CarSoundEngine::initAudio() {
         brakeSound = createBrakeSound();
     }
     
+    if (!collisionLoaded) {
+        std::cout << "[CarSoundEngine] Collision sound file not found, generating procedurally..." << std::endl;
+        collisionSound = createCollisionSound();
+    }
+    
     std::cout << "[CarSoundEngine] Sounds ready - Engine: " << (engineSound ? "OK" : "FAIL")
               << ", Turn: " << (turnSound ? "OK" : "FAIL")
-              << ", Brake: " << (brakeSound ? "OK" : "FAIL") << std::endl;
+              << ", Brake: " << (brakeSound ? "OK" : "FAIL")
+              << ", Collision: " << (collisionSound ? "OK" : "FAIL") << std::endl;
 }
 
 Mix_Chunk* CarSoundEngine::loadSound(const std::string& filepath) {
@@ -239,6 +255,46 @@ Mix_Chunk* CarSoundEngine::createBrakeSound() {
     return chunk;
 }
 
+Mix_Chunk* CarSoundEngine::createCollisionSound() {
+    // Create collision/impact sound: short sharp boom
+    const int SAMPLE_RATE = 22050;
+    const int DURATION_MS = 300;  // Short impact sound
+    const int SAMPLES = (SAMPLE_RATE * DURATION_MS) / 1000;
+    
+    Uint8* buffer = new Uint8[SAMPLES * 4];  // Stereo
+    Sint16* samples = reinterpret_cast<Sint16*>(buffer);
+    
+    // Collision: sharp impact with multiple frequency components
+    for (int i = 0; i < SAMPLES * 2; ++i) {
+        int sampleIndex = i / 2;
+        float progress = static_cast<float>(sampleIndex) / SAMPLES;
+        
+        // Envelope: very sharp attack, fast decay (impact-like)
+        float envelope = progress < 0.05f ? progress * 20.0f : 1.0f - (progress - 0.05f) * (1.0f / 0.95f);
+        
+        // Multiple frequencies for "crashing" sound
+        float freq1 = 200.0f - progress * 100.0f;    // Low frequency descends
+        float freq2 = 400.0f - progress * 200.0f;    // Mid frequency
+        float freq3 = 1000.0f - progress * 500.0f;   // High frequency
+        
+        float angle1 = 2.0f * M_PI * freq1 * sampleIndex / SAMPLE_RATE;
+        float angle2 = 2.0f * M_PI * freq2 * sampleIndex / SAMPLE_RATE;
+        float angle3 = 2.0f * M_PI * freq3 * sampleIndex / SAMPLE_RATE;
+        
+        float value = (sin(angle1) * 0.35f + sin(angle2) * 0.4f + sin(angle3) * 0.25f) * envelope;
+        value = value * 0.95f;
+        
+        samples[i] = static_cast<Sint16>(value * 32767.0f);
+    }
+    
+    Mix_Chunk* chunk = Mix_QuickLoad_RAW(buffer, SAMPLES * 4);
+    if (!chunk) {
+        std::cerr << "[CarSoundEngine] Mix_QuickLoad_RAW failed for collision sound: " << Mix_GetError() << std::endl;
+        delete[] buffer;
+    }
+    return chunk;
+}
+
 void CarSoundEngine::update(bool isAccelerating, bool isTurning, bool isBraking) {
     if (!audioInitialized) return;
     
@@ -339,6 +395,26 @@ void CarSoundEngine::playBrakeSound() {
     } else {
         brakeChannel = channel;
         std::cout << "[CarSoundEngine] ▶ Brake sound playing on channel " << channel << std::endl;
+    }
+}
+
+void CarSoundEngine::playCollisionSound() {
+    if (!audioInitialized || !collisionSound) {
+        std::cerr << "[CarSoundEngine] Cannot play collision sound: audio not ready" << std::endl;
+        return;
+    }
+    
+    // Stop previous collision sound if any
+    if (collisionChannel != -1) {
+        Mix_HaltChannel(collisionChannel);
+    }
+    
+    int channel = Mix_PlayChannel(-1, collisionSound, 0);
+    if (channel == -1) {
+        std::cerr << "[CarSoundEngine] ERROR! Failed to play collision sound: " << Mix_GetError() << std::endl;
+    } else {
+        collisionChannel = channel;
+        std::cout << "[CarSoundEngine] 💥 COLLISION sound playing on channel " << channel << std::endl;
     }
 }
 

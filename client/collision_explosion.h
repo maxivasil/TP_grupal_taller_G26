@@ -5,15 +5,14 @@
 #include <SDL_mixer.h>
 #include <vector>
 
-// Forward declaration
 class CarSoundEngine;
 
 struct Particle {
-    float x, y;           // Position (in screen coords)
-    float vx, vy;         // Velocity
-    float lifetime;       // Current lifetime
-    float maxLifetime;    // Max lifetime before death
-    int size;             // Particle size
+    float x, y;           
+    float vx, vy;         
+    float lifetime;       
+    float maxLifetime;    
+    int size;             
 };
 
 class CollisionExplosion {
@@ -21,19 +20,14 @@ public:
     CollisionExplosion();
     ~CollisionExplosion();
     
-    // Set reference to sound engine (for collision sounds)
     void setSoundEngine(CarSoundEngine* engine) { soundEngine = engine; }
     
-    // Trigger explosion at world position, with camera/scale parameters for screen transformation
     void trigger(float worldX, float worldY, float camX, float camY, float scale);
     
-    // Update particles
     void update(float dt);
     
-    // Render particles
     void render(SDL2pp::Renderer& renderer);
     
-    // Check if explosion is active
     bool isActive() const { return !particles.empty(); }
     
 private:
@@ -42,11 +36,9 @@ private:
     const int particleCount = 30;              // More particles for visible effect
     const float particleSpeed = 400.0f;        // pixels/second (increased from 200)
     
-    // Audio engine reference
     CarSoundEngine* soundEngine = nullptr;
     
-    // Generate random number between min and max
     float randomFloat(float min, float max);
 };
 
-#endif  // COLLISION_EXPLOSION_H
+#endif  

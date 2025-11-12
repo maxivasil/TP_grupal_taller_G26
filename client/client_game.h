@@ -48,37 +48,29 @@ private:
     std::vector<CarSnapshot> snapshots;
     std::vector<RenderCar> carsToRender;
 
-    // Para testing del minimap sin snapshots
     float testPlayerX = 350.0f;
     float testPlayerY = 300.0f;
     float testPlayerAngle = 0.0f;
-    bool showMinimap = true;  // Toggle con M
+    bool showMinimap = true; 
 
-    // HUD tracking
     int currentCheckpoint = 0;
     int totalCheckpoints = 4;
     float raceStartTime = 0.0f;
     
-    // Checkpoints for the race
     std::vector<RaceCheckpoint> trackCheckpoints;
 
-    // Collision tracking (to detect transition from no collision to collision)
     std::unordered_map<int, bool> previousCollisionState;
 
-    // Health tracking (to detect when player takes damage)
     std::unordered_map<int, float> previousHealthState;
 
-    // Speed calculation (client-side)
     float lastPlayerX = 0.0f;
     float lastPlayerY = 0.0f;
     Uint32 lastSpeedUpdateTime = 0;
 
-    // Game state
     GameState gameState = GameState::PLAYING;
     std::string endGameMessage = "";
     Uint32 endGameTime = 0;
     
-    // Race results
     std::vector<ClientPlayerResult> raceResults;
     bool hasRaceResults = false;
 

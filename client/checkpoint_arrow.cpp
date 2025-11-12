@@ -75,7 +75,6 @@ void CheckpointArrow::drawArrow(SDL2pp::Renderer& renderer, float centerX, float
 void CheckpointArrow::drawFilledTriangle(SDL2pp::Renderer& /* renderer */,
                                         float /* x1 */, float /* y1 */, float /* x2 */, float /* y2 */,
                                         float /* x3 */, float /* y3 */, SDL_Color /* color */) {
-    // This function is no longer used with the simple arrow style
 }
 
 void CheckpointArrow::render(SDL2pp::Renderer& renderer) {
@@ -85,13 +84,11 @@ void CheckpointArrow::render(SDL2pp::Renderer& renderer) {
     Uint8 r, g, b, a;
     renderer.GetDrawColor(r, g, b, a);
     
-    // Draw background circle
     renderer.SetDrawColor(50, 50, 50, 200);
     SDL_Rect bgCircle = {arrowX - arrowSize - 5, arrowY - arrowSize - 5, 
                         (arrowSize + 5) * 2, (arrowSize + 5) * 2};
     renderer.FillRect(bgCircle);
     
-    // Draw border circle
     renderer.SetDrawColor(255, 200, 0, 255);
     for (int i = 0; i < 2; i++) {
         SDL_Rect border = {arrowX - (arrowSize + 5 + i), arrowY - (arrowSize + 5 + i),
@@ -99,11 +96,8 @@ void CheckpointArrow::render(SDL2pp::Renderer& renderer) {
         renderer.DrawRect(border);
     }
     
-    // Draw arrow pointing to checkpoint
     drawArrow(renderer, arrowX, arrowY, angleToCheckpoint, arrowSize);
     
-    // Draw distance text below arrow
-    // Note: Requires font support - will log instead for now
     std::cout << "Distance to checkpoint: " << distanceToCheckpoint << " units" << std::endl;
 
     renderer.SetDrawColor(r, g, b, a);

@@ -25,14 +25,14 @@ Game::Game(ClientSession& client_session):
         minimap(150),
         hud(WINDOW_WIDTH, WINDOW_HEIGHT),
         arrow(WINDOW_WIDTH, WINDOW_HEIGHT) {
-    raceStartTime = SDL_GetTicks() / 1000.0f;  // Iniciar timer de carrera
-    explosion.setSoundEngine(&carSoundEngine);  // Link collision audio to car sound engine
+    raceStartTime = SDL_GetTicks() / 1000.0f; 
+    explosion.setSoundEngine(&carSoundEngine);  
 }
 
 int Game::start() {
     try {
         SDL2pp::SDL sdl(SDL_INIT_VIDEO);
-        TTF_Init();  // Initialize SDL2_ttf
+        TTF_Init(); 
 
         std::string titulo = "NFS-2D";
 
@@ -42,7 +42,6 @@ int Game::start() {
         SDL2pp::Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         init_textures(renderer);
 
-        // Load HUD font
         std::vector<std::string> font_paths = {
                 "assets/fonts/arial.ttf",
                 "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
@@ -102,10 +101,9 @@ int Game::start() {
                 return 0;
             }
 
-            // Create context for command execution
             ClientContext ctx;
             ctx.game = this;
-            ctx.mainwindow = nullptr;  // No main window in this context
+            ctx.mainwindow = nullptr; 
 
             ServerToClientCmd_Client* raw_cmd;
             while (recv_queue.try_pop(raw_cmd)) {
@@ -115,33 +113,26 @@ int Game::start() {
                 if (snapshot_cmd) {
                     update(renderer, *snapshot_cmd);
                 } else {
-                    // Execute other commands (like race results)
                     cmd->execute(ctx);
                 }
             }
 
-            // Update explosion animation
             explosion.update(deltaTime);
 
             render(renderer);
 
-            auto t2 = SDL_GetTicks();     // t2 guarda el tiempo actual en milisegundos
-            int rest = rate - (t2 - t1);  // Tiempo que falta para la proxima iteracion.
-                                          // Al tiempo buscado 'rate' se le resta
-                                          // la diferencia entre 't2' y 't1', que es el tiempo que
-                                          // se tardo en renderizar
+            auto t2 = SDL_GetTicks();     
+            int rest = rate - (t2 - t1);  
 
-            // Retrasado en comparacion al ritmo deseado
             if (rest < 0) {
-                auto behind = -rest;                 // Tiempo de retraso
-                auto lost = behind - behind % rate;  // Tiempo perdido
-                t1 += lost;  // 't1' se adelanta en 'lost' milisegundos porque esos tiempos
-                             // se perdieron a causa del retraso
-            } else {         // A tiempo o adelantado
+                auto behind = -rest;                
+                auto lost = behind - behind % rate;
+                t1 += lost;
+            } else {
                 SDL_Delay(rest);
             }
 
-            t1 += rate;  // Aumentamos 't1' en 'rate' para la proxima iteracion
+            t1 += rate;  
         }
 
         return 0;
@@ -215,7 +206,6 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
     ClientContext ctx = {.game = this, .mainwindow = nullptr};
     cmd_snapshot.execute(ctx);
 
-    // Pre-calculate camera and scale parameters needed for explosions
     int texW = textures[0]->GetWidth();
     int texH = textures[0]->GetHeight();
     src = camera.getSrcRect(texW, texH);
@@ -231,23 +221,17 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
         float worldY = (it->pos_y * 24) / 3.086;
         camera.follow(worldX, worldY);
 
-        // Detect health loss (damage taken)
         float previousHealth = previousHealthState[it->id];
         
-        // Initialize health on first frame
         if (previousHealth == 0.0f && it->health > 0.0f) {
             previousHealth = it->health;  // First time, set as baseline
         }
         
-        // Check if health decreased (damage taken)
         if (it->health < previousHealth && previousHealth > 0.0f) {
-            // Health decreased - player took damage!
-            // Pass camera and scale info for proper coordinate transformation
             explosion.trigger(worldX, worldY, src.x, src.y, scale);
         }
         previousHealthState[it->id] = it->health;
 
-        // Update car sounds based on player state
         const Uint8* keyState = SDL_GetKeyboardState(NULL);
         bool isAccelerating = keyState[SDL_SCANCODE_UP];
         bool isBraking = keyState[SDL_SCANCODE_DOWN];
@@ -255,7 +239,6 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
         
         carSoundEngine.update(isAccelerating, isTurning, isBraking);
 
-        // Actualizar flecha hacia el próximo checkpoint
         if (currentCheckpoint < totalCheckpoints) {
             const RaceCheckpoint& current = trackCheckpoints[currentCheckpoint];
             float checkpointX = current.x;
@@ -263,7 +246,6 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
             
             arrow.updateTarget(it->pos_x, it->pos_y, checkpointX, checkpointY, it->angle);
 
-            // Detectar si pasamos el checkpoint (distancia < radio de detección)
             float dx = checkpointX - it->pos_x;
             float dy = checkpointY - it->pos_y;
             float distToCheckpoint = std::sqrt(dx * dx + dy * dy);
@@ -271,21 +253,17 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
             const float CHECKPOINT_RADIUS = 5.0f;  // Radio de detección
             if (distToCheckpoint < CHECKPOINT_RADIUS) {
                 if (currentCheckpoint == totalCheckpoints - 1) {
-                    // Completamos la carrera - último checkpoint
                     setWon();
                     
-                    // Notificar al servidor que terminamos
                     auto finishCmd = std::make_unique<ClientToServerFinishRace>();
                     client_session.send_command(finishCmd.release());
                 } else {
-                    // Pasamos a siguiente checkpoint
                     currentCheckpoint++;
                 }
             }
         }
     }
 
-    // Sprite del primer auto verde
     int carW = 28;
     int carH = 22;
 
@@ -422,7 +400,6 @@ void Game::render(SDL2pp::Renderer& renderer) {
     hudData.raceTime = (SDL_GetTicks() / 1000.0f) - raceStartTime;
     hud.render(renderer, hudData);
 
-    // Render arrow to checkpoint
     if (!snapshots.empty()) {
         auto it2 = std::find_if(snapshots.begin(), snapshots.end(),
                                 [&](const CarSnapshot& car) { return car.id == client_id; });
@@ -431,7 +408,6 @@ void Game::render(SDL2pp::Renderer& renderer) {
         }
     }
 
-    // Render end game screen if game is over
     if (gameState != GameState::PLAYING) {
         renderEndGameScreen(renderer);
     }
@@ -464,16 +440,13 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
     int width = renderer.GetOutputWidth();
     int height = renderer.GetOutputHeight();
 
-    // Crear un rectángulo semi-transparente como fondo
     SDL_Rect bgRect = {0, 0, width, height};
     renderer.SetDrawColor(0, 0, 0, 200);
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     renderer.FillRect(bgRect);
 
-    // Restaurar blend mode normal
     renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
 
-    // Título
     SDL2pp::Font titleFont(hud.fontPath.empty() ?
                                    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" :
                                    hud.fontPath,

@@ -28,4 +28,4 @@ public:
     bool getRaceFinished() const { return isFinished; }
 };
 
-#endif  // CLIENT_SERVER_TO_CLIENT_RACE_RESULTS_H
+#endif  

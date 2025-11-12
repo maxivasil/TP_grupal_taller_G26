@@ -9,7 +9,6 @@ const std::string TrackLoader::TRACKS_DIR_ALT = "../tracks";
 std::vector<RaceCheckpoint> TrackLoader::loadTrackCheckpoints(const std::string& trackName) {
     std::vector<RaceCheckpoint> checkpoints;
     
-    // Try to find the track file
     std::string trackPath;
     if (std::filesystem::exists(TRACKS_DIR + "/" + trackName + ".yaml")) {
         trackPath = TRACKS_DIR + "/" + trackName + ".yaml";
@@ -48,7 +47,6 @@ std::vector<RaceCheckpoint> TrackLoader::loadTrackCheckpoints(const std::string&
             cp.width = cpNode["width"].as<float>();
             cp.height = cpNode["height"].as<float>();
             
-            // Last checkpoint is the finish line
             isFinish = (id == (int)checkpointsNode.size() - 1);
             cp.isFinish = isFinish;
             

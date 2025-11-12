@@ -22,16 +22,19 @@ private:
     Mix_Chunk* turnSound;
     Mix_Chunk* brakeSound;
     Mix_Chunk* collisionSound;
+    Mix_Chunk* engineNoiseSound;  // Background engine noise (constant)
     
     int engineChannel = -1;
     int turnChannel = -1;
     int brakeChannel = -1;
     int collisionChannel = -1;
+    int engineNoiseChannel = -1;  // For background engine noise
     
     // Track if sounds are currently playing
     bool enginePlaying = false;
     bool turnPlaying = false;
     bool brakePlaying = false;
+    bool engineNoisePlaying = false;
     
     // Sound loading
     Mix_Chunk* loadSound(const std::string& filepath);
@@ -56,9 +59,11 @@ public:
     void playTurnSound();
     void playBrakeSound();
     void playCollisionSound();
+    void playEngineNoise();  // Start background engine noise (looped)
     void stopAcceleration();
     void stopTurn();
     void stopBrake();
+    void stopEngineNoise();
     void stopAll();
 };
 

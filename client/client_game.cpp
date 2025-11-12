@@ -65,7 +65,6 @@ int Game::start() {
                                 [](const auto& path) { return std::filesystem::exists(path); });
 
         if (it2 != map_paths.end()) {
-            std::cout << "Loading minimap from: " << *it2 << std::endl;
             minimap.loadMapImage(renderer, *it2);
             minimap.setWorldScale(62.0f / 8.9f, 24.0f / 3.086f);
             minimap.setZoomPixels(900.0f, 900.0f);
@@ -167,7 +166,6 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_m) {
                     showMinimap = !showMinimap;
-                    std::cout << "Minimap: " << (showMinimap ? "ON" : "OFF") << "\n";
                 }
                 break;
         }
@@ -245,10 +243,15 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
             // Health decreased - player took damage!
             // Pass camera and scale info for proper coordinate transformation
             explosion.trigger(worldX, worldY, src.x, src.y, scale);
-            std::cout << "[DAMAGE] Car " << (int)it->id << " took damage! Health: " 
-                      << it->health << " (was " << previousHealth << ")" << std::endl;
         }
         previousHealthState[it->id] = it->health;
+
+        // Update car sounds based on player state
+        const Uint8* keyState = SDL_GetKeyboardState(NULL);
+        bool isBraking = keyState[SDL_SCANCODE_DOWN];
+        bool isTurning = keyState[SDL_SCANCODE_LEFT] || keyState[SDL_SCANCODE_RIGHT];
+        
+        carSoundEngine.update(it->speed, isTurning, isBraking);
 
         // Actualizar flecha hacia el próximo checkpoint
         if (currentCheckpoint < totalCheckpoints) {
@@ -267,7 +270,6 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
             if (distToCheckpoint < CHECKPOINT_RADIUS) {
                 if (currentCheckpoint == totalCheckpoints - 1) {
                     // Completamos la carrera - último checkpoint
-                    std::cout << "Carrera completada!" << std::endl;
                     setWon();
                     
                     // Notificar al servidor que terminamos
@@ -276,7 +278,6 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
                 } else {
                     // Pasamos a siguiente checkpoint
                     currentCheckpoint++;
-                    std::cout << "Checkpoint cruzado: " << currentCheckpoint << std::endl;
                 }
             }
         }

@@ -42,6 +42,9 @@ public:
     b2Rot getRotation() const;
 
     bool isOnBridge() const;
+
+    // Get the magnitude of the car's velocity (speed)
+    float getSpeed() const;
 };
 
 

@@ -17,6 +17,7 @@
 #include "camera.h"
 #include "checkpoint_arrow.h"
 #include "collision_explosion.h"
+#include "car_sound_engine.h"
 #include "hud.h"
 #include "minimap.h"
 #include "session.h"
@@ -41,6 +42,7 @@ private:
     HUD hud;
     CheckpointArrow arrow;
     CollisionExplosion explosion;
+    CarSoundEngine carSoundEngine;
     std::map<int, std::shared_ptr<SDL2pp::Texture>> textures;
 
     std::vector<CarSnapshot> snapshots;

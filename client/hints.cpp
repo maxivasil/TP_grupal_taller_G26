@@ -161,6 +161,8 @@ void Hints::drawCompass(SDL2pp::Renderer& renderer) {
 
 void Hints::render(SDL2pp::Renderer& renderer) {
     if (!hasHint) return;
+    Uint8 r, g, b, a;
+    renderer.GetDrawColor(r, g, b, a);
 
     // Draw compass HUD at fixed position (top-right area)
     drawCompass(renderer);
@@ -228,4 +230,5 @@ void Hints::render(SDL2pp::Renderer& renderer) {
 
     // Restore blend mode
     renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    renderer.SetDrawColor(r, g, b, a);
 }

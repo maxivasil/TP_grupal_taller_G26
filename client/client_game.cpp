@@ -456,6 +456,8 @@ void Game::update_snapshots(const std::vector<CarSnapshot>& snapshots) {
 }
 
 void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
+    Uint8 r, g, b, a;
+    renderer.GetDrawColor(r, g, b, a);
     int width = renderer.GetOutputWidth();
     int height = renderer.GetOutputHeight();
 
@@ -571,6 +573,7 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
     int instructY = height - 50;
     SDL_Rect instructRect = {instructX, instructY, instructTexture.GetWidth(), instructTexture.GetHeight()};
     renderer.Copy(instructTexture, SDL2pp::NullOpt, instructRect);
+    renderer.SetDrawColor(r, g, b, a);
 }
 
 void Game::setWon() {

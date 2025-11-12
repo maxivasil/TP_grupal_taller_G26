@@ -151,6 +151,8 @@ void CollisionExplosion::update(float dt) {
 }
 
 void CollisionExplosion::render(SDL2pp::Renderer& renderer) {
+    Uint8 r, g, b, a;
+    renderer.GetDrawColor(r, g, b, a);
     for (auto& p : particles) {
         // Calculate alpha based on lifetime
         float progress = p.lifetime / p.maxLifetime;
@@ -175,4 +177,5 @@ void CollisionExplosion::render(SDL2pp::Renderer& renderer) {
         
         renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
     }
+    renderer.SetDrawColor(r, g, b, a);
 }

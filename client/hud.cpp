@@ -27,6 +27,8 @@ void HUD::render(SDL2pp::Renderer& renderer, const HUDData& data) {
         return;  // No font, can't render text
     }
 
+    Uint8 r, g, b, a;
+    renderer.GetDrawColor(r, g, b, a);
     try {
         // Prepare text for display
         std::ostringstream speedText;
@@ -97,4 +99,5 @@ void HUD::render(SDL2pp::Renderer& renderer, const HUDData& data) {
     } catch (const std::exception& e) {
         std::cerr << "HUD: Error rendering text: " << e.what() << std::endl;
     }
+    renderer.SetDrawColor(r, g, b, a);
 }

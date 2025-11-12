@@ -28,6 +28,8 @@ void CheckpointArrow::updateTarget(float playerX, float playerY,
 
 void CheckpointArrow::drawArrow(SDL2pp::Renderer& renderer, float centerX, float centerY,
                                float angle, int size) {
+    Uint8 r, g, b, a;
+    renderer.GetDrawColor(r, g, b, a);
     
     float cos_a = std::cos(angle);
     float sin_a = std::sin(angle);
@@ -67,6 +69,7 @@ void CheckpointArrow::drawArrow(SDL2pp::Renderer& renderer, float centerX, float
         renderer.DrawLine(SDL2pp::Point(int(baseX + perpX), int(baseY + perpY)),
                          SDL2pp::Point(int(tipX + perpX), int(tipY + perpY)));
     }
+    renderer.SetDrawColor(r, g, b, a);
 }
 
 void CheckpointArrow::drawFilledTriangle(SDL2pp::Renderer& /* renderer */,
@@ -79,6 +82,8 @@ void CheckpointArrow::render(SDL2pp::Renderer& renderer) {
     if (!hasTarget) {
         return;
     }
+    Uint8 r, g, b, a;
+    renderer.GetDrawColor(r, g, b, a);
     
     // Draw background circle
     renderer.SetDrawColor(50, 50, 50, 200);
@@ -100,4 +105,6 @@ void CheckpointArrow::render(SDL2pp::Renderer& renderer) {
     // Draw distance text below arrow
     // Note: Requires font support - will log instead for now
     std::cout << "Distance to checkpoint: " << distanceToCheckpoint << " units" << std::endl;
+
+    renderer.SetDrawColor(r, g, b, a);
 }

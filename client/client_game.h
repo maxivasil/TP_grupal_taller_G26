@@ -14,12 +14,12 @@
 #include <SDL2pp/SDL2pp.hh>
 #include <SDL_image.h>
 
-#include "camera.h"
-#include "checkpoint_arrow.h"
-#include "collision_explosion.h"
-#include "car_sound_engine.h"
-#include "hud.h"
-#include "minimap.h"
+#include "graphics/camera.h"
+#include "graphics/checkpoint_arrow.h"
+#include "graphics/collision_explosion.h"
+#include "graphics/hud.h"
+#include "graphics/minimap.h"
+#include "audio/car_sound_engine.h"
 #include "session.h"
 #include "cmd/server_to_client_raceResults.h"
 

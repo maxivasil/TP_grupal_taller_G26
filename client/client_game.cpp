@@ -10,7 +10,7 @@
 #include "cmd/client_to_server_cheat.h"
 #include "cmd/client_to_server_move.h"
 #include "cmd/client_to_server_finishRace.h"
-#include "track_loader.h"
+#include "graphics/track_loader.h"
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480

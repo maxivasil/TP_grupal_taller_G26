@@ -37,6 +37,8 @@ public:
 
     int getId() const;
 
+    const std::string& getName() const;
+
     b2Rot getRotation() const;
 
     bool isOnBridge() const;

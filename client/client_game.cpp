@@ -3,12 +3,14 @@
 #include <cmath>
 #include <filesystem>
 
+#include <SDL2pp/SDL2pp.hh>
 #include <SDL_ttf.h>
 #include <unistd.h>
-#include <SDL2pp/SDL2pp.hh>
 
 #include "cmd/client_to_server_cheat.h"
 #include "cmd/client_to_server_move.h"
+#include "cmd/client_to_server_finishRace.h"
+#include "track_loader.h"
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
@@ -22,7 +24,7 @@ Game::Game(ClientSession& client_session):
         camera(WINDOW_WIDTH, WINDOW_HEIGHT),
         minimap(150),
         hud(WINDOW_WIDTH, WINDOW_HEIGHT),
-        hints(WINDOW_WIDTH, WINDOW_HEIGHT) {
+        arrow(WINDOW_WIDTH, WINDOW_HEIGHT) {
     raceStartTime = SDL_GetTicks() / 1000.0f;  // Iniciar timer de carrera
 }
 
@@ -51,8 +53,6 @@ int Game::start() {
 
         if (it != font_paths.end()) {
             hud.loadFont(*it, 18);
-            // Also pass the font to hints for cardinal labels
-            hints.setHUDFont(new SDL2pp::Font(*it, 12), *it);
         }
 
         std::vector<std::string> map_paths = {
@@ -71,34 +71,57 @@ int Game::start() {
             minimap.setZoomPixels(900.0f, 900.0f);
         }
 
-        // Set up checkpoints for the race (Liberty City circuit)
-        std::vector<RaceCheckpoint> checkpoints = {
-                {0, 8.9f, 106.5f, 6.0f, 6.0f, false},   // Start checkpoint
-                {1, 120.0f, 106.5f, 6.0f, 6.0f, true},  // Finish line
-        };
-        minimap.setCheckpoints(checkpoints);
+        std::string trackName = "track_four_checkpoints_vice_city";
+        trackCheckpoints = TrackLoader::loadTrackCheckpoints(trackName);
+        
+        if (trackCheckpoints.empty()) {
+            std::cerr << "ERROR: No checkpoints loaded! Using fallback..." << std::endl;
+            trackCheckpoints = {
+                    {0, 13.8f, 192.6f, 18.2f, 9.1f, false},
+                    {1, 231.7f, 192.9f, 17.5f, 10.9f, false},
+                    {2, 240.5f, 107.3f, 18.9f, 11.5f, false},
+                    {3, 439.8f, 107.0f, 20.2f, 13.3f, true},
+            };
+        }
+        
+        totalCheckpoints = trackCheckpoints.size();
+        minimap.setCheckpoints(trackCheckpoints);
 
         auto t1 = SDL_GetTicks();
         auto rate = FPS;
+        Uint32 prevTime = t1;
 
         Queue<ServerToClientCmd_Client*>& recv_queue = client_session.get_recv_queue();
 
         while (true) {
-            t1 = SDL_GetTicks();  // t1 guarda el tiempo actual en milisegundos
+            t1 = SDL_GetTicks();
+            float deltaTime = (t1 - prevTime) / 1000.0f;
+            prevTime = t1;
 
             if (handleEvents(renderer)) {
                 return 0;
             }
 
+            // Create context for command execution
+            ClientContext ctx;
+            ctx.game = this;
+            ctx.mainwindow = nullptr;  // No main window in this context
+
             ServerToClientCmd_Client* raw_cmd;
             while (recv_queue.try_pop(raw_cmd)) {
                 std::unique_ptr<ServerToClientCmd_Client> cmd(raw_cmd);
 
-                auto* snapshot_cmd = dynamic_cast<ServerToClientSnapshot*>(cmd.get());
+                auto const* snapshot_cmd = dynamic_cast<ServerToClientSnapshot*>(cmd.get());
                 if (snapshot_cmd) {
                     update(renderer, *snapshot_cmd);
+                } else {
+                    // Execute other commands (like race results)
+                    cmd->execute(ctx);
                 }
             }
+
+            // Update explosion animation
+            explosion.update(deltaTime);
 
             render(renderer);
 
@@ -155,7 +178,7 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
     if (state[SDL_SCANCODE_ESCAPE] || state[SDL_SCANCODE_Q]) {
         return true;
     }
-    
+
     // CHEATS
     if (state[SDL_SCANCODE_LCTRL]) {
         if (state[SDL_SCANCODE_H]) {
@@ -171,7 +194,7 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
             setLost();
         }
     }
-    
+
     if (state[SDL_SCANCODE_RIGHT]) {
         client_session.send_command(new ClientToServerMove(MOVE_RIGHT));
     }
@@ -190,9 +213,16 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
 
 bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapshot) {
     carsToRender.clear();
-    ClientContext ctx = {.game = this,
-    .mainwindow = nullptr};
+    ClientContext ctx = {.game = this, .mainwindow = nullptr};
     cmd_snapshot.execute(ctx);
+
+    // Pre-calculate camera and scale parameters needed for explosions
+    int texW = textures[0]->GetWidth();
+    int texH = textures[0]->GetHeight();
+    src = camera.getSrcRect(texW, texH);
+    
+    dst = {0, 0, renderer.GetOutputWidth(), renderer.GetOutputHeight()};
+    float scale = float(dst.w) / float(src.w);
 
     auto it = std::find_if(snapshots.begin(), snapshots.end(),
                            [&](const CarSnapshot& car) { return car.id == client_id; });
@@ -201,44 +231,60 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
         float worldX = (it->pos_x * 62) / 8.9;
         float worldY = (it->pos_y * 24) / 3.086;
         camera.follow(worldX, worldY);
+
+        // Detect health loss (damage taken)
+        float previousHealth = previousHealthState[it->id];
         
-        // Actualizar hints hacia el próximo checkpoint
+        // Initialize health on first frame
+        if (previousHealth == 0.0f && it->health > 0.0f) {
+            previousHealth = it->health;  // First time, set as baseline
+        }
+        
+        // Check if health decreased (damage taken)
+        if (it->health < previousHealth && previousHealth > 0.0f) {
+            // Health decreased - player took damage!
+            // Pass camera and scale info for proper coordinate transformation
+            explosion.trigger(worldX, worldY, src.x, src.y, scale);
+            std::cout << "[DAMAGE] Car " << (int)it->id << " took damage! Health: " 
+                      << it->health << " (was " << previousHealth << ")" << std::endl;
+        }
+        previousHealthState[it->id] = it->health;
+
+        // Actualizar flecha hacia el próximo checkpoint
         if (currentCheckpoint < totalCheckpoints) {
-            // Asumir que tenemos checkpoints en (8.9, 106.5) -> (120.0, 106.5)
-            float checkpointX = (currentCheckpoint == 0) ? 8.9f : 120.0f;
-            float checkpointY = 106.5f;
-            // Pass player heading for camera-relative needle
-            hints.updateHint(it->pos_x, it->pos_y, checkpointX, checkpointY, it->angle);
+            const RaceCheckpoint& current = trackCheckpoints[currentCheckpoint];
+            float checkpointX = current.x;
+            float checkpointY = current.y;
             
-            // Detectar si pasamos el checkpoint (distancia < radio de 5 unidades)
+            arrow.updateTarget(it->pos_x, it->pos_y, checkpointX, checkpointY, it->angle);
+
+            // Detectar si pasamos el checkpoint (distancia < radio de detección)
             float dx = checkpointX - it->pos_x;
             float dy = checkpointY - it->pos_y;
             float distToCheckpoint = std::sqrt(dx * dx + dy * dy);
-            
-            const float CHECKPOINT_RADIUS = 5.0f; // Radio de detección
-            if (distToCheckpoint < CHECKPOINT_RADIUS && currentCheckpoint == 0) {
-                // Pasamos el checkpoint de salida, ir al siguiente
-                currentCheckpoint = 1;
-                std::cout << "Checkpoint cruzado: " << currentCheckpoint << std::endl;
-            } else if (distToCheckpoint < CHECKPOINT_RADIUS && currentCheckpoint == 1) {
-                // Completamos la carrera - llamar al cheat de victoria automático
-                std::cout << "Carrera completada!" << std::endl;
-                setWon();
+
+            const float CHECKPOINT_RADIUS = 5.0f;  // Radio de detección
+            if (distToCheckpoint < CHECKPOINT_RADIUS) {
+                if (currentCheckpoint == totalCheckpoints - 1) {
+                    // Completamos la carrera - último checkpoint
+                    std::cout << "Carrera completada!" << std::endl;
+                    setWon();
+                    
+                    // Notificar al servidor que terminamos
+                    auto finishCmd = std::make_unique<ClientToServerFinishRace>();
+                    client_session.send_command(finishCmd.release());
+                } else {
+                    // Pasamos a siguiente checkpoint
+                    currentCheckpoint++;
+                    std::cout << "Checkpoint cruzado: " << currentCheckpoint << std::endl;
+                }
             }
         }
     }
 
-    int texW = textures[0]->GetWidth();
-    int texH = textures[0]->GetHeight();
-    src = camera.getSrcRect(texW, texH);
-
-    dst = {0, 0, renderer.GetOutputWidth(), renderer.GetOutputHeight()};
-
     // Sprite del primer auto verde
-    int carW = textures[1]->GetWidth() / 12;
-    int carH = textures[1]->GetHeight() / 16;
-
-    float scale = float(dst.w) / float(src.w);
+    int carW = 28;
+    int carH = 22;
 
     for (const auto& car: snapshots) {
         float worldX = (car.pos_x * 62) / 8.9;
@@ -252,7 +298,7 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
                   int(carH * scale)};
 
         // TODO: usar sprite según id o dirección
-        rc.src = {0, 0, carW, carH};
+        rc.src = {2, 5, carW, carH};
         rc.angle = car.angle;
 
         if (car.id == client_id) {
@@ -290,9 +336,6 @@ void Game::render(SDL2pp::Renderer& renderer) {
     if (it != snapshots.end()) {
         float serverX = it->pos_x;
         float serverY = it->pos_y;
-
-        std::cout << "SERVER: pos=(" << serverX << ", " << serverY << ")" << std::endl;
-
 
         localPlayer.x = serverX;
         localPlayer.y = serverY;
@@ -338,20 +381,20 @@ void Game::render(SDL2pp::Renderer& renderer) {
         minimap.render(renderer, localPlayer, otherPlayers, currentCheckpoint);
     }
 
-    // Render HUD
+    
+    explosion.render(renderer);
+
+   
     HUDData hudData;
-    hudData.speed = 0.0f;  // Default to 0 if no local player
+    hudData.speed = 0.0f; 
     hudData.health = 100.0f;
 
-    // Use the first car's data (assumed to be the local player)
     if (!snapshots.empty()) {
         hudData.health = snapshots[0].health;
 
-        // Calculate speed from position change if server speed is 0
         if (snapshots[0].speed > 0.0f) {
             hudData.speed = snapshots[0].speed;
         } else {
-            // Client-side speed calculation based on position delta
             Uint32 currentTime = SDL_GetTicks();
             if (lastSpeedUpdateTime > 0) {
                 float timeDelta =
@@ -376,12 +419,12 @@ void Game::render(SDL2pp::Renderer& renderer) {
     hudData.raceTime = (SDL_GetTicks() / 1000.0f) - raceStartTime;
     hud.render(renderer, hudData);
 
-    // Render hints (directional arrow to checkpoint)
+    // Render arrow to checkpoint
     if (!snapshots.empty()) {
-        auto it = std::find_if(snapshots.begin(), snapshots.end(),
-                               [&](const CarSnapshot& car) { return car.id == client_id; });
-        if (it != snapshots.end()) {
-            hints.render(renderer);
+        auto it2 = std::find_if(snapshots.begin(), snapshots.end(),
+                                [&](const CarSnapshot& car) { return car.id == client_id; });
+        if (it2 != snapshots.end()) {
+            arrow.render(renderer);
         }
     }
 
@@ -426,8 +469,9 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
     renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
 
     // Título
-    SDL2pp::Font titleFont(hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-                                                 : hud.fontPath,
+    SDL2pp::Font titleFont(hud.fontPath.empty() ?
+                                   "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" :
+                                   hud.fontPath,
                            48);
     SDL_Color titleColor;
     std::string titleText;
@@ -444,26 +488,89 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
     SDL2pp::Texture titleTexture(renderer, titleSurface);
 
     int titleX = (width - titleTexture.GetWidth()) / 2;
-    int titleY = height / 4;
+    int titleY = height / 10;
     SDL_Rect titleRect = {titleX, titleY, titleTexture.GetWidth(), titleTexture.GetHeight()};
     renderer.Copy(titleTexture, SDL2pp::NullOpt, titleRect);
 
-    // Mensaje adicional
-    SDL2pp::Font msgFont(hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-                                               : hud.fontPath,
-                         24);
-    SDL_Color msgColor = {255, 255, 255, 255};
+    // Si hay resultados, mostrar la tabla
+    // TEMPORAL: Comentado check de múltiples autos para testing con un solo auto
+    if (hasRaceResults && !raceResults.empty()) { // if (hasRaceResults) { // TEMPORAL: mostrar siempre si hay resultados
+        std::cout << "[RENDER] Mostrando tabla de resultados con " << raceResults.size() << " resultados\n";
+        SDL2pp::Font resultsFont(
+                hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
+                20);
+        SDL_Color resultsColor = {200, 200, 200, 255};
+        
+        int startY = titleY + titleTexture.GetHeight() + 30;
+        int lineHeight = 30;
+        int lineSpacing = 5;
+        
+        // Título de tabla
+        auto headerSurface = resultsFont.RenderText_Solid("RESULTADOS", {255, 255, 0, 255});
+        SDL2pp::Texture headerTexture(renderer, headerSurface);
+        int headerX = (width - headerTexture.GetWidth()) / 2;
+        SDL_Rect headerRect = {headerX, startY, headerTexture.GetWidth(), headerTexture.GetHeight()};
+        renderer.Copy(headerTexture, SDL2pp::NullOpt, headerRect);
+        
+        startY += lineHeight + 10;
+        
+        // Mostrar cada resultado
+        for (const auto& result : raceResults) {
+            int minutes = static_cast<int>(result.finishTime) / 60;
+            int seconds = static_cast<int>(result.finishTime) % 60;
+            int millis = static_cast<int>((result.finishTime - static_cast<int>(result.finishTime)) * 1000);
+            
+            char timeStr[50];
+            snprintf(timeStr, sizeof(timeStr), "%02d:%02d.%03d", minutes, seconds, millis);
+            
+            char resultStr[150];
+            snprintf(resultStr, sizeof(resultStr), "%d. %s - %s", 
+                     static_cast<int>(result.position), 
+                     result.playerName.c_str(), 
+                     timeStr);
+            
+            auto resultSurface = resultsFont.RenderText_Solid(resultStr, resultsColor);
+            SDL2pp::Texture resultTexture(renderer, resultSurface);
+            
+            int resultX = (width - resultTexture.GetWidth()) / 2;
+            SDL_Rect resultRect = {resultX, startY, resultTexture.GetWidth(), resultTexture.GetHeight()};
+            renderer.Copy(resultTexture, SDL2pp::NullOpt, resultRect);
+            
+            startY += lineHeight + lineSpacing;
+        }
+    } else {
+        // Mensaje si no hay resultados aún
+        SDL2pp::Font msgFont(
+                hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
+                20);
+        SDL_Color msgColor = {200, 200, 200, 255};
 
-    std::string msgText;
-    msgText = "Presiona ESC para volver al lobby";
+        std::string msgText = "Esperando resultados...";
 
-    auto msgSurface = msgFont.RenderText_Solid(msgText, msgColor);
-    SDL2pp::Texture msgTexture(renderer, msgSurface);
+        auto msgSurface = msgFont.RenderText_Solid(msgText, msgColor);
+        SDL2pp::Texture msgTexture(renderer, msgSurface);
 
-    int msgX = (width - msgTexture.GetWidth()) / 2;
-    int msgY = height / 2;
-    SDL_Rect msgRect = {msgX, msgY, msgTexture.GetWidth(), msgTexture.GetHeight()};
-    renderer.Copy(msgTexture, SDL2pp::NullOpt, msgRect);
+        int msgX = (width - msgTexture.GetWidth()) / 2;
+        int msgY = height / 2;
+        SDL_Rect msgRect = {msgX, msgY, msgTexture.GetWidth(), msgTexture.GetHeight()};
+        renderer.Copy(msgTexture, SDL2pp::NullOpt, msgRect);
+    }
+    
+    // Mensaje de instrucción al final
+    SDL2pp::Font instructFont(
+            hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
+            16);
+    SDL_Color instructColor = {200, 200, 200, 255};
+
+    std::string instructText = "Presiona ESC para volver al lobby";
+
+    auto instructSurface = instructFont.RenderText_Solid(instructText, instructColor);
+    SDL2pp::Texture instructTexture(renderer, instructSurface);
+
+    int instructX = (width - instructTexture.GetWidth()) / 2;
+    int instructY = height - 50;
+    SDL_Rect instructRect = {instructX, instructY, instructTexture.GetWidth(), instructTexture.GetHeight()};
+    renderer.Copy(instructTexture, SDL2pp::NullOpt, instructRect);
 }
 
 void Game::setWon() {
@@ -480,3 +587,14 @@ void Game::setLost() {
     std::cout << "DERROTA. Presiona ESC para volver al lobby\n";
 }
 
+void Game::setRaceResults(const std::vector<ClientPlayerResult>& results) {
+    raceResults = results;
+    hasRaceResults = true;
+    std::cout << "\n=== GAME::setRaceResults LLAMADO ===" << std::endl;
+    std::cout << "Resultados de carrera recibidos: " << results.size() << " jugadores" << std::endl;
+    for (const auto& result : results) {
+        std::cout << "  - " << result.playerName << " (Position: " << (int)result.position 
+                  << ", Time: " << result.finishTime << "s)" << std::endl;
+    }
+    std::cout << "==================================\n" << std::endl;
+}

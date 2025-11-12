@@ -31,5 +31,10 @@ std::unordered_map<uint8_t, std::function<ServerToClientCmd_Client*(const std::v
         return new ServerToClientGameStarting(std::move(snapshot));
     };
 
+    registry[SERVER_TO_CLIENT_RACE_RESULTS] = [](const std::vector<uint8_t>& data) {
+        auto raceResults = ServerToClientRaceResults::from_bytes(data);
+        return new ServerToClientRaceResults(std::move(raceResults));
+    };
+
     return registry;
 }

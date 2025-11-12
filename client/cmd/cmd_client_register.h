@@ -10,6 +10,7 @@
 #include "server_to_client_lobbyResponse.h"
 #include "server_to_client_snapshot.h"
 #include "server_to_client_gameStarting.h"
+#include "server_to_client_raceResults.h"
 
 class ClientRegisteredCommands {
 public:

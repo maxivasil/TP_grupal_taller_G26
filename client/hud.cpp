@@ -60,6 +60,21 @@ void HUD::render(SDL2pp::Renderer& renderer, const HUDData& data) {
         int lineHeight = 25;
         int x = padding;
         int y = padding;
+        
+        // Calculate the bounding box for all text (to draw background)
+        int maxWidth = std::max({speedSurface.GetWidth(), healthSurface.GetWidth(), 
+                                 checkpointSurface.GetWidth(), timeSurface.GetWidth()});
+        int totalHeight = lineHeight * 4;  // 4 lines of text
+        int bgPadding = 8;  // Extra padding around text for background
+        
+        // Draw black background rectangle
+        renderer.SetDrawColor(0, 0, 0, 200);  // Black with slight transparency
+        SDL_Rect bgRect{x - bgPadding, y - bgPadding, maxWidth + (bgPadding * 2), totalHeight + bgPadding};
+        renderer.FillRect(bgRect);
+        
+        // Draw border around background
+        renderer.SetDrawColor(255, 255, 255, 150);  // White border
+        renderer.DrawRect(bgRect);
 
         // Render speed
         renderer.Copy(speedTexture, SDL2pp::NullOpt, 

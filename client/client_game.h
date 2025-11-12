@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <SDL2/SDL.h>
@@ -14,10 +15,12 @@
 #include <SDL_image.h>
 
 #include "camera.h"
-#include "hints.h"
+#include "checkpoint_arrow.h"
+#include "collision_explosion.h"
 #include "hud.h"
 #include "minimap.h"
 #include "session.h"
+#include "cmd/server_to_client_raceResults.h"
 
 struct RenderCar {
     SDL_Rect src;
@@ -36,7 +39,8 @@ private:
     Camera camera;
     Minimap minimap;
     HUD hud;
-    Hints hints;
+    CheckpointArrow arrow;
+    CollisionExplosion explosion;
     std::map<int, std::shared_ptr<SDL2pp::Texture>> textures;
 
     std::vector<CarSnapshot> snapshots;
@@ -50,8 +54,17 @@ private:
 
     // HUD tracking
     int currentCheckpoint = 0;
-    int totalCheckpoints = 2;
+    int totalCheckpoints = 4;
     float raceStartTime = 0.0f;
+    
+    // Checkpoints for the race
+    std::vector<RaceCheckpoint> trackCheckpoints;
+
+    // Collision tracking (to detect transition from no collision to collision)
+    std::unordered_map<int, bool> previousCollisionState;
+
+    // Health tracking (to detect when player takes damage)
+    std::unordered_map<int, float> previousHealthState;
 
     // Speed calculation (client-side)
     float lastPlayerX = 0.0f;
@@ -62,6 +75,10 @@ private:
     GameState gameState = GameState::PLAYING;
     std::string endGameMessage = "";
     Uint32 endGameTime = 0;
+    
+    // Race results
+    std::vector<ClientPlayerResult> raceResults;
+    bool hasRaceResults = false;
 
     SDL_Rect src;
     SDL_Rect dst;
@@ -85,6 +102,8 @@ public:
 
     int start();
     void update_snapshots(const std::vector<CarSnapshot>& snapshots);
+    void setRaceResults(const std::vector<ClientPlayerResult>& results);
+
 };
 
 #endif

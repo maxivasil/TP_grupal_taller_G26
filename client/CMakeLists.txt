@@ -12,7 +12,9 @@ target_sources(taller_client
     session.cpp
     minimap.cpp
     hud.cpp
-    hints.cpp
+    checkpoint_arrow.cpp
+    track_loader.cpp
+    collision_explosion.cpp
     UI/resources.qrc
     UI/mainwindow.cpp
     UI/initialwindow.cpp
@@ -26,7 +28,9 @@ target_sources(taller_client
     session.h
     minimap.h
     hud.h
-    hints.h
+    checkpoint_arrow.h
+    track_loader.h
+    collision_explosion.h
     UI/mainwindow.h
     UI/initialwindow.h
     )
@@ -34,6 +38,7 @@ target_sources(taller_client
 target_link_libraries(taller_client 
     PRIVATE 
         client_cmd
+        yaml-cpp
 )
 
 # Link to Qt Widgets if it was found by the top-level CMake (guard against missing Qt)

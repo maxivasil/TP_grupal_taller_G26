@@ -5,31 +5,29 @@
 #include <string>
 
 QT_BEGIN_NAMESPACE
-namespace Ui
-{
+namespace Ui {
 class MainWindow;
 }
 QT_END_NAMESPACE
 
 class ClientSession;
 
-class MainWindow : public QMainWindow {
-	Q_OBJECT
+class MainWindow: public QMainWindow {
+    Q_OBJECT
 
-    private:
-	ClientSession& client_session;
-	Ui::MainWindow *ui;
-	std::string car;
+private:
+    ClientSession& client_session;
+    Ui::MainWindow* ui;
+    std::string car;
 
-	void selector();
+    void selector();
 
-	void ready();
+    void ready();
 
-    public:
-	MainWindow(ClientSession& client_session, QWidget *parent = nullptr);
-	~MainWindow();
+public:
+    explicit MainWindow(ClientSession& client_session, QWidget* parent = nullptr);
+    ~MainWindow();
 
-	void connectEvents();
-
+    void connectEvents();
 };
-#endif // MAINWINDOW_H
+#endif  // MAINWINDOW_H

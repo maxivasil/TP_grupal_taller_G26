@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <memory>
 #include <vector>
+#include <string>
 
 // Car sound states
 enum class CarSoundState {
@@ -21,33 +22,40 @@ private:
     Mix_Chunk* turnSound;
     Mix_Chunk* brakeSound;
     
-    int currentChannel;
-    CarSoundState currentState;
-    float currentSpeed;
-    float previousSpeed;
+    int engineChannel = -1;
+    int turnChannel = -1;
+    int brakeChannel = -1;
     
-    // State tracking (like explosion damage detection)
-    bool previousTurning;
-    bool previousBraking;
+    // Track if sounds are currently playing
+    bool enginePlaying = false;
+    bool turnPlaying = false;
+    bool brakePlaying = false;
     
-    // Sound generation
+    // Sound loading
+    Mix_Chunk* loadSound(const std::string& filepath);
+    void initAudio();
+    
+    // Fallback: procedural sound generation if files not found
     Mix_Chunk* createEngineSound(float pitch);
     Mix_Chunk* createTurnSound();
     Mix_Chunk* createBrakeSound();
-    void initAudio();
     
 public:
     CarSoundEngine();
     ~CarSoundEngine();
     
-    // Update sound based on car state
-    void update(float speed, bool isTurning, bool isBraking);
+    // Update sound based on what keys are currently pressed
+    // Pass true/false for each action currently happening
+    void update(bool isAccelerating, bool isTurning, bool isBraking);
     
     // Trigger specific sounds
     void playAcceleration();
     void playTurnSound();
     void playBrakeSound();
-    void stop();
+    void stopAcceleration();
+    void stopTurn();
+    void stopBrake();
+    void stopAll();
 };
 
 #endif  // CAR_SOUND_ENGINE_H

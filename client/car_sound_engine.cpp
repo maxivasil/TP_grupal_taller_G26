@@ -2,18 +2,13 @@
 #include <cmath>
 #include <iostream>
 #include <cstring>
+#include <filesystem>
 
 CarSoundEngine::CarSoundEngine()
     : audioInitialized(false),
       engineSound(nullptr),
       turnSound(nullptr),
-      brakeSound(nullptr),
-      currentChannel(-1),
-      currentState(CarSoundState::IDLE),
-      currentSpeed(0.0f),
-      previousSpeed(0.0f),
-      previousTurning(false),
-      previousBraking(false) {
+      brakeSound(nullptr) {
     initAudio();
 }
 
@@ -37,51 +32,118 @@ void CarSoundEngine::initAudio() {
     audioInitialized = true;
     std::cout << "[CarSoundEngine] Audio initialized successfully" << std::endl;
     
-    // Pre-generate sounds
-    engineSound = createEngineSound(1.0f);
-    turnSound = createTurnSound();
-    brakeSound = createBrakeSound();
+    // Try to load external sound files first
+    std::cout << "[CarSoundEngine] Attempting to load external sound files..." << std::endl;
     
-    std::cout << "[CarSoundEngine] Sounds generated - Engine: " << (engineSound ? "OK" : "FAIL")
+    // Try different paths for sound files
+    std::vector<std::string> basePaths = {
+        "assets/sounds/",
+        "../assets/sounds/",
+        "../../assets/sounds/",
+        "./assets/sounds/"
+    };
+    
+    bool engineLoaded = false, turnLoaded = false, brakeLoaded = false;
+    
+    for (const auto& basePath : basePaths) {
+        if (!engineLoaded) {
+            engineSound = loadSound(basePath + "car_engine_acceleration.wav");
+            if (engineSound) {
+                std::cout << "[CarSoundEngine] ✓ Engine sound loaded from " << basePath << std::endl;
+                engineLoaded = true;
+            }
+        }
+        
+        if (!turnLoaded) {
+            turnSound = loadSound(basePath + "tire_squeal_drift.mp3");
+            if (turnSound) {
+                std::cout << "[CarSoundEngine] ✓ Turn sound loaded from " << basePath << std::endl;
+                turnLoaded = true;
+            }
+        }
+        
+        if (!brakeLoaded) {
+            brakeSound = loadSound(basePath + "car_brake_sound.mp3");
+            if (brakeSound) {
+                std::cout << "[CarSoundEngine] ✓ Brake sound loaded from " << basePath << std::endl;
+                brakeLoaded = true;
+            }
+        }
+        
+        if (engineLoaded && turnLoaded && brakeLoaded) break;
+    }
+    
+    // If any sound files weren't loaded, generate them procedurally as fallback
+    if (!engineLoaded) {
+        std::cout << "[CarSoundEngine] Engine sound file not found, generating procedurally..." << std::endl;
+        engineSound = createEngineSound(1.0f);
+    }
+    
+    if (!turnLoaded) {
+        std::cout << "[CarSoundEngine] Turn sound file not found, generating procedurally..." << std::endl;
+        turnSound = createTurnSound();
+    }
+    
+    if (!brakeLoaded) {
+        std::cout << "[CarSoundEngine] Brake sound file not found, generating procedurally..." << std::endl;
+        brakeSound = createBrakeSound();
+    }
+    
+    std::cout << "[CarSoundEngine] Sounds ready - Engine: " << (engineSound ? "OK" : "FAIL")
               << ", Turn: " << (turnSound ? "OK" : "FAIL")
               << ", Brake: " << (brakeSound ? "OK" : "FAIL") << std::endl;
 }
 
+Mix_Chunk* CarSoundEngine::loadSound(const std::string& filepath) {
+    // Check if file exists first
+    if (!std::filesystem::exists(filepath)) {
+        return nullptr;
+    }
+    
+    Mix_Chunk* chunk = Mix_LoadWAV(filepath.c_str());
+    if (!chunk) {
+        std::cerr << "[CarSoundEngine] Failed to load sound: " << filepath 
+                  << " - Error: " << Mix_GetError() << std::endl;
+        return nullptr;
+    }
+    
+    return chunk;
+}
+
 Mix_Chunk* CarSoundEngine::createEngineSound(float pitch) {
-    // Create engine sound: low-frequency rumble that varies with speed
+    // Create realistic engine "vroom" sound with rising pitch (acceleration)
     const int SAMPLE_RATE = 22050;
-    const int DURATION_MS = 500;  // Longer duration
+    const int DURATION_MS = 700;  // Longer for more realistic vroom
     const int SAMPLES = (SAMPLE_RATE * DURATION_MS) / 1000;
     
     // Allocate buffer for 16-bit stereo audio
     Uint8* buffer = new Uint8[SAMPLES * 4];  // 2 channels * 2 bytes (16-bit)
     Sint16* samples = reinterpret_cast<Sint16*>(buffer);
     
-    // Generate engine sound: combination of frequencies
-    float baseFreq = 150.0f * pitch;  // Base engine frequency
-    float harmonic = 300.0f * pitch;  // Second harmonic
-    
+    // Generate engine sound with multiple harmonics and frequency sweep
     for (int i = 0; i < SAMPLES * 2; ++i) {
         int sampleIndex = i / 2;
         float progress = static_cast<float>(sampleIndex) / SAMPLES;
         
-        // Envelope: quick attack, slow decay
-        float envelope = progress < 0.1f ? progress * 10.0f : 1.0f - (progress - 0.1f) * (1.0f / 0.9f);
+        // Envelope: quick attack, gradual decay (vroom!)
+        float envelope = progress < 0.05f ? progress * 20.0f : 1.0f - (progress - 0.05f) * (1.0f / 0.95f);
         
-        // Combine two sine waves for richer sound
+        // Frequency sweep: 80Hz -> 200Hz (rising engine pitch)
+        float baseFreq = 80.0f * pitch + progress * 120.0f * pitch;
+        float harmonic2 = baseFreq * 2.0f;  // 2nd harmonic
+        float harmonic3 = baseFreq * 3.5f;  // 3.5th harmonic (less pure, more natural)
+        
+        // Generate three sine waves for richer, more organic sound
         float angle1 = 2.0f * M_PI * baseFreq * sampleIndex / SAMPLE_RATE;
-        float angle2 = 2.0f * M_PI * harmonic * sampleIndex / SAMPLE_RATE;
+        float angle2 = 2.0f * M_PI * harmonic2 * sampleIndex / SAMPLE_RATE;
+        float angle3 = 2.0f * M_PI * harmonic3 * sampleIndex / SAMPLE_RATE;
         
-        float value = (sin(angle1) * 0.6f + sin(angle2) * 0.4f) / 2.0f * envelope;
-        samples[i] = static_cast<Sint16>(value * 32767.0f * 0.8f);  // 80% amplitude
+        // Mix harmonics with different amplitudes (natural timbre)
+        float value = (sin(angle1) * 0.5f + sin(angle2) * 0.3f + sin(angle3) * 0.15f) * envelope;
+        value = value * 0.95f;  // Normalize
+        
+        samples[i] = static_cast<Sint16>(value * 32767.0f);
     }
-    
-    SDL_AudioSpec spec;
-    SDL_zero(spec);
-    spec.freq = SAMPLE_RATE;
-    spec.format = AUDIO_S16SYS;
-    spec.channels = 2;
-    spec.samples = 1024;
     
     Mix_Chunk* chunk = Mix_QuickLoad_RAW(buffer, SAMPLES * 4);
     if (!chunk) {
@@ -92,28 +154,38 @@ Mix_Chunk* CarSoundEngine::createEngineSound(float pitch) {
 }
 
 Mix_Chunk* CarSoundEngine::createTurnSound() {
-    // Create turn/squeal sound: high-frequency chirp
+    // Create tire squeal/drift sound: sharp, high-frequency noise-like sound
     const int SAMPLE_RATE = 22050;
-    const int DURATION_MS = 300;  // Longer duration
+    const int DURATION_MS = 400;  // Slightly longer for more dramatic effect
     const int SAMPLES = (SAMPLE_RATE * DURATION_MS) / 1000;
     
     Uint8* buffer = new Uint8[SAMPLES * 4];  // Stereo
     Sint16* samples = reinterpret_cast<Sint16*>(buffer);
     
-    // High-pitched squeal that rises and falls
+    // Tire squeal with multiple high frequencies
     for (int i = 0; i < SAMPLES * 2; ++i) {
         int sampleIndex = i / 2;
         float progress = static_cast<float>(sampleIndex) / SAMPLES;
         
-        // Envelope: quick attack, medium decay
-        float envelope = progress < 0.05f ? progress * 20.0f : 1.0f - (progress - 0.05f) * (1.0f / 0.95f);
+        // Envelope: quick attack, medium decay with slight wobble
+        float envelope = progress < 0.1f ? progress * 10.0f : 1.0f - (progress - 0.1f) * (1.0f / 0.9f);
         
-        // Frequency sweep from 1000 Hz to 800 Hz
-        float freq = 1000.0f - progress * 200.0f;
-        float angle = 2.0f * M_PI * freq * sampleIndex / SAMPLE_RATE;
+        // Multiple squealing frequencies for harsh tire sound
+        float freq1 = 1200.0f - progress * 300.0f;  // Main frequency sweep down
+        float freq2 = 2000.0f - progress * 400.0f;  // Second frequency
+        float freq3 = 800.0f + progress * 200.0f;   // Third frequency sweep up
         
-        float value = sin(angle) * envelope;
-        samples[i] = static_cast<Sint16>(value * 32767.0f * 0.6f);  // 60% amplitude
+        // Add slight modulation for "wobble"
+        float wobble = 1.0f + 0.1f * sin(2.0f * M_PI * 5.0f * progress);
+        
+        float angle1 = 2.0f * M_PI * freq1 * sampleIndex / SAMPLE_RATE;
+        float angle2 = 2.0f * M_PI * freq2 * sampleIndex / SAMPLE_RATE;
+        float angle3 = 2.0f * M_PI * freq3 * sampleIndex / SAMPLE_RATE;
+        
+        float value = (sin(angle1) * 0.4f + sin(angle2) * 0.35f + sin(angle3) * 0.25f) * envelope * wobble;
+        value = value * 0.95f;
+        
+        samples[i] = static_cast<Sint16>(value * 32767.0f);
     }
     
     Mix_Chunk* chunk = Mix_QuickLoad_RAW(buffer, SAMPLES * 4);
@@ -125,28 +197,38 @@ Mix_Chunk* CarSoundEngine::createTurnSound() {
 }
 
 Mix_Chunk* CarSoundEngine::createBrakeSound() {
-    // Create braking sound: descending tone
+    // Create braking sound: low rumbling descending tone (engine compression/braking)
     const int SAMPLE_RATE = 22050;
-    const int DURATION_MS = 400;  // Longer duration
+    const int DURATION_MS = 600;  // Longer for more dramatic braking
     const int SAMPLES = (SAMPLE_RATE * DURATION_MS) / 1000;
     
     Uint8* buffer = new Uint8[SAMPLES * 4];  // Stereo
     Sint16* samples = reinterpret_cast<Sint16*>(buffer);
     
-    // Braking: lower frequency that descends
+    // Braking: multiple low frequencies with modulation
     for (int i = 0; i < SAMPLES * 2; ++i) {
         int sampleIndex = i / 2;
         float progress = static_cast<float>(sampleIndex) / SAMPLES;
         
-        // Envelope: quick attack, long decay
+        // Envelope: quick attack, long decay with slight pulse
         float envelope = 1.0f - progress * progress;  // Quadratic decay
         
-        // Frequency sweep from 400 Hz to 200 Hz
-        float freq = 400.0f - progress * 200.0f;
-        float angle = 2.0f * M_PI * freq * sampleIndex / SAMPLE_RATE;
+        // Multiple descending frequencies for realistic braking sound
+        float freq1 = 300.0f - progress * 150.0f;    // Main frequency descends
+        float freq2 = 150.0f - progress * 75.0f;     // Sub-bass frequency
+        float freq3 = 600.0f - progress * 300.0f;    // Higher component
         
-        float value = sin(angle) * envelope;
-        samples[i] = static_cast<Sint16>(value * 32767.0f * 0.7f);  // 70% amplitude
+        // Add slight "pulsing" modulation for engine compression effect
+        float pulse = 1.0f + 0.15f * sin(2.0f * M_PI * 8.0f * progress);
+        
+        float angle1 = 2.0f * M_PI * freq1 * sampleIndex / SAMPLE_RATE;
+        float angle2 = 2.0f * M_PI * freq2 * sampleIndex / SAMPLE_RATE;
+        float angle3 = 2.0f * M_PI * freq3 * sampleIndex / SAMPLE_RATE;
+        
+        float value = (sin(angle1) * 0.4f + sin(angle2) * 0.35f + sin(angle3) * 0.25f) * envelope * pulse;
+        value = value * 0.95f;
+        
+        samples[i] = static_cast<Sint16>(value * 32767.0f);
     }
     
     Mix_Chunk* chunk = Mix_QuickLoad_RAW(buffer, SAMPLES * 4);
@@ -157,38 +239,53 @@ Mix_Chunk* CarSoundEngine::createBrakeSound() {
     return chunk;
 }
 
-void CarSoundEngine::update(float speed, bool isTurning, bool isBraking) {
+void CarSoundEngine::update(bool isAccelerating, bool isTurning, bool isBraking) {
     if (!audioInitialized) return;
     
-    currentSpeed = speed;
-    
-    // Debug: print current state
-    std::cout << "[CarSoundEngine] Speed: " << speed 
-              << " | Turning: " << isTurning << " (was " << previousTurning << ")"
-              << " | Braking: " << isBraking << " (was " << previousBraking << ")" << std::endl;
-    
-    // DETECTION 1: Speed just became non-zero (acceleration)
-    if (currentSpeed > 0.0f && previousSpeed == 0.0f) {
-        std::cout << "[CarSoundEngine] ACCELERATION DETECTED! Speed went from 0 to " << speed << std::endl;
-        playAcceleration();
+    // ENGINE/ACCELERATION SOUND
+    if (isAccelerating) {
+        if (!enginePlaying) {
+            std::cout << "[CarSoundEngine] ▶ Engine sound ON (key held down)" << std::endl;
+            playAcceleration();
+            enginePlaying = true;
+        }
+    } else {
+        if (enginePlaying) {
+            std::cout << "[CarSoundEngine] ⏹ Engine sound OFF (key released)" << std::endl;
+            stopAcceleration();
+            enginePlaying = false;
+        }
     }
     
-    // DETECTION 2: Turning state CHANGED (not already turning, now turning)
-    if (isTurning && !previousTurning && currentSpeed > 0.0f) {
-        std::cout << "[CarSoundEngine] TURN DETECTED! Speed: " << speed << std::endl;
-        playTurnSound();
+    // TURN SOUND
+    if (isTurning) {
+        if (!turnPlaying) {
+            std::cout << "[CarSoundEngine] ▶ Turn sound ON (key held down)" << std::endl;
+            playTurnSound();
+            turnPlaying = true;
+        }
+    } else {
+        if (turnPlaying) {
+            std::cout << "[CarSoundEngine] ⏹ Turn sound OFF (key released)" << std::endl;
+            stopTurn();
+            turnPlaying = false;
+        }
     }
     
-    // DETECTION 3: Braking state CHANGED (not already braking, now braking)
-    if (isBraking && !previousBraking && currentSpeed > 0.0f) {
-        std::cout << "[CarSoundEngine] BRAKE DETECTED! Speed: " << speed << std::endl;
-        playBrakeSound();
+    // BRAKE SOUND
+    if (isBraking) {
+        if (!brakePlaying) {
+            std::cout << "[CarSoundEngine] ▶ Brake sound ON (key held down)" << std::endl;
+            playBrakeSound();
+            brakePlaying = true;
+        }
+    } else {
+        if (brakePlaying) {
+            std::cout << "[CarSoundEngine] ⏹ Brake sound OFF (key released)" << std::endl;
+            stopBrake();
+            brakePlaying = false;
+        }
     }
-    
-    // Update previous state for next frame
-    previousSpeed = currentSpeed;
-    previousTurning = isTurning;
-    previousBraking = isBraking;
 }
 
 void CarSoundEngine::playAcceleration() {
@@ -197,12 +294,15 @@ void CarSoundEngine::playAcceleration() {
         return;
     }
     
-    std::cout << "[CarSoundEngine] >>> PLAYING ENGINE SOUND <<<" << std::endl;
+    // Stop previous engine sound if any
+    stopAcceleration();
+    
     int channel = Mix_PlayChannel(-1, engineSound, 0);
     if (channel == -1) {
         std::cerr << "[CarSoundEngine] ERROR! Failed to play acceleration: " << Mix_GetError() << std::endl;
     } else {
-        std::cout << "[CarSoundEngine] ✓ Acceleration sound playing on channel " << channel << std::endl;
+        engineChannel = channel;
+        std::cout << "[CarSoundEngine] ▶ Engine sound playing on channel " << channel << std::endl;
     }
 }
 
@@ -212,12 +312,15 @@ void CarSoundEngine::playTurnSound() {
         return;
     }
     
-    std::cout << "[CarSoundEngine] >>> PLAYING TURN SOUND <<<" << std::endl;
+    // Stop previous turn sound if any
+    stopTurn();
+    
     int channel = Mix_PlayChannel(-1, turnSound, 0);
     if (channel == -1) {
         std::cerr << "[CarSoundEngine] ERROR! Failed to play turn sound: " << Mix_GetError() << std::endl;
     } else {
-        std::cout << "[CarSoundEngine] ✓ Turn sound playing on channel " << channel << std::endl;
+        turnChannel = channel;
+        std::cout << "[CarSoundEngine] ▶ Turn sound playing on channel " << channel << std::endl;
     }
 }
 
@@ -227,16 +330,40 @@ void CarSoundEngine::playBrakeSound() {
         return;
     }
     
-    std::cout << "[CarSoundEngine] >>> PLAYING BRAKE SOUND <<<" << std::endl;
+    // Stop previous brake sound if any
+    stopBrake();
+    
     int channel = Mix_PlayChannel(-1, brakeSound, 0);
     if (channel == -1) {
         std::cerr << "[CarSoundEngine] ERROR! Failed to play brake sound: " << Mix_GetError() << std::endl;
     } else {
-        std::cout << "[CarSoundEngine] ✓ Brake sound playing on channel " << channel << std::endl;
+        brakeChannel = channel;
+        std::cout << "[CarSoundEngine] ▶ Brake sound playing on channel " << channel << std::endl;
     }
 }
 
-void CarSoundEngine::stop() {
+void CarSoundEngine::stopAcceleration() {
+    if (engineChannel != -1) {
+        Mix_HaltChannel(engineChannel);
+        engineChannel = -1;
+    }
+}
+
+void CarSoundEngine::stopTurn() {
+    if (turnChannel != -1) {
+        Mix_HaltChannel(turnChannel);
+        turnChannel = -1;
+    }
+}
+
+void CarSoundEngine::stopBrake() {
+    if (brakeChannel != -1) {
+        Mix_HaltChannel(brakeChannel);
+        brakeChannel = -1;
+    }
+}
+
+void CarSoundEngine::stopAll() {
     if (!audioInitialized) return;
-    Mix_HaltChannel(-1);
+    Mix_HaltChannel(-1);  // Halt all channels
 }

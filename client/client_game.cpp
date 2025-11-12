@@ -248,10 +248,11 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
 
         // Update car sounds based on player state
         const Uint8* keyState = SDL_GetKeyboardState(NULL);
+        bool isAccelerating = keyState[SDL_SCANCODE_UP];
         bool isBraking = keyState[SDL_SCANCODE_DOWN];
         bool isTurning = keyState[SDL_SCANCODE_LEFT] || keyState[SDL_SCANCODE_RIGHT];
         
-        carSoundEngine.update(it->speed, isTurning, isBraking);
+        carSoundEngine.update(isAccelerating, isTurning, isBraking);
 
         // Actualizar flecha hacia el próximo checkpoint
         if (currentCheckpoint < totalCheckpoints) {

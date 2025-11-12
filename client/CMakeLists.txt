@@ -15,6 +15,7 @@ target_sources(taller_client
     hints.cpp
     UI/resources.qrc
     UI/mainwindow.cpp
+    UI/initialwindow.cpp
     PUBLIC
     # .h files
     camera.h
@@ -27,6 +28,7 @@ target_sources(taller_client
     hud.h
     hints.h
     UI/mainwindow.h
+    UI/initialwindow.h
     )
 
 target_link_libraries(taller_client 

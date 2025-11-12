@@ -1,6 +1,7 @@
 #include <exception>
 #include <iostream>
 #include "UI/mainwindow.h"
+#include "UI/initialwindow.h"
 #include <QApplication>
 
 #include "../common/queue.h"
@@ -21,7 +22,9 @@ int main(int argc, const char* argv[]) {
         ClientSession session(hostname, servname, recv_queue);
         session.start();
         QApplication menu_display(argc, nullptr);
+        InitialWindow lobby_window;
 	    MainWindow selector_window(session);
+        lobby_window.show();
 	    selector_window.show();
         menu_display.exec();
         Game game(session);

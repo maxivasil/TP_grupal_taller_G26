@@ -33,6 +33,7 @@ public:
     QPushButton *Descapotable;
     QLabel *intro_text;
     QLabel *Lobby_text;
+    QPushButton *Ready;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -105,7 +106,7 @@ public:
         Descapotable->setFlat(true);
         intro_text = new QLabel(centralwidget);
         intro_text->setObjectName(QString::fromUtf8("intro_text"));
-        intro_text->setGeometry(QRect(540, 600, 891, 131));
+        intro_text->setGeometry(QRect(550, 640, 891, 131));
         QFont font;
         font.setFamily(QString::fromUtf8("Uroob"));
         font.setBold(false);
@@ -127,6 +128,15 @@ public:
 "	      "));
         Lobby_text->setTextFormat(Qt::MarkdownText);
         Lobby_text->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
+        Ready = new QPushButton(centralwidget);
+        Ready->setObjectName(QString::fromUtf8("Ready"));
+        Ready->setGeometry(QRect(850, 580, 281, 41));
+        QFont font1;
+        font1.setFamily(QString::fromUtf8("Uroob"));
+        font1.setPointSize(22);
+        font1.setBold(false);
+        font1.setItalic(false);
+        Ready->setFont(font1);
         MainWindow->setCentralWidget(centralwidget);
 
         retranslateUi(MainWindow);
@@ -148,6 +158,7 @@ public:
         Descapotable->setText(QString());
         intro_text->setText(QString());
         Lobby_text->setText(QCoreApplication::translate("MainWindow", "asdasd", nullptr));
+        Ready->setText(QCoreApplication::translate("MainWindow", "Ready", nullptr));
     } // retranslateUi
 
 };

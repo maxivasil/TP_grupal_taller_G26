@@ -225,8 +225,8 @@ border: none;       </string>
    <widget class="QLabel" name="intro_text">
     <property name="geometry">
      <rect>
-      <x>540</x>
-      <y>600</y>
+      <x>550</x>
+      <y>640</y>
       <width>891</width>
       <height>131</height>
      </rect>
@@ -286,6 +286,27 @@ font-size: 65px;
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Ready">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>580</y>
+      <width>281</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Uroob</family>
+      <pointsize>22</pointsize>
+      <italic>false</italic>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Ready</string>
     </property>
    </widget>
   </widget>

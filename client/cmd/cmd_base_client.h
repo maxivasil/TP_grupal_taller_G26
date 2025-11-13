@@ -5,12 +5,12 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
-#include "../UI/mainwindow.h"
 #include "../parser.h"
+#include <QMainWindow>
 
 struct ClientContext {
     class Game* game;
-    MainWindow* mainwindow;
+    QMainWindow* mainwindow;
 };
 
 

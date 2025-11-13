@@ -19,6 +19,7 @@ ServerClientHandler::ServerClientHandler(int client_id, Socket&& s, LobbiesMonit
 
 void ServerClientHandler::run() {
     try {
+        sender.start();
         bool inLobby = false;
         auto registry = registered_commands.get_recv_registry();
         ServerContext ctx = {
@@ -33,7 +34,6 @@ void ServerClientHandler::run() {
         }
 
         receiver->start();
-        sender.start();
 
         receiver->join();
         sender.join();

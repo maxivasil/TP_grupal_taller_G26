@@ -16,11 +16,6 @@ ClientSession::ClientSession(const char* hostname, const char* servname,
 
 void ClientSession::run() {
     try {
-        // HARCODEADO (luego modificar y eliminar) (lo haria el lobby de QT)
-        auto cmd = std::make_unique<ClientToServerLobby>(std::string("ABCDEF"), true);
-        auto data = cmd->to_bytes();
-        protocol.send_message(data);
-        //
         receiver.start();
         sender.start();
         receiver.join();

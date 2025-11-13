@@ -22,10 +22,9 @@ int main(int argc, const char* argv[]) {
         ClientSession session(hostname, servname, recv_queue);
         session.start();
         QApplication menu_display(argc, nullptr);
-        InitialWindow lobby_window;
-	    MainWindow selector_window(session);
+        MainWindow selector_lobby(session);
+        InitialWindow lobby_window(session, selector_lobby);
         lobby_window.show();
-	    selector_window.show();
         menu_display.exec();
         Game game(session);
         game.start();

@@ -29,5 +29,7 @@ public:
     ~MainWindow();
 
     void connectEvents();
+
+    void updateLobby(std::string lobby);
 };
 #endif  // MAINWINDOW_H

@@ -32,7 +32,7 @@ public:
     QPushButton *Limo;
     QPushButton *Descapotable;
     QLabel *intro_text;
-    QPushButton *Ready;
+    QLabel *Lobby_text;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -105,7 +105,7 @@ public:
         Descapotable->setFlat(true);
         intro_text = new QLabel(centralwidget);
         intro_text->setObjectName(QString::fromUtf8("intro_text"));
-        intro_text->setGeometry(QRect(540, 620, 891, 131));
+        intro_text->setGeometry(QRect(540, 600, 891, 131));
         QFont font;
         font.setFamily(QString::fromUtf8("Uroob"));
         font.setBold(false);
@@ -117,24 +117,16 @@ public:
 "	      "));
         intro_text->setTextFormat(Qt::MarkdownText);
         intro_text->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
-        Ready = new QPushButton(centralwidget);
-        Ready->setObjectName(QString::fromUtf8("Ready"));
-        Ready->setGeometry(QRect(850, 580, 261, 41));
-        QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(Ready->sizePolicy().hasHeightForWidth());
-        Ready->setSizePolicy(sizePolicy);
-        QFont font1;
-        font1.setFamily(QString::fromUtf8("System-ui"));
-        font1.setPointSize(20);
-        font1.setBold(true);
-        font1.setItalic(true);
-        font1.setUnderline(false);
-        font1.setStrikeOut(false);
-        font1.setKerning(true);
-        Ready->setFont(font1);
-        Ready->setLayoutDirection(Qt::LeftToRight);
+        Lobby_text = new QLabel(centralwidget);
+        Lobby_text->setObjectName(QString::fromUtf8("Lobby_text"));
+        Lobby_text->setGeometry(QRect(10, 10, 511, 141));
+        Lobby_text->setFont(font);
+        Lobby_text->setStyleSheet(QString::fromUtf8("Color: white; \n"
+"font-size: 65px; \n"
+"\n"
+"	      "));
+        Lobby_text->setTextFormat(Qt::MarkdownText);
+        Lobby_text->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
         MainWindow->setCentralWidget(centralwidget);
 
         retranslateUi(MainWindow);
@@ -155,7 +147,7 @@ public:
         Limo->setText(QString());
         Descapotable->setText(QString());
         intro_text->setText(QString());
-        Ready->setText(QCoreApplication::translate("MainWindow", "START", nullptr));
+        Lobby_text->setText(QCoreApplication::translate("MainWindow", "asdasd", nullptr));
     } // retranslateUi
 
 };

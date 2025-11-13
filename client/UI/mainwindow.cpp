@@ -74,6 +74,12 @@ void MainWindow::selector() {
     car = carName.toStdString();
 }
 
+void MainWindow::updateLobby(std::string lobby) {
+    QLabel* labelOut = findChild<QLabel*>("Lobby_text");
+    labelOut->setText("Lobby Code: " + QString::fromStdString(lobby));
+}
+
+
 void MainWindow::connectEvents() {
     const QPushButton* readyButton = findChild<QPushButton*>("Ready");
     QObject::connect(readyButton, &QPushButton::clicked, this, &MainWindow::ready);

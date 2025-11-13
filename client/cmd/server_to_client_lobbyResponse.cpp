@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 
 #include "../client_game.h"
+#include "../UI/initialwindow.h"
 
 ServerToClientLobbyResponse::ServerToClientLobbyResponse(uint8_t status, std::string lobbyId,
                                                          uint8_t errorCode):
@@ -13,7 +14,13 @@ ServerToClientLobbyResponse::ServerToClientLobbyResponse(uint8_t status, std::st
 
 
 void ServerToClientLobbyResponse::execute(ClientContext& ctx) {
-    std::cout << "RESPUESTA RECIBIDA: " << std::endl;
+    InitialWindow* window = qobject_cast<InitialWindow*>(ctx.mainwindow);
+    if (status == STATUS_OK) {
+        window->changeScreen(lobbyId);
+    }
+    else if (status == STATUS_ERROR) {
+        window->showError();
+    }
 }
 
 ServerToClientLobbyResponse ServerToClientLobbyResponse::from_bytes(

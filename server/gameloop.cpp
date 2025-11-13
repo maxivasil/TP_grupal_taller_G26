@@ -47,7 +47,6 @@ void ServerGameLoop::update_game_state(Race& race) {
 
 void ServerGameLoop::run() {
     while (should_keep_running()) {
-        // HARCODEADO (luego modificar y eliminar)
         bool inLobby = true;
         std::set<int> clientsReady;
         ServerContext ctx = {.race = nullptr,
@@ -55,6 +54,7 @@ void ServerGameLoop::run() {
                              .inLobby = &inLobby,
                              .clientsReady = &clientsReady,
                              .lobby = lobby};
+        
         while (should_keep_running() && status == LobbyStatus::WAITING_PLAYERS &&
                clientsReady.size() < protected_clients.size()) {
             process_pending_commands(ctx);

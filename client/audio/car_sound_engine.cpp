@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cstring>
 #include <filesystem>
+#include <SDL2/SDL.h>
 
 CarSoundEngine::CarSoundEngine()
     : audioInitialized(false),
@@ -10,7 +11,12 @@ CarSoundEngine::CarSoundEngine()
       turnSound(nullptr),
       brakeSound(nullptr),
       collisionSound(nullptr),
-      engineNoiseSound(nullptr) {
+      engineNoiseSound(nullptr),
+      raceFinishSound(nullptr),
+      gameOverSound(nullptr),
+      cheatActivatedSound(nullptr),
+      brakeLoudSound(nullptr),
+      otherCarCollision(nullptr) {
     initAudio();
 }
 
@@ -21,6 +27,11 @@ CarSoundEngine::~CarSoundEngine() {
     if (brakeSound) Mix_FreeChunk(brakeSound);
     if (collisionSound) Mix_FreeChunk(collisionSound);
     if (engineNoiseSound) Mix_FreeChunk(engineNoiseSound);
+    if (raceFinishSound) Mix_FreeChunk(raceFinishSound);
+    if (gameOverSound) Mix_FreeChunk(gameOverSound);
+    if (cheatActivatedSound) Mix_FreeChunk(cheatActivatedSound);
+    if (brakeLoudSound) Mix_FreeChunk(brakeLoudSound);
+    if (otherCarCollision) Mix_FreeChunk(otherCarCollision);
     if (audioInitialized) {
         Mix_CloseAudio();
     }
@@ -47,6 +58,7 @@ void CarSoundEngine::initAudio() {
     };
     
     bool engineLoaded = false, turnLoaded = false, brakeLoaded = false, collisionLoaded = false, engineNoiseLoaded = false;
+    bool finishLoaded = false, gameOverLoaded = false, cheatLoaded = false, brakeLoudLoaded = false, otherCarLoaded = false;
     
     for (const auto& basePath : basePaths) {
         if (!engineLoaded) {
@@ -89,7 +101,48 @@ void CarSoundEngine::initAudio() {
             }
         }
         
-        if (engineLoaded && turnLoaded && brakeLoaded && collisionLoaded && engineNoiseLoaded) break;
+        if (!finishLoaded) {
+            raceFinishSound = loadSound(basePath + "victory_game.mp3");
+            if (raceFinishSound) {
+                std::cout << "[CarSoundEngine] ✓ Victory sound loaded from " << basePath << std::endl;
+                finishLoaded = true;
+            }
+        }
+        
+        if (!gameOverLoaded) {
+            gameOverSound = loadSound(basePath + "game_over.mp3");
+            if (gameOverSound) {
+                std::cout << "[CarSoundEngine] ✓ Game over sound loaded from " << basePath << std::endl;
+                gameOverLoaded = true;
+            }
+        }
+        
+        if (!cheatLoaded) {
+            cheatActivatedSound = loadSound(basePath + "cheat_activated.mp3");
+            if (cheatActivatedSound) {
+                std::cout << "[CarSoundEngine] ✓ Cheat activated sound loaded from " << basePath << std::endl;
+                cheatLoaded = true;
+            }
+        }
+        
+        if (!brakeLoudLoaded) {
+            brakeLoudSound = loadSound(basePath + "brake_screech.mp3");
+            if (brakeLoudSound) {
+                std::cout << "[CarSoundEngine] ✓ Brake screech sound loaded from " << basePath << std::endl;
+                brakeLoudLoaded = true;
+            }
+        }
+        
+        if (!otherCarLoaded) {
+            otherCarCollision = loadSound(basePath + "other_car_collision.mp3");
+            if (otherCarCollision) {
+                std::cout << "[CarSoundEngine] ✓ Other car collision sound loaded from " << basePath << std::endl;
+                otherCarLoaded = true;
+            }
+        }
+        
+        if (engineLoaded && turnLoaded && brakeLoaded && collisionLoaded && engineNoiseLoaded 
+            && finishLoaded && gameOverLoaded && cheatLoaded && brakeLoudLoaded && otherCarLoaded) break;
     }
     
     if (!engineLoaded) {
@@ -117,13 +170,28 @@ void CarSoundEngine::initAudio() {
         engineNoiseSound = createEngineSound(0.5f);  // Lower pitch for background noise
     }
     
+    if (!finishLoaded) {
+        std::cout << "[CarSoundEngine] Race finish sound not found, generating procedurally..." << std::endl;
+        raceFinishSound = createVictorySound();
+    }
+    
+    if (!brakeLoudLoaded) {
+        std::cout << "[CarSoundEngine] Brake screech not found, will skip..." << std::endl;
+    }
+    
+    if (!otherCarLoaded) {
+        std::cout << "[CarSoundEngine] Other car collision not found, will skip..." << std::endl;
+    }
+    
     std::cout << "[CarSoundEngine] Sounds ready - Engine: " << (engineSound ? "OK" : "FAIL")
               << ", Turn: " << (turnSound ? "OK" : "FAIL")
               << ", Brake: " << (brakeSound ? "OK" : "FAIL")
               << ", Collision: " << (collisionSound ? "OK" : "FAIL")
-              << ", EngineNoise: " << (engineNoiseSound ? "OK" : "FAIL") << std::endl;
+              << ", EngineNoise: " << (engineNoiseSound ? "OK" : "FAIL")
+              << ", Finish: " << (raceFinishSound ? "OK" : "SKIP")
+              << ", BrakeLoud: " << (brakeLoudSound ? "OK" : "SKIP")
+              << ", OtherCar: " << (otherCarCollision ? "OK" : "SKIP") << std::endl;
     
-    // Start background engine noise immediately
     playEngineNoise();
 }
 
@@ -157,15 +225,15 @@ Mix_Chunk* CarSoundEngine::createEngineSound(float pitch) {
         float envelope = progress < 0.05f ? progress * 20.0f : 1.0f - (progress - 0.05f) * (1.0f / 0.95f);
         
         float baseFreq = 80.0f * pitch + progress * 120.0f * pitch;
-        float harmonic2 = baseFreq * 2.0f;  // 2nd harmonic
-        float harmonic3 = baseFreq * 3.5f;  // 3.5th harmonic (less pure, more natural)
+        float harmonic2 = baseFreq * 2.0f;  
+        float harmonic3 = baseFreq * 3.5f;  
         
         float angle1 = 2.0f * M_PI * baseFreq * sampleIndex / SAMPLE_RATE;
         float angle2 = 2.0f * M_PI * harmonic2 * sampleIndex / SAMPLE_RATE;
         float angle3 = 2.0f * M_PI * harmonic3 * sampleIndex / SAMPLE_RATE;
         
         float value = (sin(angle1) * 0.5f + sin(angle2) * 0.3f + sin(angle3) * 0.15f) * envelope;
-        value = value * 0.95f;  // Normalize
+        value = value * 0.95f; 
         
         samples[i] = static_cast<Sint16>(value * 32767.0f);
     }
@@ -402,7 +470,7 @@ void CarSoundEngine::playCollisionSound() {
         std::cerr << "[CarSoundEngine] ERROR! Failed to play collision sound: " << Mix_GetError() << std::endl;
     } else {
         collisionChannel = channel;
-        std::cout << "[CarSoundEngine] 💥 COLLISION sound playing on channel " << channel << std::endl;
+        std::cout << "[CarSoundEngine] COLLISION sound playing on channel " << channel << std::endl;
     }
 }
 
@@ -429,7 +497,7 @@ void CarSoundEngine::stopBrake() {
 
 void CarSoundEngine::stopAll() {
     if (!audioInitialized) return;
-    Mix_HaltChannel(-1);  // Halt all channels
+    Mix_HaltChannel(-1); 
 }
 
 void CarSoundEngine::playEngineNoise() {
@@ -439,7 +507,7 @@ void CarSoundEngine::playEngineNoise() {
     }
     
     if (engineNoisePlaying) {
-        return;  // Already playing
+        return;
     }
     
     int channel = Mix_PlayChannel(-1, engineNoiseSound, -1);
@@ -460,4 +528,190 @@ void CarSoundEngine::stopEngineNoise() {
         engineNoisePlaying = false;
         std::cout << "[CarSoundEngine] Engine noise stopped" << std::endl;
     }
+}
+
+void CarSoundEngine::playRaceFinish() {
+    if (!audioInitialized || !raceFinishSound) {
+        std::cout << "[CarSoundEngine] Race finish sound not available" << std::endl;
+        return;
+    }
+    
+    if (contextSoundChannel != -1) {
+        Mix_HaltChannel(contextSoundChannel);
+    }
+    
+    int channel = Mix_PlayChannel(-1, raceFinishSound, 0);
+    if (channel == -1) {
+        std::cerr << "[CarSoundEngine] Failed to play race finish sound: " << Mix_GetError() << std::endl;
+    } else {
+        contextSoundChannel = channel;
+        Mix_Volume(channel, MIX_MAX_VOLUME);  // Full volume
+        std::cout << "[CarSoundEngine] 🏁 RACE FINISH sound playing on channel " << channel << std::endl;
+    }
+}
+
+void CarSoundEngine::playGameOver() {
+    if (!audioInitialized || !gameOverSound) {
+        std::cout << "[CarSoundEngine] Game over sound not available" << std::endl;
+        return;
+    }
+    
+    if (contextSoundChannel != -1) {
+        Mix_HaltChannel(contextSoundChannel);
+    }
+    
+    int channel = Mix_PlayChannel(-1, gameOverSound, 0);
+    if (channel == -1) {
+        std::cerr << "[CarSoundEngine] Failed to play game over sound: " << Mix_GetError() << std::endl;
+    } else {
+        contextSoundChannel = channel;
+        Mix_Volume(channel, MIX_MAX_VOLUME);  // Full volume
+        std::cout << "[CarSoundEngine] ☠️ GAME OVER sound playing on channel " << channel << std::endl;
+    }
+}
+
+void CarSoundEngine::playCheatActivated() {
+    if (!audioInitialized || !cheatActivatedSound) {
+        std::cout << "[CarSoundEngine] Cheat activated sound not available" << std::endl;
+        return;
+    }
+    
+    if (contextSoundChannel != -1) {
+        Mix_HaltChannel(contextSoundChannel);
+    }
+    
+    int channel = Mix_PlayChannel(-1, cheatActivatedSound, 0);
+    if (channel == -1) {
+        std::cerr << "[CarSoundEngine] Failed to play cheat activated sound: " << Mix_GetError() << std::endl;
+    } else {
+        contextSoundChannel = channel;
+        Mix_Volume(channel, MIX_MAX_VOLUME * 0.8f);  // 80% volume
+        std::cout << "[CarSoundEngine] 🎮 CHEAT ACTIVATED sound playing on channel " << channel << std::endl;
+    }
+}
+
+void CarSoundEngine::playOtherCarCollision(float distance, float intensity) {
+    if (!audioInitialized || !otherCarCollision) {
+        return;  
+    }
+    
+    Uint32 currentTime = SDL_GetTicks();
+    if (currentTime - lastCollisionSoundTime < COLLISION_SOUND_COOLDOWN_MS) {
+        return;
+    }
+    lastCollisionSoundTime = currentTime;
+    
+    float volumeFactor = calculateDistanceVolume(distance, 80.0f);
+    if (volumeFactor < 0.1f) {
+        return;  
+    }
+    
+    volumeFactor *= (intensity / 20.0f);
+    volumeFactor = std::min(1.0f, volumeFactor);
+    
+    int channel = Mix_PlayChannel(-1, otherCarCollision, 0);
+    if (channel == -1) {
+        std::cerr << "[CarSoundEngine] Failed to play other car collision: " << Mix_GetError() << std::endl;
+    } else {
+        otherCarChannel = channel;
+        int volume = static_cast<int>(MIX_MAX_VOLUME * volumeFactor);
+        Mix_Volume(channel, volume);
+        std::cout << "[CarSoundEngine] Other car collision at distance " << distance 
+                  << " with volume " << volume << " on channel " << channel << std::endl;
+    }
+}
+
+void CarSoundEngine::playDistantBrake(float distance) {
+    if (!audioInitialized || !brakeLoudSound) {
+        return;  
+    }
+    
+    Uint32 currentTime = SDL_GetTicks();
+    if (currentTime - lastBrakeSoundTime < BRAKE_SOUND_COOLDOWN_MS) {
+        return;
+    }
+    lastBrakeSoundTime = currentTime;
+    
+    float volumeFactor = calculateDistanceVolume(distance, 60.0f);
+    if (volumeFactor < 0.05f) {
+        return;  
+    }
+    
+    int channel = Mix_PlayChannel(-1, brakeLoudSound, 0);
+    if (channel == -1) {
+        return; 
+    } else {
+        otherCarChannel = channel;
+        int volume = static_cast<int>(MIX_MAX_VOLUME * volumeFactor);
+        Mix_Volume(channel, volume);
+        std::cout << "[CarSoundEngine] Distant brake at distance " << distance << std::endl;
+    }
+}
+
+float CarSoundEngine::calculateDistanceVolume(float distance, float maxDistance) {
+    if (distance <= 0.0f) {
+        return 1.0f;  
+    }
+    if (distance >= maxDistance) {
+        return 0.0f;  
+    }
+    
+    float normalized = 1.0f - (distance / maxDistance);
+    return normalized * normalized; 
+}
+
+Mix_Chunk* CarSoundEngine::createVictorySound() {
+    // Create a celebratory "victory" chord sound
+    const int SAMPLE_RATE = 22050;
+    const int DURATION_MS = 1500;  // 1.5 seconds for victory fanfare
+    const int SAMPLES = (SAMPLE_RATE * DURATION_MS) / 1000;
+    
+    Uint8* buffer = new Uint8[SAMPLES * 4];  
+    Sint16* samples = reinterpret_cast<Sint16*>(buffer);
+    
+    // Create a rising chord progression (C-E-G major chord rising in pitch)
+    const float notes[] = {261.63f, 329.63f, 392.0f};  // C, E, G (major chord)
+    
+    for (int i = 0; i < SAMPLES * 2; ++i) {
+        int sampleIndex = i / 2;
+        float progress = static_cast<float>(sampleIndex) / SAMPLES;
+        
+        // Envelope: attack (100ms) -> sustain -> release (300ms)
+        float envelope;
+        if (progress < 0.07f) {
+            envelope = progress / 0.07f;  // Attack
+        } else if (progress > 0.85f) {
+            envelope = (1.0f - progress) / 0.15f;  // Release
+        } else {
+            envelope = 1.0f;  // Sustain
+        }
+        
+        // Rising frequency modulation for excitement
+        float freqMod = 1.0f + progress * 0.5f;  // Gradually rise in pitch
+        
+        float value = 0.0f;
+        
+        // Mix the three notes of the major chord with rising pitch
+        for (int n = 0; n < 3; ++n) {
+            float freq = notes[n] * freqMod;
+            float angle = 2.0f * M_PI * freq * sampleIndex / SAMPLE_RATE;
+            value += sin(angle) * (0.3f / 3.0f);  // Equal contribution from each note
+        }
+        
+        // Add some brightness with harmonics
+        float brightAngle = 2.0f * M_PI * (587.33f * freqMod) * sampleIndex / SAMPLE_RATE;
+        value += sin(brightAngle) * 0.1f * envelope;
+        
+        value *= envelope;
+        value = std::min(1.0f, std::max(-1.0f, value));  // Clamp
+        
+        samples[i] = static_cast<Sint16>(value * 32767.0f * 0.9f);
+    }
+    
+    Mix_Chunk* chunk = Mix_QuickLoad_RAW(buffer, SAMPLES * 4);
+    if (!chunk) {
+        std::cerr << "[CarSoundEngine] Mix_QuickLoad_RAW failed for victory sound: " << Mix_GetError() << std::endl;
+        delete[] buffer;
+    }
+    return chunk;
 }

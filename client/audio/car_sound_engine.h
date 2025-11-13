@@ -23,18 +23,31 @@ private:
     Mix_Chunk* brakeSound;
     Mix_Chunk* collisionSound;
     Mix_Chunk* engineNoiseSound;  // Background engine noise (constant)
+    Mix_Chunk* raceFinishSound;    // Sound when race finishes (victory)
+    Mix_Chunk* gameOverSound;      // Sound when player loses
+    Mix_Chunk* cheatActivatedSound; // Sound when cheat is activated
+    Mix_Chunk* brakeLoudSound;     // Loud brake screech
+    Mix_Chunk* otherCarCollision;  // Collision from other cars
     
     int engineChannel = -1;
     int turnChannel = -1;
     int brakeChannel = -1;
     int collisionChannel = -1;
     int engineNoiseChannel = -1;  // For background engine noise
+    int contextSoundChannel = -1; // For contextual sounds (race finish, etc)
+    int otherCarChannel = -1;     // For other car sounds
     
     // Track if sounds are currently playing
     bool enginePlaying = false;
     bool turnPlaying = false;
     bool brakePlaying = false;
     bool engineNoisePlaying = false;
+    
+    // Distance-based sound throttling
+    Uint32 lastCollisionSoundTime = 0;
+    Uint32 lastBrakeSoundTime = 0;
+    const Uint32 COLLISION_SOUND_COOLDOWN_MS = 100;  // Avoid sound spam
+    const Uint32 BRAKE_SOUND_COOLDOWN_MS = 150;
     
     // Sound loading
     Mix_Chunk* loadSound(const std::string& filepath);
@@ -45,6 +58,7 @@ private:
     Mix_Chunk* createTurnSound();
     Mix_Chunk* createBrakeSound();
     Mix_Chunk* createCollisionSound();
+    Mix_Chunk* createVictorySound();  // Victory/finish sound
     
 public:
     CarSoundEngine();
@@ -65,6 +79,17 @@ public:
     void stopBrake();
     void stopEngineNoise();
     void stopAll();
+    
+    // Contextual sounds with distance modulation
+    void playRaceFinish();                                    // When player finishes race (victory)
+    void playGameOver();                                      // When player loses
+    void playCheatActivated();                                // When cheat is activated
+    void playOtherCarCollision(float distance, float intensity); // Other cars colliding nearby
+    void playDistantBrake(float distance);                   // Other cars braking with distance-based volume
+    
+    // Distance-based volume calculation
+    // maxDistance: sounds beyond this distance are silent (0.0)
+    static float calculateDistanceVolume(float distance, float maxDistance = 100.0f);
 };
 
 #endif  // CAR_SOUND_ENGINE_H

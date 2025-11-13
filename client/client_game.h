@@ -66,6 +66,16 @@ private:
     float lastPlayerX = 0.0f;
     float lastPlayerY = 0.0f;
     Uint32 lastSpeedUpdateTime = 0;
+    
+    std::unordered_map<int, float> otherPlayersLastHealth;
+    std::unordered_map<int, float> otherPlayersLastSpeed;
+
+    Uint32 collisionFlashStartTime = 0;
+    const Uint32 FLASH_DURATION_MS = 300;  
+    float lastCollisionIntensity = 0.0f;
+    
+    bool playerDestroyed = false;
+    Uint32 destructionStartTime = 0;
 
     GameState gameState = GameState::PLAYING;
     std::string endGameMessage = "";

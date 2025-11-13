@@ -173,6 +173,7 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
     if (state[SDL_SCANCODE_LCTRL]) {
         if (state[SDL_SCANCODE_H]) {
             client_session.send_command(new ClientToServerCheat(CHEAT_INFINITE_HEALTH));
+            carSoundEngine.playCheatActivated();
             std::cout << "CHEAT: Vida infinita activada\n";
         } else if (state[SDL_SCANCODE_W]) {
             client_session.send_command(new ClientToServerCheat(CHEAT_WIN));
@@ -186,16 +187,16 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
     }
 
     if (state[SDL_SCANCODE_RIGHT]) {
-        client_session.send_command(new ClientToServerMove(MOVE_RIGHT));
+        if (!playerDestroyed) client_session.send_command(new ClientToServerMove(MOVE_RIGHT));
     }
     if (state[SDL_SCANCODE_LEFT]) {
-        client_session.send_command(new ClientToServerMove(MOVE_LEFT));
+        if (!playerDestroyed) client_session.send_command(new ClientToServerMove(MOVE_LEFT));
     }
     if (state[SDL_SCANCODE_UP]) {
-        client_session.send_command(new ClientToServerMove(MOVE_UP));
+        if (!playerDestroyed) client_session.send_command(new ClientToServerMove(MOVE_UP));
     }
     if (state[SDL_SCANCODE_DOWN]) {
-        client_session.send_command(new ClientToServerMove(MOVE_DOWN));
+        if (!playerDestroyed) client_session.send_command(new ClientToServerMove(MOVE_DOWN));
     }
 
     return false;
@@ -224,12 +225,31 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
         float previousHealth = previousHealthState[it->id];
         
         if (previousHealth == 0.0f && it->health > 0.0f) {
-            previousHealth = it->health;  // First time, set as baseline
+            previousHealth = it->health; 
         }
         
         if (it->health < previousHealth && previousHealth > 0.0f) {
+            float healthDamage = previousHealth - it->health;
+            lastCollisionIntensity = healthDamage;
+            
+            if (healthDamage > 5.0f) {
+                collisionFlashStartTime = SDL_GetTicks();
+            }
+            
             explosion.trigger(worldX, worldY, src.x, src.y, scale);
         }
+        
+        if (it->health <= 0.0f && !playerDestroyed) {
+            playerDestroyed = true;
+            destructionStartTime = SDL_GetTicks();
+            std::cout << "[GAME] Player destroyed! Health: " << it->health << std::endl;
+        }
+        
+        // If destroyed, trigger death sequence after short delay
+        if (playerDestroyed && (SDL_GetTicks() - destructionStartTime) > 500) {
+            setLost();
+        }
+        
         previousHealthState[it->id] = it->health;
 
         const Uint8* keyState = SDL_GetKeyboardState(NULL);
@@ -267,6 +287,13 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
     int carW = 28;
     int carH = 22;
 
+    // Get player position for distance calculations
+    float playerWorldX = 0.0f, playerWorldY = 0.0f;
+    if (it != snapshots.end()) {
+        playerWorldX = (it->pos_x * 62) / 8.9;
+        playerWorldY = (it->pos_y * 24) / 3.086;
+    }
+
     for (const auto& car: snapshots) {
         float worldX = (car.pos_x * 62) / 8.9;
         float worldY = (car.pos_y * 24) / 3.086;
@@ -284,7 +311,29 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
 
         if (car.id == client_id) {
             camera.follow(worldX, worldY);
+        } else {
+            float distToOtherCar = std::sqrt((worldX - playerWorldX) * (worldX - playerWorldX) + 
+                                           (worldY - playerWorldY) * (worldY - playerWorldY));
+            
+            float prevHealth = otherPlayersLastHealth[car.id];
+            if (prevHealth == 0.0f && car.health > 0.0f) {
+                prevHealth = car.health;  // First time
+            }
+            
+            if (car.health < prevHealth && prevHealth > 0.0f) {
+                float healthDamage = prevHealth - car.health;
+                carSoundEngine.playOtherCarCollision(distToOtherCar, healthDamage);
+                std::cout << "[GAME] Other car (ID: " << car.id << ") collided at distance " << distToOtherCar << std::endl;
+            }
+            otherPlayersLastHealth[car.id] = car.health;
+            
+            float prevSpeed = otherPlayersLastSpeed[car.id];
+            if (car.speed < prevSpeed && prevSpeed > 5.0f && car.speed < 2.0f) {
+                carSoundEngine.playDistantBrake(distToOtherCar);
+            }
+            otherPlayersLastSpeed[car.id] = car.speed;
         }
+        
         rc.onBridge = car.onBridge;
         carsToRender.push_back(rc);
     }
@@ -410,6 +459,40 @@ void Game::render(SDL2pp::Renderer& renderer) {
 
     if (gameState != GameState::PLAYING) {
         renderEndGameScreen(renderer);
+    }
+
+    // Render high-impact collision flash effect
+    if (collisionFlashStartTime > 0) {
+        Uint32 elapsedMs = SDL_GetTicks() - collisionFlashStartTime;
+        if (elapsedMs < FLASH_DURATION_MS) {
+            // Flash intensity fades from 1.0 to 0.0
+            float progress = (float)elapsedMs / (float)FLASH_DURATION_MS;
+            float intensity = 1.0f - progress;  // Fade out
+            
+            // Alternate between red and white based on collision intensity
+            uint8_t flashAlpha = static_cast<uint8_t>(255 * intensity * (lastCollisionIntensity / 20.0f));
+            
+            Uint8 prevR, prevG, prevB, prevA;
+            renderer.GetDrawColor(prevR, prevG, prevB, prevA);
+            
+            int width = renderer.GetOutputWidth();
+            int height = renderer.GetOutputHeight();
+            SDL_Rect flashRect = {0, 0, width, height};
+            
+            // Alternate: strong impacts = white, medium impacts = red
+            if (lastCollisionIntensity > 10.0f) {
+                renderer.SetDrawColor(255, 255, 255, flashAlpha);  // White flash for high impact
+            } else {
+                renderer.SetDrawColor(255, 80, 80, flashAlpha);   // Red flash for medium impact
+            }
+            
+            renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+            renderer.FillRect(flashRect);
+            renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+            renderer.SetDrawColor(prevR, prevG, prevB, prevA);
+        } else {
+            collisionFlashStartTime = 0;  // Stop flashing
+        }
     }
 
     renderer.Present();
@@ -556,6 +639,7 @@ void Game::setWon() {
     gameState = GameState::WON;
     endGameMessage = "¡GANASTE!";
     endGameTime = SDL_GetTicks();
+    carSoundEngine.playRaceFinish();  // Play victory sound
     std::cout << "¡VICTORIA! Presiona ESC para volver al lobby\n";
 }
 
@@ -563,6 +647,7 @@ void Game::setLost() {
     gameState = GameState::LOST;
     endGameMessage = "GAME OVER";
     endGameTime = SDL_GetTicks();
+    carSoundEngine.playGameOver();
     std::cout << "DERROTA. Presiona ESC para volver al lobby\n";
 }
 

@@ -1,6 +1,7 @@
 #include "Player.h"
 
 #include <utility>
+#include <cmath>
 
 Player::Player(std::string name, int id, CarStats& stats):
         name(std::move(name)), id(id), car(nullptr), stats(std::move(stats)) {}
@@ -54,5 +55,19 @@ const std::string& Player::getName() const { return name; }
 b2Rot Player::getRotation() const { return car ? car->getRotation() : b2Rot_identity; }
 
 bool Player::isOnBridge() const { return car ? car->getIsOnBridge() : false; }
+
+float Player::getSpeed() const {
+    if (!car) {
+        return 0.0f;
+    }
+    
+    // Get the linear velocity vector from Box2D
+    b2Vec2 velocity = car->getLinearVelocity();
+    
+    // Calculate the magnitude of the velocity vector
+    float speed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+    
+    return speed;
+}
 
 Player::~Player() {}

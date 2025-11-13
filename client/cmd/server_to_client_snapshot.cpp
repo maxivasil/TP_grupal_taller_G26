@@ -13,16 +13,16 @@ ServerToClientSnapshot::ServerToClientSnapshot(std::vector<CarSnapshot> cars):
 void ServerToClientSnapshot::execute(ClientContext& ctx) {
     ctx.game->update_snapshots(cars_snapshot);
 
-    std::cout << "[Snapshot recibido] Autos en escena: " << cars_snapshot.size() << std::endl;
+    // std::cout << "[Snapshot recibido] Autos en escena: " << cars_snapshot.size() << std::endl;
 
-    for (const auto& car: cars_snapshot) {
-        std::cout << "  Auto ID: " << car.id << " | Posición: (" << car.pos_x << ", " << car.pos_y
-                  << ")"
-                  << " | Colisión: " << (car.collision ? "sí" : "no")
-                  << " | Vida: " << static_cast<int>(car.health) << " | Velocidad: " << car.speed
-                  << " | Ángulo: " << car.angle << " | OnBridge: " << (car.onBridge ? "SI" : "NO")
-                  << std::endl;
-    }
+    // for (const auto& car: cars_snapshot) {
+    //     std::cout << "  Auto ID: " << car.id << " | Posición: (" << car.pos_x << ", " << car.pos_y
+    //               << ")"
+    //               << " | Colisión: " << (car.collision ? "sí" : "no")
+    //               << " | Vida: " << static_cast<int>(car.health) << " | Velocidad: " << car.speed
+    //               << " | Ángulo: " << car.angle << " | OnBridge: " << (car.onBridge ? "SI" : "NO")
+    //               << std::endl;
+    // }
 }
 
 ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint8_t>& data) {

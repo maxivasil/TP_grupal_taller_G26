@@ -41,12 +41,10 @@ ServerToClientRaceResults ServerToClientRaceResults::from_bytes(const std::vecto
     for (uint8_t i = 0; i < numResults; ++i) {
         ClientPlayerResult result;
         
-        // Read player ID
         if (offset >= data.size())
             throw std::runtime_error("Incomplete race results: missing player ID");
         result.playerId = data[offset++];
         
-        // Read player name length
         if (offset + sizeof(uint16_t) > data.size())
             throw std::runtime_error("Incomplete race results: missing name length");
         
@@ -54,19 +52,16 @@ ServerToClientRaceResults ServerToClientRaceResults::from_bytes(const std::vecto
         std::memcpy(&nameLen, &data[offset], sizeof(uint16_t));
         offset += sizeof(uint16_t);
         
-        // Read player name
         if (offset + nameLen > data.size())
             throw std::runtime_error("Incomplete race results: missing player name");
         result.playerName = std::string((const char*)&data[offset], nameLen);
         offset += nameLen;
         
-        // Read finish time
         if (offset + sizeof(float) > data.size())
             throw std::runtime_error("Incomplete race results: missing finish time");
         std::memcpy(&result.finishTime, &data[offset], sizeof(float));
         offset += sizeof(float);
         
-        // Read position
         if (offset >= data.size())
             throw std::runtime_error("Incomplete race results: missing position");
         result.position = data[offset++];
@@ -104,7 +99,6 @@ void ServerToClientRaceResults::execute(ClientContext& ctx) {
     }
     std::cout << std::string(50, '=') << std::endl;
     
-    // Notify game about race results
     if (ctx.game) {
         std::cout << "Calling ctx.game->setRaceResults()..." << std::endl;
         ctx.game->setRaceResults(results);

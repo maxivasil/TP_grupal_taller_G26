@@ -84,17 +84,14 @@ void Hints::drawFilledCircle(SDL2pp::Renderer& renderer,
 void Hints::drawCompass(SDL2pp::Renderer& renderer) {
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     
-    // Get pulse opacity for smooth animation
     float pulseOp = getPulseOpacity();
     int bgOpacity = static_cast<int>(160 * pulseOp);
     int ringOpacity = static_cast<int>(220 * pulseOp);
     int tickOpacity = static_cast<int>(200 * pulseOp);
     
-    // Background semi-transparent circle (dark with pulse)
     drawFilledCircle(renderer, compassX, compassY, compassRadius, 
                     {10, 10, 10, static_cast<Uint8>(bgOpacity)});
 
-    // Outer ring (blue) with pulsing
     renderer.SetDrawColor({100, 150, 255, static_cast<Uint8>(ringOpacity)});
     for (int r = compassRadius - 2; r <= compassRadius; ++r) {
         int steps = 64;
@@ -109,7 +106,6 @@ void Hints::drawCompass(SDL2pp::Renderer& renderer) {
         }
     }
 
-    // Cardinal ticks (N, E, S, W) with pulsing
     renderer.SetDrawColor({200, 200, 200, static_cast<Uint8>(tickOpacity)});
     int tickLen = 8;
     renderer.DrawLine(compassX, compassY - compassRadius, compassX, compassY - compassRadius - tickLen);  // N
@@ -117,12 +113,10 @@ void Hints::drawCompass(SDL2pp::Renderer& renderer) {
     renderer.DrawLine(compassX, compassY + compassRadius, compassX, compassY + compassRadius + tickLen);  // S
     renderer.DrawLine(compassX - compassRadius, compassY, compassX - compassRadius - tickLen, compassY);  // W
     
-    // Cardinal letters (N, E, S, W) if font is available
     if (hudFont) {
         try {
             SDL_Color labelColor = {220, 220, 220, static_cast<Uint8>(tickOpacity)};
             
-            // N - North
             auto nSurf = hudFont->RenderText_Solid("N", labelColor);
             SDL2pp::Texture nTex(renderer, nSurf);
             int nx = compassX - nTex.GetWidth() / 2;
@@ -130,7 +124,6 @@ void Hints::drawCompass(SDL2pp::Renderer& renderer) {
             SDL_Rect nDst = {nx, ny, nTex.GetWidth(), nTex.GetHeight()};
             renderer.Copy(nTex, SDL2pp::NullOpt, nDst);
             
-            // E - East
             auto eSurf = hudFont->RenderText_Solid("E", labelColor);
             SDL2pp::Texture eTex(renderer, eSurf);
             int ex = compassX + compassRadius + tickLen + 4;
@@ -138,7 +131,6 @@ void Hints::drawCompass(SDL2pp::Renderer& renderer) {
             SDL_Rect eDst = {ex, ey, eTex.GetWidth(), eTex.GetHeight()};
             renderer.Copy(eTex, SDL2pp::NullOpt, eDst);
             
-            // S - South
             auto sSurf = hudFont->RenderText_Solid("S", labelColor);
             SDL2pp::Texture sTex(renderer, sSurf);
             int sx = compassX - sTex.GetWidth() / 2;
@@ -146,7 +138,6 @@ void Hints::drawCompass(SDL2pp::Renderer& renderer) {
             SDL_Rect sDst = {sx, sy, sTex.GetWidth(), sTex.GetHeight()};
             renderer.Copy(sTex, SDL2pp::NullOpt, sDst);
             
-            // W - West
             auto wSurf = hudFont->RenderText_Solid("W", labelColor);
             SDL2pp::Texture wTex(renderer, wSurf);
             int wx = compassX - compassRadius - tickLen - wTex.GetWidth() - 4;
@@ -154,27 +145,22 @@ void Hints::drawCompass(SDL2pp::Renderer& renderer) {
             SDL_Rect wDst = {wx, wy, wTex.GetWidth(), wTex.GetHeight()};
             renderer.Copy(wTex, SDL2pp::NullOpt, wDst);
         } catch (const std::exception& e) {
-            // Font rendering failed, continue without labels
         }
     }
 }
 
 void Hints::render(SDL2pp::Renderer& renderer) {
     if (!hasHint) return;
+    Uint8 r, g, b, a;
+    renderer.GetDrawColor(r, g, b, a);
 
-    // Draw compass HUD at fixed position (top-right area)
     drawCompass(renderer);
 
-    // Compute needle angle:
-    // - If playerHeading is used: needle is relative to player's heading
-    // - Otherwise: absolute north (world space)
     float arrowAngle;
     
     if (playerHeading != 0.0f) {
-        // Camera-relative: subtract player heading to make needle relative to car direction
         arrowAngle = currentHint.angle - playerHeading - (M_PI / 2.0f);
     } else {
-        // Absolute: 0 = +X (east), rotate to 0 = -Y (up/north)
         arrowAngle = currentHint.angle - (M_PI / 2.0f);
     }
 
@@ -182,13 +168,11 @@ void Hints::render(SDL2pp::Renderer& renderer) {
     int endX = compassX + static_cast<int>(arrowLen * std::cos(arrowAngle));
     int endY = compassY + static_cast<int>(arrowLen * std::sin(arrowAngle));
 
-    // Draw arrow (red needle) with pulsing opacity
     float pulseOp = getPulseOpacity();
     int needleOpacity = static_cast<int>(255 * pulseOp);
     SDL_Color needleColor = {255, 80, 80, static_cast<Uint8>(needleOpacity)};
     drawThickLine(renderer, compassX, compassY, endX, endY, 3, needleColor);
 
-    // Draw triangular head
     float headA1 = arrowAngle + 0.9f;
     float headA2 = arrowAngle - 0.9f;
     int hx1 = endX + static_cast<int>(10 * std::cos(headA1));
@@ -201,10 +185,8 @@ void Hints::render(SDL2pp::Renderer& renderer) {
     renderer.DrawLine(endX, endY, hx2, hy2);
     renderer.DrawLine(hx1, hy1, hx2, hy2);
 
-    // Small center cap (white)
     drawFilledCircle(renderer, compassX, compassY, 4, {255, 255, 255, static_cast<Uint8>(needleOpacity)});
 
-    // Distance text: use HUD font if available, otherwise fallback
     try {
         SDL2pp::Font* fontToUse = hudFont;
         SDL2pp::Font fallbackFont("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 11);
@@ -223,9 +205,8 @@ void Hints::render(SDL2pp::Renderer& renderer) {
         SDL_Rect dst = {tx, ty, tex.GetWidth(), tex.GetHeight()};
         renderer.Copy(tex, SDL2pp::NullOpt, dst);
     } catch (const std::exception& e) {
-        // Font not available or rendering failed: skip distance text
     }
 
-    // Restore blend mode
     renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    renderer.SetDrawColor(r, g, b, a);
 }

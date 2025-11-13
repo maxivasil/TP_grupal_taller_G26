@@ -8,17 +8,9 @@
 
 class TrackLoader {
 public:
-    /**
-     * Load checkpoints from a YAML track file
-     * @param trackName Name of the track file (e.g., "track_four_checkpoints_vice_city")
-     * @return Vector of RaceCheckpoint objects
-     */
+   
     static std::vector<RaceCheckpoint> loadTrackCheckpoints(const std::string& trackName);
-    
-    /**
-     * Get list of available track files in the tracks directory
-     * @return Vector of track file names
-     */
+   
     static std::vector<std::string> getAvailableTracks();
 
 private:

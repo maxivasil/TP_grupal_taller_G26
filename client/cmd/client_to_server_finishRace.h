@@ -11,4 +11,4 @@ public:
     std::vector<uint8_t> to_bytes() const override;
 };
 
-#endif  // CLIENT_TO_SERVER_FINISH_RACE_H
+#endif  

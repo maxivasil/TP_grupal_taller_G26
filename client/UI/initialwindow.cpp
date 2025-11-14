@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "../cmd/client_to_server_lobby.h"
+#include "../cmd/client_to_server_tour.h"
 #include "../cmd/server_to_client_lobbyResponse.h"
 #include "../session.h"
 #include "./ui_initialwindow.h"
@@ -90,6 +91,10 @@ void InitialWindow::createLobby() {
             auto* response_cmd = dynamic_cast<ServerToClientLobbyResponse*>(cmd.get());
             if (response_cmd) {
                 ClientContext ctx = {.game = nullptr, .mainwindow = (this)};
+                // HARDCODEADO
+                std::string tourFile("./tours/tour1.yaml");
+                client_session.send_command(new ClientToServerTour(tourFile));
+                //
                 response_cmd->execute(ctx);
                 break;
             } else {

@@ -26,6 +26,7 @@
 #define READY_TO_START_COMMAND 0x05
 #define CHEAT_COMMAND 0x06
 #define CLIENT_TO_SERVER_FINISH_RACE 0x09
+#define TOUR_COMMAND 0x0B
 
 // Constants for JOIN_COMMAND type
 #define TYPE_JOIN 0

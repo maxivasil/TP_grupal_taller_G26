@@ -8,7 +8,6 @@
 #include <unistd.h>
 
 #include "cmd/client_to_server_cheat.h"
-#include "cmd/client_to_server_finishRace.h"
 #include "cmd/client_to_server_move.h"
 #include "graphics/track_loader.h"
 
@@ -285,9 +284,6 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
             if (distToCheckpoint < CHECKPOINT_RADIUS) {
                 if (currentCheckpoint == totalCheckpoints - 1) {
                     setWon();
-
-                    auto finishCmd = std::make_unique<ClientToServerFinishRace>();
-                    client_session.send_command(finishCmd.release());
                 } else {
                     currentCheckpoint++;
                 }
@@ -600,6 +596,7 @@ void Game::setRaceResults(const std::vector<ClientPlayerResult>& results, bool i
 
         if (it != results.end()) {
             myOwnResults = *it;
+            setWon();
         } else {
             std::cerr << "[WARNING] PARCIAL recibido pero no contiene mi playerId="
                       << (int)client_id << std::endl;

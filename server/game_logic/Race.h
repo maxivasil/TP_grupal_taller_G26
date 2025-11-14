@@ -22,12 +22,11 @@
 
 #define MAX_RACE_TIME 600.0f
 
-// enum CommandType { ACCELERATE, BRAKE, TURN_LEFT, TURN_RIGHT };
-
-// struct Command {
-//     int playerId;
-//     CommandType type;
-// };
+struct RaceInfo {
+    CityName city;
+    std::string trackFile;
+    RaceInfo(CityName city, const std::string& trackFile): city(city), trackFile(trackFile) {}
+};
 
 class Race {
 private:
@@ -70,7 +69,7 @@ public:
     const std::unordered_map<int, float>& getFinishTimes() const;
 
     const std::vector<std::unique_ptr<Player>>& getPlayers() const;
-    
+
     // Get current elapsed time since race start
     float getCurrentElapsedTime() const;
 

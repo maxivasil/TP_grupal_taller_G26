@@ -50,12 +50,13 @@ void ServerGameLoop::run() {
     while (should_keep_running()) {
         bool inLobby = true;
         std::set<int> clientsReady;
+        std::vector<RaceInfo> racesInfo;
         ServerContext ctx = {.race = nullptr,
                              .client = nullptr,
                              .inLobby = &inLobby,
                              .clientsReady = &clientsReady,
-                             .lobby = lobby};
-
+                             .lobby = lobby,
+                             .racesInfo = &racesInfo};
         while (should_keep_running() && status == LobbyStatus::WAITING_PLAYERS &&
                clientsReady.size() < protected_clients.size()) {
             process_pending_commands(ctx);
@@ -118,7 +119,7 @@ void ServerGameLoop::run() {
             playerId++;
         }
 
-        // Second player: always create a second player with a default car for racing
+        // // Second player: always create a second player with a default car for racing
         // if (players.size() < 2) {
         //     std::cout << "Adding second player with default car" << std::endl;
         //     CarStats statsB = {.acceleration = 20.0f,
@@ -133,100 +134,104 @@ void ServerGameLoop::run() {
         //     players.emplace_back(std::make_unique<Player>("DefaultCar", 999, statsB));
         // }
 
-        std::string trackFile = "tracks/track.yaml";
-        Race race(CityName::LibertyCity, trackFile, players);
-        ctx = {.race = &race,
-               .client = nullptr,
-               .inLobby = &inLobby,
-               .clientsReady = &clientsReady,
-               .lobby = lobby};
-        race.start();
+        // cppcheck-suppress knownEmptyContainer
+        for (auto& raceInfo: racesInfo) {
+            Race race(raceInfo.city, raceInfo.trackFile, players);
+            ctx = {.race = &race,
+                   .client = nullptr,
+                   .inLobby = &inLobby,
+                   .clientsReady = &clientsReady,
+                   .lobby = lobby,
+                   .racesInfo = nullptr};
+            race.start();
 
-        const std::chrono::milliseconds frameDuration(1000 / FPS);
-        auto t1 = std::chrono::high_resolution_clock::now();
-        bool resultsAlreadySent = false;
-        std::set<int> playersWhoAlreadyReceivedPartial;
+            const std::chrono::milliseconds frameDuration(1000 / FPS);
+            auto t1 = std::chrono::high_resolution_clock::now();
+            bool resultsAlreadySent = false;
+            std::set<int> playersWhoAlreadyReceivedPartial;
 
-        while (!race.isFinished() && should_keep_running()) {
-            process_pending_commands(ctx);
+            while (!race.isFinished() && should_keep_running()) {
+                process_pending_commands(ctx);
 
-            race.updatePhysics(std::chrono::duration<float>(frameDuration).count());
+                race.updatePhysics(std::chrono::duration<float>(frameDuration).count());
 
-            for (const auto& [pid, finishTime]: race.getFinishTimes()) {
-                if (playersWhoAlreadyReceivedPartial.count(pid))
-                    continue;
+                for (const auto& [pid, finishTime]: race.getFinishTimes()) {
+                    if (playersWhoAlreadyReceivedPartial.count(pid))
+                        continue;
 
-                playersWhoAlreadyReceivedPartial.insert(pid);
-                std::vector<PlayerResult> partial;
-                std::string playerName = "Unknown";
-
-                auto it = std::find_if(race.getPlayers().begin(), race.getPlayers().end(),
-                                       [pid](const auto& p) { return p->getId() == pid; });
-
-                if (it != race.getPlayers().end()) {
-                    playerName = (*it)->getName();
-                }
-
-                uint8_t position = playersWhoAlreadyReceivedPartial.size();
-
-                partial.emplace_back(static_cast<uint8_t>(pid), playerName, finishTime, position);
-
-                auto partialCmd = std::make_shared<ServerToClientRaceResults>(partial, false);
-
-                protected_clients.broadcast(partialCmd);
-
-                std::cout << "[RACE] Sent PARTIAL result to player " << pid << " => " << finishTime
-                          << " seconds\n";
-            }
-
-            update_game_state(race);
-
-            if (race.isFinished() && !resultsAlreadySent) {
-                resultsAlreadySent = true;
-
-                const auto& finishTimes = race.getFinishTimes();
-                std::vector<std::pair<int, float>> pairs;
-
-                for (const auto& [pid, ftime]: finishTimes) pairs.emplace_back(pid, ftime);
-
-                std::sort(pairs.begin(), pairs.end(),
-                          [](const auto& a, const auto& b) { return a.second < b.second; });
-
-                std::vector<PlayerResult> fullResults;
-
-                for (size_t i = 0; i < pairs.size(); i++) {
-                    int playerId_ = pairs[i].first;
-                    float finishTime = pairs[i].second;
-
+                    playersWhoAlreadyReceivedPartial.insert(pid);
+                    std::vector<PlayerResult> partial;
                     std::string playerName = "Unknown";
 
-                    for (const auto& p: race.getPlayers())
-                        if (p->getId() == playerId_)
-                            playerName = p->getName();
+                    auto it = std::find_if(race.getPlayers().begin(), race.getPlayers().end(),
+                                           [pid](const auto& p) { return p->getId() == pid; });
 
-                    fullResults.emplace_back((uint8_t)playerId_, playerName, finishTime,
-                                             (uint8_t)(i + 1));
+                    if (it != race.getPlayers().end()) {
+                        playerName = (*it)->getName();
+                    }
+
+                    uint8_t position = playersWhoAlreadyReceivedPartial.size();
+
+                    partial.emplace_back(static_cast<uint8_t>(pid), playerName, finishTime,
+                                         position);
+
+                    auto partialCmd = std::make_shared<ServerToClientRaceResults>(partial, false);
+
+                    protected_clients.broadcast(partialCmd);
+
+                    std::cout << "[RACE] Sent PARTIAL result to player " << pid << " => "
+                              << finishTime << " seconds\n";
                 }
 
-                auto fullCmd = std::make_shared<ServerToClientRaceResults>(fullResults, true);
+                update_game_state(race);
 
-                protected_clients.broadcast(fullCmd);
+                if (race.isFinished() && !resultsAlreadySent) {
+                    resultsAlreadySent = true;
 
-                std::cout << "[RACE] Sent FULL results to all players.\n";
-            }
+                    const auto& finishTimes = race.getFinishTimes();
+                    std::vector<std::pair<int, float>> pairs;
 
-            auto t2 = std::chrono::high_resolution_clock::now();
-            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+                    for (const auto& [pid, ftime]: finishTimes) pairs.emplace_back(pid, ftime);
 
-            if (elapsed < frameDuration) {
-                std::this_thread::sleep_for(frameDuration - elapsed);
-                t1 += frameDuration;
-            } else {
-                auto lostFrames = elapsed / frameDuration;
-                t1 += lostFrames * frameDuration;
+                    std::sort(pairs.begin(), pairs.end(),
+                              [](const auto& a, const auto& b) { return a.second < b.second; });
+
+                    std::vector<PlayerResult> fullResults;
+
+                    for (size_t i = 0; i < pairs.size(); i++) {
+                        int playerId_ = pairs[i].first;
+                        float finishTime = pairs[i].second;
+
+                        std::string playerName = "Unknown";
+
+                        for (const auto& p: race.getPlayers())
+                            if (p->getId() == playerId_)
+                                playerName = p->getName();
+
+                        fullResults.emplace_back((uint8_t)playerId_, playerName, finishTime,
+                                                 (uint8_t)(i + 1));
+                    }
+
+                    auto fullCmd = std::make_shared<ServerToClientRaceResults>(fullResults, true);
+
+                    protected_clients.broadcast(fullCmd);
+
+                    std::cout << "[RACE] Sent FULL results to all players.\n";
+                    std::this_thread::sleep_for(std::chrono::seconds(10));
+                }
+
+                auto t2 = std::chrono::high_resolution_clock::now();
+                auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+
+                if (elapsed < frameDuration) {
+                    std::this_thread::sleep_for(frameDuration - elapsed);
+                    t1 += frameDuration;
+                } else {
+                    auto lostFrames = elapsed / frameDuration;
+                    t1 += lostFrames * frameDuration;
+                }
             }
         }
-
         // Exit after sending results for demo
         status = LobbyStatus::FINISHED;
         stop();

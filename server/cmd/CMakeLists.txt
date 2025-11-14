@@ -8,9 +8,9 @@ add_library(server_cmd
     client_to_server_readyToStart.h
     server_to_client_gameStarting.h
     client_to_server_cheat.h
-    client_to_server_finishRace.h
     server_to_client_raceResults.h
     server_to_client_assign_id.h
+    client_to_server_tour.h
 
     cmd_server_register.cpp
     cmd_base_server.cpp
@@ -21,9 +21,9 @@ add_library(server_cmd
     client_to_server_readyToStart.cpp
     server_to_client_gameStarting.cpp  
     client_to_server_cheat.cpp
-    client_to_server_finishRace.cpp
     server_to_client_raceResults.cpp
     server_to_client_assign_id.cpp
+    client_to_server_tour.cpp
 )
 
 target_link_libraries(server_cmd PRIVATE server_game_logic taller_common)

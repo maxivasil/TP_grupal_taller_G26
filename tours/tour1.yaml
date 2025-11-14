@@ -1,0 +1,6 @@
+
+races:
+  - city: "Liberty_City"
+    track: "./tracks/track_four_checkpoints_vice_city.yaml"
+  - city: "Liberty_City"
+    track: "./tracks/track_four_checkpoints_vice_city.yaml"

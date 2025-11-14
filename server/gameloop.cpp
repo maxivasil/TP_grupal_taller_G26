@@ -141,7 +141,6 @@ void ServerGameLoop::run() {
 
         const std::chrono::milliseconds frameDuration(1000 / FPS);
         auto t1 = std::chrono::high_resolution_clock::now();
-        bool resultsAlreadySent = false;
         
         while (!race.isFinished() && should_keep_running()) {
             process_pending_commands(ctx);
@@ -149,60 +148,6 @@ void ServerGameLoop::run() {
             race.updatePhysics(std::chrono::duration<float>(frameDuration).count());
 
             update_game_state(race);
-            
-            // Check if we should send results early (at least one player finished for demo mode)
-            if (!resultsAlreadySent && !race.getFinishTimes().empty()) {
-                // DEMO MODE: Send results as soon as first player finishes
-                std::cout << "\n=== DEMO MODE: At least one player finished, sending results ===" << std::endl;
-                resultsAlreadySent = true;
-                
-                const auto& finishTimes = race.getFinishTimes();
-                std::vector<PlayerResult> results;
-                
-                // Create a list of players with their finish times
-                std::vector<std::pair<int, float>> playerTimesPairs;
-                for (const auto& [playerId, finishTime] : finishTimes) {
-                    playerTimesPairs.emplace_back(playerId, finishTime);
-                }
-                
-                // Sort by finish time to determine positions
-                std::sort(playerTimesPairs.begin(), playerTimesPairs.end(),
-                          [](const auto& a, const auto& b) { return a.second < b.second; });
-                
-                // Create results with positions
-                for (uint8_t position = 0; position < playerTimesPairs.size(); ++position) {
-                    int playerId = playerTimesPairs[position].first;
-                    float finishTime = playerTimesPairs[position].second;
-                    
-                    // Find player by ID to get name
-                    std::string playerName = "Unknown";
-                    for (const auto& player : race.getPlayers()) {
-                        if (player->getId() == playerId) {
-                            playerName = player->getName();
-                            break;
-                        }
-                    }
-                    
-                    results.emplace_back(static_cast<uint8_t>(playerId), playerName, finishTime, position + 1);
-                }
-                
-                auto raceResultsCmd = std::make_shared<ServerToClientRaceResults>(results, race.isFinished());
-                auto bytes = raceResultsCmd->to_bytes();
-                
-                std::cout << "\n=== RACE RESULTS BROADCAST ===" << std::endl;
-                std::cout << "Serialized to " << bytes.size() << " bytes" << std::endl;
-                std::cout << "First byte (command): " << static_cast<int>(bytes[0]) << " (should be 0x08)" << std::endl;
-                std::cout << "Race Officially Finished: " << (race.isFinished() ? "YES" : "NO") << std::endl;
-                std::cout << "Number of results: " << results.size() << std::endl;
-                for (const auto& result : results) {
-                    std::cout << "  Position " << static_cast<int>(result.position) << ": "
-                              << result.playerName << " (ID:" << static_cast<int>(result.playerId) << ") - " 
-                              << result.finishTime << "s" << std::endl;
-                }
-                std::cout << "==============================\n" << std::endl;
-                
-                protected_clients.broadcast(raceResultsCmd);
-            }
 
             auto t2 = std::chrono::high_resolution_clock::now();
             auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
@@ -216,8 +161,54 @@ void ServerGameLoop::run() {
             }
         }
 
-        // Exit after sending results for demo
-        status = LobbyStatus::FINISHED;
-        stop();
+        // La carrera ha terminado - enviar resultados finales
+        std::cout << "\n=== RACE FINISHED: Sending Final Results ===" << std::endl;
+        
+        const auto& finishTimes = race.getFinishTimes();
+        std::vector<PlayerResult> results;
+        
+        // Create a list of players with their finish times
+        std::vector<std::pair<int, float>> playerTimesPairs;
+        for (const auto& [playerId, finishTime] : finishTimes) {
+            playerTimesPairs.emplace_back(playerId, finishTime);
+        }
+        
+        // Sort by finish time to determine positions
+        std::sort(playerTimesPairs.begin(), playerTimesPairs.end(),
+                  [](const auto& a, const auto& b) { return a.second < b.second; });
+        
+        // Create results with positions, including player ID
+        for (uint8_t position = 0; position < playerTimesPairs.size(); ++position) {
+            int playerId = playerTimesPairs[position].first;
+            float finishTime = playerTimesPairs[position].second;
+            
+            // Find player by ID to get name
+            std::string playerName = "Unknown";
+            for (const auto& player : race.getPlayers()) {
+                if (player->getId() == playerId) {
+                    playerName = player->getName();
+                    break;
+                }
+            }
+            
+            results.emplace_back(static_cast<uint8_t>(playerId), playerName, finishTime, position + 1);
+        }
+        
+        auto raceResultsCmd = std::make_shared<ServerToClientRaceResults>(results, true);
+        auto bytes = raceResultsCmd->to_bytes();
+        
+        std::cout << "\n=== FINAL RACE RESULTS ===" << std::endl;
+        std::cout << "Serialized to " << bytes.size() << " bytes" << std::endl;
+        std::cout << "First byte (command): " << static_cast<int>(bytes[0]) << " (should be 0x08)" << std::endl;
+        std::cout << "Race Officially Finished: YES" << std::endl;
+        std::cout << "Number of results: " << results.size() << std::endl;
+        for (const auto& result : results) {
+            std::cout << "  Position " << static_cast<int>(result.position) << ": "
+                      << result.playerName << " (ID:" << static_cast<int>(result.playerId) << ") - " 
+                      << result.finishTime << "s" << std::endl;
+        }
+        std::cout << "===========================\n" << std::endl;
+        
+        protected_clients.broadcast(raceResultsCmd);
     }
 }

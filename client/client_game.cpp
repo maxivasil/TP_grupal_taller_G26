@@ -597,9 +597,9 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
             char timeStr[50];
             snprintf(timeStr, sizeof(timeStr), "%02d:%02d.%03d", minutes, seconds, millis);
 
-            char resultStr[150];
-            snprintf(resultStr, sizeof(resultStr), "%d. %s - %s", static_cast<int>(result.position),
-                     result.playerName.c_str(), timeStr);
+            char resultStr[200];
+            snprintf(resultStr, sizeof(resultStr), "%d. %s (ID:%d) - %s", static_cast<int>(result.position),
+                     result.playerName.c_str(), static_cast<int>(result.playerId), timeStr);
 
             auto resultSurface = resultsFont.RenderText_Solid(resultStr, resultsColor);
             SDL2pp::Texture resultTexture(renderer, resultSurface);
@@ -675,11 +675,31 @@ void Game::setRaceResults(const std::vector<ClientPlayerResult>& results) {
     hasRaceResults = true;
     std::cout << "\n=== GAME::setRaceResults LLAMADO ===" << std::endl;
     std::cout << "Resultados de carrera recibidos: " << results.size() << " jugadores" << std::endl;
+    std::cout << "Client ID: " << (int)client_id << std::endl;
+    
     for (const auto& result: results) {
-        std::cout << "  - " << result.playerName << " (Position: " << (int)result.position
+        std::cout << "  - " << result.playerName << " (ID:" << (int)result.playerId 
+                  << ", Position: " << (int)result.position
                   << ", Time: " << result.finishTime << "s)" << std::endl;
     }
     std::cout << "==================================\n" << std::endl;
+    
+    // Determine if this client won or lost based on position in results
+    // Look for this client's result by ID
+    for (const auto& result : results) {
+        if (result.playerId == client_id) {
+            if (result.position == 1) {
+                setWon();
+            } else {
+                setLost();
+            }
+            return;
+        }
+    }
+    
+    // If not found by ID, show lost state
+    std::cerr << "WARNING: This client not found in race results!" << std::endl;
+    setLost();
 }
 
 float Game::getScale(int w, int h) const {

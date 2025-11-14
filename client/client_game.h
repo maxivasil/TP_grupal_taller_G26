@@ -83,6 +83,8 @@ private:
 
     std::vector<ClientPlayerResult> raceResults;
     bool hasRaceResults = false;
+    bool raceFullyFinished = false;
+    std::vector<ClientPlayerResult> myOwnResults;
 
     SDL_Rect src;
     SDL_Rect dst;
@@ -100,7 +102,15 @@ private:
     void setWon();
 
     void setLost();
+
     float getScale(int w, int h) const;
+
+    void renderPressESC(SDL2pp::Renderer& renderer);
+
+    void renderMyOwnTime(SDL2pp::Renderer& renderer, const ClientPlayerResult& result);
+
+    void renderRaceTable(SDL2pp::Renderer& renderer,
+                         const std::vector<ClientPlayerResult>& results);
 
 public:
     explicit Game(ClientSession& client_session);
@@ -108,7 +118,7 @@ public:
     int start();
     void setClientId(uint8_t id);
     void update_snapshots(const std::vector<CarSnapshot>& snapshots);
-    void setRaceResults(const std::vector<ClientPlayerResult>& results);
+    void setRaceResults(const std::vector<ClientPlayerResult>& results, bool isFinished);
 };
 
 #endif

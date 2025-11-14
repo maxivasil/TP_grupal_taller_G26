@@ -22,8 +22,12 @@ void ServerClientHandler::run() {
         sender.start();
         bool inLobby = false;
         auto registry = registered_commands.get_recv_registry();
-        ServerContext ctx = {
-                .race = nullptr, .client = this, .inLobby = &inLobby, .clientsReady = nullptr, .lobby = nullptr};
+        ServerContext ctx = {.race = nullptr,
+                             .client = this,
+                             .inLobby = &inLobby,
+                             .clientsReady = nullptr,
+                             .lobby = nullptr};
+        // cppcheck-suppress knownConditionTrueFalse
         while (should_keep_running() && !inLobby) {
             std::vector<uint8_t> data = protocol.recv_full_message();
             if (data.empty())
@@ -32,6 +36,10 @@ void ServerClientHandler::run() {
                     ClientToServerCmd_Server::from_bytes(data, registry, client_id));
             cmd->execute(ctx);
         }
+
+        std::cout << "[SERVER] Assigned client ID " << client_id << " to connected client.\n";
+        auto assignIdCmd = std::make_shared<ServerToClientAssignId>(client_id);
+        send_message(assignIdCmd);
 
         receiver->start();
 

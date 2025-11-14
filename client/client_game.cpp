@@ -8,8 +8,8 @@
 #include <unistd.h>
 
 #include "cmd/client_to_server_cheat.h"
-#include "cmd/client_to_server_move.h"
 #include "cmd/client_to_server_finishRace.h"
+#include "cmd/client_to_server_move.h"
 #include "graphics/track_loader.h"
 
 #define WINDOW_WIDTH 640
@@ -25,14 +25,14 @@ Game::Game(ClientSession& client_session):
         minimap(150),
         hud(WINDOW_WIDTH, WINDOW_HEIGHT),
         arrow(WINDOW_WIDTH, WINDOW_HEIGHT) {
-    raceStartTime = SDL_GetTicks() / 1000.0f; 
-    explosion.setSoundEngine(&carSoundEngine);  
+    raceStartTime = SDL_GetTicks() / 1000.0f;
+    explosion.setSoundEngine(&carSoundEngine);
 }
 
 int Game::start() {
     try {
         SDL2pp::SDL sdl(SDL_INIT_VIDEO);
-        TTF_Init(); 
+        TTF_Init();
 
         std::string titulo = "NFS-2D";
 
@@ -72,7 +72,7 @@ int Game::start() {
 
         std::string trackName = "track_four_checkpoints_vice_city";
         trackCheckpoints = TrackLoader::loadTrackCheckpoints(trackName);
-        
+
         if (trackCheckpoints.empty()) {
             std::cerr << "ERROR: No checkpoints loaded! Using fallback..." << std::endl;
             trackCheckpoints = {
@@ -82,7 +82,7 @@ int Game::start() {
                     {3, 439.8f, 107.0f, 20.2f, 13.3f, true},
             };
         }
-        
+
         totalCheckpoints = trackCheckpoints.size();
         minimap.setCheckpoints(trackCheckpoints);
 
@@ -103,7 +103,7 @@ int Game::start() {
 
             ClientContext ctx;
             ctx.game = this;
-            ctx.mainwindow = nullptr; 
+            ctx.mainwindow = nullptr;
 
             ServerToClientCmd_Client* raw_cmd;
             while (recv_queue.try_pop(raw_cmd)) {
@@ -121,18 +121,18 @@ int Game::start() {
 
             render(renderer);
 
-            auto t2 = SDL_GetTicks();     
-            int rest = rate - (t2 - t1);  
+            auto t2 = SDL_GetTicks();
+            int rest = rate - (t2 - t1);
 
             if (rest < 0) {
-                auto behind = -rest;                
+                auto behind = -rest;
                 auto lost = behind - behind % rate;
                 t1 += lost;
             } else {
                 SDL_Delay(rest);
             }
 
-            t1 += rate;  
+            t1 += rate;
         }
 
         return 0;
@@ -187,16 +187,20 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
     }
 
     if (state[SDL_SCANCODE_RIGHT]) {
-        if (!playerDestroyed) client_session.send_command(new ClientToServerMove(MOVE_RIGHT));
+        if (!playerDestroyed)
+            client_session.send_command(new ClientToServerMove(MOVE_RIGHT));
     }
     if (state[SDL_SCANCODE_LEFT]) {
-        if (!playerDestroyed) client_session.send_command(new ClientToServerMove(MOVE_LEFT));
+        if (!playerDestroyed)
+            client_session.send_command(new ClientToServerMove(MOVE_LEFT));
     }
     if (state[SDL_SCANCODE_UP]) {
-        if (!playerDestroyed) client_session.send_command(new ClientToServerMove(MOVE_UP));
+        if (!playerDestroyed)
+            client_session.send_command(new ClientToServerMove(MOVE_UP));
     }
     if (state[SDL_SCANCODE_DOWN]) {
-        if (!playerDestroyed) client_session.send_command(new ClientToServerMove(MOVE_DOWN));
+        if (!playerDestroyed)
+            client_session.send_command(new ClientToServerMove(MOVE_DOWN));
     }
 
     return false;
@@ -210,7 +214,7 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
     int texW = textures[0]->GetWidth();
     int texH = textures[0]->GetHeight();
     src = camera.getSrcRect(texW, texH);
-    
+
     dst = {0, 0, renderer.GetOutputWidth(), renderer.GetOutputHeight()};
     float scale = float(dst.w) / float(src.w);
 
@@ -223,47 +227,47 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
         camera.follow(worldX, worldY);
 
         float previousHealth = previousHealthState[it->id];
-        
+
         if (previousHealth == 0.0f && it->health > 0.0f) {
-            previousHealth = it->health; 
+            previousHealth = it->health;
         }
-        
+
         if (it->health < previousHealth && previousHealth > 0.0f) {
             float healthDamage = previousHealth - it->health;
             lastCollisionIntensity = healthDamage;
-            
+
             if (healthDamage > 5.0f) {
                 collisionFlashStartTime = SDL_GetTicks();
             }
-            
+
             explosion.trigger(worldX, worldY, src.x, src.y, scale);
         }
-        
+
         if (it->health <= 0.0f && !playerDestroyed) {
             playerDestroyed = true;
             destructionStartTime = SDL_GetTicks();
             std::cout << "[GAME] Player destroyed! Health: " << it->health << std::endl;
         }
-        
+
         // If destroyed, trigger death sequence after short delay
         if (playerDestroyed && (SDL_GetTicks() - destructionStartTime) > 500) {
             setLost();
         }
-        
+
         previousHealthState[it->id] = it->health;
 
         const Uint8* keyState = SDL_GetKeyboardState(NULL);
         bool isAccelerating = keyState[SDL_SCANCODE_UP];
         bool isBraking = keyState[SDL_SCANCODE_DOWN];
         bool isTurning = keyState[SDL_SCANCODE_LEFT] || keyState[SDL_SCANCODE_RIGHT];
-        
+
         carSoundEngine.update(isAccelerating, isTurning, isBraking);
 
         if (currentCheckpoint < totalCheckpoints) {
             const RaceCheckpoint& current = trackCheckpoints[currentCheckpoint];
             float checkpointX = current.x;
             float checkpointY = current.y;
-            
+
             arrow.updateTarget(it->pos_x, it->pos_y, checkpointX, checkpointY, it->angle);
 
             float dx = checkpointX - it->pos_x;
@@ -274,7 +278,7 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
             if (distToCheckpoint < CHECKPOINT_RADIUS) {
                 if (currentCheckpoint == totalCheckpoints - 1) {
                     setWon();
-                    
+
                     auto finishCmd = std::make_unique<ClientToServerFinishRace>();
                     client_session.send_command(finishCmd.release());
                 } else {
@@ -312,28 +316,29 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
         if (car.id == client_id) {
             camera.follow(worldX, worldY);
         } else {
-            float distToOtherCar = std::sqrt((worldX - playerWorldX) * (worldX - playerWorldX) + 
-                                           (worldY - playerWorldY) * (worldY - playerWorldY));
-            
+            float distToOtherCar = std::sqrt((worldX - playerWorldX) * (worldX - playerWorldX) +
+                                             (worldY - playerWorldY) * (worldY - playerWorldY));
+
             float prevHealth = otherPlayersLastHealth[car.id];
             if (prevHealth == 0.0f && car.health > 0.0f) {
                 prevHealth = car.health;  // First time
             }
-            
+
             if (car.health < prevHealth && prevHealth > 0.0f) {
                 float healthDamage = prevHealth - car.health;
                 carSoundEngine.playOtherCarCollision(distToOtherCar, healthDamage);
-                std::cout << "[GAME] Other car (ID: " << car.id << ") collided at distance " << distToOtherCar << std::endl;
+                std::cout << "[GAME] Other car (ID: " << car.id << ") collided at distance "
+                          << distToOtherCar << std::endl;
             }
             otherPlayersLastHealth[car.id] = car.health;
-            
+
             float prevSpeed = otherPlayersLastSpeed[car.id];
             if (car.speed < prevSpeed && prevSpeed > 5.0f && car.speed < 2.0f) {
                 carSoundEngine.playDistantBrake(distToOtherCar);
             }
             otherPlayersLastSpeed[car.id] = car.speed;
         }
-        
+
         rc.onBridge = car.onBridge;
         carsToRender.push_back(rc);
     }
@@ -362,6 +367,9 @@ void Game::render(SDL2pp::Renderer& renderer) {
 
     MinimapPlayer localPlayer;
     std::vector<MinimapPlayer> otherPlayers;
+    HUDData hudData;
+    hudData.speed = 0.0f;
+    hudData.health = 100.0f;
 
     if (it != snapshots.end()) {
         float serverX = it->pos_x;
@@ -373,6 +381,27 @@ void Game::render(SDL2pp::Renderer& renderer) {
         localPlayer.playerId = client_id;
         localPlayer.health = it->health;
         localPlayer.isLocal = true;
+
+        hudData.health = it->health;
+        if (it->speed > 0.0f) {
+            hudData.speed = it->speed;
+        } else {
+            Uint32 currentTime = SDL_GetTicks();
+            if (lastSpeedUpdateTime > 0) {
+                float timeDelta = (currentTime - lastSpeedUpdateTime) / 1000.0f;
+
+                if (timeDelta > 0.0f) {
+                    float dx = it->pos_x - lastPlayerX;
+                    float dy = it->pos_y - lastPlayerY;
+                    float distance = std::sqrt(dx * dx + dy * dy);
+                    hudData.speed = distance / timeDelta;
+                }
+            }
+
+            lastPlayerX = it->pos_x;
+            lastPlayerY = it->pos_y;
+            lastSpeedUpdateTime = currentTime;
+        }
 
         for (const auto& car: snapshots) {
             if (car.id != client_id) {
@@ -411,38 +440,8 @@ void Game::render(SDL2pp::Renderer& renderer) {
         minimap.render(renderer, localPlayer, otherPlayers, currentCheckpoint);
     }
 
-    
+
     explosion.render(renderer);
-
-   
-    HUDData hudData;
-    hudData.speed = 0.0f; 
-    hudData.health = 100.0f;
-
-    if (!snapshots.empty()) {
-        hudData.health = snapshots[0].health;
-
-        if (snapshots[0].speed > 0.0f) {
-            hudData.speed = snapshots[0].speed;
-        } else {
-            Uint32 currentTime = SDL_GetTicks();
-            if (lastSpeedUpdateTime > 0) {
-                float timeDelta =
-                        (currentTime - lastSpeedUpdateTime) / 1000.0f;  // Convert to seconds
-                if (timeDelta > 0.0f) {
-                    float posX = snapshots[0].pos_x;
-                    float posY = snapshots[0].pos_y;
-                    float dx = posX - lastPlayerX;
-                    float dy = posY - lastPlayerY;
-                    float distance = std::sqrt(dx * dx + dy * dy);
-                    hudData.speed = distance / timeDelta;  // units per second
-                }
-            }
-            lastPlayerX = snapshots[0].pos_x;
-            lastPlayerY = snapshots[0].pos_y;
-            lastSpeedUpdateTime = currentTime;
-        }
-    }
 
     hudData.checkpointCurrent = currentCheckpoint;
     hudData.checkpointTotal = totalCheckpoints;
@@ -468,24 +467,25 @@ void Game::render(SDL2pp::Renderer& renderer) {
             // Flash intensity fades from 1.0 to 0.0
             float progress = (float)elapsedMs / (float)FLASH_DURATION_MS;
             float intensity = 1.0f - progress;  // Fade out
-            
+
             // Alternate between red and white based on collision intensity
-            uint8_t flashAlpha = static_cast<uint8_t>(255 * intensity * (lastCollisionIntensity / 20.0f));
-            
+            uint8_t flashAlpha =
+                    static_cast<uint8_t>(255 * intensity * (lastCollisionIntensity / 20.0f));
+
             Uint8 prevR, prevG, prevB, prevA;
             renderer.GetDrawColor(prevR, prevG, prevB, prevA);
-            
+
             int width = renderer.GetOutputWidth();
             int height = renderer.GetOutputHeight();
             SDL_Rect flashRect = {0, 0, width, height};
-            
+
             // Alternate: strong impacts = white, medium impacts = red
             if (lastCollisionIntensity > 10.0f) {
                 renderer.SetDrawColor(255, 255, 255, flashAlpha);  // White flash for high impact
             } else {
-                renderer.SetDrawColor(255, 80, 80, flashAlpha);   // Red flash for medium impact
+                renderer.SetDrawColor(255, 80, 80, flashAlpha);  // Red flash for medium impact
             }
-            
+
             renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
             renderer.FillRect(flashRect);
             renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
@@ -555,55 +555,60 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
 
     // Si hay resultados, mostrar la tabla
     // TEMPORAL: Comentado check de múltiples autos para testing con un solo auto
-    if (hasRaceResults && !raceResults.empty()) { // if (hasRaceResults) { // TEMPORAL: mostrar siempre si hay resultados
-        std::cout << "[RENDER] Mostrando tabla de resultados con " << raceResults.size() << " resultados\n";
-        SDL2pp::Font resultsFont(
-                hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
-                20);
+    if (hasRaceResults && !raceResults.empty()) {  // if (hasRaceResults) { // TEMPORAL: mostrar
+                                                   // siempre si hay resultados
+        std::cout << "[RENDER] Mostrando tabla de resultados con " << raceResults.size()
+                  << " resultados\n";
+        SDL2pp::Font resultsFont(hud.fontPath.empty() ?
+                                         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" :
+                                         hud.fontPath,
+                                 20);
         SDL_Color resultsColor = {200, 200, 200, 255};
-        
+
         int startY = titleY + titleTexture.GetHeight() + 30;
         int lineHeight = 30;
         int lineSpacing = 5;
-        
+
         // Título de tabla
         auto headerSurface = resultsFont.RenderText_Solid("RESULTADOS", {255, 255, 0, 255});
         SDL2pp::Texture headerTexture(renderer, headerSurface);
         int headerX = (width - headerTexture.GetWidth()) / 2;
-        SDL_Rect headerRect = {headerX, startY, headerTexture.GetWidth(), headerTexture.GetHeight()};
+        SDL_Rect headerRect = {headerX, startY, headerTexture.GetWidth(),
+                               headerTexture.GetHeight()};
         renderer.Copy(headerTexture, SDL2pp::NullOpt, headerRect);
-        
+
         startY += lineHeight + 10;
-        
+
         // Mostrar cada resultado
-        for (const auto& result : raceResults) {
+        for (const auto& result: raceResults) {
             int minutes = static_cast<int>(result.finishTime) / 60;
             int seconds = static_cast<int>(result.finishTime) % 60;
-            int millis = static_cast<int>((result.finishTime - static_cast<int>(result.finishTime)) * 1000);
-            
+            int millis = static_cast<int>(
+                    (result.finishTime - static_cast<int>(result.finishTime)) * 1000);
+
             char timeStr[50];
             snprintf(timeStr, sizeof(timeStr), "%02d:%02d.%03d", minutes, seconds, millis);
-            
+
             char resultStr[150];
-            snprintf(resultStr, sizeof(resultStr), "%d. %s - %s", 
-                     static_cast<int>(result.position), 
-                     result.playerName.c_str(), 
-                     timeStr);
-            
+            snprintf(resultStr, sizeof(resultStr), "%d. %s - %s", static_cast<int>(result.position),
+                     result.playerName.c_str(), timeStr);
+
             auto resultSurface = resultsFont.RenderText_Solid(resultStr, resultsColor);
             SDL2pp::Texture resultTexture(renderer, resultSurface);
-            
+
             int resultX = (width - resultTexture.GetWidth()) / 2;
-            SDL_Rect resultRect = {resultX, startY, resultTexture.GetWidth(), resultTexture.GetHeight()};
+            SDL_Rect resultRect = {resultX, startY, resultTexture.GetWidth(),
+                                   resultTexture.GetHeight()};
             renderer.Copy(resultTexture, SDL2pp::NullOpt, resultRect);
-            
+
             startY += lineHeight + lineSpacing;
         }
     } else {
         // Mensaje si no hay resultados aún
-        SDL2pp::Font msgFont(
-                hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
-                20);
+        SDL2pp::Font msgFont(hud.fontPath.empty() ?
+                                     "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" :
+                                     hud.fontPath,
+                             20);
         SDL_Color msgColor = {200, 200, 200, 255};
 
         std::string msgText = "Esperando resultados...";
@@ -616,7 +621,7 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
         SDL_Rect msgRect = {msgX, msgY, msgTexture.GetWidth(), msgTexture.GetHeight()};
         renderer.Copy(msgTexture, SDL2pp::NullOpt, msgRect);
     }
-    
+
     // Mensaje de instrucción al final
     SDL2pp::Font instructFont(
             hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
@@ -630,9 +635,15 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
 
     int instructX = (width - instructTexture.GetWidth()) / 2;
     int instructY = height - 50;
-    SDL_Rect instructRect = {instructX, instructY, instructTexture.GetWidth(), instructTexture.GetHeight()};
+    SDL_Rect instructRect = {instructX, instructY, instructTexture.GetWidth(),
+                             instructTexture.GetHeight()};
     renderer.Copy(instructTexture, SDL2pp::NullOpt, instructRect);
     renderer.SetDrawColor(r, g, b, a);
+}
+
+void Game::setClientId(uint8_t id) {
+    client_id = id;
+    std::cout << "[GAME] Client ID set to " << (int)client_id << std::endl;
 }
 
 void Game::setWon() {
@@ -656,8 +667,8 @@ void Game::setRaceResults(const std::vector<ClientPlayerResult>& results) {
     hasRaceResults = true;
     std::cout << "\n=== GAME::setRaceResults LLAMADO ===" << std::endl;
     std::cout << "Resultados de carrera recibidos: " << results.size() << " jugadores" << std::endl;
-    for (const auto& result : results) {
-        std::cout << "  - " << result.playerName << " (Position: " << (int)result.position 
+    for (const auto& result: results) {
+        std::cout << "  - " << result.playerName << " (Position: " << (int)result.position
                   << ", Time: " << result.finishTime << "s)" << std::endl;
     }
     std::cout << "==================================\n" << std::endl;

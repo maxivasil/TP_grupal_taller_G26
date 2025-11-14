@@ -14,14 +14,15 @@
 #include <SDL2pp/SDL2pp.hh>
 #include <SDL_image.h>
 
+#include "audio/car_sound_engine.h"
+#include "cmd/server_to_client_raceResults.h"
 #include "graphics/camera.h"
 #include "graphics/checkpoint_arrow.h"
 #include "graphics/collision_explosion.h"
 #include "graphics/hud.h"
 #include "graphics/minimap.h"
-#include "audio/car_sound_engine.h"
+
 #include "session.h"
-#include "cmd/server_to_client_raceResults.h"
 
 struct RenderCar {
     SDL_Rect src;
@@ -36,7 +37,7 @@ class Game {
 private:
     ClientSession& client_session;
 
-    uint8_t client_id = 0;
+    uint8_t client_id = UINT8_MAX;
     Camera camera;
     Minimap minimap;
     HUD hud;
@@ -51,12 +52,12 @@ private:
     float testPlayerX = 350.0f;
     float testPlayerY = 300.0f;
     float testPlayerAngle = 0.0f;
-    bool showMinimap = true; 
+    bool showMinimap = true;
 
     int currentCheckpoint = 0;
     int totalCheckpoints = 4;
     float raceStartTime = 0.0f;
-    
+
     std::vector<RaceCheckpoint> trackCheckpoints;
 
     std::unordered_map<int, bool> previousCollisionState;
@@ -66,21 +67,21 @@ private:
     float lastPlayerX = 0.0f;
     float lastPlayerY = 0.0f;
     Uint32 lastSpeedUpdateTime = 0;
-    
+
     std::unordered_map<int, float> otherPlayersLastHealth;
     std::unordered_map<int, float> otherPlayersLastSpeed;
 
     Uint32 collisionFlashStartTime = 0;
-    const Uint32 FLASH_DURATION_MS = 300;  
+    const Uint32 FLASH_DURATION_MS = 300;
     float lastCollisionIntensity = 0.0f;
-    
+
     bool playerDestroyed = false;
     Uint32 destructionStartTime = 0;
 
     GameState gameState = GameState::PLAYING;
     std::string endGameMessage = "";
     Uint32 endGameTime = 0;
-    
+
     std::vector<ClientPlayerResult> raceResults;
     bool hasRaceResults = false;
 
@@ -105,9 +106,9 @@ public:
     explicit Game(ClientSession& client_session);
 
     int start();
+    void setClientId(uint8_t id);
     void update_snapshots(const std::vector<CarSnapshot>& snapshots);
     void setRaceResults(const std::vector<ClientPlayerResult>& results);
-
 };
 
 #endif

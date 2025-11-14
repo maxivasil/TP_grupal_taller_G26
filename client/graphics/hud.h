@@ -1,8 +1,9 @@
 #ifndef CLIENT_HUD_H
 #define CLIENT_HUD_H
 
-#include <SDL2pp/SDL2pp.hh>
 #include <string>
+
+#include <SDL2pp/SDL2pp.hh>
 
 struct HUDData {
     float speed;
@@ -23,16 +24,16 @@ private:
 public:
     explicit HUD(int windowWidth, int windowHeight);
     ~HUD();
-    
+
     HUD(const HUD&) = delete;
     HUD& operator=(const HUD&) = delete;
     HUD(HUD&&) = default;
     HUD& operator=(HUD&&) = default;
-    
+
     void loadFont(const std::string& fontPath, int fontSize);
     void render(SDL2pp::Renderer& renderer, const HUDData& data);
-    
-    std::string getFontPath() const { return loadedFontPath; }
+
+    const std::string& getFontPath() const { return loadedFontPath; }
 
 public:
     // Acceso público para obtener fontPath desde el exterior

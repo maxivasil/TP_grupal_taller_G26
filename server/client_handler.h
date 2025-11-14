@@ -10,6 +10,7 @@
 #include "../common/socket.h"
 #include "../common/thread.h"
 #include "cmd/cmd_server_register.h"
+#include "cmd/server_to_client_assign_id.h"
 
 #include "server_receiver.h"
 #include "server_sender.h"

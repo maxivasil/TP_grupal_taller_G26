@@ -30,6 +30,6 @@ public:
 
     void connectEvents();
 
-    void updateLobby(std::string lobby);
+    void updateLobby(const std::string& lobby);
 };
 #endif  // MAINWINDOW_H

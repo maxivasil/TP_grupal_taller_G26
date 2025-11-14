@@ -9,6 +9,7 @@
 #include <iostream>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "../cmd/client_to_server_readyToStart.h"
 #include "../cmd/server_to_client_gameStarting.h"
@@ -52,6 +53,7 @@ void MainWindow::ready() {
     ServerToClientCmd_Client* raw_cmd;
     Queue<ServerToClientCmd_Client*>& recv_queue = client_session.get_recv_queue();
     client_session.send_command(new ClientToServerReady(car));
+    std::vector<ServerToClientCmd_Client*> stash;
     while (true) {
         if (recv_queue.try_pop(raw_cmd)) {
             std::unique_ptr<ServerToClientCmd_Client> cmd(raw_cmd);
@@ -60,8 +62,13 @@ void MainWindow::ready() {
                 ClientContext ctx = {.game = nullptr, .mainwindow = (this)};
                 start_cmd->execute(ctx);
                 break;
+            } else {
+                stash.push_back(cmd.release());
             }
         }
+    }
+    for (auto* c: stash) {
+        recv_queue.push(c);
     }
 }
 
@@ -74,8 +81,9 @@ void MainWindow::selector() {
     car = carName.toStdString();
 }
 
-void MainWindow::updateLobby(std::string lobby) {
+void MainWindow::updateLobby(const std::string& lobby) {
     QLabel* labelOut = findChild<QLabel*>("Lobby_text");
+    std::cout << "Updating lobby code to: " << lobby << std::endl;
     labelOut->setText("Lobby Code: " + QString::fromStdString(lobby));
 }
 

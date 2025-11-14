@@ -5,12 +5,12 @@
 #include <utility>
 #include <vector>
 
-#include "client_to_server_move.h"
 #include "cmd_base_client.h"
-#include "server_to_client_lobbyResponse.h"
-#include "server_to_client_snapshot.h"
+#include "server_to_client_assign_id.h"
 #include "server_to_client_gameStarting.h"
+#include "server_to_client_lobbyResponse.h"
 #include "server_to_client_raceResults.h"
+#include "server_to_client_snapshot.h"
 
 class ClientRegisteredCommands {
 public:

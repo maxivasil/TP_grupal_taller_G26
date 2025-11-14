@@ -450,6 +450,7 @@ void Game::render(SDL2pp::Renderer& renderer) {
 
     explosion.render(renderer);
 
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     hudData.checkpointCurrent = currentCheckpoint;
     hudData.checkpointTotal = totalCheckpoints;
     hudData.raceTime = (SDL_GetTicks() / 1000.0f) - raceStartTime;

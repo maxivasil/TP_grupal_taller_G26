@@ -76,13 +76,13 @@ void HUD::render(SDL2pp::Renderer& renderer, const HUDData& data) {
         int bgPadding = int(8 * hudScale);  // Extra padding around text for background
 
         // Draw black background rectangle
-        renderer.SetDrawColor(0, 0, 0, 200);  // Black with slight transparency
+        renderer.SetDrawColor(0, 0, 0, 120);  // Black with slight transparency
         SDL_Rect bgRect{x - bgPadding, y - bgPadding, maxWidth + (bgPadding * 2),
                         totalHeight + bgPadding};
         renderer.FillRect(bgRect);
 
         // Draw border around background
-        renderer.SetDrawColor(255, 255, 255, 150);  // White border
+        renderer.SetDrawColor(255, 255, 255, 100);  // White border
         renderer.DrawRect(bgRect);
 
         // Render speed

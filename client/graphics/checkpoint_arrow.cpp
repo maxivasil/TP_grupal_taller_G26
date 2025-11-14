@@ -65,7 +65,7 @@ void CheckpointArrow::drawArrow(SDL2pp::Renderer& renderer, float centerX, float
         if (offset == 0)
             continue;
 
-        renderer.SetDrawColor(255, 200, 0, 200);
+        renderer.SetDrawColor(255, 200, 0, 120);
         renderer.DrawLine(SDL2pp::Point(int(baseX + perpX), int(baseY + perpY)),
                           SDL2pp::Point(int(tipX + perpX), int(tipY + perpY)));
     }
@@ -83,12 +83,12 @@ void CheckpointArrow::render(SDL2pp::Renderer& renderer) {
     Uint8 r, g, b, a;
     renderer.GetDrawColor(r, g, b, a);
 
-    renderer.SetDrawColor(50, 50, 50, 200);
+    renderer.SetDrawColor(50, 50, 50, 120);
     SDL_Rect bgCircle = {arrowX - arrowSize - 5, arrowY - arrowSize - 5, (arrowSize + 5) * 2,
                          (arrowSize + 5) * 2};
     renderer.FillRect(bgCircle);
 
-    renderer.SetDrawColor(255, 200, 0, 255);
+    renderer.SetDrawColor(255, 200, 0, 180);
     for (int i = 0; i < 2; i++) {
         SDL_Rect border = {arrowX - (arrowSize + 5 + i), arrowY - (arrowSize + 5 + i),
                            (arrowSize + 5 + i) * 2, (arrowSize + 5 + i) * 2};

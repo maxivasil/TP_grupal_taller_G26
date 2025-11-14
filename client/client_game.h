@@ -84,7 +84,7 @@ private:
     std::vector<ClientPlayerResult> raceResults;
     bool hasRaceResults = false;
     bool raceFullyFinished = false;
-    std::vector<ClientPlayerResult> myOwnResults;
+    ClientPlayerResult myOwnResults = {0, "", 0.0f, 0};
 
     SDL_Rect src;
     SDL_Rect dst;
@@ -107,10 +107,9 @@ private:
 
     void renderPressESC(SDL2pp::Renderer& renderer);
 
-    void renderMyOwnTime(SDL2pp::Renderer& renderer, const ClientPlayerResult& result);
+    void renderMyOwnTime(SDL2pp::Renderer& renderer);
 
-    void renderRaceTable(SDL2pp::Renderer& renderer,
-                         const std::vector<ClientPlayerResult>& results);
+    void renderRaceTable(SDL2pp::Renderer& renderer);
 
 public:
     explicit Game(ClientSession& client_session);

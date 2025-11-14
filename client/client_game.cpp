@@ -556,12 +556,12 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
     renderer.Copy(titleTexture, SDL2pp::NullOpt, titleRect);
 
     if (hasRaceResults && !raceFullyFinished) {
-        renderMyOwnTime(renderer, myOwnResults[0]);
+        renderMyOwnTime(renderer);
         renderPressESC(renderer);
         return;
     }
     if (raceFullyFinished) {
-        renderRaceTable(renderer, raceResults);
+        renderRaceTable(renderer);
         renderPressESC(renderer);
         return;
     }
@@ -595,13 +595,11 @@ void Game::setRaceResults(const std::vector<ClientPlayerResult>& results, bool i
     std::cout << "Resultados de carrera recibidos: " << results.size() << " jugadores" << std::endl;
 
     if (!isFinished) {
-        myOwnResults.clear();
-
         auto it = std::find_if(results.begin(), results.end(),
                                [this](const auto& r) { return r.playerId == client_id; });
 
         if (it != results.end()) {
-            myOwnResults.push_back(*it);
+            myOwnResults = *it;
         } else {
             std::cerr << "[WARNING] PARCIAL recibido pero no contiene mi playerId="
                       << (int)client_id << std::endl;
@@ -641,7 +639,7 @@ void Game::renderPressESC(SDL2pp::Renderer& renderer) {
     renderer.Copy(instructTexture, SDL2pp::NullOpt, instructRect);
 }
 
-void Game::renderMyOwnTime(SDL2pp::Renderer& renderer, const ClientPlayerResult& result) {
+void Game::renderMyOwnTime(SDL2pp::Renderer& renderer) {
     SDL_Color color = {255, 255, 255, 255};
 
     SDL2pp::Font font(
@@ -651,14 +649,15 @@ void Game::renderMyOwnTime(SDL2pp::Renderer& renderer, const ClientPlayerResult&
     int width = renderer.GetOutputWidth();
     int height = renderer.GetOutputHeight();
 
-    int minutes = (int)result.finishTime / 60;
-    int seconds = (int)result.finishTime % 60;
-    int millis = (int)((result.finishTime - (int)result.finishTime) * 1000);
+    // std::cout << myOwnResults.size()
+    //           << " resultados propios para renderizar el tiempo recibido." << std::endl;
+    int minutes = (int)myOwnResults.finishTime / 60;
+    int seconds = (int)myOwnResults.finishTime % 60;
+    int millis = (int)((myOwnResults.finishTime - (int)myOwnResults.finishTime) * 1000);
 
     char line[128];
     snprintf(line, sizeof(line), "Tu tiempo: %02d:%02d.%03d (Puesto %d)", minutes, seconds, millis,
-             (int)result.position);
-
+             (int)myOwnResults.position);
     auto surf = font.RenderText_Solid(line, color);
     SDL2pp::Texture tex(renderer, surf);
 
@@ -669,8 +668,7 @@ void Game::renderMyOwnTime(SDL2pp::Renderer& renderer, const ClientPlayerResult&
     renderer.Copy(tex, SDL2pp::NullOpt, rect);
 }
 
-void Game::renderRaceTable(SDL2pp::Renderer& renderer,
-                           const std::vector<ClientPlayerResult>& results) {
+void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
     SDL2pp::Font font(
             hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
             20);
@@ -692,7 +690,7 @@ void Game::renderRaceTable(SDL2pp::Renderer& renderer,
     renderer.Copy(texHeader, SDL2pp::NullOpt, headerRect);
     startY += lineHeight + 15;
 
-    for (const auto& r: results) {
+    for (const auto& r: raceResults) {
 
         int minutes = (int)r.finishTime / 60;
         int seconds = (int)r.finishTime % 60;

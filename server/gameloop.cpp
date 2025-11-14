@@ -167,7 +167,7 @@ void ServerGameLoop::run() {
                     playerName = (*it)->getName();
                 }
 
-                uint8_t position = partial.size() + 1;
+                uint8_t position = playersWhoAlreadyReceivedPartial.size();
 
                 partial.emplace_back(static_cast<uint8_t>(pid), playerName, finishTime, position);
 

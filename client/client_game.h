@@ -36,7 +36,6 @@ enum class GameState { PLAYING, WON, LOST };
 class Game {
 private:
     ClientSession& client_session;
-
     uint8_t client_id = UINT8_MAX;
     Camera camera;
     Minimap minimap;
@@ -101,6 +100,7 @@ private:
     void setWon();
 
     void setLost();
+    float getScale(int w, int h) const;
 
 public:
     explicit Game(ClientSession& client_session);

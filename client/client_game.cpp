@@ -152,7 +152,14 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
                 return true;
             case SDL_WINDOWEVENT:
                 if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                    camera.setDimensions(renderer.GetOutputWidth(), renderer.GetOutputHeight());
+                    int w = renderer.GetOutputWidth();
+                    int h = renderer.GetOutputHeight();
+                    float uiScale = getScale(w, h);
+
+                    camera.setDimensions(w, h);
+                    minimap.onWindowResize(w, h, uiScale);
+                    hud.onWindowResize(w, h, uiScale);
+                    arrow.onWindowResize(w, h, uiScale);
                 }
                 break;
             case SDL_KEYDOWN:
@@ -672,4 +679,10 @@ void Game::setRaceResults(const std::vector<ClientPlayerResult>& results) {
                   << ", Time: " << result.finishTime << "s)" << std::endl;
     }
     std::cout << "==================================\n" << std::endl;
+}
+
+float Game::getScale(int w, int h) const {
+    float sx = float(w) / float(WINDOW_WIDTH);
+    float sy = float(h) / float(WINDOW_HEIGHT);
+    return std::min(sx, sy);
 }

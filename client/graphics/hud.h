@@ -20,6 +20,7 @@ private:
     SDL2pp::Font* font;
     bool fontLoaded = false;
     std::string loadedFontPath;
+    float hudScale = 1.0f;
 
 public:
     explicit HUD(int windowWidth, int windowHeight);
@@ -35,7 +36,8 @@ public:
 
     const std::string& getFontPath() const { return loadedFontPath; }
 
-public:
+    void onWindowResize(int w, int h, float scale);
+
     // Acceso público para obtener fontPath desde el exterior
     std::string fontPath;
 };

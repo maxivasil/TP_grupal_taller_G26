@@ -85,22 +85,22 @@ int Minimap::worldToMinimapY(float serverY) const {
 
 void Minimap::renderCheckpoints(SDL2pp::Renderer& renderer, int nextCheckpointId) {
     int screenX = renderer.GetOutputWidth() - size - 10;
-    int screenY = 10;
 
     if (nextCheckpointId < (int)checkpoints.size()) {
         const auto& cp = checkpoints[nextCheckpointId];
         int minimapX = worldToMinimapX(cp.x);
         int minimapY = worldToMinimapY(cp.y);
 
+        constexpr int screenY = 10;
         int screenMinimapX = screenX + minimapX;
         int screenMinimapY = screenY + minimapY;
 
         int radius = 7;
-        
+
         if (cp.isFinish) {
-            renderer.SetDrawColor(255, 50, 50, 255);  
+            renderer.SetDrawColor(255, 50, 50, 255);
         } else {
-            renderer.SetDrawColor(0, 255, 0, 255);   
+            renderer.SetDrawColor(0, 255, 0, 255);
         }
 
         SDL_Rect rect{screenMinimapX - radius, screenMinimapY - radius, radius * 2, radius * 2};
@@ -194,4 +194,11 @@ void Minimap::render(SDL2pp::Renderer& renderer, const MinimapPlayer& localPlaye
                   << "playerMap=(" << playerMapX << "," << playerMapY << ")\n";
     }
     renderer.SetDrawColor(r, g, b, a);
+}
+
+void Minimap::onWindowResize(int w, int h, float scale) {
+    size = int(150 * scale);
+    arrowPixelSize = int(8 * scale);
+    zoomPixelWidth = 900 * scale;
+    zoomPixelHeight = 900 * scale;
 }

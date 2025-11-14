@@ -1,12 +1,13 @@
 #ifndef CLIENT_MINIMAP_H
 #define CLIENT_MINIMAP_H
 
-#include <SDL2pp/SDL2pp.hh>
-#include <memory>
-#include <vector>
-#include <string>
-#include <cmath>
 #include <algorithm>
+#include <cmath>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include <SDL2pp/SDL2pp.hh>
 
 struct RaceCheckpoint {
     int id;
@@ -15,7 +16,7 @@ struct RaceCheckpoint {
 };
 
 struct MinimapPlayer {
-    float x, y, angle;  
+    float x, y, angle;
     int playerId;
     float health;
     bool isLocal;
@@ -23,7 +24,7 @@ struct MinimapPlayer {
 
 class Minimap {
 private:
-    int size;  
+    int size;
     int arrowPixelSize = 8;
 
     std::unique_ptr<SDL2pp::Texture> mapTexture;
@@ -38,10 +39,10 @@ private:
     float offsetX = 0.0f;
     float offsetY = 0.0f;
 
-    float zoomPixelWidth  = 800.0f;  
-    float zoomPixelHeight = 800.0f;  
+    float zoomPixelWidth = 800.0f;
+    float zoomPixelHeight = 800.0f;
     float viewLeft = 0.0f;
-    float viewTop  = 0.0f;
+    float viewTop = 0.0f;
 
     void updateViewport(float playerMapX, float playerMapY);
 
@@ -62,20 +63,25 @@ public:
 
     void loadMapImage(SDL2pp::Renderer& renderer, const std::string& imagePath);
 
-    void setWorldScale(float sx, float sy) { scaleX = sx; scaleY = sy; }
-    void setWorldOffset(float ox, float oy) { offsetX = ox; offsetY = oy; }
+    void setWorldScale(float sx, float sy) {
+        scaleX = sx;
+        scaleY = sy;
+    }
+    void setWorldOffset(float ox, float oy) {
+        offsetX = ox;
+        offsetY = oy;
+    }
 
     void setZoomPixels(float w, float h) {
-        zoomPixelWidth  = std::max(50.0f, w);
+        zoomPixelWidth = std::max(50.0f, w);
         zoomPixelHeight = std::max(50.0f, h);
     }
 
     void setCheckpoints(const std::vector<RaceCheckpoint>& cp);
 
-    void render(SDL2pp::Renderer& renderer,
-                const MinimapPlayer& localPlayer,
-                const std::vector<MinimapPlayer>& otherPlayers,
-                int nextCheckpointId = 0);
+    void render(SDL2pp::Renderer& renderer, const MinimapPlayer& localPlayer,
+                const std::vector<MinimapPlayer>& otherPlayers, int nextCheckpointId = 0);
+    void onWindowResize(int w, int h, float scale);
 };
 
 #endif

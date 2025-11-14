@@ -118,6 +118,7 @@ public:
     void setClientId(uint8_t id);
     void update_snapshots(const std::vector<CarSnapshot>& snapshots);
     void setRaceResults(const std::vector<ClientPlayerResult>& results, bool isFinished);
+    void resetForNextRace();
 };
 
 #endif

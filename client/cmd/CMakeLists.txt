@@ -16,6 +16,7 @@ add_library(client_cmd
     server_to_client_raceResults.h
     server_to_client_assign_id.h
     client_to_server_tour.h
+    server_to_client_startingRace.h
     
     ../client_game.cpp
     cmd_client_register.cpp
@@ -30,6 +31,7 @@ add_library(client_cmd
     server_to_client_raceResults.cpp
     server_to_client_assign_id.cpp
     client_to_server_tour.cpp
+    server_to_client_startingRace.cpp
 )
 
 target_link_libraries(client_cmd PUBLIC Qt${QT_VERSION_MAJOR}::Widgets SDL2pp::SDL2pp taller_common)

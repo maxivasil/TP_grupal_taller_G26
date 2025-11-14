@@ -143,6 +143,13 @@ void ServerGameLoop::run() {
                    .clientsReady = &clientsReady,
                    .lobby = lobby,
                    .racesInfo = nullptr};
+
+            auto startingRaceCmd = std::make_shared<ServerToClientStartingRace>();
+            protected_clients.broadcast(startingRaceCmd);
+
+            ClientToServerCmd_Server* raw;
+            while (gameloop_queue.try_pop(raw)) {}
+
             race.start();
 
             const std::chrono::milliseconds frameDuration(1000 / FPS);

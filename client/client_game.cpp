@@ -707,3 +707,19 @@ void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
         startY += lineHeight;
     }
 }
+
+void Game::resetForNextRace() {
+    gameState = GameState::PLAYING;
+    hasRaceResults = false;
+    raceFullyFinished = false;
+    raceStartTime = SDL_GetTicks() / 1000.0f;
+    currentCheckpoint = 0;
+    playerDestroyed = false;
+    previousHealthState.clear();
+    otherPlayersLastHealth.clear();
+    otherPlayersLastSpeed.clear();
+    lastSpeedUpdateTime = 0;
+    lastPlayerX = 0.0f;
+    lastPlayerY = 0.0f;
+    std::cout << "[GAME] Preparado para la siguiente carrera." << std::endl;
+}

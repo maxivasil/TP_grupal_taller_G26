@@ -11,6 +11,7 @@
 #include "server_to_client_lobbyResponse.h"
 #include "server_to_client_raceResults.h"
 #include "server_to_client_snapshot.h"
+#include "server_to_client_startingRace.h"
 
 class ClientRegisteredCommands {
 public:

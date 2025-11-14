@@ -41,5 +41,10 @@ std::unordered_map<uint8_t, std::function<ServerToClientCmd_Client*(const std::v
         return new ServerToClientAssignId(std::move(assignId));
     };
 
+    registry[STARTING_RACE_COMMAND] = [](const std::vector<uint8_t>& data) {
+        auto startingRace = ServerToClientStartingRace::from_bytes(data);
+        return new ServerToClientStartingRace(std::move(startingRace));
+    };
+
     return registry;
 }

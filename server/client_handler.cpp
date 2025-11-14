@@ -26,7 +26,8 @@ void ServerClientHandler::run() {
                              .client = this,
                              .inLobby = &inLobby,
                              .clientsReady = nullptr,
-                             .lobby = nullptr};
+                             .lobby = nullptr,
+                             .racesInfo = nullptr};
         // cppcheck-suppress knownConditionTrueFalse
         while (should_keep_running() && !inLobby) {
             std::vector<uint8_t> data = protocol.recv_full_message();

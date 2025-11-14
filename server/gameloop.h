@@ -9,6 +9,7 @@
 #include "../common/socket.h"
 #include "../common/thread.h"
 #include "cmd/server_to_client_snapshot.h"
+#include "cmd/server_to_client_startingRace.h"
 
 #include "LobbyStatus.h"
 #include "protected_clients.h"

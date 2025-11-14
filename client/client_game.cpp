@@ -8,7 +8,6 @@
 #include <unistd.h>
 
 #include "cmd/client_to_server_cheat.h"
-#include "cmd/client_to_server_finishRace.h"
 #include "cmd/client_to_server_move.h"
 #include "graphics/track_loader.h"
 
@@ -285,9 +284,6 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
             if (distToCheckpoint < CHECKPOINT_RADIUS) {
                 if (currentCheckpoint == totalCheckpoints - 1) {
                     setWon();
-
-                    auto finishCmd = std::make_unique<ClientToServerFinishRace>();
-                    client_session.send_command(finishCmd.release());
                 } else {
                     currentCheckpoint++;
                 }
@@ -542,16 +538,10 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
                                    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" :
                                    hud.fontPath,
                            48);
-    SDL_Color titleColor;
-    std::string titleText;
+    SDL_Color titleColor =
+            (gameState == GameState::WON) ? SDL_Color{0, 255, 0, 255} : SDL_Color{255, 0, 0, 255};
 
-    if (gameState == GameState::WON) {
-        titleColor = {0, 255, 0, 255};
-        titleText = "GANASTE!";
-    } else {
-        titleColor = {255, 0, 0, 255};
-        titleText = "GAME OVER";
-    }
+    std::string titleText = (gameState == GameState::WON) ? "GANASTE!" : "GAME OVER";
 
     auto titleSurface = titleFont.RenderText_Solid(titleText, titleColor);
     SDL2pp::Texture titleTexture(renderer, titleSurface);
@@ -561,92 +551,16 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
     SDL_Rect titleRect = {titleX, titleY, titleTexture.GetWidth(), titleTexture.GetHeight()};
     renderer.Copy(titleTexture, SDL2pp::NullOpt, titleRect);
 
-    // Si hay resultados, mostrar la tabla
-    // TEMPORAL: Comentado check de múltiples autos para testing con un solo auto
-    if (hasRaceResults && !raceResults.empty()) {  // if (hasRaceResults) { // TEMPORAL: mostrar
-                                                   // siempre si hay resultados
-        std::cout << "[RENDER] Mostrando tabla de resultados con " << raceResults.size()
-                  << " resultados\n";
-        SDL2pp::Font resultsFont(hud.fontPath.empty() ?
-                                         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" :
-                                         hud.fontPath,
-                                 20);
-        SDL_Color resultsColor = {200, 200, 200, 255};
-
-        int startY = titleY + titleTexture.GetHeight() + 30;
-        int lineHeight = 30;
-        int lineSpacing = 5;
-
-        // Título de tabla
-        auto headerSurface = resultsFont.RenderText_Solid("RESULTADOS", {255, 255, 0, 255});
-        SDL2pp::Texture headerTexture(renderer, headerSurface);
-        int headerX = (width - headerTexture.GetWidth()) / 2;
-        SDL_Rect headerRect = {headerX, startY, headerTexture.GetWidth(),
-                               headerTexture.GetHeight()};
-        renderer.Copy(headerTexture, SDL2pp::NullOpt, headerRect);
-
-        startY += lineHeight + 10;
-
-        // Mostrar cada resultado
-        for (const auto& result: raceResults) {
-            int minutes = static_cast<int>(result.finishTime) / 60;
-            int seconds = static_cast<int>(result.finishTime) % 60;
-            int millis = static_cast<int>(
-                    (result.finishTime - static_cast<int>(result.finishTime)) * 1000);
-
-            char timeStr[50];
-            snprintf(timeStr, sizeof(timeStr), "%02d:%02d.%03d", minutes, seconds, millis);
-
-            char resultStr[200];
-            snprintf(resultStr, sizeof(resultStr), "%d. %s (ID:%d) - %s", static_cast<int>(result.position),
-                     result.playerName.c_str(), static_cast<int>(result.playerId), timeStr);
-
-            auto resultSurface = resultsFont.RenderText_Solid(resultStr, resultsColor);
-            SDL2pp::Texture resultTexture(renderer, resultSurface);
-
-            int resultX = (width - resultTexture.GetWidth()) / 2;
-            SDL_Rect resultRect = {resultX, startY, resultTexture.GetWidth(),
-                                   resultTexture.GetHeight()};
-            renderer.Copy(resultTexture, SDL2pp::NullOpt, resultRect);
-
-            startY += lineHeight + lineSpacing;
-        }
-    } else {
-        // Mensaje si no hay resultados aún
-        SDL2pp::Font msgFont(hud.fontPath.empty() ?
-                                     "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" :
-                                     hud.fontPath,
-                             20);
-        SDL_Color msgColor = {200, 200, 200, 255};
-
-        std::string msgText = "Esperando resultados...";
-
-        auto msgSurface = msgFont.RenderText_Solid(msgText, msgColor);
-        SDL2pp::Texture msgTexture(renderer, msgSurface);
-
-        int msgX = (width - msgTexture.GetWidth()) / 2;
-        int msgY = height / 2;
-        SDL_Rect msgRect = {msgX, msgY, msgTexture.GetWidth(), msgTexture.GetHeight()};
-        renderer.Copy(msgTexture, SDL2pp::NullOpt, msgRect);
+    if (hasRaceResults && !raceFullyFinished) {
+        renderMyOwnTime(renderer);
+        renderPressESC(renderer);
+        return;
     }
-
-    // Mensaje de instrucción al final
-    SDL2pp::Font instructFont(
-            hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
-            16);
-    SDL_Color instructColor = {200, 200, 200, 255};
-
-    std::string instructText = "Presiona ESC para volver al lobby";
-
-    auto instructSurface = instructFont.RenderText_Solid(instructText, instructColor);
-    SDL2pp::Texture instructTexture(renderer, instructSurface);
-
-    int instructX = (width - instructTexture.GetWidth()) / 2;
-    int instructY = height - 50;
-    SDL_Rect instructRect = {instructX, instructY, instructTexture.GetWidth(),
-                             instructTexture.GetHeight()};
-    renderer.Copy(instructTexture, SDL2pp::NullOpt, instructRect);
-    renderer.SetDrawColor(r, g, b, a);
+    if (raceFullyFinished) {
+        renderRaceTable(renderer);
+        renderPressESC(renderer);
+        return;
+    }
 }
 
 void Game::setClientId(uint8_t id) {
@@ -670,40 +584,142 @@ void Game::setLost() {
     std::cout << "DERROTA. Presiona ESC para volver al lobby\n";
 }
 
-void Game::setRaceResults(const std::vector<ClientPlayerResult>& results) {
-    raceResults = results;
+void Game::setRaceResults(const std::vector<ClientPlayerResult>& results, bool isFinished) {
     hasRaceResults = true;
+    raceFullyFinished = isFinished;
     std::cout << "\n=== GAME::setRaceResults LLAMADO ===" << std::endl;
     std::cout << "Resultados de carrera recibidos: " << results.size() << " jugadores" << std::endl;
-    std::cout << "Client ID: " << (int)client_id << std::endl;
-    
-    for (const auto& result: results) {
-        std::cout << "  - " << result.playerName << " (ID:" << (int)result.playerId 
-                  << ", Position: " << (int)result.position
-                  << ", Time: " << result.finishTime << "s)" << std::endl;
-    }
-    std::cout << "==================================\n" << std::endl;
-    
-    // Determine if this client won or lost based on position in results
-    // Look for this client's result by ID
-    for (const auto& result : results) {
-        if (result.playerId == client_id) {
-            if (result.position == 1) {
-                setWon();
-            } else {
-                setLost();
-            }
-            return;
+
+    if (!isFinished) {
+        auto it = std::find_if(results.begin(), results.end(),
+                               [this](const auto& r) { return r.playerId == client_id; });
+
+        if (it != results.end()) {
+            myOwnResults = *it;
+            setWon();
+        } else {
+            std::cerr << "[WARNING] PARCIAL recibido pero no contiene mi playerId="
+                      << (int)client_id << std::endl;
         }
+    } else {
+        raceResults = results;
     }
-    
-    // If not found by ID, show lost state
-    std::cerr << "WARNING: This client not found in race results!" << std::endl;
-    setLost();
 }
 
 float Game::getScale(int w, int h) const {
     float sx = float(w) / float(WINDOW_WIDTH);
     float sy = float(h) / float(WINDOW_HEIGHT);
     return std::min(sx, sy);
+}
+
+void Game::renderPressESC(SDL2pp::Renderer& renderer) {
+    int width = renderer.GetOutputWidth();
+    int height = renderer.GetOutputHeight();
+
+    SDL2pp::Font instructFont(
+            hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
+            16);
+
+    SDL_Color instructColor = {200, 200, 200, 255};
+
+    std::string instructText = "Presiona ESC para volver al lobby";
+
+    auto instructSurface = instructFont.RenderText_Solid(instructText, instructColor);
+    SDL2pp::Texture instructTexture(renderer, instructSurface);
+
+    int instructX = (width - instructTexture.GetWidth()) / 2;
+    int instructY = height - 50;
+
+    SDL_Rect instructRect = {instructX, instructY, instructTexture.GetWidth(),
+                             instructTexture.GetHeight()};
+
+    renderer.Copy(instructTexture, SDL2pp::NullOpt, instructRect);
+}
+
+void Game::renderMyOwnTime(SDL2pp::Renderer& renderer) {
+    SDL_Color color = {255, 255, 255, 255};
+
+    SDL2pp::Font font(
+            hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
+            28);
+
+    int width = renderer.GetOutputWidth();
+    int height = renderer.GetOutputHeight();
+
+    // std::cout << myOwnResults.size()
+    //           << " resultados propios para renderizar el tiempo recibido." << std::endl;
+    int minutes = (int)myOwnResults.finishTime / 60;
+    int seconds = (int)myOwnResults.finishTime % 60;
+    int millis = (int)((myOwnResults.finishTime - (int)myOwnResults.finishTime) * 1000);
+
+    char line[128];
+    snprintf(line, sizeof(line), "Tu tiempo: %02d:%02d.%03d (Puesto %d)", minutes, seconds, millis,
+             (int)myOwnResults.position);
+    auto surf = font.RenderText_Solid(line, color);
+    SDL2pp::Texture tex(renderer, surf);
+
+    int x = (width - tex.GetWidth()) / 2;
+    int y = height / 2;
+
+    SDL_Rect rect = {x, y, tex.GetWidth(), tex.GetHeight()};
+    renderer.Copy(tex, SDL2pp::NullOpt, rect);
+}
+
+void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
+    SDL2pp::Font font(
+            hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
+            20);
+
+    SDL_Color headerColor = {255, 255, 0, 255};
+    SDL_Color rowColor = {200, 200, 200, 255};
+
+    int width = renderer.GetOutputWidth();
+    int height = renderer.GetOutputHeight();
+
+    int startY = height / 4;
+    int lineHeight = 28;
+
+    auto surfHeader = font.RenderText_Solid("RESULTADOS", headerColor);
+    SDL2pp::Texture texHeader(renderer, surfHeader);
+
+    SDL_Rect headerRect = {(width - texHeader.GetWidth()) / 2, startY, texHeader.GetWidth(),
+                           texHeader.GetHeight()};
+    renderer.Copy(texHeader, SDL2pp::NullOpt, headerRect);
+    startY += lineHeight + 15;
+
+    for (const auto& r: raceResults) {
+
+        int minutes = (int)r.finishTime / 60;
+        int seconds = (int)r.finishTime % 60;
+        int millis = (int)((r.finishTime - (int)r.finishTime) * 1000);
+
+        char line[256];
+        snprintf(line, sizeof(line), "%d. %s   %02d:%02d.%03d", (int)r.position,
+                 r.playerName.c_str(), minutes, seconds, millis);
+
+        auto surfRow = font.RenderText_Solid(line, rowColor);
+        SDL2pp::Texture texRow(renderer, surfRow);
+
+        SDL_Rect rowRect = {(width - texRow.GetWidth()) / 2, startY, texRow.GetWidth(),
+                            texRow.GetHeight()};
+
+        renderer.Copy(texRow, SDL2pp::NullOpt, rowRect);
+        startY += lineHeight;
+    }
+}
+
+void Game::resetForNextRace() {
+    gameState = GameState::PLAYING;
+    hasRaceResults = false;
+    raceFullyFinished = false;
+    raceStartTime = SDL_GetTicks() / 1000.0f;
+    currentCheckpoint = 0;
+    playerDestroyed = false;
+    previousHealthState.clear();
+    otherPlayersLastHealth.clear();
+    otherPlayersLastSpeed.clear();
+    lastSpeedUpdateTime = 0;
+    lastPlayerX = 0.0f;
+    lastPlayerY = 0.0f;
+    std::cout << "[GAME] Preparado para la siguiente carrera." << std::endl;
 }

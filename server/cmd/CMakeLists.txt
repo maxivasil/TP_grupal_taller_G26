@@ -12,6 +12,7 @@ add_library(server_cmd
     server_to_client_assign_id.h
     client_to_server_tour.h
     server_to_client_startingRace.h
+    server_to_client_accumulatedResults.h
 
     cmd_server_register.cpp
     cmd_base_server.cpp
@@ -26,6 +27,7 @@ add_library(server_cmd
     server_to_client_assign_id.cpp
     client_to_server_tour.cpp
     server_to_client_startingRace.cpp
+    server_to_client_accumulatedResults.cpp
 )
 
 target_link_libraries(server_cmd PRIVATE server_game_logic taller_common)

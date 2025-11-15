@@ -119,21 +119,6 @@ void ServerGameLoop::run() {
             playerId++;
         }
 
-        // // Second player: always create a second player with a default car for racing
-        // if (players.size() < 2) {
-        //     std::cout << "Adding second player with default car" << std::endl;
-        //     CarStats statsB = {.acceleration = 20.0f,
-        //                        .max_speed = 100.0f,
-        //                        .turn_speed = 5.0f,
-        //                        .mass = 1200.0f,
-        //                        .brake_force = 15.0f,
-        //                        .handling = 1.8f,
-        //                        .health_max = 100.0f,
-        //                        .length = 4.4f,
-        //                        .width = 2.3714f};
-        //     players.emplace_back(std::make_unique<Player>("DefaultCar", 999, statsB));
-        // }
-
         // cppcheck-suppress knownEmptyContainer
         for (auto& raceInfo: racesInfo) {
             Race race(raceInfo.city, raceInfo.trackFile, players);
@@ -189,58 +174,64 @@ void ServerGameLoop::run() {
                     std::cout << "[RACE] Sent PARTIAL result to player " << pid << " => "
                               << finishTime << " seconds\n";
                 }
-
                 update_game_state(race);
-
-                if (race.isFinished() && !resultsAlreadySent) {
-                    resultsAlreadySent = true;
-
-                    const auto& finishTimes = race.getFinishTimes();
-                    std::vector<std::pair<int, float>> pairs;
-
-                    for (const auto& [pid, ftime]: finishTimes) pairs.emplace_back(pid, ftime);
-
-                    std::sort(pairs.begin(), pairs.end(),
-                              [](const auto& a, const auto& b) { return a.second < b.second; });
-
-                    std::vector<PlayerResult> fullResults;
-
-                    for (size_t i = 0; i < pairs.size(); i++) {
-                        int playerId_ = pairs[i].first;
-                        float finishTime = pairs[i].second;
-
-                        std::string playerName = "Unknown";
-
-                        for (const auto& p: race.getPlayers())
-                            if (p->getId() == playerId_)
-                                playerName = p->getName();
-
-                        fullResults.emplace_back((uint8_t)playerId_, playerName, finishTime,
-                                                 (uint8_t)(i + 1));
+            }
+            if (race.isFinished() && !resultsAlreadySent) {
+                resultsAlreadySent = true;
+                const auto& finishTimes = race.getFinishTimes();
+                std::vector<std::pair<int, float>> pairs;
+                for (const auto& [pid, ftime]: finishTimes) pairs.emplace_back(pid, ftime);
+                std::sort(pairs.begin(), pairs.end(),
+                          [](const auto& a, const auto& b) { return a.second < b.second; });
+                std::vector<PlayerResult> fullResults;
+                for (size_t i = 0; i < pairs.size(); i++) {
+                    int playerId_ = pairs[i].first;
+                    float finishTime = pairs[i].second;
+                    std::string playerName = "Unknown";
+                    for (const auto& p: race.getPlayers())
+                        if (p->getId() == playerId_)
+                            playerName = p->getName();
+                    fullResults.emplace_back((uint8_t)playerId_, playerName, finishTime,
+                                             (uint8_t)(i + 1));
+                }
+                auto fullCmd = std::make_shared<ServerToClientRaceResults>(fullResults, true);
+                protected_clients.broadcast(fullCmd);
+                std::cout << "[RACE] Sent FULL results to all players.\n";
+                // === NUEVO: ACUMULAR RESULTADOS DE ESTA CARRERA ===
+                for (auto& p: players) {
+                    int pid = p->getId();
+                    // Ver si terminó la carrera
+                    auto it = race.getFinishTimes().find(pid);
+                    if (it != race.getFinishTimes().end()) {
+                        float time = it->second;
+                        if (time >= 0.0f) {
+                            accumulatedResults[pid].completedRaces++;
+                            accumulatedResults[pid].totalTime += time;
+                        }
                     }
-
-                    auto fullCmd = std::make_shared<ServerToClientRaceResults>(fullResults, true);
-
-                    protected_clients.broadcast(fullCmd);
-
-                    std::cout << "[RACE] Sent FULL results to all players.\n";
-                    std::this_thread::sleep_for(std::chrono::seconds(10));
                 }
-
-                auto t2 = std::chrono::high_resolution_clock::now();
-                auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
-
-                if (elapsed < frameDuration) {
-                    std::this_thread::sleep_for(frameDuration - elapsed);
-                    t1 += frameDuration;
-                } else {
-                    auto lostFrames = elapsed / frameDuration;
-                    t1 += lostFrames * frameDuration;
+                auto accumCmd =
+                        std::make_shared<ServerToClientAccumulatedResults>(accumulatedResults);
+                protected_clients.broadcast(accumCmd);
+                std::cout << "\n--- ACUMULADO HASTA AHORA ---\n";
+                for (auto& [pid, acc]: accumulatedResults) {
+                    std::cout << "Player " << pid << ": completed=" << acc.completedRaces
+                              << ", totalTime=" << acc.totalTime << "\n";
                 }
+                std::this_thread::sleep_for(std::chrono::seconds(10));
+            }
+            auto t2 = std::chrono::high_resolution_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+            if (elapsed < frameDuration) {
+                std::this_thread::sleep_for(frameDuration - elapsed);
+                t1 += frameDuration;
+            } else {
+                auto lostFrames = elapsed / frameDuration;
+                t1 += lostFrames * frameDuration;
             }
         }
-        // Exit after sending results for demo
-        status = LobbyStatus::FINISHED;
-        stop();
     }
+    // Exit after sending results for demo
+    status = LobbyStatus::FINISHED;
+    stop();
 }

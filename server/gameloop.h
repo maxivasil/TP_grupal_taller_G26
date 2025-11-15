@@ -3,6 +3,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -16,6 +17,8 @@
 
 #include "LobbyStatus.h"
 #include "protected_clients.h"
+
+class Player;
 
 class ServerGameLoop: public Thread {
 public:
@@ -34,6 +37,9 @@ private:
 
     void process_pending_commands(ServerContext& ctx);
     void update_game_state(Race& race);
+    void send_partial_results(Race& race, std::set<int>& playersWhoAlreadyReceivedPartial);
+    void send_acumulated_results(Race& race, std::vector<std::unique_ptr<Player>>& players,
+                                 bool& resultsAlreadySent);
 };
 
 #endif

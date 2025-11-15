@@ -147,91 +147,102 @@ void ServerGameLoop::run() {
 
                 race.updatePhysics(std::chrono::duration<float>(frameDuration).count());
 
-                for (const auto& [pid, finishTime]: race.getFinishTimes()) {
-                    if (playersWhoAlreadyReceivedPartial.count(pid))
-                        continue;
-
-                    playersWhoAlreadyReceivedPartial.insert(pid);
-                    std::vector<PlayerResult> partial;
-                    std::string playerName = "Unknown";
-
-                    auto it = std::find_if(race.getPlayers().begin(), race.getPlayers().end(),
-                                           [pid](const auto& p) { return p->getId() == pid; });
-
-                    if (it != race.getPlayers().end()) {
-                        playerName = (*it)->getName();
-                    }
-
-                    uint8_t position = playersWhoAlreadyReceivedPartial.size();
-
-                    partial.emplace_back(static_cast<uint8_t>(pid), playerName, finishTime,
-                                         position);
-
-                    auto partialCmd = std::make_shared<ServerToClientRaceResults>(partial, false);
-
-                    protected_clients.broadcast(partialCmd);
-
-                    std::cout << "[RACE] Sent PARTIAL result to player " << pid << " => "
-                              << finishTime << " seconds\n";
-                }
+                send_partial_results(race, playersWhoAlreadyReceivedPartial);
                 update_game_state(race);
+
+                auto t2 = std::chrono::high_resolution_clock::now();
+                auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+                if (elapsed < frameDuration) {
+                    std::this_thread::sleep_for(frameDuration - elapsed);
+                    t1 += frameDuration;
+                } else {
+                    auto lostFrames = elapsed / frameDuration;
+                    t1 += lostFrames * frameDuration;
+                }
             }
             if (race.isFinished() && !resultsAlreadySent) {
-                resultsAlreadySent = true;
-                const auto& finishTimes = race.getFinishTimes();
-                std::vector<std::pair<int, float>> pairs;
-                for (const auto& [pid, ftime]: finishTimes) pairs.emplace_back(pid, ftime);
-                std::sort(pairs.begin(), pairs.end(),
-                          [](const auto& a, const auto& b) { return a.second < b.second; });
-                std::vector<PlayerResult> fullResults;
-                for (size_t i = 0; i < pairs.size(); i++) {
-                    int playerId_ = pairs[i].first;
-                    float finishTime = pairs[i].second;
-                    std::string playerName = "Unknown";
-                    for (const auto& p: race.getPlayers())
-                        if (p->getId() == playerId_)
-                            playerName = p->getName();
-                    fullResults.emplace_back((uint8_t)playerId_, playerName, finishTime,
-                                             (uint8_t)(i + 1));
-                }
-                auto fullCmd = std::make_shared<ServerToClientRaceResults>(fullResults, true);
-                protected_clients.broadcast(fullCmd);
-                std::cout << "[RACE] Sent FULL results to all players.\n";
-                // === NUEVO: ACUMULAR RESULTADOS DE ESTA CARRERA ===
-                for (auto& p: players) {
-                    int pid = p->getId();
-                    // Ver si terminó la carrera
-                    auto it = race.getFinishTimes().find(pid);
-                    if (it != race.getFinishTimes().end()) {
-                        float time = it->second;
-                        if (time >= 0.0f) {
-                            accumulatedResults[pid].completedRaces++;
-                            accumulatedResults[pid].totalTime += time;
-                        }
-                    }
-                }
-                auto accumCmd =
-                        std::make_shared<ServerToClientAccumulatedResults>(accumulatedResults);
-                protected_clients.broadcast(accumCmd);
-                std::cout << "\n--- ACUMULADO HASTA AHORA ---\n";
-                for (auto& [pid, acc]: accumulatedResults) {
-                    std::cout << "Player " << pid << ": completed=" << acc.completedRaces
-                              << ", totalTime=" << acc.totalTime << "\n";
-                }
-                std::this_thread::sleep_for(std::chrono::seconds(10));
+                send_acumulated_results(race, players, resultsAlreadySent);
             }
-            auto t2 = std::chrono::high_resolution_clock::now();
-            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
-            if (elapsed < frameDuration) {
-                std::this_thread::sleep_for(frameDuration - elapsed);
-                t1 += frameDuration;
-            } else {
-                auto lostFrames = elapsed / frameDuration;
-                t1 += lostFrames * frameDuration;
+        }
+
+        stop();
+        status = LobbyStatus::FINISHED;
+    }
+}
+
+
+void ServerGameLoop::send_partial_results(Race& race,
+                                          std::set<int>& playersWhoAlreadyReceivedPartial) {
+    for (const auto& [pid, finishTime]: race.getFinishTimes()) {
+        if (playersWhoAlreadyReceivedPartial.count(pid))
+            continue;
+
+        playersWhoAlreadyReceivedPartial.insert(pid);
+        std::vector<PlayerResult> partial;
+        std::string playerName = "Unknown";
+
+        auto it = std::find_if(race.getPlayers().begin(), race.getPlayers().end(),
+                               [pid](const auto& p) { return p->getId() == pid; });
+
+        if (it != race.getPlayers().end()) {
+            playerName = (*it)->getName();
+        }
+
+        uint8_t position = playersWhoAlreadyReceivedPartial.size();
+
+        partial.emplace_back(static_cast<uint8_t>(pid), playerName,
+                             finishTime >= 0 ? finishTime : 0.0f, position);
+
+        auto partialCmd = std::make_shared<ServerToClientRaceResults>(partial, false);
+
+        protected_clients.broadcast(partialCmd);
+
+        std::cout << "[RACE] Sent PARTIAL result to player " << pid << " => " << finishTime
+                  << " seconds\n";
+    }
+}
+
+void ServerGameLoop::send_acumulated_results(Race& race,
+                                             std::vector<std::unique_ptr<Player>>& players,
+                                             bool& resultsAlreadySent) {
+    resultsAlreadySent = true;
+    const auto& finishTimes = race.getFinishTimes();
+    std::vector<std::pair<int, float>> pairs;
+    for (const auto& [pid, ftime]: finishTimes) pairs.emplace_back(pid, ftime);
+    std::sort(pairs.begin(), pairs.end(),
+              [](const auto& a, const auto& b) { return a.second < b.second; });
+    std::vector<PlayerResult> fullResults;
+    for (size_t i = 0; i < pairs.size(); i++) {
+        int playerId_ = pairs[i].first;
+        float finishTime = pairs[i].second;
+        std::string playerName = "Unknown";
+        for (const auto& p: race.getPlayers())
+            if (p->getId() == playerId_)
+                playerName = p->getName();
+        fullResults.emplace_back((uint8_t)playerId_, playerName, finishTime, (uint8_t)(i + 1));
+    }
+    auto fullCmd = std::make_shared<ServerToClientRaceResults>(fullResults, true);
+    protected_clients.broadcast(fullCmd);
+    std::cout << "[RACE] Sent FULL results to all players.\n";
+    // === NUEVO: ACUMULAR RESULTADOS DE ESTA CARRERA ===
+    for (auto& p: players) {
+        int pid = p->getId();
+        // Ver si terminó la carrera
+        auto it = race.getFinishTimes().find(pid);
+        if (it != race.getFinishTimes().end()) {
+            float time = it->second;
+            if (time >= 0.0f) {
+                accumulatedResults[pid].completedRaces++;
+                accumulatedResults[pid].totalTime += time;
             }
         }
     }
-    // Exit after sending results for demo
-    status = LobbyStatus::FINISHED;
-    stop();
+    auto accumCmd = std::make_shared<ServerToClientAccumulatedResults>(accumulatedResults);
+    protected_clients.broadcast(accumCmd);
+    std::cout << "\n--- ACUMULADO HASTA AHORA ---\n";
+    for (auto& [pid, acc]: accumulatedResults) {
+        std::cout << "Player " << pid << ": completed=" << acc.completedRaces
+                  << ", totalTime=" << acc.totalTime << "\n";
+    }
+    std::this_thread::sleep_for(std::chrono::seconds(10));
 }

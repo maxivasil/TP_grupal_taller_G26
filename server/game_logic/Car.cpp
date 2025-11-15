@@ -246,4 +246,6 @@ void Car::setLevel(bool onBridge) {
 
 bool Car::getIsOnBridge() const { return isOnBridge; }
 
+void Car::setDestroyed() { current_health = 0.0f; }
+
 Car::~Car() {}

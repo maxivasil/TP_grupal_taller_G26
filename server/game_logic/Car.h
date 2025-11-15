@@ -79,6 +79,8 @@ public:
 
     void setInfiniteHealth();
 
+    void setDestroyed();
+
     void setLevel(bool onBridge);
 
     bool getIsOnBridge() const;

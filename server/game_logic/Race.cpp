@@ -90,7 +90,7 @@ void Race::checkFinishConditions() {
                       << ") finished in " << elapsed << "s" << std::endl;
         }
         if (player->getCurrentHealth() <= 0.0f && !playerFinishTimes.count(player->getId())) {
-            playerFinishTimes[player->getId()] = -1.0f;  // Indicate DNF with -1.0f
+            playerFinishTimes[player->getId()] = -1.0f;
 
             std::cout << "[RACE] Player " << player->getId() << " (" << player->getName()
                       << ") destroyed their car" << std::endl;
@@ -209,12 +209,7 @@ void Race::forceLoseCheat(int playerId) {
             [playerId](const std::unique_ptr<Player>& p) { return p->getId() == playerId; });
 
     if (it != players.end()) {
-        // Destruir el auto: establecer salud a 0
-        // Como no hay método para destruir directamente, aplicamos daño extremo
-        // Usamos applyCollision con un daño muy alto
-        (*it)->getCar()->applyCollision(CollisionInfo{10000.0f});
+        (*it)->getCar()->setDestroyed();
         std::cout << "CHEAT: Cliente " << playerId << " perdió automáticamente" << std::endl;
-        // TODO: Implementar destrucción de auto de forma más limpia
-        // Por ahora solo log
     }
 }

@@ -21,7 +21,6 @@ target_sources(taller_client
     client_sender.h
     session.h
     client_game.h
-    CarStats.h
     UI/mainwindow.h
     UI/initialwindow.h
     )

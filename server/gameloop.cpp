@@ -8,6 +8,7 @@
 
 #include "../cmd/server_to_client_gameStarting.h"
 #include "../cmd/server_to_client_raceResults.h"
+#include "../common/CarStats.h"
 #include "../common/constants.h"
 
 #include "Car.h"
@@ -20,13 +21,20 @@
 
 // Función helper para convertir nombre del auto a car_type (0-6)
 static uint8_t getCarTypeFromName(const std::string& carName) {
-    if (carName == "Iveco Daily") return 0;
-    if (carName == "Dodge Viper") return 1;
-    if (carName == "Chevrolet Corsa") return 2;
-    if (carName == "Jeep Wrangler") return 3;
-    if (carName == "Toyota Tacoma") return 4;
-    if (carName == "Lincoln TownCar") return 5;
-    if (carName == "Lamborghini Diablo") return 6;
+    if (carName == "Iveco Daily")
+        return 0;
+    if (carName == "Dodge Viper")
+        return 1;
+    if (carName == "Chevrolet Corsa")
+        return 2;
+    if (carName == "Jeep Wrangler")
+        return 3;
+    if (carName == "Toyota Tacoma")
+        return 4;
+    if (carName == "Lincoln TownCar")
+        return 5;
+    if (carName == "Lamborghini Diablo")
+        return 6;
     return 0;  // Default
 }
 
@@ -119,15 +127,12 @@ void ServerGameLoop::run() {
                       << ") with car: " << carName << std::endl;
 
             // Use generic stats for now (can be customized per car later)
-            CarStats stats = {.acceleration = 20.0f,
-                              .max_speed = 120.0f,
-                              .turn_speed = 7.0f,
-                              .mass = 1200.0f,
-                              .brake_force = 15.0f,
-                              .handling = 2.8f,
-                              .health_max = 100.0f,
-                              .length = 4.011f,
-                              .width = 2.8288f};
+            CarStats stats = CarStatsDatabase::getCarStats(carName);
+            std::cout << "  Car stats - Accel: " << stats.acceleration
+                      << ", Max Speed: " << stats.max_speed << ", Turn Speed: " << stats.turn_speed
+                      << ", Mass: " << stats.mass << ", Brake Force: " << stats.brake_force
+                      << ", Handling: " << stats.handling << ", Health Max: " << stats.health_max
+                      << ", Length: " << stats.length << ", Width: " << stats.width << std::endl;
             uint8_t car_type = getCarTypeFromName(carName);
             players.emplace_back(std::make_unique<Player>(carName, clientId, stats, car_type));
             playerId++;
@@ -169,10 +174,10 @@ void ServerGameLoop::run() {
                     std::vector<PlayerResult> partial;
                     std::string playerName = "Unknown";
 
-                    auto it = std::find_if(race.getPlayers().begin(), race.getPlayers().end(),
+                    auto it = std::find_if(players.begin(), players.end(),
                                            [pid](const auto& p) { return p->getId() == pid; });
 
-                    if (it != race.getPlayers().end()) {
+                    if (it != players.end()) {
                         playerName = (*it)->getName();
                     }
 
@@ -180,11 +185,11 @@ void ServerGameLoop::run() {
 
                     // Obtener la penalización de mejoras del jugador
                     float upgradePenalty = 0.0f;
-                    for (const auto& p: race.getPlayers()) {
-                        if (p->getId() == pid) {
-                            upgradePenalty = p->getCarUpgrades().getTimePenalty();
-                            break;
-                        }
+                    auto it_ = std::find_if(race.getPlayers().begin(), race.getPlayers().end(),
+                                            [pid](const auto& p) { return p->getId() == pid; });
+
+                    if (it_ != race.getPlayers().end()) {
+                        upgradePenalty = (*it_)->getCarUpgrades().getTimePenalty();
                     }
 
                     partial.emplace_back(static_cast<uint8_t>(pid), playerName, finishTime,
@@ -220,12 +225,13 @@ void ServerGameLoop::run() {
                         std::string playerName = "Unknown";
                         float upgradePenalty = 0.0f;
 
-                        for (const auto& p: race.getPlayers()) {
-                            if (p->getId() == playerId_) {
-                                playerName = p->getName();
-                                upgradePenalty = p->getCarUpgrades().getTimePenalty();
-                                break;
-                            }
+                        auto it = std::find_if(
+                                players.begin(), players.end(),
+                                [playerId_](const auto& p) { return p->getId() == playerId_; });
+
+                        if (it != players.end()) {
+                            playerName = (*it)->getName();
+                            upgradePenalty = (*it)->getCarUpgrades().getTimePenalty();
                         }
 
                         fullResults.emplace_back((uint8_t)playerId_, playerName, finishTime,

@@ -3,22 +3,12 @@
 
 #include <box2d/box2d.h>
 
-#include "Collidable.h"
+#include "../../common/CarStats.h"
+
 #include "CarUpgrades.h"
+#include "Collidable.h"
 
 enum class Direction { FORWARD, LEFT, RIGHT };
-
-struct CarStats {
-    float acceleration;
-    float max_speed;
-    float turn_speed;
-    float mass;
-    float brake_force;
-    float handling;
-    float health_max;
-    float length;
-    float width;
-};
 
 struct CarInput {
     bool accelerating;

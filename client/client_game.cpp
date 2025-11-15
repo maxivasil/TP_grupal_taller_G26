@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <filesystem>
+#include <utility>
 
 #include <SDL2pp/SDL2pp.hh>
 #include <SDL_ttf.h>
@@ -27,13 +28,13 @@ struct SpriteInfo {
 // Mapeo de sprites para los 7 autos en Cars_Combined.png
 // Imagen: 196x22 píxeles (7 autos x 28 píxeles cada uno en una fila)
 const SpriteInfo SPRITE_MAP[] = {
-    {{0, 0, 75, 69}, "Iveco Daily"},              // Auto 0 - Van (75x69)
-    {{0, 0, 75, 86}, "Dodge Viper"},              // Auto 1 - Ferrari (75x86)
-    {{0, 0, 75, 86}, "Chevrolet Corsa"},          // Auto 2 - Celeste (75x86)
-    {{0, 0, 75, 86}, "Jeep Wrangler"},            // Auto 3 - Jeep (75x86)
-    {{0, 0, 75, 86}, "Toyota Tacoma"},            // Auto 4 - Pickup (75x86)
-    {{0, 0, 75, 103}, "Lincoln TownCar"},         // Auto 5 - Limo (75x103)
-    {{0, 0, 75, 86}, "Lamborghini Diablo"},       // Auto 6 - Descapotable (75x86)
+        {{0, 0, 75, 69}, "Iveco Daily"},         // Auto 0 - Van (75x69)
+        {{0, 0, 75, 86}, "Dodge Viper"},         // Auto 1 - Ferrari (75x86)
+        {{0, 0, 75, 86}, "Chevrolet Corsa"},     // Auto 2 - Celeste (75x86)
+        {{0, 0, 75, 86}, "Jeep Wrangler"},       // Auto 3 - Jeep (75x86)
+        {{0, 0, 75, 86}, "Toyota Tacoma"},       // Auto 4 - Pickup (75x86)
+        {{0, 0, 75, 103}, "Lincoln TownCar"},    // Auto 5 - Limo (75x103)
+        {{0, 0, 75, 86}, "Lamborghini Diablo"},  // Auto 6 - Descapotable (75x86)
 };
 
 const int NUM_SPRITES = 7;
@@ -314,14 +315,22 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
     // Función helper para obtener tamaño según car_type
     auto getCarSize = [](uint8_t car_type) -> std::pair<int, int> {
         switch (car_type) {
-            case 0: return {28, 26};   // Van (75x69) - proporción: 28/75 = 0.373
-            case 1: return {28, 32};   // Ferrari (75x86) - proporción: 28/75 = 0.373, 32/86 = 0.372
-            case 2: return {28, 32};   // Celeste (75x86)
-            case 3: return {28, 32};   // Jeep (75x86)
-            case 4: return {28, 32};   // Pickup (75x86)
-            case 5: return {28, 39};   // Limo (75x103) - proporción: 28/75 = 0.373, 39/103 = 0.379
-            case 6: return {28, 32};   // Descapotable (75x86)
-            default: return {28, 32};
+            case 0:
+                return {28, 22};  // Van (75x69) - proporción: 28/75 = 0.373
+            case 1:
+                return {40, 24};  // Ferrari (75x86) - proporción: 28/75 = 0.373, 32/86 = 0.372
+            case 2:
+                return {39, 24};  // Celeste (75x86)
+            case 3:
+                return {38, 24};  // Jeep (75x86)
+            case 4:
+                return {40, 22};  // Pickup (75x86)
+            case 5:
+                return {48, 20};  // Limo (75x103) - proporción: 28/75 = 0.373, 39/103 = 0.379
+            case 6:
+                return {40, 22};  // Descapotable (75x86)
+            default:
+                return {28, 20};
         }
     };
 
@@ -348,7 +357,7 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
 
         // Usar sprite correcto según car_type (auto elegido), no car.id (usuario)
         rc.src = getSpriteForCarId(car.car_type);
-        rc.angle = car.angle - 270;  // Restar 270 grados para orientación correcta
+        rc.angle = car.angle;      // Restar 270 grados para orientación correcta
         rc.car_id = car.car_type;  // Usar car_type para renderizado
 
         if (car.id == client_id) {
@@ -392,7 +401,8 @@ void Game::render(SDL2pp::Renderer& renderer) {
         if (!rc.onBridge) {
             // Usar textura individual del auto según su car_id
             if (carTextures.count(rc.car_id)) {
-                renderer.Copy(*carTextures[rc.car_id], rc.src, rc.dst, rc.angle, SDL2pp::NullOpt, SDL_FLIP_NONE);
+                renderer.Copy(*carTextures[rc.car_id], rc.src, rc.dst, rc.angle, SDL2pp::NullOpt,
+                              SDL_FLIP_NONE);
             }
         }
     }
@@ -401,7 +411,8 @@ void Game::render(SDL2pp::Renderer& renderer) {
         if (rc.onBridge) {
             // Usar textura individual del auto según su car_id
             if (carTextures.count(rc.car_id)) {
-                renderer.Copy(*carTextures[rc.car_id], rc.src, rc.dst, rc.angle, SDL2pp::NullOpt, SDL_FLIP_NONE);
+                renderer.Copy(*carTextures[rc.car_id], rc.src, rc.dst, rc.angle, SDL2pp::NullOpt,
+                              SDL_FLIP_NONE);
             }
         }
     }
@@ -549,28 +560,25 @@ void Game::init_textures(SDL2pp::Renderer& renderer) {
     textures[2] = std::make_shared<SDL2pp::Texture>(
             renderer,
             SDL2pp::Surface(DATA_PATH "cities/Liberty_City_bridges.png").SetColorKey(true, 0));
-    
+
     // Cargar cada auto desde su PNG individual
     std::vector<std::pair<uint8_t, std::string>> carFiles = {
-        {0, "iveco_daily.png"},
-        {1, "dodge_viper.png"},
-        {2, "chevrolet_corsa.png"},
-        {3, "jeep_wrangler.png"},
-        {4, "toyota_tacoma.png"},
-        {5, "lincoln_towncar.png"},
-        {6, "lamborghini_diablo.png"},
+            {0, "iveco_daily.png"},        {1, "dodge_viper.png"},   {2, "chevrolet_corsa.png"},
+            {3, "jeep_wrangler.png"},      {4, "toyota_tacoma.png"}, {5, "lincoln_towncar.png"},
+            {6, "lamborghini_diablo.png"},
     };
-    
-    for (const auto& [car_id, filename] : carFiles) {
+
+    for (const auto& [car_id, filename]: carFiles) {
         std::string filepath = std::string(DATA_PATH) + "cars/" + filename;
         try {
             carTextures[car_id] = std::make_shared<SDL2pp::Texture>(
-                    renderer,
-                    SDL2pp::Surface(filepath)
-                            .SetColorKey(true, SDL_MapRGB(SDL2pp::Surface(filepath).Get()->format, 163, 163, 13)));
+                    renderer, SDL2pp::Surface(filepath).SetColorKey(
+                                      true, SDL_MapRGB(SDL2pp::Surface(filepath).Get()->format, 163,
+                                                       163, 13)));
             std::cout << "[TEXTURES] Loaded car " << (int)car_id << ": " << filename << std::endl;
         } catch (const std::exception& e) {
-            std::cerr << "[WARNING] Failed to load car texture " << filename << ": " << e.what() << std::endl;
+            std::cerr << "[WARNING] Failed to load car texture " << filename << ": " << e.what()
+                      << std::endl;
         }
     }
 }

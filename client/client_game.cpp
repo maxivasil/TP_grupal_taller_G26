@@ -311,8 +311,19 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
         }
     }
 
-    int carW = 28;  // Volvemos a las medidas originales
-    int carH = 22;
+    // Función helper para obtener tamaño según car_type
+    auto getCarSize = [](uint8_t car_type) -> std::pair<int, int> {
+        switch (car_type) {
+            case 0: return {28, 26};   // Van (75x69) - proporción: 28/75 = 0.373
+            case 1: return {28, 32};   // Ferrari (75x86) - proporción: 28/75 = 0.373, 32/86 = 0.372
+            case 2: return {28, 32};   // Celeste (75x86)
+            case 3: return {28, 32};   // Jeep (75x86)
+            case 4: return {28, 32};   // Pickup (75x86)
+            case 5: return {28, 39};   // Limo (75x103) - proporción: 28/75 = 0.373, 39/103 = 0.379
+            case 6: return {28, 32};   // Descapotable (75x86)
+            default: return {28, 32};
+        }
+    };
 
     // Get player position for distance calculations
     float playerWorldX = 0.0f, playerWorldY = 0.0f;
@@ -327,6 +338,9 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
 
         float relX = (worldX - src.x) * scale;
         float relY = (worldY - src.y) * scale;
+
+        // Obtener tamaño según car_type
+        auto [carW, carH] = getCarSize(car.car_type);
 
         RenderCar rc;
         rc.dst = {int(relX - (carW * scale) / 2), int(relY - (carH * scale) / 2), int(carW * scale),

@@ -35,6 +35,9 @@ std::vector<uint8_t> ServerToClientRaceResults::to_bytes() const {
         
         BufferUtils::append_bytes(data, &result.finishTime, sizeof(result.finishTime));
         BufferUtils::append_bytes(data, &result.position, sizeof(result.position));
+        
+        // Write upgrade penalty
+        BufferUtils::append_bytes(data, &result.upgradePenalty, sizeof(result.upgradePenalty));
     }
     
     return data;

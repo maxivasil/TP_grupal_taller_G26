@@ -5,6 +5,7 @@
 #include "client_to_server_move.h"
 #include "client_to_server_readyToStart.h"
 #include "client_to_server_tour.h"
+#include "client_to_server_applyUpgrades.h"
 
 ServerRegisteredCommands::ServerRegisteredCommands():
         recv_registry(build_server_recv_command_registry()) {}
@@ -40,6 +41,10 @@ std::unordered_map<uint8_t, std::function<ClientToServerCmd_Server*(const std::v
 
     registry[TOUR_COMMAND] = [](const std::vector<uint8_t>& data, const int client_id) {
         return ClientToServerTour::from_bytes(data, client_id);
+    };
+
+    registry[APPLY_UPGRADES_COMMAND] = [](const std::vector<uint8_t>& data, const int client_id) {
+        return ClientToServerApplyUpgrades::from_bytes(data, client_id);
     };
 
     return registry;

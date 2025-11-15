@@ -18,6 +18,18 @@
 
 #define FPS 60
 
+// Función helper para convertir nombre del auto a car_type (0-6)
+static uint8_t getCarTypeFromName(const std::string& carName) {
+    if (carName == "Iveco Daily") return 0;
+    if (carName == "Dodge Viper") return 1;
+    if (carName == "Chevrolet Corsa") return 2;
+    if (carName == "Jeep Wrangler") return 3;
+    if (carName == "Toyota Tacoma") return 4;
+    if (carName == "Lincoln TownCar") return 5;
+    if (carName == "Lamborghini Diablo") return 6;
+    return 0;  // Default
+}
+
 ServerGameLoop::ServerGameLoop(Queue<ClientToServerCmd_Server*>& gameloop_queue,
                                ServerProtectedClients& protected_clients, LobbyStatus& status,
                                struct Lobby* lobby):
@@ -116,7 +128,8 @@ void ServerGameLoop::run() {
                               .health_max = 100.0f,
                               .length = 4.011f,
                               .width = 2.8288f};
-            players.emplace_back(std::make_unique<Player>(carName, clientId, stats));
+            uint8_t car_type = getCarTypeFromName(carName);
+            players.emplace_back(std::make_unique<Player>(carName, clientId, stats, car_type));
             playerId++;
         }
 
@@ -165,8 +178,17 @@ void ServerGameLoop::run() {
 
                     uint8_t position = playersWhoAlreadyReceivedPartial.size();
 
+                    // Obtener la penalización de mejoras del jugador
+                    float upgradePenalty = 0.0f;
+                    for (const auto& p: race.getPlayers()) {
+                        if (p->getId() == pid) {
+                            upgradePenalty = p->getCarUpgrades().getTimePenalty();
+                            break;
+                        }
+                    }
+
                     partial.emplace_back(static_cast<uint8_t>(pid), playerName, finishTime,
-                                         position);
+                                         position, upgradePenalty);
 
                     auto partialCmd = std::make_shared<ServerToClientRaceResults>(partial, false);
 
@@ -196,13 +218,18 @@ void ServerGameLoop::run() {
                         float finishTime = pairs[i].second;
 
                         std::string playerName = "Unknown";
+                        float upgradePenalty = 0.0f;
 
-                        for (const auto& p: race.getPlayers())
-                            if (p->getId() == playerId_)
+                        for (const auto& p: race.getPlayers()) {
+                            if (p->getId() == playerId_) {
                                 playerName = p->getName();
+                                upgradePenalty = p->getCarUpgrades().getTimePenalty();
+                                break;
+                            }
+                        }
 
                         fullResults.emplace_back((uint8_t)playerId_, playerName, finishTime,
-                                                 (uint8_t)(i + 1));
+                                                 (uint8_t)(i + 1), upgradePenalty);
                     }
 
                     auto fullCmd = std::make_shared<ServerToClientRaceResults>(fullResults, true);

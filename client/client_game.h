@@ -29,6 +29,7 @@ struct RenderCar {
     SDL_Rect dst;
     float angle;
     bool onBridge;
+    uint8_t car_id;
 };
 
 enum class GameState { PLAYING, WON, LOST };
@@ -44,6 +45,7 @@ private:
     CollisionExplosion explosion;
     CarSoundEngine carSoundEngine;
     std::map<int, std::shared_ptr<SDL2pp::Texture>> textures;
+    std::map<uint8_t, std::shared_ptr<SDL2pp::Texture>> carTextures;  // Texturas individuales por auto
 
     std::vector<CarSnapshot> snapshots;
     std::vector<RenderCar> carsToRender;
@@ -110,6 +112,8 @@ private:
     void renderMyOwnTime(SDL2pp::Renderer& renderer);
 
     void renderRaceTable(SDL2pp::Renderer& renderer);
+
+    SDL_Rect getSpriteForCarId(uint8_t car_id);
 
 public:
     explicit Game(ClientSession& client_session);

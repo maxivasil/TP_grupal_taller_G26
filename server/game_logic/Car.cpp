@@ -246,4 +246,28 @@ void Car::setLevel(bool onBridge) {
 
 bool Car::getIsOnBridge() const { return isOnBridge; }
 
+void Car::applyUpgrades(const CarUpgrades& newUpgrades) {
+    if (!newUpgrades.isValid()) {
+        return;  // Rechazar upgrades inválidos
+    }
+
+    upgrades = newUpgrades;
+
+    // Actualizar la salud máxima si cambia
+    float newMaxHealth = stats.health_max + upgrades.health_boost;
+    if (newMaxHealth > 0) {
+        current_health = std::min(current_health, newMaxHealth);
+    }
+}
+
+const CarUpgrades& Car::getUpgrades() const { return upgrades; }
+
+float Car::getMaxSpeed() const { return stats.max_speed + upgrades.speed_boost; }
+
+float Car::getAcceleration() const { return stats.acceleration + upgrades.acceleration_boost; }
+
+float Car::getHandling() const { return stats.handling + upgrades.handling_boost; }
+
+float Car::getMaxHealth() const { return stats.health_max + upgrades.health_boost; }
+
 Car::~Car() {}

@@ -4,6 +4,7 @@
 #include <box2d/box2d.h>
 
 #include "Collidable.h"
+#include "CarUpgrades.h"
 
 enum class Direction { FORWARD, LEFT, RIGHT };
 
@@ -29,6 +30,7 @@ class Car: public Collidable {
 private:
     b2BodyId body;
     CarStats stats;
+    CarUpgrades upgrades;  // Acumulación de mejoras aplicadas
     float current_health;
     bool hasInfiniteHealth;
     bool isOnBridge;
@@ -82,6 +84,42 @@ public:
     void setLevel(bool onBridge);
 
     bool getIsOnBridge() const;
+
+    /**
+     * @brief Aplica las mejoras acumuladas del auto modificando sus estadísticas.
+     * @param newUpgrades Las nuevas mejoras a aplicar
+     */
+    void applyUpgrades(const CarUpgrades& newUpgrades);
+
+    /**
+     * @brief Obtiene las mejoras acumuladas del auto.
+     * @return Referencia constante a las mejoras aplicadas
+     */
+    const CarUpgrades& getUpgrades() const;
+
+    /**
+     * @brief Obtiene la estadística de velocidad máxima incluyendo upgrades.
+     * @return Velocidad máxima actual del auto (stats base + upgrades)
+     */
+    float getMaxSpeed() const;
+
+    /**
+     * @brief Obtiene la estadística de aceleración incluyendo upgrades.
+     * @return Aceleración actual del auto (stats base + upgrades)
+     */
+    float getAcceleration() const;
+
+    /**
+     * @brief Obtiene la estadística de controlabilidad incluyendo upgrades.
+     * @return Controlabilidad actual del auto (stats base + upgrades)
+     */
+    float getHandling() const;
+
+    /**
+     * @brief Obtiene la salud máxima incluyendo upgrades.
+     * @return Salud máxima actual del auto (stats base + upgrades)
+     */
+    float getMaxHealth() const;
 };
 
 

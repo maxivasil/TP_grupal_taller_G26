@@ -48,7 +48,7 @@ ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint
 
         if (offset + sizeof(car.id) + sizeof(car.pos_x) + sizeof(car.pos_y) + sizeof(uint8_t) +
                     sizeof(car.health) + sizeof(car.speed) + sizeof(car.angle) +
-                    sizeof(car.onBridge) >
+                    sizeof(car.onBridge) + sizeof(car.car_type) >
             data.size())
             throw std::runtime_error("Incomplete snapshot: missing car data");
 
@@ -75,6 +75,9 @@ ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint
 
         std::memcpy(&car.onBridge, &data[offset], sizeof(car.onBridge));
         offset += sizeof(car.onBridge);
+
+        std::memcpy(&car.car_type, &data[offset], sizeof(car.car_type));
+        offset += sizeof(car.car_type);
 
         cars.push_back(car);
     }

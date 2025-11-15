@@ -154,7 +154,8 @@ std::vector<CarSnapshot> Race::getSnapshot() const {
         float angle = b2Rot_GetAngle(rot) * 180.0f / B2_PI;
         float speed = player->getSpeed();  // Get actual speed from player
         snapshot.push_back(CarSnapshot{(uint8_t)player->getId(), pos.x, pos.y, false,
-                                       player->getCurrentHealth(), speed, angle, player->isOnBridge()});
+                                       player->getCurrentHealth(), speed, angle, player->isOnBridge(),
+                                       player->getCarType()});
     }
 
     return snapshot;

@@ -12,10 +12,11 @@ struct PlayerResult {
     std::string playerName;
     float finishTime;
     uint8_t position;
+    float upgradePenalty;  // Penalización de tiempo por mejoras aplicadas (en segundos)
     
-    PlayerResult() : playerId(0), playerName(""), finishTime(0.0f), position(0) {}
-    PlayerResult(uint8_t id, const std::string& name, float time, uint8_t pos)
-        : playerId(id), playerName(name), finishTime(time), position(pos) {}
+    PlayerResult() : playerId(0), playerName(""), finishTime(0.0f), position(0), upgradePenalty(0.0f) {}
+    PlayerResult(uint8_t id, const std::string& name, float time, uint8_t pos, float penalty = 0.0f)
+        : playerId(id), playerName(name), finishTime(time), position(pos), upgradePenalty(penalty) {}
 };
 
 class ServerToClientRaceResults: public ServerToClientCmd_Server {

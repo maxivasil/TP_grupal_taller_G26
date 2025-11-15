@@ -10,10 +10,13 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include <iomanip>
+#include <sstream>
 
 #include "../cmd/client_to_server_readyToStart.h"
 #include "../cmd/server_to_client_gameStarting.h"
 #include "../session.h"
+#include "../CarStats.h"
 
 #include "ui_mainwindow.h"
 
@@ -77,7 +80,21 @@ void MainWindow::selector() {
     QPushButton* senderButton = qobject_cast<QPushButton*>(sender());
     QLabel* labelOut = findChild<QLabel*>("intro_text");
     QString carName = senderButton->property("car_name").toString();
-    labelOut->setText("Has seleccionado un " + carName);
+    
+    // Obtener estadísticas del auto
+    CarStats stats = CarStatsDatabase::getCarStats(carName.toStdString());
+    
+    // Formatear las estadísticas para mostrar
+    std::ostringstream oss;
+    oss << "🚗 " << carName.toStdString() << "\n\n";
+    oss << std::fixed << std::setprecision(1);
+    oss << "⚡ Velocidad Máxima: " << stats.max_speed << " km/h\n";
+    oss << "🏃 Aceleración: " << stats.acceleration << " m/s²\n";
+    oss << "❤️  Salud: " << stats.health_max << " HP\n";
+    oss << "⚖️  Masa: " << stats.mass << " kg\n";
+    oss << "🎮 Controlabilidad: " << stats.handling << "/5\n";
+    
+    labelOut->setText(QString::fromStdString(oss.str()));
     car = carName.toStdString();
 }
 

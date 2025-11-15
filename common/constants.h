@@ -28,6 +28,7 @@
 #define CHEAT_COMMAND 0x06
 #define CLIENT_TO_SERVER_FINISH_RACE 0x09
 #define TOUR_COMMAND 0x0B
+#define APPLY_UPGRADES_COMMAND 0x0D
 
 // Constants for JOIN_COMMAND type
 #define TYPE_JOIN 0

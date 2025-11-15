@@ -3,8 +3,8 @@
 #include <utility>
 #include <cmath>
 
-Player::Player(std::string name, int id, CarStats& stats):
-        name(std::move(name)), id(id), car(nullptr), stats(std::move(stats)) {}
+Player::Player(std::string name, int id, CarStats& stats, uint8_t car_type):
+        name(std::move(name)), id(id), car(nullptr), stats(std::move(stats)), car_type(car_type) {}
 
 void Player::initCar(b2WorldId world, b2Vec2 startPos, b2Rot rot) {
     car = std::make_unique<Car>(world, stats, startPos, rot);
@@ -71,3 +71,21 @@ float Player::getSpeed() const {
 }
 
 Player::~Player() {}
+
+void Player::applyCarUpgrades(const CarUpgrades& upgrades) {
+    if (car) {
+        car->applyUpgrades(upgrades);
+    }
+}
+
+const CarUpgrades& Player::getCarUpgrades() const {
+    if (car) {
+        return car->getUpgrades();
+    }
+    static CarUpgrades empty;
+    return empty;
+}
+
+uint8_t Player::getCarType() const {
+    return car_type;
+}

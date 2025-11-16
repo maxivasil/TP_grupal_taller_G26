@@ -11,9 +11,9 @@
 #include "cmd_base_client.h"
 
 struct AccumulatedResultDTO {
-    uint8_t playerId;
+    uint32_t playerId;
     std::string name;
-    int completedRaces;
+    uint16_t completedRaces;
     float totalTime;
 };
 
@@ -22,9 +22,7 @@ private:
     std::vector<AccumulatedResultDTO> results;
 
 public:
-    ServerToClientAccumulatedResults(const std::vector<AccumulatedResultDTO>& res);
-
-    // const std::vector<AccumulatedResultDTO>& getResults() const { return results; }
+    explicit ServerToClientAccumulatedResults(const std::vector<AccumulatedResultDTO>& res);
 
     virtual void execute(ClientContext& ctx) override;
 

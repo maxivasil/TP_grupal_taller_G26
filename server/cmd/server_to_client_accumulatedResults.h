@@ -2,6 +2,7 @@
 #define SERVER_TO_CLIENT_ACCUMULATEDRESULTS_H
 
 #include <cstdint>
+#include <utility>
 #include <vector>
 
 #include "../../common/buffer_utils.h"
@@ -9,18 +10,18 @@
 
 #include "cmd_base_server.h"
 
-struct AccumulatedInfo {
-    int completedRaces = 0;
-    float totalTime = 0.0f;
+struct AccumulatedResultDTO {
+    int playerId;
+    uint16_t completedRaces;
+    float totalTime;
 };
 
 class ServerToClientAccumulatedResults: public ServerToClientCmd_Server {
 private:
-    std::unordered_map<int, AccumulatedInfo> accumulatedResults;
+    std::vector<AccumulatedResultDTO> accumulatedResults;
 
 public:
-    explicit ServerToClientAccumulatedResults(
-            std::unordered_map<int, AccumulatedInfo> accumulatedResults);
+    explicit ServerToClientAccumulatedResults(std::vector<AccumulatedResultDTO> accumulatedResults);
 
     std::vector<uint8_t> to_bytes() const override;
 

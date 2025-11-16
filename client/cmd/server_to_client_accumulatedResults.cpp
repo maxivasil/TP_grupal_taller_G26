@@ -14,39 +14,33 @@ ServerToClientAccumulatedResults ServerToClientAccumulatedResults::from_bytes(
         const std::vector<uint8_t>& data) {
     size_t offset = 0;
 
-    // 1) Command
     if (data[offset] != ACCUMULATED_RESULTS_COMMAND)
-        throw std::runtime_error("Invalid command type");
+        throw std::runtime_error("Invalid command type for AccumulatedResults");
     offset += 1;
 
-    // 2) mapSize (network order)
-    uint16_t mapSize;
-    memcpy(&mapSize, &data[offset], sizeof(uint16_t));
-    mapSize = ntohs(mapSize);
+    uint16_t count;
+    memcpy(&count, &data[offset], sizeof(uint16_t));
+    count = ntohs(count);
     offset += sizeof(uint16_t);
 
     std::vector<AccumulatedResultDTO> res;
-    res.reserve(mapSize);
+    res.reserve(count);
 
-    // 3) Parse entries
-    for (int i = 0; i < mapSize; i++) {
+    for (int i = 0; i < count; i++) {
         AccumulatedResultDTO dto;
 
-        // --- playerId ---
-        uint32_t pid;
-        memcpy(&pid, &data[offset], sizeof(uint32_t));
-        pid = ntohl(pid);
-        dto.playerId = pid;
+        uint32_t playerId;
+        memcpy(&playerId, &data[offset], sizeof(uint32_t));
+        playerId = ntohl(playerId);
+        dto.playerId = playerId;
         offset += sizeof(uint32_t);
 
-        // --- completedRaces ---
-        uint32_t races;
-        memcpy(&races, &data[offset], sizeof(uint32_t));
-        races = ntohl(races);
-        dto.completedRaces = static_cast<int>(races);
-        offset += sizeof(uint32_t);
+        uint16_t races;
+        memcpy(&races, &data[offset], sizeof(uint16_t));
+        races = ntohs(races);
+        dto.completedRaces = races;
+        offset += sizeof(uint16_t);
 
-        // --- totalTime (float) ---
         uint32_t timeBits;
         memcpy(&timeBits, &data[offset], sizeof(uint32_t));
         timeBits = ntohl(timeBits);
@@ -55,9 +49,6 @@ ServerToClientAccumulatedResults ServerToClientAccumulatedResults::from_bytes(
         memcpy(&totalTime, &timeBits, sizeof(float));
         dto.totalTime = totalTime;
         offset += sizeof(uint32_t);
-
-        // Si querés agregar el nombre más adelante:
-        dto.name = "";  // o algo por defecto
 
         res.push_back(dto);
     }

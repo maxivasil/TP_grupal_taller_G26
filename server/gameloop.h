@@ -4,7 +4,6 @@
 #include <map>
 #include <memory>
 #include <set>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -33,12 +32,12 @@ private:
     LobbyStatus& status;
     struct Lobby* lobby;
 
-    std::unordered_map<int, AccumulatedInfo> accumulatedResults;
+    std::vector<AccumulatedResultDTO> accumulatedResults;
 
     void process_pending_commands(ServerContext& ctx);
     void update_game_state(Race& race);
     void send_partial_results(Race& race, std::set<int>& playersWhoAlreadyReceivedPartial);
-    void send_acumulated_results(Race& race, std::vector<std::unique_ptr<Player>>& players,
+    void send_acumulated_results(Race& race, std::vector<std::unique_ptr<Player>> const& players,
                                  bool& resultsAlreadySent);
 };
 

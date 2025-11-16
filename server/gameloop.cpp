@@ -308,15 +308,13 @@ void ServerGameLoop::send_acumulated_results(Race& race,
 
     std::sort(orderedAccum.begin(), orderedAccum.end(),
               [](const AccumulatedResultDTO& a, const AccumulatedResultDTO& b) {
-                  if (a.completedRaces == 0 && b.completedRaces == 0)
-                      return a.playerId < b.playerId;
+                  if (a.completedRaces != b.completedRaces)
+                      return a.completedRaces > b.completedRaces;
 
-                  if (a.completedRaces == 0)
-                      return false;
-                  if (b.completedRaces == 0)
-                      return true;
+                  if (a.totalTime != b.totalTime)
+                      return a.totalTime < b.totalTime;
 
-                  return a.totalTime < b.totalTime;
+                  return a.playerId < b.playerId;
               });
 
     auto accumCmd = std::make_shared<ServerToClientAccumulatedResults>(orderedAccum);

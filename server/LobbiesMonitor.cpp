@@ -13,16 +13,19 @@ void LobbiesMonitor::killFinishedLobbies() {
     }
 }
 #include <iostream>
-bool LobbiesMonitor::createLobby(const std::string& lobbyId) {
+Queue<ClientToServerCmd_Server*>* LobbiesMonitor::createLobby(const std::string& lobbyId,
+                                                              ServerClientHandler* client) {
     std::cout << "EJECUTANDO CREATE LOBBY" << std::endl;
     std::lock_guard<std::mutex> lock(mutex);
     killFinishedLobbies();
     auto [it, inserted] = lobbies.emplace(lobbyId, nullptr);
     if (!inserted) {
-        return false;
+        return nullptr;
     }
     it->second = std::make_shared<Lobby>(lobbyId);
-    return true;
+    it->second->connectedClients.add_client(client);
+    it->second->lobbyStart();
+    return it->second->gameloop_queue.get();
 }
 
 Queue<ClientToServerCmd_Server*>* LobbiesMonitor::joinLobby(std::string lobbyId,

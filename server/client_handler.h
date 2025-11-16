@@ -24,7 +24,7 @@ public:
     bool is_dead() const;
     void stop() override;
     void send_message(std::shared_ptr<ServerToClientCmd_Server> cmd);
-    bool createLobby(const std::string& lobbyId);
+    Queue<ClientToServerCmd_Server*>* createLobby(const std::string& lobbyId);
     Queue<ClientToServerCmd_Server*>* joinLobby(const std::string& lobbyId);
     void initReceiver(Queue<ClientToServerCmd_Server*>& gameloop_queue);
 

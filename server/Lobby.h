@@ -22,10 +22,9 @@ struct Lobby {
             lobbyId(lobbyId),
             status(LobbyStatus::WAITING_PLAYERS),
             gameloop_queue(std::make_shared<Queue<ClientToServerCmd_Server*>>(UINT32_MAX)),
-            gameloop(*gameloop_queue, connectedClients, status, this) {
-        gameloop.start();
-    }
+            gameloop(*gameloop_queue, connectedClients, status, this) {}
     ~Lobby() {}
+    void lobbyStart() { gameloop.start(); }
 };
 
 

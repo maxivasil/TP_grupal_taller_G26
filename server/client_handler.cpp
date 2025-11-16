@@ -80,8 +80,8 @@ void ServerClientHandler::send_message(std::shared_ptr<ServerToClientCmd_Server>
         send_queue.push(cmd);
 }
 
-bool ServerClientHandler::createLobby(const std::string& lobbyId) {
-    return lobbiesMonitor.createLobby(lobbyId);
+Queue<ClientToServerCmd_Server*>* ServerClientHandler::createLobby(const std::string& lobbyId) {
+    return lobbiesMonitor.createLobby(lobbyId, this);
 }
 
 Queue<ClientToServerCmd_Server*>* ServerClientHandler::joinLobby(const std::string& lobbyId) {

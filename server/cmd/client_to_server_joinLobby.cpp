@@ -1,14 +1,13 @@
 #include "client_to_server_joinLobby.h"
 
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <string>
 #include <utility>
 #include <vector>
-#include <cstdlib>
-#include <ctime>
-#include <string>
-
 
 #include "../client_handler.h"
 
@@ -31,21 +30,24 @@ void ClientToServerJoinLobby::execute(ServerContext& ctx) {
         std::cout << "YA en lobby " << std::endl;
         return;
     }
+    Queue<ClientToServerCmd_Server*>* gameloop_queue = nullptr;
     if (type == TYPE_CREATE) {
-        do{
+        do {
             lobbyId.clear();
             for (int i = 0; i < 6; ++i) {
                 lobbyId += static_cast<char>('A' + std::rand() % 26);
             }
-        }while(!ctx.client->createLobby(lobbyId)); 
+        } while (!(gameloop_queue = ctx.client->createLobby(lobbyId)));
     }
-    auto gameloop_queue = ctx.client->joinLobby(lobbyId);
-    if (!gameloop_queue) {
-        std::cout << "Error al conectarse al Lobby " << std::endl;
-        auto error_cmd =
-                std::make_shared<ServerToClientJoinResponse>(STATUS_ERROR, LOBBY_ALREADY_STARTED);
-        ctx.client->send_message(error_cmd);
-        return;
+    if (type == TYPE_JOIN) {
+        gameloop_queue = ctx.client->joinLobby(lobbyId);
+        if (!gameloop_queue) {
+            std::cout << "Error al conectarse al Lobby " << std::endl;
+            auto error_cmd = std::make_shared<ServerToClientJoinResponse>(STATUS_ERROR,
+                                                                          LOBBY_ALREADY_STARTED);
+            ctx.client->send_message(error_cmd);
+            return;
+        }
     }
     ctx.client->initReceiver(*gameloop_queue);
     *(ctx.inLobby) = true;

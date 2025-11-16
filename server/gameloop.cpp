@@ -148,7 +148,8 @@ void ServerGameLoop::run() {
                    .lobby = lobby,
                    .racesInfo = nullptr};
 
-            auto startingRaceCmd = std::make_shared<ServerToClientStartingRace>(raceInfo.city);
+            auto startingRaceCmd =
+                    std::make_shared<ServerToClientStartingRace>(raceInfo.city, raceInfo.trackFile);
             protected_clients.broadcast(startingRaceCmd);
 
             ClientToServerCmd_Server* raw;

@@ -123,7 +123,7 @@ private:
 
     void renderAccumulatedTable();
 
-    void initMinimapAndCheckpoints();
+    void initMinimapAndCheckpoints(const std::string& trackName);
 
 public:
     explicit Game(ClientSession& client_session);
@@ -133,7 +133,7 @@ public:
     void update_snapshots(const std::vector<CarSnapshot>& snapshots);
     void setRaceResults(const std::vector<ClientPlayerResult>& results, bool isFinished);
     void setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res);
-    void resetForNextRace(uint8_t nextCityId);
+    void resetForNextRace(uint8_t nextCityId, const std::string& trackName);
 };
 
 #endif

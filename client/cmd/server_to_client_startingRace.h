@@ -12,9 +12,10 @@
 class ServerToClientStartingRace: public ServerToClientCmd_Client {
 private:
     uint8_t cityId;
+    std::string trackFile;
 
 public:
-    explicit ServerToClientStartingRace(uint8_t cityId);
+    ServerToClientStartingRace(uint8_t cityId, std::string& trackFile);
 
     virtual void execute(ClientContext& ctx) override;
 

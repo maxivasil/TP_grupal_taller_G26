@@ -5,9 +5,12 @@
 
 #include "../client_game.h"
 
-ServerToClientStartingRace::ServerToClientStartingRace(uint8_t cityId): cityId(cityId) {}
+ServerToClientStartingRace::ServerToClientStartingRace(uint8_t cityId, std::string& trackFile):
+        cityId(cityId), trackFile(trackFile) {}
 
-void ServerToClientStartingRace::execute(ClientContext& ctx) { ctx.game->resetForNextRace(cityId); }
+void ServerToClientStartingRace::execute(ClientContext& ctx) {
+    ctx.game->resetForNextRace(cityId, trackFile);
+}
 
 ServerToClientStartingRace ServerToClientStartingRace::from_bytes(
         const std::vector<uint8_t>& data) {
@@ -22,5 +25,9 @@ ServerToClientStartingRace ServerToClientStartingRace::from_bytes(
         throw std::runtime_error("Invalid header for Race Starting");
     uint8_t cityId;
     std::memcpy(&cityId, &data[1], sizeof(cityId));
-    return ServerToClientStartingRace(cityId);
+    std::string trackFile;
+    if (data.size() > 2) {
+        trackFile = std::string(data.begin() + 2, data.end());
+    }
+    return ServerToClientStartingRace(cityId, trackFile);
 }

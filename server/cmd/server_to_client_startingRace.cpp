@@ -1,6 +1,7 @@
 #include "server_to_client_startingRace.h"
 
-ServerToClientStartingRace::ServerToClientStartingRace(uint8_t cityId): cityId(cityId) {}
+ServerToClientStartingRace::ServerToClientStartingRace(uint8_t cityId, std::string& trackFile):
+        cityId(cityId), trackFile(trackFile) {}
 
 std::vector<uint8_t> ServerToClientStartingRace::to_bytes() const {
     std::vector<uint8_t> data;
@@ -11,6 +12,7 @@ std::vector<uint8_t> ServerToClientStartingRace::to_bytes() const {
     uint8_t mapId = cityId;
     BufferUtils::append_bytes(data, &mapId, sizeof(mapId));
 
+    BufferUtils::append_bytes(data, trackFile.data(), trackFile.size());
     return data;
 }
 

@@ -948,7 +948,7 @@ void Game::setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res) {
     accumulatedResults = res;
 }
 
-void Game::resetForNextRace(uint8_t nextCityId) {
+void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
     gameState = GameState::PLAYING;
     currentCityId = nextCityId;
     hasRaceResults = false;
@@ -966,11 +966,11 @@ void Game::resetForNextRace(uint8_t nextCityId) {
     lastSpeedUpdateTime = 0;
     lastPlayerX = 0.0f;
     lastPlayerY = 0.0f;
-    initMinimapAndCheckpoints();
+    initMinimapAndCheckpoints(trackName);
     std::cout << "[GAME] Preparado para la siguiente carrera." << std::endl;
 }
 
-void Game::initMinimapAndCheckpoints() {
+void Game::initMinimapAndCheckpoints(const std::string& trackName) {
 
     std::map<uint8_t, std::string> city_map_paths = {
             {0, "assets/cities/Liberty_City.png"},
@@ -986,18 +986,7 @@ void Game::initMinimapAndCheckpoints() {
         minimap.setZoomPixels(900.0f, 900.0f);
     }
 
-    std::string trackName = "track_four_checkpoints_vice_city";
     trackCheckpoints = TrackLoader::loadTrackCheckpoints(trackName);
-
-    if (trackCheckpoints.empty()) {
-        std::cerr << "ERROR: No checkpoints loaded! Using fallback..." << std::endl;
-        trackCheckpoints = {
-                {0, 13.8f, 192.6f, 18.2f, 9.1f, false},
-                {1, 231.7f, 192.9f, 17.5f, 10.9f, false},
-                {2, 240.5f, 107.3f, 18.9f, 11.5f, false},
-                {3, 439.8f, 107.0f, 20.2f, 13.3f, true},
-        };
-    }
     totalCheckpoints = trackCheckpoints.size();
     minimap.setCheckpoints(trackCheckpoints);
 }

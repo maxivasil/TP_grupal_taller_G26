@@ -1,5 +1,6 @@
 #include "LobbiesMonitor.h"
 
+#define MAX_PLAYERS_PER_LOBBY 8
 
 LobbiesMonitor::LobbiesMonitor() {}
 
@@ -12,10 +13,9 @@ void LobbiesMonitor::killFinishedLobbies() {
         }
     }
 }
-#include <iostream>
+
 Queue<ClientToServerCmd_Server*>* LobbiesMonitor::createLobby(const std::string& lobbyId,
                                                               ServerClientHandler* client) {
-    std::cout << "EJECUTANDO CREATE LOBBY" << std::endl;
     std::lock_guard<std::mutex> lock(mutex);
     killFinishedLobbies();
     auto [it, inserted] = lobbies.emplace(lobbyId, nullptr);
@@ -30,13 +30,15 @@ Queue<ClientToServerCmd_Server*>* LobbiesMonitor::createLobby(const std::string&
 
 Queue<ClientToServerCmd_Server*>* LobbiesMonitor::joinLobby(std::string lobbyId,
                                                             ServerClientHandler* client) {
-    std::cout << "EJECUTANDO JOIN LOBBY" << std::endl;
     std::lock_guard<std::mutex> lock(mutex);
     auto lobby = lobbies.find(lobbyId);
     if (lobby == lobbies.end()) {
         return nullptr;
     }
     if (lobby->second->status != LobbyStatus::WAITING_PLAYERS) {
+        return nullptr;
+    }
+    if (lobby->second->connectedClients.size() >= MAX_PLAYERS_PER_LOBBY) {
         return nullptr;
     }
     lobby->second->connectedClients.add_client(client);

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "cmd_base_client.h"
+#include "server_to_client_accumulatedResults.h"
 #include "server_to_client_assign_id.h"
 #include "server_to_client_gameStarting.h"
 #include "server_to_client_lobbyResponse.h"

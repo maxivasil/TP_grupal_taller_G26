@@ -3,16 +3,21 @@
 
 #include <map>
 #include <memory>
+#include <set>
+#include <unordered_set>
 #include <vector>
 
 #include "../common/queue.h"
 #include "../common/socket.h"
 #include "../common/thread.h"
+#include "cmd/server_to_client_accumulatedResults.h"
 #include "cmd/server_to_client_snapshot.h"
 #include "cmd/server_to_client_startingRace.h"
 
 #include "LobbyStatus.h"
 #include "protected_clients.h"
+
+class Player;
 
 class ServerGameLoop: public Thread {
 public:
@@ -27,8 +32,13 @@ private:
     LobbyStatus& status;
     struct Lobby* lobby;
 
+    std::vector<AccumulatedResultDTO> accumulatedResults;
+
     void process_pending_commands(ServerContext& ctx);
     void update_game_state(Race& race);
+    void send_partial_results(Race& race, std::set<int>& playersWhoAlreadyReceivedPartial);
+    void send_acumulated_results(Race& race, std::vector<std::unique_ptr<Player>> const& players,
+                                 bool& resultsAlreadySent);
 };
 
 #endif

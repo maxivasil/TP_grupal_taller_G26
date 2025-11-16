@@ -185,6 +185,16 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_m) {
                     showMinimap = !showMinimap;
+                } else if (event.key.keysym.sym == SDLK_t) {
+                    if (gameState != GameState::PLAYING && raceFullyFinished &&
+                        !accumulatedResults.empty()) {
+
+                        if (endScreenPhase == EndScreenPhase::RACE_RESULTS) {
+                            endScreenPhase = EndScreenPhase::ACCUMULATED_RESULTS;
+                        } else {
+                            endScreenPhase = EndScreenPhase::RACE_RESULTS;
+                        }
+                    }
                 }
                 break;
         }
@@ -625,15 +635,24 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
     SDL_Rect titleRect = {titleX, titleY, titleTexture.GetWidth(), titleTexture.GetHeight()};
     renderer.Copy(titleTexture, SDL2pp::NullOpt, titleRect);
 
-    if (hasRaceResults && !raceFullyFinished) {
+    if (!raceFullyFinished) {
         renderMyOwnTime(renderer);
         renderPressESC(renderer);
         return;
     }
+
     if (raceFullyFinished) {
-        renderRaceTable(renderer);
-        renderPressESC(renderer);
-        return;
+        if (endScreenPhase == EndScreenPhase::ACCUMULATED_RESULTS && !accumulatedResults.empty()) {
+
+            renderAccumulatedTable(renderer);
+            renderPressESC(renderer);
+            return;
+        } else {
+            endScreenPhase = EndScreenPhase::RACE_RESULTS;
+            renderRaceTable(renderer);
+            renderPressESC(renderer);
+            return;
+        }
     }
 }
 
@@ -643,14 +662,18 @@ void Game::setClientId(uint8_t id) {
 }
 
 void Game::setWon() {
+    if (gameState != GameState::PLAYING)
+        return;
     gameState = GameState::WON;
     endGameMessage = "¡GANASTE!";
     endGameTime = SDL_GetTicks();
-    carSoundEngine.playRaceFinish();  // Play victory sound
+    carSoundEngine.playRaceFinish();
     std::cout << "¡VICTORIA! Presiona ESC para volver al lobby\n";
 }
 
 void Game::setLost() {
+    if (gameState != GameState::PLAYING)
+        return;
     gameState = GameState::LOST;
     endGameMessage = "GAME OVER";
     endGameTime = SDL_GetTicks();
@@ -664,20 +687,36 @@ void Game::setRaceResults(const std::vector<ClientPlayerResult>& results, bool i
     std::cout << "\n=== GAME::setRaceResults LLAMADO ===" << std::endl;
     std::cout << "Resultados de carrera recibidos: " << results.size() << " jugadores" << std::endl;
 
-    if (!isFinished) {
-        auto it = std::find_if(results.begin(), results.end(),
-                               [this](const auto& r) { return r.playerId == client_id; });
+    auto it = std::find_if(results.begin(), results.end(),
+                           [this](const auto& r) { return r.playerId == client_id; });
 
-        if (it != results.end()) {
-            myOwnResults = *it;
-            setWon();
-        } else {
-            std::cerr << "[WARNING] PARCIAL recibido pero no contiene mi playerId="
-                      << (int)client_id << std::endl;
-        }
-    } else {
-        raceResults = results;
+    if (it == results.end()) {
+        return;
     }
+
+    myOwnResults = *it;
+
+    if (myOwnResults.finishTime < 0.0f && gameState == GameState::PLAYING) {
+        std::cout << "[INFO] finishTime < 0 => DNF para player " << (int)client_id << std::endl;
+        myOwnResults.position = 0;
+        setLost();
+        return;
+    }
+
+    if (!isFinished) {
+        if (myOwnResults.position == 1)
+            setWon();
+        else
+            setLost();
+        return;
+    }
+
+    raceResults = results;
+
+    if (myOwnResults.position == 1)
+        setWon();
+    else
+        setLost();
 }
 
 float Game::getScale(int w, int h) const {
@@ -696,7 +735,18 @@ void Game::renderPressESC(SDL2pp::Renderer& renderer) {
 
     SDL_Color instructColor = {200, 200, 200, 255};
 
-    std::string instructText = "Presiona ESC para volver al lobby";
+    std::string instructText;
+    // cppcheck-suppress knownConditionTrueFalse
+    if (!raceFullyFinished) {
+        instructText = "Esperando a que terminen todos los jugadores...";
+    } else if (accumulatedResults.empty()) {
+        instructText = "Presiona ESC para volver al lobby";
+    } else {
+        if (endScreenPhase == EndScreenPhase::RACE_RESULTS)
+            instructText = "T: ver acumulado | ESC: volver al lobby";
+        else
+            instructText = "T: ver resultado de esta carrera | ESC: volver al lobby";
+    }
 
     auto instructSurface = instructFont.RenderText_Solid(instructText, instructColor);
     SDL2pp::Texture instructTexture(renderer, instructSurface);
@@ -727,8 +777,12 @@ void Game::renderMyOwnTime(SDL2pp::Renderer& renderer) {
     int millis = (int)((myOwnResults.finishTime - (int)myOwnResults.finishTime) * 1000);
 
     char line[128];
-    snprintf(line, sizeof(line), "Tu tiempo: %02d:%02d.%03d (Puesto %d)", minutes, seconds, millis,
-             (int)myOwnResults.position);
+    if (myOwnResults.position == 0) {
+        snprintf(line, sizeof(line), "Tu tiempo: DNF (No completaste la carrera)");
+    } else {
+        snprintf(line, sizeof(line), "Tu tiempo: %02d:%02d.%03d (Puesto %d)", minutes, seconds,
+                 millis, (int)myOwnResults.position);
+    }
     auto surf = font.RenderText_Solid(line, color);
     SDL2pp::Texture tex(renderer, surf);
 
@@ -761,7 +815,16 @@ void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
     renderer.Copy(texHeader, SDL2pp::NullOpt, headerRect);
     startY += lineHeight + 15;
 
+    std::vector<ClientPlayerResult> finished, dnf;
+
     for (const auto& r: raceResults) {
+        if (r.finishTime >= 0)
+            finished.push_back(r);
+        else
+            dnf.push_back(r);
+    }
+
+    for (const auto& r: finished) {
 
         int minutes = (int)r.finishTime / 60;
         int seconds = (int)r.finishTime % 60;
@@ -780,12 +843,91 @@ void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
         renderer.Copy(texRow, SDL2pp::NullOpt, rowRect);
         startY += lineHeight;
     }
+
+    if (!dnf.empty()) {
+        startY += 20;
+
+        auto surfDNF = font.RenderText_Solid("NO COMPLETARON (DNF)", headerColor);
+        SDL2pp::Texture texDNF(renderer, surfDNF);
+        SDL_Rect dnfHeaderRect = {(width - texDNF.GetWidth()) / 2, startY, texDNF.GetWidth(),
+                                  texDNF.GetHeight()};
+        renderer.Copy(texDNF, SDL2pp::NullOpt, dnfHeaderRect);
+
+        startY += lineHeight;
+
+        for (const auto& r: dnf) {
+            char line[256];
+            snprintf(line, sizeof(line), "-    %s    DNF", r.playerName.c_str());
+
+            auto surfRow = font.RenderText_Solid(line, rowColor);
+            SDL2pp::Texture texRow(renderer, surfRow);
+
+            SDL_Rect rowRect = {(width - texRow.GetWidth()) / 2, startY, texRow.GetWidth(),
+                                texRow.GetHeight()};
+
+            renderer.Copy(texRow, SDL2pp::NullOpt, rowRect);
+
+            startY += lineHeight;
+        }
+    }
+}
+
+void Game::renderAccumulatedTable(SDL2pp::Renderer& renderer) {
+    SDL2pp::Font font(
+            hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
+            20);
+
+    SDL_Color headerColor = {0, 200, 255, 255};
+    SDL_Color rowColor = {200, 200, 200, 255};
+
+    int width = renderer.GetOutputWidth();
+    int height = renderer.GetOutputHeight();
+
+    int startY = height / 4;
+    int lineHeight = 28;
+
+    auto surfHeader = font.RenderText_Solid("ACUMULADO DEL CIRCUITO", headerColor);
+    SDL2pp::Texture texHeader(renderer, surfHeader);
+
+    SDL_Rect headerRect = {(width - texHeader.GetWidth()) / 2, startY, texHeader.GetWidth(),
+                           texHeader.GetHeight()};
+    renderer.Copy(texHeader, SDL2pp::NullOpt, headerRect);
+
+    startY += lineHeight + 20;
+
+    for (const auto& r: accumulatedResults) {
+        char line[256];
+
+        if (r.completedRaces == 0) {
+            snprintf(line, sizeof(line), "%u  |  Carreras: 0  |  Tiempo total: N/A", r.playerId);
+        } else {
+            snprintf(line, sizeof(line), "%u  |  Carreras: %u  |  Tiempo total: %.2f", r.playerId,
+                     r.completedRaces, r.totalTime);
+        }
+
+        auto surfRow = font.RenderText_Solid(line, rowColor);
+        SDL2pp::Texture texRow(renderer, surfRow);
+
+        SDL_Rect rowRect = {(width - texRow.GetWidth()) / 2, startY, texRow.GetWidth(),
+                            texRow.GetHeight()};
+        renderer.Copy(texRow, SDL2pp::NullOpt, rowRect);
+
+        startY += lineHeight;
+    }
+}
+
+void Game::setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res) {
+    accumulatedResults = res;
 }
 
 void Game::resetForNextRace() {
     gameState = GameState::PLAYING;
     hasRaceResults = false;
     raceFullyFinished = false;
+    endScreenPhase = EndScreenPhase::RACE_RESULTS;
+    accumulatedResults.clear();
+    raceResults.clear();
+    myOwnResults = ClientPlayerResult();
     raceStartTime = SDL_GetTicks() / 1000.0f;
     currentCheckpoint = 0;
     playerDestroyed = false;

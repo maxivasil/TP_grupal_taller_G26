@@ -85,21 +85,29 @@ void Race::checkFinishConditions() {
             auto now = std::chrono::steady_clock::now();
             float elapsed = std::chrono::duration<float>(now - startTime).count();
             playerFinishTimes[player->getId()] = elapsed;
-            
-            std::cout << "[RACE] Player " << player->getId() << " (" << player->getName() 
+
+            std::cout << "[RACE] Player " << player->getId() << " (" << player->getName()
                       << ") finished in " << elapsed << "s" << std::endl;
+        }
+        if (player->getCurrentHealth() <= 0.0f && !playerFinishTimes.count(player->getId())) {
+            playerFinishTimes[player->getId()] = -1.0f;
+
+            std::cout << "[RACE] Player " << player->getId() << " (" << player->getName()
+                      << ") destroyed their car" << std::endl;
         }
     }
 
-    std::cout << "[RACE] Finish check: " << playerFinishTimes.size() << "/" << players.size() 
+    std::cout << "[RACE] Finish check: " << playerFinishTimes.size() << "/" << players.size()
               << " players finished" << std::endl;
 
     if (playerFinishTimes.size() == players.size() ||
         std::chrono::duration<float>(std::chrono::steady_clock::now() - startTime).count() >=
                 MAX_RACE_TIME) {
         finished = true;
-        std::cout << "[RACE] RACE FINISHED! Reason: " 
-                  << (playerFinishTimes.size() == players.size() ? "All players done" : "Time limit") << std::endl;
+        std::cout << "[RACE] RACE FINISHED! Reason: "
+                  << (playerFinishTimes.size() == players.size() ? "All players done" :
+                                                                   "Time limit")
+                  << std::endl;
     }
 }
 
@@ -154,8 +162,8 @@ std::vector<CarSnapshot> Race::getSnapshot() const {
         float angle = b2Rot_GetAngle(rot) * 180.0f / B2_PI;
         float speed = player->getSpeed();  // Get actual speed from player
         snapshot.push_back(CarSnapshot{(uint8_t)player->getId(), pos.x, pos.y, false,
-                                       player->getCurrentHealth(), speed, angle, player->isOnBridge(),
-                                       player->getCarType()});
+                                       player->getCurrentHealth(), speed, angle,
+                                       player->isOnBridge(), player->getCarType()});
     }
 
     return snapshot;
@@ -190,7 +198,8 @@ void Race::forceWinCheat(int playerId) {
         auto now = std::chrono::steady_clock::now();
         auto raceTime = std::chrono::duration_cast<std::chrono::seconds>(now - startTime).count();
         playerFinishTimes[playerId] = static_cast<float>(raceTime);
-        std::cout << "CHEAT: Cliente " << playerId << " ganó en " << raceTime << " segundos" << std::endl;
+        std::cout << "CHEAT: Cliente " << playerId << " ganó en " << raceTime << " segundos"
+                  << std::endl;
     }
 }
 
@@ -200,11 +209,7 @@ void Race::forceLoseCheat(int playerId) {
             [playerId](const std::unique_ptr<Player>& p) { return p->getId() == playerId; });
 
     if (it != players.end()) {
-        // Destruir el auto: establecer salud a 0
-        // Como no hay método para destruir directamente, aplicamos daño extremo
-        // Usamos applyCollision con un daño muy alto
+        (*it)->getCar()->setDestroyed();
         std::cout << "CHEAT: Cliente " << playerId << " perdió automáticamente" << std::endl;
-        // TODO: Implementar destrucción de auto de forma más limpia
-        // Por ahora solo log
     }
 }

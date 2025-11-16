@@ -34,6 +34,8 @@ struct RenderCar {
 
 enum class GameState { PLAYING, WON, LOST };
 
+enum class EndScreenPhase { RACE_RESULTS, ACCUMULATED_RESULTS };
+
 class Game {
 private:
     ClientSession& client_session;
@@ -45,10 +47,12 @@ private:
     CollisionExplosion explosion;
     CarSoundEngine carSoundEngine;
     std::map<int, std::shared_ptr<SDL2pp::Texture>> textures;
-    std::map<uint8_t, std::shared_ptr<SDL2pp::Texture>> carTextures;  // Texturas individuales por auto
+    std::map<uint8_t, std::shared_ptr<SDL2pp::Texture>>
+            carTextures;  // Texturas individuales por auto
 
     std::vector<CarSnapshot> snapshots;
     std::vector<RenderCar> carsToRender;
+    EndScreenPhase endScreenPhase = EndScreenPhase::RACE_RESULTS;
 
     float testPlayerX = 350.0f;
     float testPlayerY = 300.0f;
@@ -86,6 +90,7 @@ private:
     std::vector<ClientPlayerResult> raceResults;
     bool hasRaceResults = false;
     bool raceFullyFinished = false;
+    std::vector<AccumulatedResultDTO> accumulatedResults;
     ClientPlayerResult myOwnResults = {0, "", 0.0f, 0};
 
     SDL_Rect src;
@@ -114,6 +119,7 @@ private:
     void renderRaceTable(SDL2pp::Renderer& renderer);
 
     SDL_Rect getSpriteForCarId(uint8_t car_id);
+    void renderAccumulatedTable(SDL2pp::Renderer& renderer);
 
 public:
     explicit Game(ClientSession& client_session);
@@ -122,6 +128,7 @@ public:
     void setClientId(uint8_t id);
     void update_snapshots(const std::vector<CarSnapshot>& snapshots);
     void setRaceResults(const std::vector<ClientPlayerResult>& results, bool isFinished);
+    void setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res);
     void resetForNextRace();
 };
 

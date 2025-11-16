@@ -46,5 +46,10 @@ std::unordered_map<uint8_t, std::function<ServerToClientCmd_Client*(const std::v
         return new ServerToClientStartingRace(std::move(startingRace));
     };
 
+    registry[ACCUMULATED_RESULTS_COMMAND] = [](const std::vector<uint8_t>& data) {
+        auto accumulatedResults = ServerToClientAccumulatedResults::from_bytes(data);
+        return new ServerToClientAccumulatedResults(std::move(accumulatedResults));
+    };
+
     return registry;
 }

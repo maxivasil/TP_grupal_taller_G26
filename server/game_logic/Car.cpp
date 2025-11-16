@@ -269,5 +269,6 @@ float Car::getAcceleration() const { return stats.acceleration + upgrades.accele
 float Car::getHandling() const { return stats.handling + upgrades.handling_boost; }
 
 float Car::getMaxHealth() const { return stats.health_max + upgrades.health_boost; }
+void Car::setDestroyed() { current_health = 0.0f; }
 
 Car::~Car() {}

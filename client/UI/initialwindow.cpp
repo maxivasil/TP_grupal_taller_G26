@@ -1,6 +1,7 @@
 #include "initialwindow.h"
 
 #include <QGuiApplication>
+#include <QIcon>
 #include <QLabel>
 #include <QPixmap>
 #include <QPushButton>
@@ -24,6 +25,9 @@ InitialWindow::InitialWindow(ClientSession& client_session, MainWindow& mainwind
         mainwindow(mainwindow),
         ui(new Ui::InitialWindow) {
     ui->setupUi(this);
+
+    this->setWindowIcon(QIcon(":/new/prefix1/Assets/logo.png"));
+
     QScreen* screen = QGuiApplication::primaryScreen();
     QSize screenSize = screen->availableGeometry().size();
 

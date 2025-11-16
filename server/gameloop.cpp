@@ -113,7 +113,7 @@ void ServerGameLoop::run() {
         int playerId = 0;
         // cppcheck-suppress knownEmptyContainer
         for (int clientId: clientsReady) {
-            std::string carName = "DefaultCar";
+            std::string carName = "Iveco Daily";
             if (lobby &&
                 lobby->clientCarSelection.find(clientId) != lobby->clientCarSelection.end()) {
                 carName = lobby->clientCarSelection[clientId];

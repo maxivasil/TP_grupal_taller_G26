@@ -59,6 +59,14 @@ int Game::start() {
         SDL2pp::Window window(titulo, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                               WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE);
 
+        SDL_Surface* icon = IMG_Load("assets/logo.png");
+        if (icon) {
+            SDL_SetWindowIcon(window.Get(), icon);
+            SDL_FreeSurface(icon);
+        } else {
+            std::cerr << "No se pudo cargar el icono: " << SDL_GetError() << "\n";
+        }
+
         SDL2pp::Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         rendererPtr = &renderer;
         init_textures();
@@ -311,7 +319,7 @@ bool Game::update(ServerToClientSnapshot cmd_snapshot) {
             case 6:
                 return {40, 22};  // Descapotable (75x86)
             default:
-                return {28, 20};
+                return {28, 22};
         }
     };
 

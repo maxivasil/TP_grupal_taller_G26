@@ -3,5 +3,6 @@
         <file>Assets/Background.png</file>
         <file>Assets/Cars.png</file>
         <file>Assets/Start.png</file>
+        <file>Assets/logo.png</file>
     </qresource>
 </RCC>

@@ -23,6 +23,8 @@
 MainWindow::MainWindow(ClientSession& client_session, QWidget* parent):
         QMainWindow(parent), client_session(client_session), ui(new Ui::MainWindow) {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon(":/new/prefix1/Assets/logo.png"));
+
     QScreen* screen = QGuiApplication::primaryScreen();
     QSize screenSize = screen->availableGeometry().size();
 

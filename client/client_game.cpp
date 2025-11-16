@@ -404,6 +404,7 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
 }
 
 void Game::render(SDL2pp::Renderer& renderer) {
+    renderer.SetDrawColor(0, 0, 0, 255);
     renderer.Clear();
 
     renderer.Copy(*textures[0], src, dst);
@@ -825,6 +826,7 @@ void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
     }
 
     for (const auto& r: finished) {
+        bool isMe = (r.playerId == client_id);
 
         int minutes = (int)r.finishTime / 60;
         int seconds = (int)r.finishTime % 60;
@@ -839,6 +841,20 @@ void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
 
         SDL_Rect rowRect = {(width - texRow.GetWidth()) / 2, startY, texRow.GetWidth(),
                             texRow.GetHeight()};
+
+        if (isMe) {
+            SDL_Rect bgRect = {rowRect.x - 10, rowRect.y - 2, rowRect.w + 20, rowRect.h + 4};
+
+            SDL_Color highlightColor = {255, 255, 100, 90};
+
+            renderer.SetDrawColor(highlightColor.r, highlightColor.g, highlightColor.b,
+                                  highlightColor.a);
+            renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+            renderer.FillRect(bgRect);
+
+            renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+            renderer.SetDrawColor(255, 255, 255, 255);
+        }
 
         renderer.Copy(texRow, SDL2pp::NullOpt, rowRect);
         startY += lineHeight;
@@ -856,6 +872,7 @@ void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
         startY += lineHeight;
 
         for (const auto& r: dnf) {
+            bool isMe = (r.playerId == client_id);
             char line[256];
             snprintf(line, sizeof(line), "-    %s    DNF", r.playerName.c_str());
 
@@ -864,6 +881,20 @@ void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
 
             SDL_Rect rowRect = {(width - texRow.GetWidth()) / 2, startY, texRow.GetWidth(),
                                 texRow.GetHeight()};
+
+            if (isMe) {
+                SDL_Rect bgRect = {rowRect.x - 10, rowRect.y - 2, rowRect.w + 20, rowRect.h + 4};
+
+                SDL_Color highlightColor = {255, 255, 100, 90};
+
+                renderer.SetDrawColor(highlightColor.r, highlightColor.g, highlightColor.b,
+                                      highlightColor.a);
+                renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+                renderer.FillRect(bgRect);
+
+                renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+                renderer.SetDrawColor(255, 255, 255, 255);
+            }
 
             renderer.Copy(texRow, SDL2pp::NullOpt, rowRect);
 
@@ -896,6 +927,7 @@ void Game::renderAccumulatedTable(SDL2pp::Renderer& renderer) {
     startY += lineHeight + 20;
 
     for (const auto& r: accumulatedResults) {
+        bool isMe = (r.playerId == client_id);
         char line[256];
 
         if (r.completedRaces == 0) {
@@ -910,6 +942,21 @@ void Game::renderAccumulatedTable(SDL2pp::Renderer& renderer) {
 
         SDL_Rect rowRect = {(width - texRow.GetWidth()) / 2, startY, texRow.GetWidth(),
                             texRow.GetHeight()};
+
+        if (isMe) {
+            SDL_Rect bgRect = {rowRect.x - 10, rowRect.y - 2, rowRect.w + 20, rowRect.h + 4};
+
+            SDL_Color highlightColor = {255, 255, 100, 90};
+
+            renderer.SetDrawColor(highlightColor.r, highlightColor.g, highlightColor.b,
+                                  highlightColor.a);
+            renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+            renderer.FillRect(bgRect);
+
+            renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+            renderer.SetDrawColor(255, 255, 255, 255);
+        }
+
         renderer.Copy(texRow, SDL2pp::NullOpt, rowRect);
 
         startY += lineHeight;

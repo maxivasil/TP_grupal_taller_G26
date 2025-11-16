@@ -39,6 +39,7 @@ enum class EndScreenPhase { RACE_RESULTS, ACCUMULATED_RESULTS };
 class Game {
 private:
     ClientSession& client_session;
+    SDL2pp::Renderer* rendererPtr = nullptr;
     uint8_t client_id = UINT8_MAX;
     Camera camera;
     Minimap minimap;
@@ -58,7 +59,7 @@ private:
     float testPlayerY = 300.0f;
     float testPlayerAngle = 0.0f;
     bool showMinimap = true;
-
+    uint8_t currentCityId = 0;
     int currentCheckpoint = 0;
     int totalCheckpoints = 4;
     float raceStartTime = 0.0f;
@@ -96,15 +97,15 @@ private:
     SDL_Rect src;
     SDL_Rect dst;
 
-    bool handleEvents(SDL2pp::Renderer& renderer);
+    bool handleEvents();
 
-    void init_textures(SDL2pp::Renderer& renderer);
+    void init_textures();
 
-    bool update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapshot);
+    bool update(ServerToClientSnapshot cmd_snapshot);
 
-    void render(SDL2pp::Renderer& renderer);
+    void render();
 
-    void renderEndGameScreen(SDL2pp::Renderer& renderer);
+    void renderEndGameScreen();
 
     void setWon();
 
@@ -112,14 +113,17 @@ private:
 
     float getScale(int w, int h) const;
 
-    void renderPressESC(SDL2pp::Renderer& renderer);
+    void renderPressESC();
 
-    void renderMyOwnTime(SDL2pp::Renderer& renderer);
+    void renderMyOwnTime();
 
-    void renderRaceTable(SDL2pp::Renderer& renderer);
+    void renderRaceTable();
 
     SDL_Rect getSpriteForCarId(uint8_t car_id);
-    void renderAccumulatedTable(SDL2pp::Renderer& renderer);
+
+    void renderAccumulatedTable();
+
+    void initMinimapAndCheckpoints();
 
 public:
     explicit Game(ClientSession& client_session);
@@ -129,7 +133,7 @@ public:
     void update_snapshots(const std::vector<CarSnapshot>& snapshots);
     void setRaceResults(const std::vector<ClientPlayerResult>& results, bool isFinished);
     void setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res);
-    void resetForNextRace();
+    void resetForNextRace(uint8_t nextCityId);
 };
 
 #endif

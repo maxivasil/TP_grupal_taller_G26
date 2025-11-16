@@ -140,11 +140,6 @@ objects:
   width: 56.18666666666667
   height: 7.216071428571429
 - type: CollisionDown
-  x: 373.81333333333333
-  y: 600.7339285714287
-  width: 0.0
-  height: 0.0
-- type: CollisionDown
   x: 358.9425
   y: 596.0973214285715
   width: 29.741666666666667

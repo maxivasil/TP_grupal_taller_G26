@@ -60,7 +60,8 @@ int Game::start() {
                               WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE);
 
         SDL2pp::Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-        init_textures(renderer);
+        rendererPtr = &renderer;
+        init_textures();
 
         std::vector<std::string> font_paths = {
                 "assets/fonts/arial.ttf",
@@ -75,36 +76,6 @@ int Game::start() {
             hud.loadFont(*it, 18);
         }
 
-        std::vector<std::string> map_paths = {
-                "assets/cities/Liberty_City.png",
-                "../assets/cities/Liberty_City.png",
-                "../../assets/cities/Liberty_City.png",
-        };
-
-        auto it2 = std::find_if(map_paths.begin(), map_paths.end(),
-                                [](const auto& path) { return std::filesystem::exists(path); });
-
-        if (it2 != map_paths.end()) {
-            minimap.loadMapImage(renderer, *it2);
-            minimap.setWorldScale(62.0f / 8.9f, 24.0f / 3.086f);
-            minimap.setZoomPixels(900.0f, 900.0f);
-        }
-
-        std::string trackName = "track_four_checkpoints_vice_city";
-        trackCheckpoints = TrackLoader::loadTrackCheckpoints(trackName);
-
-        if (trackCheckpoints.empty()) {
-            std::cerr << "ERROR: No checkpoints loaded! Using fallback..." << std::endl;
-            trackCheckpoints = {
-                    {0, 13.8f, 192.6f, 18.2f, 9.1f, false},
-                    {1, 231.7f, 192.9f, 17.5f, 10.9f, false},
-                    {2, 240.5f, 107.3f, 18.9f, 11.5f, false},
-                    {3, 439.8f, 107.0f, 20.2f, 13.3f, true},
-            };
-        }
-
-        totalCheckpoints = trackCheckpoints.size();
-        minimap.setCheckpoints(trackCheckpoints);
 
         auto t1 = SDL_GetTicks();
         auto rate = FPS;
@@ -117,7 +88,7 @@ int Game::start() {
             float deltaTime = (t1 - prevTime) / 1000.0f;
             prevTime = t1;
 
-            if (handleEvents(renderer)) {
+            if (handleEvents()) {
                 return 0;
             }
 
@@ -131,7 +102,7 @@ int Game::start() {
 
                 auto const* snapshot_cmd = dynamic_cast<ServerToClientSnapshot*>(cmd.get());
                 if (snapshot_cmd) {
-                    update(renderer, *snapshot_cmd);
+                    update(*snapshot_cmd);
                 } else {
                     cmd->execute(ctx);
                 }
@@ -139,7 +110,7 @@ int Game::start() {
 
             explosion.update(deltaTime);
 
-            render(renderer);
+            render();
 
             auto t2 = SDL_GetTicks();
             int rest = rate - (t2 - t1);
@@ -163,7 +134,7 @@ int Game::start() {
     }
 }
 
-bool Game::handleEvents(SDL2pp::Renderer& renderer) {
+bool Game::handleEvents() {
 
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
@@ -172,8 +143,8 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
                 return true;
             case SDL_WINDOWEVENT:
                 if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                    int w = renderer.GetOutputWidth();
-                    int h = renderer.GetOutputHeight();
+                    int w = rendererPtr->GetOutputWidth();
+                    int h = rendererPtr->GetOutputHeight();
                     float uiScale = getScale(w, h);
 
                     camera.setDimensions(w, h);
@@ -243,16 +214,16 @@ bool Game::handleEvents(SDL2pp::Renderer& renderer) {
     return false;
 }
 
-bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapshot) {
+bool Game::update(ServerToClientSnapshot cmd_snapshot) {
     carsToRender.clear();
     ClientContext ctx = {.game = this, .mainwindow = nullptr};
     cmd_snapshot.execute(ctx);
 
-    int texW = textures[0]->GetWidth();
-    int texH = textures[0]->GetHeight();
+    int texW = textures[currentCityId]->GetWidth();
+    int texH = textures[currentCityId]->GetHeight();
     src = camera.getSrcRect(texW, texH);
 
-    dst = {0, 0, renderer.GetOutputWidth(), renderer.GetOutputHeight()};
+    dst = {0, 0, rendererPtr->GetOutputWidth(), rendererPtr->GetOutputHeight()};
     float scale = float(dst.w) / float(src.w);
 
     auto it = std::find_if(snapshots.begin(), snapshots.end(),
@@ -403,27 +374,27 @@ bool Game::update(SDL2pp::Renderer& renderer, ServerToClientSnapshot cmd_snapsho
     return false;  // Aca quizas haya que devolver true una vez que termine la partida?
 }
 
-void Game::render(SDL2pp::Renderer& renderer) {
-    renderer.SetDrawColor(0, 0, 0, 255);
-    renderer.Clear();
+void Game::render() {
+    rendererPtr->SetDrawColor(0, 0, 0, 255);
+    rendererPtr->Clear();
 
-    renderer.Copy(*textures[0], src, dst);
+    rendererPtr->Copy(*textures[currentCityId], src, dst);
     for (const auto& rc: carsToRender) {
         if (!rc.onBridge) {
             // Usar textura individual del auto según su car_id
             if (carTextures.count(rc.car_id)) {
-                renderer.Copy(*carTextures[rc.car_id], rc.src, rc.dst, rc.angle, SDL2pp::NullOpt,
-                              SDL_FLIP_NONE);
+                rendererPtr->Copy(*carTextures[rc.car_id], rc.src, rc.dst, rc.angle,
+                                  SDL2pp::NullOpt, SDL_FLIP_NONE);
             }
         }
     }
-    renderer.Copy(*textures[2], src, dst);
+    rendererPtr->Copy(*textures[currentCityId + 3], src, dst);
     for (const auto& rc: carsToRender) {
         if (rc.onBridge) {
             // Usar textura individual del auto según su car_id
             if (carTextures.count(rc.car_id)) {
-                renderer.Copy(*carTextures[rc.car_id], rc.src, rc.dst, rc.angle, SDL2pp::NullOpt,
-                              SDL_FLIP_NONE);
+                rendererPtr->Copy(*carTextures[rc.car_id], rc.src, rc.dst, rc.angle,
+                                  SDL2pp::NullOpt, SDL_FLIP_NONE);
             }
         }
     }
@@ -503,28 +474,28 @@ void Game::render(SDL2pp::Renderer& renderer) {
     }
 
     if (showMinimap) {
-        minimap.render(renderer, localPlayer, otherPlayers, currentCheckpoint);
+        minimap.render(*rendererPtr, localPlayer, otherPlayers, currentCheckpoint);
     }
 
 
-    explosion.render(renderer);
+    explosion.render(*rendererPtr);
 
-    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     hudData.checkpointCurrent = currentCheckpoint;
     hudData.checkpointTotal = totalCheckpoints;
     hudData.raceTime = (SDL_GetTicks() / 1000.0f) - raceStartTime;
-    hud.render(renderer, hudData);
+    hud.render(*rendererPtr, hudData);
 
     if (!snapshots.empty()) {
         auto it2 = std::find_if(snapshots.begin(), snapshots.end(),
                                 [&](const CarSnapshot& car) { return car.id == client_id; });
         if (it2 != snapshots.end()) {
-            arrow.render(renderer);
+            arrow.render(*rendererPtr);
         }
     }
 
     if (gameState != GameState::PLAYING) {
-        renderEndGameScreen(renderer);
+        renderEndGameScreen();
     }
 
     // Render high-impact collision flash effect
@@ -540,37 +511,49 @@ void Game::render(SDL2pp::Renderer& renderer) {
                     static_cast<uint8_t>(255 * intensity * (lastCollisionIntensity / 20.0f));
 
             Uint8 prevR, prevG, prevB, prevA;
-            renderer.GetDrawColor(prevR, prevG, prevB, prevA);
+            rendererPtr->GetDrawColor(prevR, prevG, prevB, prevA);
 
-            int width = renderer.GetOutputWidth();
-            int height = renderer.GetOutputHeight();
+            int width = rendererPtr->GetOutputWidth();
+            int height = rendererPtr->GetOutputHeight();
             SDL_Rect flashRect = {0, 0, width, height};
 
             // Alternate: strong impacts = white, medium impacts = red
             if (lastCollisionIntensity > 10.0f) {
-                renderer.SetDrawColor(255, 255, 255, flashAlpha);  // White flash for high impact
+                rendererPtr->SetDrawColor(255, 255, 255,
+                                          flashAlpha);  // White flash for high impact
             } else {
-                renderer.SetDrawColor(255, 80, 80, flashAlpha);  // Red flash for medium impact
+                rendererPtr->SetDrawColor(255, 80, 80, flashAlpha);  // Red flash for medium impact
             }
 
-            renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-            renderer.FillRect(flashRect);
-            renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
-            renderer.SetDrawColor(prevR, prevG, prevB, prevA);
+            rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+            rendererPtr->FillRect(flashRect);
+            rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
+            rendererPtr->SetDrawColor(prevR, prevG, prevB, prevA);
         } else {
             collisionFlashStartTime = 0;  // Stop flashing
         }
     }
 
-    renderer.Present();
+    rendererPtr->Present();
 }
 
-void Game::init_textures(SDL2pp::Renderer& renderer) {
+void Game::init_textures() {
     textures[0] = std::make_shared<SDL2pp::Texture>(
-            renderer, SDL2pp::Surface(DATA_PATH "cities/Liberty_City.png").SetColorKey(true, 0));
-    textures[2] = std::make_shared<SDL2pp::Texture>(
-            renderer,
+            *rendererPtr,
+            SDL2pp::Surface(DATA_PATH "cities/Liberty_City.png").SetColorKey(true, 0));
+    textures[3] = std::make_shared<SDL2pp::Texture>(
+            *rendererPtr,
             SDL2pp::Surface(DATA_PATH "cities/Liberty_City_bridges.png").SetColorKey(true, 0));
+    textures[1] = std::make_shared<SDL2pp::Texture>(
+            *rendererPtr, SDL2pp::Surface(DATA_PATH "cities/San_Andreas.png").SetColorKey(true, 0));
+    textures[4] = std::make_shared<SDL2pp::Texture>(
+            *rendererPtr,
+            SDL2pp::Surface(DATA_PATH "cities/San_Andreas_bridges.png").SetColorKey(true, 0));
+    textures[2] = std::make_shared<SDL2pp::Texture>(
+            *rendererPtr, SDL2pp::Surface(DATA_PATH "cities/Vice_City.png").SetColorKey(true, 0));
+    textures[5] = std::make_shared<SDL2pp::Texture>(
+            *rendererPtr,
+            SDL2pp::Surface(DATA_PATH "cities/Vice_City_bridges.png").SetColorKey(true, 0));
 
     // Cargar cada auto desde su PNG individual
     std::vector<std::pair<uint8_t, std::string>> carFiles = {
@@ -583,9 +566,9 @@ void Game::init_textures(SDL2pp::Renderer& renderer) {
         std::string filepath = std::string(DATA_PATH) + "cars/" + filename;
         try {
             carTextures[car_id] = std::make_shared<SDL2pp::Texture>(
-                    renderer, SDL2pp::Surface(filepath).SetColorKey(
-                                      true, SDL_MapRGB(SDL2pp::Surface(filepath).Get()->format, 163,
-                                                       163, 13)));
+                    *rendererPtr, SDL2pp::Surface(filepath).SetColorKey(
+                                          true, SDL_MapRGB(SDL2pp::Surface(filepath).Get()->format,
+                                                           163, 163, 13)));
             std::cout << "[TEXTURES] Loaded car " << (int)car_id << ": " << filename << std::endl;
         } catch (const std::exception& e) {
             std::cerr << "[WARNING] Failed to load car texture " << filename << ": " << e.what()
@@ -606,18 +589,18 @@ void Game::update_snapshots(const std::vector<CarSnapshot>& snapshots) {
     this->snapshots = snapshots;
 }
 
-void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
+void Game::renderEndGameScreen() {
     Uint8 r, g, b, a;
-    renderer.GetDrawColor(r, g, b, a);
-    int width = renderer.GetOutputWidth();
-    int height = renderer.GetOutputHeight();
+    rendererPtr->GetDrawColor(r, g, b, a);
+    int width = rendererPtr->GetOutputWidth();
+    int height = rendererPtr->GetOutputHeight();
 
     SDL_Rect bgRect = {0, 0, width, height};
-    renderer.SetDrawColor(0, 0, 0, 200);
-    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-    renderer.FillRect(bgRect);
+    rendererPtr->SetDrawColor(0, 0, 0, 200);
+    rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    rendererPtr->FillRect(bgRect);
 
-    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
 
     SDL2pp::Font titleFont(hud.fontPath.empty() ?
                                    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" :
@@ -629,29 +612,29 @@ void Game::renderEndGameScreen(SDL2pp::Renderer& renderer) {
     std::string titleText = (gameState == GameState::WON) ? "GANASTE!" : "GAME OVER";
 
     auto titleSurface = titleFont.RenderText_Solid(titleText, titleColor);
-    SDL2pp::Texture titleTexture(renderer, titleSurface);
+    SDL2pp::Texture titleTexture(*rendererPtr, titleSurface);
 
     int titleX = (width - titleTexture.GetWidth()) / 2;
     int titleY = height / 10;
     SDL_Rect titleRect = {titleX, titleY, titleTexture.GetWidth(), titleTexture.GetHeight()};
-    renderer.Copy(titleTexture, SDL2pp::NullOpt, titleRect);
+    rendererPtr->Copy(titleTexture, SDL2pp::NullOpt, titleRect);
 
     if (!raceFullyFinished) {
-        renderMyOwnTime(renderer);
-        renderPressESC(renderer);
+        renderMyOwnTime();
+        renderPressESC();
         return;
     }
 
     if (raceFullyFinished) {
         if (endScreenPhase == EndScreenPhase::ACCUMULATED_RESULTS && !accumulatedResults.empty()) {
 
-            renderAccumulatedTable(renderer);
-            renderPressESC(renderer);
+            renderAccumulatedTable();
+            renderPressESC();
             return;
         } else {
             endScreenPhase = EndScreenPhase::RACE_RESULTS;
-            renderRaceTable(renderer);
-            renderPressESC(renderer);
+            renderRaceTable();
+            renderPressESC();
             return;
         }
     }
@@ -726,9 +709,9 @@ float Game::getScale(int w, int h) const {
     return std::min(sx, sy);
 }
 
-void Game::renderPressESC(SDL2pp::Renderer& renderer) {
-    int width = renderer.GetOutputWidth();
-    int height = renderer.GetOutputHeight();
+void Game::renderPressESC() {
+    int width = rendererPtr->GetOutputWidth();
+    int height = rendererPtr->GetOutputHeight();
 
     SDL2pp::Font instructFont(
             hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
@@ -750,7 +733,7 @@ void Game::renderPressESC(SDL2pp::Renderer& renderer) {
     }
 
     auto instructSurface = instructFont.RenderText_Solid(instructText, instructColor);
-    SDL2pp::Texture instructTexture(renderer, instructSurface);
+    SDL2pp::Texture instructTexture(*rendererPtr, instructSurface);
 
     int instructX = (width - instructTexture.GetWidth()) / 2;
     int instructY = height - 50;
@@ -758,18 +741,18 @@ void Game::renderPressESC(SDL2pp::Renderer& renderer) {
     SDL_Rect instructRect = {instructX, instructY, instructTexture.GetWidth(),
                              instructTexture.GetHeight()};
 
-    renderer.Copy(instructTexture, SDL2pp::NullOpt, instructRect);
+    rendererPtr->Copy(instructTexture, SDL2pp::NullOpt, instructRect);
 }
 
-void Game::renderMyOwnTime(SDL2pp::Renderer& renderer) {
+void Game::renderMyOwnTime() {
     SDL_Color color = {255, 255, 255, 255};
 
     SDL2pp::Font font(
             hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
             28);
 
-    int width = renderer.GetOutputWidth();
-    int height = renderer.GetOutputHeight();
+    int width = rendererPtr->GetOutputWidth();
+    int height = rendererPtr->GetOutputHeight();
 
     // std::cout << myOwnResults.size()
     //           << " resultados propios para renderizar el tiempo recibido." << std::endl;
@@ -785,16 +768,16 @@ void Game::renderMyOwnTime(SDL2pp::Renderer& renderer) {
                  millis, (int)myOwnResults.position);
     }
     auto surf = font.RenderText_Solid(line, color);
-    SDL2pp::Texture tex(renderer, surf);
+    SDL2pp::Texture tex(*rendererPtr, surf);
 
     int x = (width - tex.GetWidth()) / 2;
     int y = height / 2;
 
     SDL_Rect rect = {x, y, tex.GetWidth(), tex.GetHeight()};
-    renderer.Copy(tex, SDL2pp::NullOpt, rect);
+    rendererPtr->Copy(tex, SDL2pp::NullOpt, rect);
 }
 
-void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
+void Game::renderRaceTable() {
     SDL2pp::Font font(
             hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
             20);
@@ -802,18 +785,18 @@ void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
     SDL_Color headerColor = {255, 255, 0, 255};
     SDL_Color rowColor = {200, 200, 200, 255};
 
-    int width = renderer.GetOutputWidth();
-    int height = renderer.GetOutputHeight();
+    int width = rendererPtr->GetOutputWidth();
+    int height = rendererPtr->GetOutputHeight();
 
     int startY = height / 4;
     int lineHeight = 28;
 
     auto surfHeader = font.RenderText_Solid("RESULTADOS", headerColor);
-    SDL2pp::Texture texHeader(renderer, surfHeader);
+    SDL2pp::Texture texHeader(*rendererPtr, surfHeader);
 
     SDL_Rect headerRect = {(width - texHeader.GetWidth()) / 2, startY, texHeader.GetWidth(),
                            texHeader.GetHeight()};
-    renderer.Copy(texHeader, SDL2pp::NullOpt, headerRect);
+    rendererPtr->Copy(texHeader, SDL2pp::NullOpt, headerRect);
     startY += lineHeight + 15;
 
     std::vector<ClientPlayerResult> finished, dnf;
@@ -837,7 +820,7 @@ void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
                  r.playerName.c_str(), minutes, seconds, millis);
 
         auto surfRow = font.RenderText_Solid(line, rowColor);
-        SDL2pp::Texture texRow(renderer, surfRow);
+        SDL2pp::Texture texRow(*rendererPtr, surfRow);
 
         SDL_Rect rowRect = {(width - texRow.GetWidth()) / 2, startY, texRow.GetWidth(),
                             texRow.GetHeight()};
@@ -847,16 +830,16 @@ void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
 
             SDL_Color highlightColor = {255, 255, 100, 90};
 
-            renderer.SetDrawColor(highlightColor.r, highlightColor.g, highlightColor.b,
-                                  highlightColor.a);
-            renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-            renderer.FillRect(bgRect);
+            rendererPtr->SetDrawColor(highlightColor.r, highlightColor.g, highlightColor.b,
+                                      highlightColor.a);
+            rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+            rendererPtr->FillRect(bgRect);
 
-            renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
-            renderer.SetDrawColor(255, 255, 255, 255);
+            rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
+            rendererPtr->SetDrawColor(255, 255, 255, 255);
         }
 
-        renderer.Copy(texRow, SDL2pp::NullOpt, rowRect);
+        rendererPtr->Copy(texRow, SDL2pp::NullOpt, rowRect);
         startY += lineHeight;
     }
 
@@ -864,10 +847,10 @@ void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
         startY += 20;
 
         auto surfDNF = font.RenderText_Solid("NO COMPLETARON (DNF)", headerColor);
-        SDL2pp::Texture texDNF(renderer, surfDNF);
+        SDL2pp::Texture texDNF(*rendererPtr, surfDNF);
         SDL_Rect dnfHeaderRect = {(width - texDNF.GetWidth()) / 2, startY, texDNF.GetWidth(),
                                   texDNF.GetHeight()};
-        renderer.Copy(texDNF, SDL2pp::NullOpt, dnfHeaderRect);
+        rendererPtr->Copy(texDNF, SDL2pp::NullOpt, dnfHeaderRect);
 
         startY += lineHeight;
 
@@ -877,7 +860,7 @@ void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
             snprintf(line, sizeof(line), "-    %s    DNF", r.playerName.c_str());
 
             auto surfRow = font.RenderText_Solid(line, rowColor);
-            SDL2pp::Texture texRow(renderer, surfRow);
+            SDL2pp::Texture texRow(*rendererPtr, surfRow);
 
             SDL_Rect rowRect = {(width - texRow.GetWidth()) / 2, startY, texRow.GetWidth(),
                                 texRow.GetHeight()};
@@ -887,23 +870,22 @@ void Game::renderRaceTable(SDL2pp::Renderer& renderer) {
 
                 SDL_Color highlightColor = {255, 255, 100, 90};
 
-                renderer.SetDrawColor(highlightColor.r, highlightColor.g, highlightColor.b,
-                                      highlightColor.a);
-                renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-                renderer.FillRect(bgRect);
+                rendererPtr->SetDrawColor(highlightColor.r, highlightColor.g, highlightColor.b,
+                                          highlightColor.a);
+                rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+                rendererPtr->FillRect(bgRect);
 
-                renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
-                renderer.SetDrawColor(255, 255, 255, 255);
+                rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
+                rendererPtr->SetDrawColor(255, 255, 255, 255);
             }
 
-            renderer.Copy(texRow, SDL2pp::NullOpt, rowRect);
-
+            rendererPtr->Copy(texRow, SDL2pp::NullOpt, rowRect);
             startY += lineHeight;
         }
     }
 }
 
-void Game::renderAccumulatedTable(SDL2pp::Renderer& renderer) {
+void Game::renderAccumulatedTable() {
     SDL2pp::Font font(
             hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
             20);
@@ -911,18 +893,18 @@ void Game::renderAccumulatedTable(SDL2pp::Renderer& renderer) {
     SDL_Color headerColor = {0, 200, 255, 255};
     SDL_Color rowColor = {200, 200, 200, 255};
 
-    int width = renderer.GetOutputWidth();
-    int height = renderer.GetOutputHeight();
+    int width = rendererPtr->GetOutputWidth();
+    int height = rendererPtr->GetOutputHeight();
 
     int startY = height / 4;
     int lineHeight = 28;
 
     auto surfHeader = font.RenderText_Solid("ACUMULADO DEL CIRCUITO", headerColor);
-    SDL2pp::Texture texHeader(renderer, surfHeader);
+    SDL2pp::Texture texHeader(*rendererPtr, surfHeader);
 
     SDL_Rect headerRect = {(width - texHeader.GetWidth()) / 2, startY, texHeader.GetWidth(),
                            texHeader.GetHeight()};
-    renderer.Copy(texHeader, SDL2pp::NullOpt, headerRect);
+    rendererPtr->Copy(texHeader, SDL2pp::NullOpt, headerRect);
 
     startY += lineHeight + 20;
 
@@ -938,7 +920,7 @@ void Game::renderAccumulatedTable(SDL2pp::Renderer& renderer) {
         }
 
         auto surfRow = font.RenderText_Solid(line, rowColor);
-        SDL2pp::Texture texRow(renderer, surfRow);
+        SDL2pp::Texture texRow(*rendererPtr, surfRow);
 
         SDL_Rect rowRect = {(width - texRow.GetWidth()) / 2, startY, texRow.GetWidth(),
                             texRow.GetHeight()};
@@ -948,17 +930,16 @@ void Game::renderAccumulatedTable(SDL2pp::Renderer& renderer) {
 
             SDL_Color highlightColor = {255, 255, 100, 90};
 
-            renderer.SetDrawColor(highlightColor.r, highlightColor.g, highlightColor.b,
-                                  highlightColor.a);
-            renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-            renderer.FillRect(bgRect);
+            rendererPtr->SetDrawColor(highlightColor.r, highlightColor.g, highlightColor.b,
+                                      highlightColor.a);
+            rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+            rendererPtr->FillRect(bgRect);
 
-            renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
-            renderer.SetDrawColor(255, 255, 255, 255);
+            rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
+            rendererPtr->SetDrawColor(255, 255, 255, 255);
         }
 
-        renderer.Copy(texRow, SDL2pp::NullOpt, rowRect);
-
+        rendererPtr->Copy(texRow, SDL2pp::NullOpt, rowRect);
         startY += lineHeight;
     }
 }
@@ -967,8 +948,9 @@ void Game::setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res) {
     accumulatedResults = res;
 }
 
-void Game::resetForNextRace() {
+void Game::resetForNextRace(uint8_t nextCityId) {
     gameState = GameState::PLAYING;
+    currentCityId = nextCityId;
     hasRaceResults = false;
     raceFullyFinished = false;
     endScreenPhase = EndScreenPhase::RACE_RESULTS;
@@ -984,5 +966,38 @@ void Game::resetForNextRace() {
     lastSpeedUpdateTime = 0;
     lastPlayerX = 0.0f;
     lastPlayerY = 0.0f;
+    initMinimapAndCheckpoints();
     std::cout << "[GAME] Preparado para la siguiente carrera." << std::endl;
+}
+
+void Game::initMinimapAndCheckpoints() {
+
+    std::map<uint8_t, std::string> city_map_paths = {
+            {0, "assets/cities/Liberty_City.png"},
+            {1, "assets/cities/San_Andreas.png"},
+            {2, "assets/cities/Vice_City.png"},
+    };
+    auto it2 = std::find_if(city_map_paths.begin(), city_map_paths.end(),
+                            [this](const auto& path) { return currentCityId == path.first; });
+
+    if (it2 != city_map_paths.end()) {
+        minimap.loadMapImage(*rendererPtr, it2->second);
+        minimap.setWorldScale(62.0f / 8.9f, 24.0f / 3.086f);
+        minimap.setZoomPixels(900.0f, 900.0f);
+    }
+
+    std::string trackName = "track_four_checkpoints_vice_city";
+    trackCheckpoints = TrackLoader::loadTrackCheckpoints(trackName);
+
+    if (trackCheckpoints.empty()) {
+        std::cerr << "ERROR: No checkpoints loaded! Using fallback..." << std::endl;
+        trackCheckpoints = {
+                {0, 13.8f, 192.6f, 18.2f, 9.1f, false},
+                {1, 231.7f, 192.9f, 17.5f, 10.9f, false},
+                {2, 240.5f, 107.3f, 18.9f, 11.5f, false},
+                {3, 439.8f, 107.0f, 20.2f, 13.3f, true},
+        };
+    }
+    totalCheckpoints = trackCheckpoints.size();
+    minimap.setCheckpoints(trackCheckpoints);
 }

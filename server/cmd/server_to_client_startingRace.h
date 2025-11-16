@@ -9,8 +9,11 @@
 #include "cmd_base_server.h"
 
 class ServerToClientStartingRace: public ServerToClientCmd_Server {
+private:
+    uint8_t cityId;
+
 public:
-    ServerToClientStartingRace();
+    explicit ServerToClientStartingRace(uint8_t cityId);
 
     std::vector<uint8_t> to_bytes() const override;
 

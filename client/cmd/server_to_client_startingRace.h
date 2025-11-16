@@ -10,8 +10,11 @@
 #include "cmd_base_client.h"
 
 class ServerToClientStartingRace: public ServerToClientCmd_Client {
+private:
+    uint8_t cityId;
+
 public:
-    ServerToClientStartingRace();
+    explicit ServerToClientStartingRace(uint8_t cityId);
 
     virtual void execute(ClientContext& ctx) override;
 

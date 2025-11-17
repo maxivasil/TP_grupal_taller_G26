@@ -121,19 +121,19 @@ if(TALLER_CLIENT)
     find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
-    add_executable(taller_client)
+    add_executable(nfs2d_client)
 
     # Make them depend on taller_common lib
-    add_dependencies(taller_client taller_common SDL2pp::SDL2pp)
+    add_dependencies(nfs2d_client taller_common SDL2pp::SDL2pp)
 
     # Add source files and enable warnings
     # HEY!! TODO XXX: add more subfolders here
     add_subdirectory(client)
 
-    set_project_warnings(taller_client ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
+    set_project_warnings(nfs2d_client ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # add libSDL2pp's headers
-    target_include_directories(taller_client
+    target_include_directories(nfs2d_client
         PRIVATE
             ${SDL2_SOURCE_DIR}/include
             ${SDL2_mixer_SOURCE_DIR}/include
@@ -142,7 +142,7 @@ if(TALLER_CLIENT)
     )
 
     # Link the taller_common lib target
-    target_link_libraries(taller_client 
+    target_link_libraries(nfs2d_client 
         PRIVATE
             taller_common 
             client_cmd
@@ -170,19 +170,19 @@ if(TALLER_SERVER)
     # sudo apt install libyaml-cpp-dev
     find_package(yaml-cpp REQUIRED)
 
-    add_executable(taller_server)
+    add_executable(nfs2d_server)
 
     # Make them depend on taller_common lib
-    add_dependencies(taller_server taller_common)
+    add_dependencies(nfs2d_server taller_common)
 
     # Add source files and enable warnings
     # HEY!! TODO XXX: add more subfolders here
     add_subdirectory(server)
 
-    set_project_warnings(taller_server ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
+    set_project_warnings(nfs2d_server ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # Link the taller_common lib target
-    target_link_libraries(taller_server 
+    target_link_libraries(nfs2d_server 
         PRIVATE
             taller_common
             server_cmd
@@ -200,19 +200,19 @@ if(TALLER_EDITOR)
     find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
     
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
-    add_executable(taller_editor)
+    add_executable(nfs2d_editor)
 
     # Make them depend on taller_common lib
-    add_dependencies(taller_editor taller_common)
+    add_dependencies(nfs2d_editor taller_common)
 
     # Add source files and enable warnings
     # HEY!! TODO XXX: add more subfolders here
     add_subdirectory(editor)
 
-    set_project_warnings(taller_editor ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
+    set_project_warnings(nfs2d_editor ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # Link the taller_common lib target
-    target_link_libraries(taller_editor taller_common Qt${QT_VERSION_MAJOR}::Widgets)
+    target_link_libraries(nfs2d_editor taller_common Qt${QT_VERSION_MAJOR}::Widgets)
 endif()
 
 

@@ -2,7 +2,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-target_sources(taller_editor
+target_sources(nfs2d_editor
     PRIVATE
     # .cpp files
     main.cpp

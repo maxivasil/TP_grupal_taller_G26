@@ -5,6 +5,7 @@
 #include <string>
 
 #include "mainwindow.h"
+#include "trackwindow.h"
 
 class ClientSession;
 
@@ -18,7 +19,8 @@ class InitialWindow: public QMainWindow {
     Q_OBJECT
 
 public:
-    InitialWindow(ClientSession& client_session, MainWindow& mainwindow, QWidget* parent = nullptr);
+    InitialWindow(ClientSession& client_session, MainWindow& mainwindow, TrackWindow& trackwindow,
+                  QWidget* parent = nullptr);
     ~InitialWindow();
     void changeScreen(const std::string& lobby);
     void showError();
@@ -26,7 +28,9 @@ public:
 private:
     ClientSession& client_session;
     MainWindow& mainwindow;
+    TrackWindow& trackwindow;
     Ui::InitialWindow* ui;
+    bool created;
     void connectEvents();
     void joinLobby();
     void createLobby();

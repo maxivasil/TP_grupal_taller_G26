@@ -1,10 +1,11 @@
+#include <QApplication>
 #include <exception>
 #include <iostream>
-#include "UI/mainwindow.h"
-#include "UI/initialwindow.h"
-#include <QApplication>
 
 #include "../common/queue.h"
+#include "UI/initialwindow.h"
+#include "UI/mainwindow.h"
+#include "UI/trackwindow.h"
 
 #include "client_game.h"
 #include "session.h"
@@ -23,7 +24,8 @@ int main(int argc, const char* argv[]) {
         session.start();
         QApplication menu_display(argc, nullptr);
         MainWindow selector_lobby(session);
-        InitialWindow lobby_window(session, selector_lobby);
+        TrackWindow track_window(session, selector_lobby);
+        InitialWindow lobby_window(session, selector_lobby, track_window);
         lobby_window.show();
         menu_display.exec();
         Game game(session);

@@ -1,18 +1,24 @@
 // Enhanced compass-style HUD with animation, font integration, and camera-relative needle
 #include "hints.h"
-#include <cmath>
+
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 
-Hints::Hints(int windowWidth, int windowHeight)
-    : windowWidth(windowWidth), windowHeight(windowHeight),
-      compassX(windowWidth / 2), compassY(70), compassRadius(45),
-      currentHint({0.0f, 0.0f}), hasHint(false),
-      playerHeading(0.0f), animationStartTime(SDL_GetTicks()),
-      isAnimating(true), pulsePhase(0.0f) {}
+Hints::Hints(int windowWidth, int windowHeight):
+        windowWidth(windowWidth),
+        windowHeight(windowHeight),
+        compassX(windowWidth / 2),
+        compassY(70),
+        compassRadius(45),
+        currentHint({0.0f, 0.0f}),
+        hasHint(false),
+        playerHeading(0.0f),
+        animationStartTime(SDL_GetTicks()),
+        isAnimating(true),
+        pulsePhase(0.0f) {}
 
-void Hints::updateHint(float playerX, float playerY,
-                       float checkpointX, float checkpointY,
+void Hints::updateHint(float playerX, float playerY, float checkpointX, float checkpointY,
                        float playerHeadingAngle) {
     // If checkpoint undefined, disable
     if (checkpointX == 0.0f && checkpointY == 0.0f) {
@@ -30,7 +36,7 @@ void Hints::updateHint(float playerX, float playerY,
     playerHeading = playerHeadingAngle;
 
     hasHint = (distance > 0.5f);
-    
+
     // Update pulse animation
     Uint32 elapsed = SDL_GetTicks() - animationStartTime;
     pulsePhase = fmod(elapsed / 1000.0f * 2.0f, 2.0f);  // 2-second cycle
@@ -46,9 +52,8 @@ float Hints::getPulseOpacity() const {
     }
 }
 
-void Hints::drawThickLine(SDL2pp::Renderer& renderer,
-                          int x1, int y1, int x2, int y2,
-                          int thickness, SDL_Color color) {
+void Hints::drawThickLine(SDL2pp::Renderer& renderer, int x1, int y1, int x2, int y2, int thickness,
+                          SDL_Color color) {
     renderer.SetDrawColor(color);
 
     float dx = float(x2 - x1);
@@ -59,45 +64,43 @@ void Hints::drawThickLine(SDL2pp::Renderer& renderer,
         return;
     }
 
-    float px = -dy / len; // perpendicular
+    float px = -dy / len;  // perpendicular
     float py = dx / len;
 
-    for (int i = -thickness/2; i <= thickness/2; ++i) {
+    for (int i = -thickness / 2; i <= thickness / 2; ++i) {
         float ox = px * i;
         float oy = py * i;
-        renderer.DrawLine(
-            static_cast<int>(x1 + ox), static_cast<int>(y1 + oy),
-            static_cast<int>(x2 + ox), static_cast<int>(y2 + oy)
-        );
+        renderer.DrawLine(static_cast<int>(x1 + ox), static_cast<int>(y1 + oy),
+                          static_cast<int>(x2 + ox), static_cast<int>(y2 + oy));
     }
 }
 
-void Hints::drawFilledCircle(SDL2pp::Renderer& renderer,
-                             int cx, int cy, int radius, SDL_Color color) {
+void Hints::drawFilledCircle(SDL2pp::Renderer& renderer, int cx, int cy, int radius,
+                             SDL_Color color) {
     renderer.SetDrawColor(color);
     for (int dx = -radius; dx <= radius; ++dx) {
-        int h = static_cast<int>(std::sqrt(std::max(0, radius*radius - dx*dx)));
+        int h = static_cast<int>(std::sqrt(std::max(0, radius * radius - dx * dx)));
         renderer.DrawLine(cx + dx, cy - h, cx + dx, cy + h);
     }
 }
 
 void Hints::drawCompass(SDL2pp::Renderer& renderer) {
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-    
+
     float pulseOp = getPulseOpacity();
     int bgOpacity = static_cast<int>(160 * pulseOp);
     int ringOpacity = static_cast<int>(220 * pulseOp);
     int tickOpacity = static_cast<int>(200 * pulseOp);
-    
-    drawFilledCircle(renderer, compassX, compassY, compassRadius, 
-                    {10, 10, 10, static_cast<Uint8>(bgOpacity)});
+
+    drawFilledCircle(renderer, compassX, compassY, compassRadius,
+                     {10, 10, 10, static_cast<Uint8>(bgOpacity)});
 
     renderer.SetDrawColor({100, 150, 255, static_cast<Uint8>(ringOpacity)});
     for (int r = compassRadius - 2; r <= compassRadius; ++r) {
         int steps = 64;
         for (int i = 0; i < steps; ++i) {
             float a1 = (float(i) / steps) * 2.0f * M_PI;
-            float a2 = (float(i+1) / steps) * 2.0f * M_PI;
+            float a2 = (float(i + 1) / steps) * 2.0f * M_PI;
             int x1 = compassX + static_cast<int>(r * std::cos(a1));
             int y1 = compassY + static_cast<int>(r * std::sin(a1));
             int x2 = compassX + static_cast<int>(r * std::cos(a2));
@@ -108,56 +111,60 @@ void Hints::drawCompass(SDL2pp::Renderer& renderer) {
 
     renderer.SetDrawColor({200, 200, 200, static_cast<Uint8>(tickOpacity)});
     int tickLen = 8;
-    renderer.DrawLine(compassX, compassY - compassRadius, compassX, compassY - compassRadius - tickLen);  // N
-    renderer.DrawLine(compassX + compassRadius, compassY, compassX + compassRadius + tickLen, compassY);  // E
-    renderer.DrawLine(compassX, compassY + compassRadius, compassX, compassY + compassRadius + tickLen);  // S
-    renderer.DrawLine(compassX - compassRadius, compassY, compassX - compassRadius - tickLen, compassY);  // W
-    
+    renderer.DrawLine(compassX, compassY - compassRadius, compassX,
+                      compassY - compassRadius - tickLen);  // N
+    renderer.DrawLine(compassX + compassRadius, compassY, compassX + compassRadius + tickLen,
+                      compassY);  // E
+    renderer.DrawLine(compassX, compassY + compassRadius, compassX,
+                      compassY + compassRadius + tickLen);  // S
+    renderer.DrawLine(compassX - compassRadius, compassY, compassX - compassRadius - tickLen,
+                      compassY);  // W
+
     if (hudFont) {
         try {
             SDL_Color labelColor = {220, 220, 220, static_cast<Uint8>(tickOpacity)};
-            
+
             auto nSurf = hudFont->RenderText_Solid("N", labelColor);
             SDL2pp::Texture nTex(renderer, nSurf);
             int nx = compassX - nTex.GetWidth() / 2;
             int ny = compassY - compassRadius - tickLen - 12;
             SDL_Rect nDst = {nx, ny, nTex.GetWidth(), nTex.GetHeight()};
             renderer.Copy(nTex, SDL2pp::NullOpt, nDst);
-            
+
             auto eSurf = hudFont->RenderText_Solid("E", labelColor);
             SDL2pp::Texture eTex(renderer, eSurf);
             int ex = compassX + compassRadius + tickLen + 4;
             int ey = compassY - eTex.GetHeight() / 2;
             SDL_Rect eDst = {ex, ey, eTex.GetWidth(), eTex.GetHeight()};
             renderer.Copy(eTex, SDL2pp::NullOpt, eDst);
-            
+
             auto sSurf = hudFont->RenderText_Solid("S", labelColor);
             SDL2pp::Texture sTex(renderer, sSurf);
             int sx = compassX - sTex.GetWidth() / 2;
             int sy = compassY + compassRadius + tickLen + 2;
             SDL_Rect sDst = {sx, sy, sTex.GetWidth(), sTex.GetHeight()};
             renderer.Copy(sTex, SDL2pp::NullOpt, sDst);
-            
+
             auto wSurf = hudFont->RenderText_Solid("W", labelColor);
             SDL2pp::Texture wTex(renderer, wSurf);
             int wx = compassX - compassRadius - tickLen - wTex.GetWidth() - 4;
             int wy = compassY - wTex.GetHeight() / 2;
             SDL_Rect wDst = {wx, wy, wTex.GetWidth(), wTex.GetHeight()};
             renderer.Copy(wTex, SDL2pp::NullOpt, wDst);
-        } catch (const std::exception& e) {
-        }
+        } catch (const std::exception& e) {}
     }
 }
 
 void Hints::render(SDL2pp::Renderer& renderer) {
-    if (!hasHint) return;
+    if (!hasHint)
+        return;
     Uint8 r, g, b, a;
     renderer.GetDrawColor(r, g, b, a);
 
     drawCompass(renderer);
 
     float arrowAngle;
-    
+
     if (playerHeading != 0.0f) {
         arrowAngle = currentHint.angle - playerHeading - (M_PI / 2.0f);
     } else {
@@ -185,16 +192,17 @@ void Hints::render(SDL2pp::Renderer& renderer) {
     renderer.DrawLine(endX, endY, hx2, hy2);
     renderer.DrawLine(hx1, hy1, hx2, hy2);
 
-    drawFilledCircle(renderer, compassX, compassY, 4, {255, 255, 255, static_cast<Uint8>(needleOpacity)});
+    drawFilledCircle(renderer, compassX, compassY, 4,
+                     {255, 255, 255, static_cast<Uint8>(needleOpacity)});
 
     try {
         SDL2pp::Font* fontToUse = hudFont;
         SDL2pp::Font fallbackFont("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 11);
-        
+
         if (!fontToUse) {
             fontToUse = &fallbackFont;
         }
-        
+
         char buf[32];
         snprintf(buf, sizeof(buf), "%.1f m", currentHint.distance);
         SDL_Color textColor = {220, 220, 220, static_cast<Uint8>(needleOpacity)};
@@ -204,8 +212,7 @@ void Hints::render(SDL2pp::Renderer& renderer) {
         int ty = compassY + compassRadius + 12;
         SDL_Rect dst = {tx, ty, tex.GetWidth(), tex.GetHeight()};
         renderer.Copy(tex, SDL2pp::NullOpt, dst);
-    } catch (const std::exception& e) {
-    }
+    } catch (const std::exception& e) {}
 
     renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
     renderer.SetDrawColor(r, g, b, a);

@@ -121,8 +121,7 @@ void InitialWindow::changeScreen(const std::string& lobby) {
 
 void InitialWindow::showError() {
     QLabel* labelOut = findChild<QLabel*>("intro_text");
-    labelOut->setText("Error al intentar unirse a la partida \n Compruebe que el código sea "
-                      "correcto o no esté en marcha");
+    labelOut->setText("Error al intentar unirse a la partida Compruebe que el código sea correcto");
     created = false;
 }
 

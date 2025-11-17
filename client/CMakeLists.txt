@@ -13,8 +13,11 @@ target_sources(nfs2d_client
     client_game.cpp
     UI/resources.qrc
     UI/mainwindow.cpp
+    UI/mainwindow.ui
     UI/initialwindow.cpp
+    UI/initialwindow.ui
     UI/trackwindow.cpp
+    UI/trackwindow.ui
     PUBLIC
     # .h files
     parser.h
@@ -27,7 +30,6 @@ target_sources(nfs2d_client
     UI/trackwindow.h
     )
 
-
 target_link_libraries(nfs2d_client 
     PRIVATE 
         client_cmd
@@ -36,7 +38,7 @@ target_link_libraries(nfs2d_client
         yaml-cpp
 )
 
-#Link to Qt Widgets if it was found by the top - level CMake(guard against missing Qt)
+# Link to Qt Widgets if it was found by the top-level CMake (guard against missing Qt)
 if(DEFINED QT_VERSION_MAJOR AND TARGET Qt${QT_VERSION_MAJOR}::Widgets)
     target_link_libraries(nfs2d_client PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 endif()

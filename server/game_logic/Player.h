@@ -65,6 +65,12 @@ public:
      * @return car_type (0-6)
      */
     uint8_t getCarType() const;
+
+    /**
+     * @brief Verifica si el auto tiene vida infinita activada.
+     * @return true si tiene vida infinita, false en caso contrario
+     */
+    bool hasInfiniteHealth() const;
 };
 
 #endif

@@ -220,6 +220,8 @@ b2Rot Car::getRotation([[maybe_unused]] const b2Vec2& contactNormal) const { ret
 
 void Car::setInfiniteHealth() { hasInfiniteHealth = true; }
 
+bool Car::hasInfiniteHealthActive() const { return hasInfiniteHealth; }
+
 void Car::setLevel(bool onBridge) {
     isOnBridge = onBridge;
 

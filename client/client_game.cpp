@@ -376,6 +376,7 @@ bool Game::update(ServerToClientSnapshot cmd_snapshot) {
         }
 
         rc.onBridge = car.onBridge;
+        rc.hasInfiniteHealth = car.hasInfiniteHealth;  // Asignar el estado de vida infinita
         carsToRender.push_back(rc);
     }
 
@@ -540,6 +541,33 @@ void Game::render() {
         } else {
             collisionFlashStartTime = 0;  // Stop flashing
         }
+    }
+
+    // Dibujar indicador de vida infinita en los bordes de la pantalla
+    auto it_local = std::find_if(snapshots.begin(), snapshots.end(),
+                                 [&](const CarSnapshot& car) { return car.id == client_id; });
+    if (it_local != snapshots.end() && it_local->hasInfiniteHealth) {
+        int windowWidth = rendererPtr->GetOutputWidth();
+        int windowHeight = rendererPtr->GetOutputHeight();
+        const int borderWidth = 10;  // Grosor del borde indicador (engrosado)
+        
+        rendererPtr->SetDrawColor(0, 255, 100, 255);  // Verde brillante
+        
+        // Borde superior
+        SDL_Rect topBorder = {0, 0, windowWidth, borderWidth};
+        rendererPtr->FillRect(topBorder);
+        
+        // Borde inferior
+        SDL_Rect bottomBorder = {0, windowHeight - borderWidth, windowWidth, borderWidth};
+        rendererPtr->FillRect(bottomBorder);
+        
+        // Borde izquierdo
+        SDL_Rect leftBorder = {0, 0, borderWidth, windowHeight};
+        rendererPtr->FillRect(leftBorder);
+        
+        // Borde derecho
+        SDL_Rect rightBorder = {windowWidth - borderWidth, 0, borderWidth, windowHeight};
+        rendererPtr->FillRect(rightBorder);
     }
 
     rendererPtr->Present();

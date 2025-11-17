@@ -77,6 +77,8 @@ public:
 
     bool getIsOnBridge() const;
 
+    bool hasInfiniteHealthActive() const;
+
     /**
      * @brief Aplica las mejoras acumuladas del auto modificando sus estadísticas.
      * @param newUpgrades Las nuevas mejoras a aplicar

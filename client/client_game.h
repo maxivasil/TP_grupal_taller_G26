@@ -30,6 +30,7 @@ struct RenderCar {
     float angle;
     bool onBridge;
     uint8_t car_id;
+    bool hasInfiniteHealth = false;  // Indica si tiene vida infinita activada
 };
 
 enum class GameState { PLAYING, WON, LOST };

@@ -12,7 +12,7 @@
 #include <QTextStream>
 #include <QVBoxLayout>
 
-#define PATH_MAPS "assets/cities/"
+#include "../common/constants.h"
 
 MainWindow::MainWindow(QWidget* parent):
         QMainWindow(parent), central(new QWidget(this)), mapView(new MapView(this)) {
@@ -87,12 +87,21 @@ MainWindow::MainWindow(QWidget* parent):
     setCentralWidget(central);
 
     // Connections
-    connect(map1, &QPushButton::clicked, this,
-            [this]() { openMap(PATH_MAPS "Liberty_City.png", "Liberty City"); });
-    connect(map2, &QPushButton::clicked, this,
-            [this]() { openMap(PATH_MAPS "San_Andreas.png", "San Andreas"); });
-    connect(map3, &QPushButton::clicked, this,
-            [this]() { openMap(PATH_MAPS "Vice_City.png", "Vice City"); });
+    connect(map1, &QPushButton::clicked, this, [this]() {
+        openMap(ABS_DIR ASSETS_DIR "cities/"
+                                   "Liberty_City.png",
+                "Liberty City");
+    });
+    connect(map2, &QPushButton::clicked, this, [this]() {
+        openMap(ABS_DIR ASSETS_DIR "cities/"
+                                   "San_Andreas.png",
+                "San Andreas");
+    });
+    connect(map3, &QPushButton::clicked, this, [this]() {
+        openMap(ABS_DIR ASSETS_DIR "cities/"
+                                   "Vice_City.png",
+                "Vice City");
+    });
 
     connect(zoomIn, &QPushButton::clicked, mapView, &MapView::zoomIn);
     connect(zoomOut, &QPushButton::clicked, mapView, &MapView::zoomOut);

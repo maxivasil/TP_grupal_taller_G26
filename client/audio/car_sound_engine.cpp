@@ -4,9 +4,10 @@
 #include <cstring>
 #include <filesystem>
 #include <iostream>
-#include "../../common/constants.h"
 
 #include <SDL2/SDL.h>
+
+#include "../../common/constants.h"
 
 #define SOUND_DIR "sounds/"
 
@@ -560,7 +561,7 @@ void CarSoundEngine::playEngineNoise() {
         return;
     }
 
-    Mix_Music* bgm = Mix_LoadMUS("assets/sounds/music_theme.mp3");
+    Mix_Music* bgm = Mix_LoadMUS(ABS_DIR ASSETS_DIR "sounds/music_theme.mp3");
     if (!bgm) {
         std::cerr << "[Sound] No se pudo cargar música: " << Mix_GetError() << std::endl;
         return;

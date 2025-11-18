@@ -1,0 +1,217 @@
+#include "Race.h"
+
+#include <algorithm>
+#include <chrono>
+#include <iostream>
+#include <memory>
+#include <utility>
+#include <vector>
+
+#define VELOCITY_ITERATIONS 4
+
+void Race::initCheckpoints(b2WorldId world) {
+    for (auto& ckpt: track.getCheckpoints()) {
+        checkpointManager.createCheckpoint(world, {ckpt.x, ckpt.y}, ckpt.width, ckpt.height);
+    }
+}
+
+void Race::initStaticObjects(b2WorldId world) {
+    for (auto& obj: city.getStaticObjects()) {
+        StaticObjectParam params = {
+                .length = obj.height, .width = obj.width, .mass = 10000.0f, .onBridge = obj.isUp};
+        staticObjects.emplace_back(world, b2Vec2{obj.x, obj.y}, params);
+    }
+}
+
+void Race::initBridgeSensors(b2WorldId world) {
+    for (auto bridgeSensor: city.getBridgeSensors()) {
+        bridgeSensorManager.createBridgeSensor(world, b2Vec2{bridgeSensor.x, bridgeSensor.y},
+                                               bridgeSensor.width, bridgeSensor.height);
+    }
+}
+
+void Race::initCars(b2WorldId world) {
+    const auto& checkpoints = track.getCheckpoints();
+    if (!checkpoints.empty()) {
+        const auto& startCheckpoint = checkpoints.front();
+
+        b2Vec2 basePos{startCheckpoint.x, startCheckpoint.y};
+
+        InitialDirection dir = track.getInitialDirection();
+        b2Vec2 direction = {dir.x, dir.y};
+
+        for (size_t i = 0; i < players.size(); ++i) {
+            Player* p = players[i].get();
+            float carLength = p->getCarStats().length;
+            float offset = i * (carLength + 1.5f);
+
+            b2Vec2 pos = basePos - offset * direction;
+
+            if (i % 2 == 1) {
+                pos.y += startCheckpoint.height / 4.0f;
+            } else {
+                pos.y -= startCheckpoint.height / 4.0f;
+            }
+
+            p->initCar(world, pos, b2MakeRot(0));
+        }
+    }
+}
+
+Race::Race(CityName cityName, std::string& trackFile,
+           std::vector<std::unique_ptr<Player>>& players):
+        city(cityName),
+        track(trackFile),
+        physics(checkpointManager),
+        players(players),
+        finished(false) {
+    b2WorldId world = physics.getWorld();
+    initCheckpoints(world);
+    initStaticObjects(world);
+    initBridgeSensors(world);
+    initCars(world);
+}
+
+void Race::start() {
+    startTime = std::chrono::steady_clock::now();
+    finished = false;
+}
+
+void Race::checkFinishConditions() {
+    for (const auto& player: players) {
+        if (checkpointManager.hasCarFinished(player->getCar()) &&
+            !playerFinishTimes.count(player->getId())) {
+
+            auto now = std::chrono::steady_clock::now();
+            float elapsed = std::chrono::duration<float>(now - startTime).count();
+            playerFinishTimes[player->getId()] = elapsed;
+
+            std::cout << "[RACE] Player " << player->getId() << " (" << player->getName()
+                      << ") finished in " << elapsed << "s" << std::endl;
+        }
+        if (player->getCurrentHealth() <= 0.0f && !playerFinishTimes.count(player->getId())) {
+            playerFinishTimes[player->getId()] = -1.0f;
+
+            std::cout << "[RACE] Player " << player->getId() << " (" << player->getName()
+                      << ") destroyed their car" << std::endl;
+        }
+    }
+
+    std::cout << "[RACE] Finish check: " << playerFinishTimes.size() << "/" << players.size()
+              << " players finished" << std::endl;
+
+    if (playerFinishTimes.size() == players.size() ||
+        std::chrono::duration<float>(std::chrono::steady_clock::now() - startTime).count() >=
+                MAX_RACE_TIME) {
+        finished = true;
+        std::cout << "[RACE] RACE FINISHED! Reason: "
+                  << (playerFinishTimes.size() == players.size() ? "All players done" :
+                                                                   "Time limit")
+                  << std::endl;
+    }
+}
+
+void Race::updatePhysics(float dt) {
+    physics.step(dt, VELOCITY_ITERATIONS);
+    checkFinishConditions();
+}
+
+bool Race::isFinished() const { return finished; }
+
+float Race::getCurrentElapsedTime() const {
+    auto now = std::chrono::steady_clock::now();
+    return std::chrono::duration<float>(now - startTime).count();
+}
+
+void Race::turnPlayer(int playerId, Direction dir) {
+    auto it = std::find_if(
+            players.begin(), players.end(),
+            [playerId](const std::unique_ptr<Player>& p) { return p->getId() == playerId; });
+
+    if (it != players.end()) {
+        (*it)->turn(dir);
+    }
+}
+
+void Race::acceleratePlayer(int playerId) {
+    auto it = std::find_if(
+            players.begin(), players.end(),
+            [playerId](const std::unique_ptr<Player>& p) { return p->getId() == playerId; });
+
+    if (it != players.end()) {
+        (*it)->accelerate();
+    }
+}
+
+void Race::brakePlayer(int playerId) {
+    auto it = std::find_if(
+            players.begin(), players.end(),
+            [playerId](const std::unique_ptr<Player>& p) { return p->getId() == playerId; });
+
+    if (it != players.end()) {
+        (*it)->brake();
+    }
+}
+
+std::vector<CarSnapshot> Race::getSnapshot() const {
+    std::vector<CarSnapshot> snapshot;
+
+    for (const auto& player: players) {
+        b2Vec2 pos = player->getPosition();
+        b2Rot rot = player->getRotation();
+        float angle = b2Rot_GetAngle(rot) * 180.0f / B2_PI;
+        float speed = player->getSpeed();  // Get actual speed from player
+        CarSnapshot cs{(uint8_t)player->getId(), pos.x, pos.y, false,
+                       player->getCurrentHealth(), speed, angle,
+                       player->isOnBridge(), player->getCarType()};
+        cs.hasInfiniteHealth = player->hasInfiniteHealth();
+        snapshot.push_back(cs);
+    }
+
+    return snapshot;
+}
+
+
+const std::unordered_map<int, float>& Race::getFinishTimes() const { return playerFinishTimes; }
+
+const std::vector<std::unique_ptr<Player>>& Race::getPlayers() const { return players; }
+
+Race::~Race() {}
+
+// Métodos para cheats
+void Race::activateInfiniteHealthCheat(int playerId) {
+    auto it = std::find_if(
+            players.begin(), players.end(),
+            [playerId](const std::unique_ptr<Player>& p) { return p->getId() == playerId; });
+
+    if (it != players.end()) {
+        (*it)->getCar()->setInfiniteHealth();
+        std::cout << "CHEAT: Vida infinita activada para cliente: " << playerId << std::endl;
+    }
+}
+
+void Race::forceWinCheat(int playerId) {
+    auto it = std::find_if(
+            players.begin(), players.end(),
+            [playerId](const std::unique_ptr<Player>& p) { return p->getId() == playerId; });
+
+    if (it != players.end()) {
+        // Marcar como finalizador inmediatamente
+        auto now = std::chrono::steady_clock::now();
+        auto raceTime = std::chrono::duration_cast<std::chrono::seconds>(now - startTime).count();
+        playerFinishTimes[playerId] = static_cast<float>(raceTime);
+        std::cout << "CHEAT: Cliente " << playerId << " ganó en " << raceTime << " segundos"
+                  << std::endl;
+    }
+}
+
+void Race::forceLoseCheat(int playerId) {
+    auto it = std::find_if(
+            players.begin(), players.end(),
+            [playerId](const std::unique_ptr<Player>& p) { return p->getId() == playerId; });
+
+    if (it != players.end()) {
+        (*it)->getCar()->setDestroyed();
+        std::cout << "CHEAT: Cliente " << playerId << " perdió automáticamente" << std::endl;
+    }
+}

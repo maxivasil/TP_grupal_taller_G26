@@ -1,0 +1,53 @@
+initial_direction:
+  x: 1.000
+  y: 0.000
+
+checkpoints:
+  - x: 49.8
+    y: 564.6
+    width: 3.9
+    height: 6.3
+  - x: 255.9
+    y: 564.6
+    width: 4.2
+    height: 5.9
+  - x: 352.9
+    y: 537.6
+    width: 4.6
+    height: 3.5
+  - x: 328.1
+    y: 505.0
+    width: 4.0
+    height: 4.6
+  - x: 289.0
+    y: 541.2
+    width: 5.0
+    height: 4.6
+  - x: 604.8
+    y: 547.6
+    width: 6.7
+    height: 5.2
+  - x: 604.9
+    y: 314.6
+    width: 8.1
+    height: 3.6
+  - x: 604.8
+    y: 233.4
+    width: 7.0
+    height: 7.2
+  - x: 406.4
+    y: 233.1
+    width: 11.7
+    height: 6.3
+  - x: 280.0
+    y: 233.5
+    width: 11.1
+    height: 8.2
+  - x: 280.0
+    y: 98.0
+    width: 11.1
+    height: 6.5
+  - x: 248.7
+    y: 115.2
+    width: 15.7
+    height: 2.9

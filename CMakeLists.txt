@@ -9,6 +9,7 @@ if (NOT DEFINED CMAKE_CXX_STANDARD)
 endif()
 
 set(CMAKE_CXX_EXTENSIONS ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(taller_tp
     VERSION 1.0
@@ -27,7 +28,7 @@ message(CMAKE_CXX_COMPILER_ID="${CMAKE_CXX_COMPILER_ID}")
 # Define target: lib common between client, server and editor programs
 # HEY TODO XXX: change the name to something that you like
 add_library(taller_common STATIC)
-
+set_target_properties(taller_common PROPERTIES POSITION_INDEPENDENT_CODE ON)
 # add the source files that make the lib
 # HEY!! TODO XXX: add more subfolders here
 add_subdirectory(common/)
@@ -47,12 +48,12 @@ target_include_directories(taller_common PUBLIC .)
 #
 # In xubuntu 24.04 these are:
 #
-# sudo apt-get install libopus-dev libopusfile-dev libxmp-dev libfluidsynth-dev fluidsynth libwavpack1 libwavpack-dev libfreetype-dev wavpack
+# sudo apt-get install libopus-dev libopusfile-dev libxmp-dev libfluidsynth-dev fluidsynth libwavpack1 libwavpack-dev libfreetype-dev wavpack sudo apt install qtbase5-dev qtbase5-dev-tools qtchooser qt5-qmake qttools5-dev qttools5-dev-tools
 #
 
-# Install libSDL2 and libSDL2pp (for client or editor)
+# Install libSDL2 and libSDL2pp (for client)
 # HEY!! TODO XXX: add more dependendies (either for client, server or editor)
-if(TALLER_CLIENT OR TALLER_EDITOR)
+if(TALLER_CLIENT)
     include(FetchContent)
     FetchContent_Declare(
         SDL2
@@ -96,66 +97,122 @@ if(TALLER_CLIENT OR TALLER_EDITOR)
         URL https://github.com/libSDL2pp/libSDL2pp/archive/cc198c9a5657048bee67ece82de620b2d5661084.zip
     )
 
+    set(SDL2IMAGE_SDL2 ON)
+    set(SDL2IMAGE_VENDORED TRUE)
+    set(SDL2IMAGE_PNG ON)
+    set(SDL2IMAGE_JPG ON)
+    set(SDL2IMAGE_TIF OFF)
+    set(SDL2PP_WITH_IMAGE ON CACHE BOOL "" FORCE)
+    set(SDL2PP_WITH_MIXER ON CACHE BOOL "" FORCE)
+    set(SDL2PP_WITH_TTF ON CACHE BOOL "" FORCE)
+
     FetchContent_MakeAvailable(SDL2 SDL2_image SDL2_mixer SDL2_ttf libSDL2pp)
 endif()
 
 # Program section
 # ---------------
 if(TALLER_CLIENT)
+    # Qt5Widgets es opcional - comentado para no bloquear compilación
+    find_package(Qt5Widgets)
+    set(CMAKE_AUTOUIC ON)
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTORCC ON)
+    find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
-    add_executable(taller_client)
+    add_executable(nfs2d_client)
 
     # Make them depend on taller_common lib
-    add_dependencies(taller_client taller_common SDL2pp::SDL2pp)
+    add_dependencies(nfs2d_client taller_common SDL2pp::SDL2pp)
 
     # Add source files and enable warnings
     # HEY!! TODO XXX: add more subfolders here
     add_subdirectory(client)
 
-    set_project_warnings(taller_client ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
+    set_project_warnings(nfs2d_client ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # add libSDL2pp's headers
-    target_include_directories(taller_client PRIVATE ${libSDL2pp_SOURCE_DIR})
+    target_include_directories(nfs2d_client
+        PRIVATE
+            ${SDL2_SOURCE_DIR}/include
+            ${SDL2_mixer_SOURCE_DIR}/include
+            ${SDL2_ttf_SOURCE_DIR}/include
+            ${libSDL2pp_SOURCE_DIR}/include
+    )
 
     # Link the taller_common lib target
-    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp)
+    target_link_libraries(nfs2d_client 
+        PRIVATE
+            taller_common 
+            client_cmd
+            SDL2pp::SDL2pp 
+            SDL2_mixer::SDL2_mixer
+            SDL2_ttf::SDL2_ttf
+            yaml-cpp
+            Qt${QT_VERSION_MAJOR}::Widgets)
 endif()
 
 if(TALLER_SERVER)
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
-    add_executable(taller_server)
+    include(FetchContent)
+
+    FetchContent_Declare(
+        box2d
+        GIT_REPOSITORY https://github.com/erincatto/box2d.git
+        GIT_TAG v3.1.1
+        GIT_SHALLOW TRUE
+        GIT_PROGRESS TRUE
+    )
+    FetchContent_MakeAvailable(box2d)
+
+    # BEFORE COMPILING: you need to install
+    # sudo apt install libyaml-cpp-dev
+    find_package(yaml-cpp REQUIRED)
+
+    add_executable(nfs2d_server)
 
     # Make them depend on taller_common lib
-    add_dependencies(taller_server taller_common)
+    add_dependencies(nfs2d_server taller_common)
 
     # Add source files and enable warnings
     # HEY!! TODO XXX: add more subfolders here
     add_subdirectory(server)
 
-    set_project_warnings(taller_server ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
+    set_project_warnings(nfs2d_server ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # Link the taller_common lib target
-    target_link_libraries(taller_server taller_common)
+    target_link_libraries(nfs2d_server 
+        PRIVATE
+            taller_common
+            server_cmd
+            server_game_logic
+            )
 endif()
 
 if(TALLER_EDITOR)
+    # Qt5Widgets es opcional - comentado para no bloquear compilación
+    find_package(Qt5Widgets)
+    set(CMAKE_AUTOUIC ON)
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTORCC ON)
+    find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
+    find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+    
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
-    add_executable(taller_editor)
+    add_executable(nfs2d_editor)
 
     # Make them depend on taller_common lib
-    add_dependencies(taller_editor taller_common SDL2pp::SDL2pp)
+    add_dependencies(nfs2d_editor taller_common)
 
     # Add source files and enable warnings
     # HEY!! TODO XXX: add more subfolders here
     add_subdirectory(editor)
 
-    set_project_warnings(taller_editor ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
-
-    # add libSDL2pp's headers
-    target_include_directories(taller_editor PRIVATE ${libSDL2pp_SOURCE_DIR})
+    set_project_warnings(nfs2d_editor ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # Link the taller_common lib target
-    target_link_libraries(taller_editor taller_common SDL2pp::SDL2pp)
+    target_link_libraries(nfs2d_editor taller_common Qt${QT_VERSION_MAJOR}::Widgets)
 endif()
 
 

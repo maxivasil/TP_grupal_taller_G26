@@ -1,0 +1,8 @@
+
+races:
+  - city: "Liberty_City"
+    track: "track_completo_liberty_city.yaml"
+  - city: "San_Andreas"
+    track: "track_completo_san_andreas.yaml"
+  - city: "Vice_City"
+    track: "track_Vice_City_Example.yaml"

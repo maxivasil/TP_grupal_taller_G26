@@ -62,11 +62,11 @@ void TrackWindow::connectEvents() {
     QObject::connect(begginer, &QPushButton::clicked, this, &TrackWindow::selectTrack);
 
     QPushButton* intermediate = findChild<QPushButton*>("intermediate");
-    intermediate->setProperty("track_souce", "tours/tour1.yaml");
+    intermediate->setProperty("track_souce", "tours/tour2.yaml");
     QObject::connect(intermediate, &QPushButton::clicked, this, &TrackWindow::selectTrack);
 
     QPushButton* expert = findChild<QPushButton*>("expert");
-    expert->setProperty("track_souce", "tours/tour1.yaml");
+    expert->setProperty("track_souce", "tours/tour3.yaml");
     QObject::connect(expert, &QPushButton::clicked, this, &TrackWindow::selectTrack);
 }
 

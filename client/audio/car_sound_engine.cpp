@@ -4,8 +4,11 @@
 #include <cstring>
 #include <filesystem>
 #include <iostream>
+#include "../../common/constants.h"
 
 #include <SDL2/SDL.h>
+
+#define SOUND_DIR "sounds/"
 
 CarSoundEngine* CarSoundEngine::instance = nullptr;
 
@@ -67,8 +70,7 @@ void CarSoundEngine::initAudio() {
 
     std::cout << "[CarSoundEngine] Attempting to load external sound files..." << std::endl;
 
-    std::vector<std::string> basePaths = {"assets/sounds/", "../assets/sounds/",
-                                          "../../assets/sounds/", "./assets/sounds/"};
+    std::vector<std::string> basePaths = {ABS_DIR ASSETS_DIR SOUND_DIR};
 
     bool engineLoaded = false, turnLoaded = false, brakeLoaded = false, collisionLoaded = false,
          engineNoiseLoaded = false;

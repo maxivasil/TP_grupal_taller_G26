@@ -1,6 +1,37 @@
 # TP_grupal_taller_G26
 
 
+## Instalación
+
+```bash
+sudo bash install.sh
+```
+
+**El instalador automático:**
+
+- Descarga e instala todas las dependencias (SDL2, Qt5, yaml-cpp)
+- Compila el proyecto completo
+- Instala binarios en `/usr/bin/`
+- Instala assets en `/var/nfs2d/`
+
+**Nota:** El instalador requiere permisos de administrador para instalar en el sistema.
+
+
+## Desinstalación
+
+```bash
+sudo bash uninstall.sh
+```
+
+**El desinstalador automático:**
+
+- Elimina binarios en `/usr/bin/`
+- Elimina assets en `/var/nfs2d/`
+
+**Nota:** El desinstalador requiere permisos de administrador.
+
+
+
 ## Guía de Usuario
 
 ### Servidor

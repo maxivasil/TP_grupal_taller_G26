@@ -12,6 +12,7 @@
 #include "cmd/client_to_server_move.h"
 #include "cmd/client_to_server_applyUpgrades.h"
 #include "graphics/track_loader.h"
+#include "../common/constants.h"
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
@@ -19,8 +20,6 @@
 #define PX_PER_METER_Y (24.0f / 3.086f)
 
 #define FPS 1000 / 30
-
-#define DATA_PATH "assets/"
 
 
 // Estructura de información de sprite
@@ -63,7 +62,7 @@ int Game::start() {
         SDL2pp::Window window(titulo, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                               WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE);
 
-        SDL_Surface* icon = IMG_Load("assets/logo.png");
+        SDL_Surface* icon = IMG_Load(ABS_DIR ASSETS_DIR "logo.png");
         if (icon) {
             SDL_SetWindowIcon(window.Get(), icon);
             SDL_FreeSurface(icon);
@@ -643,20 +642,20 @@ void Game::renderCheckpoints(SDL2pp::Renderer& renderer) {
 void Game::init_textures() {
     textures[0] = std::make_shared<SDL2pp::Texture>(
             *rendererPtr,
-            SDL2pp::Surface(DATA_PATH "cities/Liberty_City.png").SetColorKey(true, 0));
+            SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/Liberty_City.png").SetColorKey(true, 0));
     textures[3] = std::make_shared<SDL2pp::Texture>(
             *rendererPtr,
-            SDL2pp::Surface(DATA_PATH "cities/Liberty_City_bridges.png").SetColorKey(true, 0));
+            SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/Liberty_City_bridges.png").SetColorKey(true, 0));
     textures[1] = std::make_shared<SDL2pp::Texture>(
-            *rendererPtr, SDL2pp::Surface(DATA_PATH "cities/San_Andreas.png").SetColorKey(true, 0));
+            *rendererPtr, SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/San_Andreas.png").SetColorKey(true, 0));
     textures[4] = std::make_shared<SDL2pp::Texture>(
             *rendererPtr,
-            SDL2pp::Surface(DATA_PATH "cities/San_Andreas_bridges.png").SetColorKey(true, 0));
+            SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/San_Andreas_bridges.png").SetColorKey(true, 0));
     textures[2] = std::make_shared<SDL2pp::Texture>(
-            *rendererPtr, SDL2pp::Surface(DATA_PATH "cities/Vice_City.png").SetColorKey(true, 0));
+            *rendererPtr, SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/Vice_City.png").SetColorKey(true, 0));
     textures[5] = std::make_shared<SDL2pp::Texture>(
             *rendererPtr,
-            SDL2pp::Surface(DATA_PATH "cities/Vice_City_bridges.png").SetColorKey(true, 0));
+            SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/Vice_City_bridges.png").SetColorKey(true, 0));
 
     // Cargar cada auto desde su PNG individual
     std::vector<std::pair<uint8_t, std::string>> carFiles = {
@@ -666,7 +665,7 @@ void Game::init_textures() {
     };
 
     for (const auto& [car_id, filename]: carFiles) {
-        std::string filepath = std::string(DATA_PATH) + "cars/" + filename;
+        std::string filepath = std::string(ABS_DIR) + std::string(ASSETS_DIR) + "cars/" + filename;
         try {
             carTextures[car_id] = std::make_shared<SDL2pp::Texture>(
                     *rendererPtr, SDL2pp::Surface(filepath).SetColorKey(
@@ -1080,9 +1079,9 @@ void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
 void Game::initMinimapAndCheckpoints(const std::string& trackName) {
 
     std::map<uint8_t, std::string> city_map_paths = {
-            {0, "assets/cities/Liberty_City.png"},
-            {1, "assets/cities/San_Andreas.png"},
-            {2, "assets/cities/Vice_City.png"},
+            {0, ABS_DIR ASSETS_DIR "cities/Liberty_City.png"},
+            {1, ABS_DIR ASSETS_DIR "cities/San_Andreas.png"},
+            {2, ABS_DIR ASSETS_DIR "cities/Vice_City.png"},
     };
     auto it2 = std::find_if(city_map_paths.begin(), city_map_paths.end(),
                             [this](const auto& path) { return currentCityId == path.first; });

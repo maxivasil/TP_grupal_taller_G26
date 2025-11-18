@@ -1,9 +1,11 @@
 #include "Track.h"
 
+#include "../../common/constants.h"
+
 #include <yaml-cpp/yaml.h>
 
 Track::Track(std::string& filename) {
-    YAML::Node config = YAML::LoadFile(filename);
+    YAML::Node config = YAML::LoadFile(ABS_DIR "tracks/" + filename);
 
     if (config["initial_direction"]) {
         YAML::Node dir = config["initial_direction"];

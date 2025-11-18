@@ -3,6 +3,8 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "../../common/constants.h"
+
 #include <yaml-cpp/yaml.h>
 
 #include "../game_logic/Race.h"
@@ -17,7 +19,7 @@ void ClientToServerTour::execute(ServerContext& ctx) {
     if (!ctx.inLobby || !*(ctx.inLobby) || !ctx.racesInfo)
         return;
 
-    YAML::Node root = YAML::LoadFile(tourFile);
+    YAML::Node root = YAML::LoadFile(ABS_DIR + tourFile);
 
     for (const auto& node: root["races"]) {
         std::string cityStr = node["city"].as<std::string>();

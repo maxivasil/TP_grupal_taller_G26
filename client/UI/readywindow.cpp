@@ -2,10 +2,12 @@
 
 #include <QGuiApplication>
 #include <QLabel>
+#include <QPainter>
 #include <QPixmap>
 #include <QPushButton>
 #include <QResizeEvent>
 #include <QScreen>
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -21,31 +23,50 @@
 ReadyWindow::ReadyWindow(ClientSession& client_session, QWidget* parent):
         QMainWindow(parent), ui(new Ui::ReadyWindow), client_session(client_session) {
     ui->setupUi(this);
+    this->setWindowState(Qt::WindowFullScreen);
     this->setWindowIcon(QIcon(":/new/prefix1/Assets/logo.png"));
+
+    QWidget* cw = centralWidget();
+    cw->installEventFilter(this);
+
+    QWidget* root = this;
+    QList<QWidget*> widgets = root->findChildren<QWidget*>();
+
+    for (QWidget* w: widgets) {
+        w->setProperty("origGeometry", w->geometry());
+        w->setProperty("origFontSize", w->font().pointSizeF());
+    }
 
     QScreen* screen = QGuiApplication::primaryScreen();
     QSize screenSize = screen->availableGeometry().size();
 
-    int width = screenSize.width();
-    int height = screenSize.height();
+    float scaleX = (float)screenSize.width() / BASE_WIDTH;
+    float scaleY = (float)screenSize.height() / BASE_HEIGHT;
+    float scaleFactor = std::min(scaleX, scaleY);
 
-    if (width * 9 != height * 16) {
-        if ((float)width / height > 16.0 / 9.0) {
-            width = height * 16 / 9;
+    for (QWidget* w: widgets) {
+        if (w->property("doNotScale").toBool())
+            continue;
+
+        w->resize(w->width() * scaleFactor, w->height() * scaleFactor);
+        w->move(w->x() * scaleFactor, w->y() * scaleFactor);
+
+        QFont font = w->font();
+        float originalSize = w->property("origFontSize").toFloat();
+        if (originalSize > 0) {
+            font.setPointSizeF(originalSize * scaleFactor);
         } else {
-            height = width * 9 / 16;
+            font.setPointSizeF(12 * scaleFactor);
         }
+        w->setFont(font);
     }
-    setFixedSize(width, height);
-    move((screenSize.width() - width) / 2, (screenSize.height() - height) / 2);
 
-    QPixmap bg(":/new/prefix1/Assets/Background.png");
-    bg = bg.scaled(this->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
-
-    QPalette palette;
-    palette.setBrush(QPalette::Window, bg);
-    this->setPalette(palette);
-    this->setAutoFillBackground(true);
+    QLabel* title = findChild<QLabel*>("intro_text");
+    if (title) {
+        int origHeight = title->property("origGeometry").toRect().height();
+        title->setGeometry(0, height() * 0.35, width(), origHeight);
+        title->setAlignment(Qt::AlignCenter);
+    }
     connectEvents();
 }
 
@@ -85,9 +106,26 @@ void ReadyWindow::setReady() {
 
 void ReadyWindow::updateLobby(const std::string& lobby, const std::string& new_car) {
     car = new_car;
-    QLabel* labelOut = findChild<QLabel*>("Lobby_text");
-    labelOut->setText("Código de Sala: " + QString::fromStdString(lobby));
+    QLabel* lobbyLabel = findChild<QLabel*>("Lobby_text");
+    if (lobbyLabel) {
+        lobbyLabel->setProperty("doNotScale", true);
+        QFont font = lobbyLabel->font();
+        font.setPointSizeF(28);
+        lobbyLabel->setFont(font);
+
+        lobbyLabel->setText("Código de Sala: " + QString::fromStdString(lobby));
+    }
 }
 
+bool ReadyWindow::eventFilter(QObject* obj, QEvent* event) {
+    if (obj == centralWidget() && event->type() == QEvent::Paint) {
+        QPainter painter(centralWidget());
+        QPixmap bg(":/new/prefix1/Assets/Background.png");
+        bg = bg.scaled(centralWidget()->size(), Qt::KeepAspectRatioByExpanding,
+                       Qt::SmoothTransformation);
+        painter.drawPixmap(0, 0, bg);
+    }
+    return false;
+}
 
 ReadyWindow::~ReadyWindow() { delete ui; }

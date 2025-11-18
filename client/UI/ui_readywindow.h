@@ -61,10 +61,10 @@ public:
         intro_text->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
         Lobby_text = new QLabel(centralwidget);
         Lobby_text->setObjectName(QString::fromUtf8("Lobby_text"));
-        Lobby_text->setGeometry(QRect(10, 10, 511, 141));
+        Lobby_text->setGeometry(QRect(10, 20, 700, 80));
         Lobby_text->setFont(font1);
         Lobby_text->setStyleSheet(QString::fromUtf8("Color: white; \n"
-                                                    "font-size: 65px; \n"
+                                                    "font-size: 38px; \n"
                                                     "\n"
                                                     "	      "));
         Lobby_text->setTextFormat(Qt::MarkdownText);
@@ -89,9 +89,20 @@ public:
         ReadyWindow->setWindowTitle(QCoreApplication::translate("NFS-2D", "NFS-2D", nullptr));
         label_2->setText(QCoreApplication::translate(
                 "ReadyWindow",
-                "<html><head/><body><p align=\"center\">Todo Listo! <br/>Recuerda esperar a todos "
-                "los jugadores antes de empezar la partida.</p></body></html>",
+                "<html><head/><body>"
+                "<p align=\"center\">"
+                "<span style=\"font-size:40px; font-weight:bold;\">¡Todo listo!</span><br/>"
+                "<span style=\"font-size:24px;\">Cuando estén todos listos, comenzá...</span><br/>"
+                "</p>"
+                "</body></html>",
                 nullptr));
+        label_2->setStyleSheet("QLabel {"
+                               "   background-color: rgba(0, 0, 0, 120);"
+                               "   border: 2px solid white;"
+                               "   border-radius: 10px;"
+                               "   color: white;"
+                               "   padding: 12px;"
+                               "}");
         intro_text->setText(QString());
         Lobby_text->setText(QCoreApplication::translate("ReadyWindow", "asdasd", nullptr));
         Ready->setText(QCoreApplication::translate("ReadyWindow", "Listo para empezar!", nullptr));

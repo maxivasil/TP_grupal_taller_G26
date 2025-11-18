@@ -21,10 +21,14 @@ public:
     ~TrackWindow();
 
 private:
+    const int BASE_WIDTH = 1920;
+    const int BASE_HEIGHT = 1080;
+
     ClientSession& client_session;
     MainWindow& mainwindow;
     Ui::TrackWindow* ui;
     void connectEvents();
     void selectTrack();
+    bool eventFilter(QObject* obj, QEvent* event) override;
 };
 #endif  // TRACKWINDOW_H

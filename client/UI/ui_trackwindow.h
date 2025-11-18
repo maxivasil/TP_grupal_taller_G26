@@ -15,6 +15,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -35,16 +36,20 @@ public:
         centralwidget = new QWidget(TrackWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         centralwidget->setAutoFillBackground(true);
+        QVBoxLayout* verticalLayout = new QVBoxLayout(centralwidget);
+        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        verticalLayout->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
+        verticalLayout->setContentsMargins(0, 200, 0, 0);
         intro_text_2 = new QLabel(centralwidget);
         intro_text_2->setObjectName(QString::fromUtf8("intro_text_2"));
-        intro_text_2->setGeometry(QRect(430, 220, 1171, 101));
+        verticalLayout->addWidget(intro_text_2);
         QFont font;
-        font.setFamily(QString::fromUtf8("Uroob"));
-        font.setBold(false);
+        font.setFamily(QString::fromUtf8("System-ui"));
+        font.setBold(true);
         font.setItalic(false);
         intro_text_2->setFont(font);
         intro_text_2->setStyleSheet(QString::fromUtf8("Color: white; \n"
-                                                      "font-size: 70px; \n"
+                                                      "font-size: 38px; \n"
                                                       "\n"
                                                       "	      "));
         intro_text_2->setLocale(QLocale(QLocale::Chuvash, QLocale::Russia));
@@ -76,10 +81,9 @@ public:
     }  // setupUi
 
     void retranslateUi(QMainWindow* TrackWindow) {
-        TrackWindow->setWindowTitle(
-                QCoreApplication::translate("NFS-2D", "NFS-2D", nullptr));
+        TrackWindow->setWindowTitle(QCoreApplication::translate("NFS-2D", "NFS-2D", nullptr));
         intro_text_2->setText(QCoreApplication::translate(
-                "TrackWindow", "Seleccione sobre que Pista se jugar\303\241 la carrera", nullptr));
+                "TrackWindow", "Seleccione un Tour de Carreras", nullptr));
         expert->setText(QString());
         begginer->setText(QString());
         intermediate->setText(QString());

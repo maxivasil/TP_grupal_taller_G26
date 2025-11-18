@@ -16,6 +16,9 @@ class MainWindow: public QMainWindow {
     Q_OBJECT
 
 private:
+    const int BASE_WIDTH = 1920;
+    const int BASE_HEIGHT = 1080;
+
     Ui::MainWindow* ui;
     ReadyWindow& readywindow;
     std::string lobbycode;
@@ -24,6 +27,7 @@ private:
     void selector();
 
     void ready();
+    bool eventFilter(QObject* obj, QEvent* event) override;
 
 public:
     explicit MainWindow(ReadyWindow& readywindow, QWidget* parent = nullptr);

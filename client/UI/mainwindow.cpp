@@ -2,10 +2,12 @@
 
 #include <QGuiApplication>
 #include <QLabel>
+#include <QPainter>
 #include <QPixmap>
 #include <QPushButton>
 #include <QResizeEvent>
 #include <QScreen>
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -20,31 +22,50 @@
 MainWindow::MainWindow(ReadyWindow& readywindow, QWidget* parent):
         QMainWindow(parent), ui(new Ui::MainWindow), readywindow(readywindow) {
     ui->setupUi(this);
+    this->setWindowState(Qt::WindowFullScreen);
     this->setWindowIcon(QIcon(":/new/prefix1/Assets/logo.png"));
+
+    QWidget* cw = centralWidget();
+    cw->installEventFilter(this);
+
+    QWidget* root = this;
+    QList<QWidget*> widgets = root->findChildren<QWidget*>();
+
+    for (QWidget* w: widgets) {
+        w->setProperty("origGeometry", w->geometry());
+        w->setProperty("origFontSize", w->font().pointSizeF());
+    }
 
     QScreen* screen = QGuiApplication::primaryScreen();
     QSize screenSize = screen->availableGeometry().size();
 
-    int width = screenSize.width();
-    int height = screenSize.height();
+    float scaleX = (float)screenSize.width() / BASE_WIDTH;
+    float scaleY = (float)screenSize.height() / BASE_HEIGHT;
+    float scaleFactor = std::min(scaleX, scaleY);
 
-    if (width * 9 != height * 16) {
-        if ((float)width / height > 16.0 / 9.0) {
-            width = height * 16 / 9;
+    for (QWidget* w: widgets) {
+        if (w->property("doNotScale").toBool())
+            continue;
+
+        w->resize(w->width() * scaleFactor, w->height() * scaleFactor);
+        w->move(w->x() * scaleFactor, w->y() * scaleFactor);
+
+        QFont font = w->font();
+        float originalSize = w->property("origFontSize").toFloat();
+        if (originalSize > 0) {
+            font.setPointSizeF(originalSize * scaleFactor);
         } else {
-            height = width * 9 / 16;
+            font.setPointSizeF(12 * scaleFactor);
         }
+        w->setFont(font);
     }
-    setFixedSize(width, height);
-    move((screenSize.width() - width) / 2, (screenSize.height() - height) / 2);
 
-    QPixmap bg(":/new/prefix1/Assets/Background.png");
-    bg = bg.scaled(this->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
-
-    QPalette palette;
-    palette.setBrush(QPalette::Window, bg);
-    this->setPalette(palette);
-    this->setAutoFillBackground(true);
+    QLabel* title = findChild<QLabel*>("intro_text");
+    if (title) {
+        int origHeight = title->property("origGeometry").toRect().height();
+        title->setGeometry(0, height() * 0.35, width(), origHeight);
+        title->setAlignment(Qt::AlignCenter);
+    }
     connectEvents();
 }
 
@@ -60,30 +81,67 @@ void MainWindow::ready() {
 
 void MainWindow::selector() {
     QPushButton* senderButton = qobject_cast<QPushButton*>(sender());
-    QLabel* labelOut = findChild<QLabel*>("intro_text");
-    QString carName = senderButton->property("car_name").toString();
+    QLabel* statsLabel = findChild<QLabel*>("intro_text");
+    if (!statsLabel)
+        return;
 
-    // Obtener estadísticas del auto
+    QString carName = senderButton->property("car_name").toString();
     CarStats stats = CarStatsDatabase::getCarStats(carName.toStdString());
 
-    // Formatear las estadísticas para mostrar
     std::ostringstream oss;
-    oss << "🚗 " << carName.toStdString() << "\n\n";
-    oss << std::fixed << std::setprecision(1);
-    oss << "⚡ Velocidad Máxima: " << stats.max_speed << " km/h\n";
-    oss << "🏃 Aceleración: " << stats.acceleration << " m/s²\n";
-    oss << "❤️  Salud: " << stats.health_max << " HP\n";
-    oss << "⚖️  Masa: " << stats.mass << " kg\n";
-    oss << "🎮 Controlabilidad: " << stats.handling << "/5\n";
+    oss << carName.toStdString() << "\n"
+        << "------------------------------\n"
+        << "Velocidad Máxima: " << stats.max_speed << " km/h\n"
+        << "Aceleración:      " << stats.acceleration << " m/s²\n"
+        << "Salud:            " << stats.health_max << " HP\n"
+        << "Masa:             " << stats.mass << " kg\n"
+        << "Controlabilidad:  " << stats.handling << " / 5";
 
-    labelOut->setText(QString::fromStdString(oss.str()));
+    statsLabel->setTextFormat(Qt::PlainText);
+    statsLabel->setText(QString::fromStdString(oss.str()));
+    statsLabel->setWordWrap(true);
+    statsLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+
+    int boxWidth = width() * 0.50;
+    int boxHeight = height() * 0.35;
+    int posX = (width() - boxWidth) / 2;
+    int posY = height() * 0.60;
+
+    statsLabel->setGeometry(posX, posY, boxWidth, boxHeight);
+
+    statsLabel->setStyleSheet("QLabel {"
+                              "   background-color: rgba(0, 0, 0, 130);"
+                              "   border: 2px solid white;"
+                              "   border-radius: 14px;"
+                              "   color: white;"
+                              "   padding: 20px;"
+                              "   font-size: 26px;"
+                              "   font-family: 'DejaVu Sans Mono';"
+                              "}");
+
+    QLabel* carBox = findChild<QLabel*>("label_2");
+    if (carBox) {
+        int carWidth = carBox->width();
+        int carPosX = (width() - carWidth) / 2;
+        carBox->move(carPosX, carBox->y());
+    }
+
+    car = carName.toStdString();
+
     car = carName.toStdString();
 }
 
 void MainWindow::updateLobby(const std::string& lobby) {
     lobbycode = lobby;
-    QLabel* labelOut = findChild<QLabel*>("Lobby_text");
-    labelOut->setText("Código de Sala: " + QString::fromStdString(lobby));
+    QLabel* lobbyLabel = findChild<QLabel*>("Lobby_text");
+    if (lobbyLabel) {
+        lobbyLabel->setProperty("doNotScale", true);
+        QFont font = lobbyLabel->font();
+        font.setPointSizeF(28);
+        lobbyLabel->setFont(font);
+
+        lobbyLabel->setText("Código de Sala: " + QString::fromStdString(lobby));
+    }
 }
 
 
@@ -118,6 +176,17 @@ void MainWindow::connectEvents() {
     QPushButton* vanButton = findChild<QPushButton*>("Van");
     vanButton->setProperty("car_name", "Iveco Daily");
     QObject::connect(vanButton, &QPushButton::clicked, this, &MainWindow::selector);
+}
+
+bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
+    if (obj == centralWidget() && event->type() == QEvent::Paint) {
+        QPainter painter(centralWidget());
+        QPixmap bg(":/new/prefix1/Assets/Background.png");
+        bg = bg.scaled(centralWidget()->size(), Qt::KeepAspectRatioByExpanding,
+                       Qt::SmoothTransformation);
+        painter.drawPixmap(0, 0, bg);
+    }
+    return false;
 }
 
 MainWindow::~MainWindow() { delete ui; }

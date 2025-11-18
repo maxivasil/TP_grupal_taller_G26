@@ -47,12 +47,17 @@ ServerGameLoop::ServerGameLoop(Queue<ClientToServerCmd_Server*>& gameloop_queue,
         lobby(lobby) {}
 
 void ServerGameLoop::process_pending_commands(ServerContext& ctx) {
-    ClientToServerCmd_Server* raw;
-    while (gameloop_queue.try_pop(raw)) {
-        if (raw) {
-            std::unique_ptr<ClientToServerCmd_Server> cmd(raw);
-            cmd->execute(ctx);
+    try {
+        ClientToServerCmd_Server* raw;
+        while (gameloop_queue.try_pop(raw)) {
+            if (raw) {
+                std::unique_ptr<ClientToServerCmd_Server> cmd(raw);
+                cmd->execute(ctx);
+            }
         }
+    } catch (const ClosedQueue&) {
+        stop();
+        status = LobbyStatus::FINISHED;
     }
 }
 
@@ -152,8 +157,14 @@ void ServerGameLoop::run() {
                     std::make_shared<ServerToClientStartingRace>(raceInfo.city, raceInfo.trackFile);
             protected_clients.broadcast(startingRaceCmd);
 
-            ClientToServerCmd_Server* raw;
-            while (gameloop_queue.try_pop(raw)) {}
+            try {
+                ClientToServerCmd_Server* raw;
+                while (gameloop_queue.try_pop(raw)) {}
+            } catch (const ClosedQueue&) {
+                stop();
+                status = LobbyStatus::FINISHED;
+                break;
+            }
 
             race.start();
 

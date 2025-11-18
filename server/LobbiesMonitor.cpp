@@ -1,5 +1,7 @@
 #include "LobbiesMonitor.h"
 
+#include "client_handler.h"
+
 #define MAX_PLAYERS_PER_LOBBY 8
 
 LobbiesMonitor::LobbiesMonitor() {}
@@ -23,7 +25,8 @@ Queue<ClientToServerCmd_Server*>* LobbiesMonitor::createLobby(const std::string&
         return nullptr;
     }
     it->second = std::make_shared<Lobby>(lobbyId);
-    it->second->connectedClients.add_client(client);
+    std::shared_ptr<ServerClientHandler> client_ptr(client);
+    it->second->connectedClients.add_client(client_ptr);
     it->second->lobbyStart();
     return it->second->gameloop_queue.get();
 }
@@ -41,7 +44,8 @@ Queue<ClientToServerCmd_Server*>* LobbiesMonitor::joinLobby(std::string lobbyId,
     if (lobby->second->connectedClients.size() >= MAX_PLAYERS_PER_LOBBY) {
         return nullptr;
     }
-    lobby->second->connectedClients.add_client(client);
+    std::shared_ptr<ServerClientHandler> client_ptr(client);
+    lobby->second->connectedClients.add_client(client_ptr);
     return lobby->second->gameloop_queue.get();
 }
 

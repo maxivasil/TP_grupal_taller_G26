@@ -18,13 +18,13 @@ class ServerProtectedClients {
 public:
     ServerProtectedClients();
     void broadcast(std::shared_ptr<ServerToClientCmd_Server> cmd);
-    void add_client(ServerClientHandler* client);
+    void add_client(std::shared_ptr<ServerClientHandler> client);
     void stop_and_delete_dead();
     void stop_all_and_delete();
     size_t size();
 
 private:
-    std::list<ServerClientHandler*> clients;
+    std::list<std::shared_ptr<ServerClientHandler>> clients;
     std::mutex m;
 };
 

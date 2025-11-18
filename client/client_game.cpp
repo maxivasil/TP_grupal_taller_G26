@@ -10,6 +10,7 @@
 
 #include "cmd/client_to_server_cheat.h"
 #include "cmd/client_to_server_move.h"
+#include "cmd/client_to_server_applyUpgrades.h"
 #include "graphics/track_loader.h"
 
 #define WINDOW_WIDTH 640
@@ -121,6 +122,16 @@ int Game::start() {
 
             explosion.update(deltaTime);
 
+            // Auto-close upgrades screen after duration
+            if (showUpgradesScreen) {
+                Uint32 elapsedMs = SDL_GetTicks() - upgradesScreenStartTime;
+                if (elapsedMs >= UPGRADES_SCREEN_DURATION_MS) {
+                    showUpgradesScreen = false;
+                    selectedUpgrades = CarUpgrades();  // Reset
+                    std::cout << "[UPGRADES] Upgrade screen auto-closed after 10 seconds" << std::endl;
+                }
+            }
+
             render();
 
             auto t2 = SDL_GetTicks();
@@ -149,6 +160,12 @@ bool Game::handleEvents() {
 
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
+        // Handle upgrades screen input
+        if (showUpgradesScreen) {
+            handleUpgradesInput(event);
+            // Continue processing other events even in upgrades screen
+        }
+
         switch (event.type) {
             case SDL_QUIT:
                 return true;
@@ -515,6 +532,11 @@ void Game::render() {
         renderEndGameScreen();
     }
 
+    // Render upgrades screen after race ends
+    if (showUpgradesScreen) {
+        renderUpgradesScreen();
+    }
+
     // Render high-impact collision flash effect
     if (collisionFlashStartTime > 0) {
         Uint32 elapsedMs = SDL_GetTicks() - collisionFlashStartTime;
@@ -782,6 +804,12 @@ void Game::setRaceResults(const std::vector<ClientPlayerResult>& results, bool i
         setWon();
     else
         setLost();
+
+    // Activar pantalla de upgrades después de 1 segundo de que termine la carrera
+    showUpgradesScreen = true;
+    upgradesScreenStartTime = SDL_GetTicks();
+    selectedUpgrades = CarUpgrades();  // Resetear selección
+    std::cout << "[UPGRADES] Upgrade screen activated after race results" << std::endl;
 }
 
 float Game::getScale(int w, int h) const {
@@ -1068,4 +1096,245 @@ void Game::initMinimapAndCheckpoints(const std::string& trackName) {
     trackCheckpoints = TrackLoader::loadTrackCheckpoints(trackName);
     totalCheckpoints = trackCheckpoints.size();
     minimap.setCheckpoints(trackCheckpoints);
+}
+
+void Game::renderUpgradesScreen() {
+    Uint8 r, g, b, a;
+    rendererPtr->GetDrawColor(r, g, b, a);
+    int width = rendererPtr->GetOutputWidth();
+    int height = rendererPtr->GetOutputHeight();
+
+    // Fondo semi-transparente
+    SDL_Rect bgRect = {0, 0, width, height};
+    rendererPtr->SetDrawColor(0, 0, 0, 220);
+    rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    rendererPtr->FillRect(bgRect);
+    rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
+
+    // Título
+    SDL2pp::Font titleFont(hud.fontPath.empty() ?
+                                   "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" :
+                                   hud.fontPath,
+                           32);
+    SDL_Color titleColor = {100, 200, 255, 255};  // Azul
+    std::string titleText = "MEJORAS DISPONIBLES";
+    auto titleSurface = titleFont.RenderText_Solid(titleText, titleColor);
+    SDL2pp::Texture titleTexture(*rendererPtr, titleSurface);
+    int titleX = (width - titleTexture.GetWidth()) / 2;
+    int titleY = 30;
+    SDL_Rect titleRect = {titleX, titleY, titleTexture.GetWidth(), titleTexture.GetHeight()};
+    rendererPtr->Copy(titleTexture, SDL2pp::NullOpt, titleRect);
+
+    // Fuentes
+    SDL2pp::Font labelFont(hud.fontPath.empty() ?
+                                   "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" :
+                                   hud.fontPath,
+                           18);
+    SDL2pp::Font valueFont(hud.fontPath.empty() ?
+                                   "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" :
+                                   hud.fontPath,
+                           16);
+
+    SDL_Color labelColor = {200, 200, 200, 255};
+    SDL_Color valueColor = {100, 255, 100, 255};  // Verde
+    SDL_Color penaltyColor = {255, 100, 100, 255};  // Rojo para penalización
+
+    // Dimensiones del upgrade display
+    int centerX = width / 2;
+    int startY = 100;
+    int rowHeight = 50;
+    int boxWidth = 400;
+
+    // Array de upgrades labels
+    const char* upgradeLabels[] = {"ACELERACION", "VELOCIDAD", "CONTROLABILIDAD", "SALUD"};
+    float* upgradeValues[] = {&selectedUpgrades.acceleration_boost, &selectedUpgrades.speed_boost,
+                              &selectedUpgrades.handling_boost, &selectedUpgrades.health_boost};
+
+    // Render cada upgrade con botones +/-
+    for (int i = 0; i < 4; i++) {
+        int yPos = startY + (i * rowHeight);
+
+        // Label del upgrade
+        auto labelSurface = labelFont.RenderText_Solid(upgradeLabels[i], labelColor);
+        SDL2pp::Texture labelTexture(*rendererPtr, labelSurface);
+        int labelX = centerX - boxWidth / 2;
+        SDL_Rect labelRect = {labelX, yPos, labelTexture.GetWidth(),
+                              labelTexture.GetHeight()};
+        rendererPtr->Copy(labelTexture, SDL2pp::NullOpt, labelRect);
+
+        // Botón "-"
+        int minusX = centerX - boxWidth / 2 + 140;
+        int minusY = yPos - 5;
+        SDL_Rect minusRect = {minusX, minusY, 30, 30};
+        rendererPtr->SetDrawColor(200, 100, 100, 255);
+        rendererPtr->DrawRect(minusRect);
+        rendererPtr->FillRect(minusRect);
+
+        auto minusSurface = labelFont.RenderText_Solid("-", {0, 0, 0, 255});
+        SDL2pp::Texture minusTexture(*rendererPtr, minusSurface);
+        int minusTextX = minusX + (30 - minusTexture.GetWidth()) / 2;
+        int minusTextY = minusY + (30 - minusTexture.GetHeight()) / 2;
+        SDL_Rect minusTextRect = {minusTextX, minusTextY, minusTexture.GetWidth(),
+                                  minusTexture.GetHeight()};
+        rendererPtr->Copy(minusTexture, SDL2pp::NullOpt, minusTextRect);
+
+        // Valor actual
+        std::string valueStr = std::to_string((int)(*upgradeValues[i]));
+        auto valueSurface = valueFont.RenderText_Solid(valueStr.c_str(), valueColor);
+        SDL2pp::Texture valueTexture(*rendererPtr, valueSurface);
+        int valueX = centerX - 20;
+        int valueY = yPos + 5;
+        SDL_Rect valueRect = {valueX, valueY, valueTexture.GetWidth(),
+                              valueTexture.GetHeight()};
+        rendererPtr->Copy(valueTexture, SDL2pp::NullOpt, valueRect);
+
+        // Botón "+"
+        int plusX = centerX + 30;
+        int plusY = yPos - 5;
+        SDL_Rect plusRect = {plusX, plusY, 30, 30};
+        rendererPtr->SetDrawColor(100, 200, 100, 255);
+        rendererPtr->DrawRect(plusRect);
+        rendererPtr->FillRect(plusRect);
+
+        auto plusSurface = labelFont.RenderText_Solid("+", {0, 0, 0, 255});
+        SDL2pp::Texture plusTexture(*rendererPtr, plusSurface);
+        int plusTextX = plusX + (30 - plusTexture.GetWidth()) / 2;
+        int plusTextY = plusY + (30 - plusTexture.GetHeight()) / 2;
+        SDL_Rect plusTextRect = {plusTextX, plusTextY, plusTexture.GetWidth(),
+                                 plusTexture.GetHeight()};
+        rendererPtr->Copy(plusTexture, SDL2pp::NullOpt, plusTextRect);
+    }
+
+    // Cálculo de penalización total
+    float totalPenalty = selectedUpgrades.getTimePenalty();
+
+    // Mostrar tiempo de penalización
+    std::string penaltyLabel = "PENALIZACION: ";
+    auto penaltyLabelSurface = labelFont.RenderText_Solid(penaltyLabel.c_str(), labelColor);
+    SDL2pp::Texture penaltyLabelTexture(*rendererPtr, penaltyLabelSurface);
+    int penaltyY = startY + (4 * rowHeight) + 10;
+    int penaltyLabelX = centerX - boxWidth / 2;
+    SDL_Rect penaltyLabelRect = {penaltyLabelX, penaltyY, penaltyLabelTexture.GetWidth(),
+                                 penaltyLabelTexture.GetHeight()};
+    rendererPtr->Copy(penaltyLabelTexture, SDL2pp::NullOpt, penaltyLabelRect);
+
+    std::string penaltyStr = std::to_string((int)totalPenalty) + " segundos";
+    auto penaltySurface = valueFont.RenderText_Solid(penaltyStr.c_str(), penaltyColor);
+    SDL2pp::Texture penaltyTexture(*rendererPtr, penaltySurface);
+    int penaltyValueX = penaltyLabelX + penaltyLabelTexture.GetWidth() + 10;
+    SDL_Rect penaltyRect = {penaltyValueX, penaltyY, penaltyTexture.GetWidth(),
+                            penaltyTexture.GetHeight()};
+    rendererPtr->Copy(penaltyTexture, SDL2pp::NullOpt, penaltyRect);
+
+    // Botón "APLICAR UPGRADES"
+    int applyButtonY = penaltyY + 50;
+    int applyButtonWidth = 200;
+    int applyButtonHeight = 40;
+    int applyButtonX = centerX - applyButtonWidth / 2;
+    SDL_Rect applyRect = {applyButtonX, applyButtonY, applyButtonWidth, applyButtonHeight};
+    rendererPtr->SetDrawColor(50, 150, 255, 255);  // Azul
+    rendererPtr->FillRect(applyRect);
+    rendererPtr->SetDrawColor(100, 200, 255, 255);
+    rendererPtr->DrawRect(applyRect);
+
+    auto applySurface = labelFont.RenderText_Solid("APLICAR UPGRADES", {0, 0, 0, 255});
+    SDL2pp::Texture applyTexture(*rendererPtr, applySurface);
+    int applyTextX = applyButtonX + (applyButtonWidth - applyTexture.GetWidth()) / 2;
+    int applyTextY = applyButtonY + (applyButtonHeight - applyTexture.GetHeight()) / 2;
+    SDL_Rect applyTextRect = {applyTextX, applyTextY, applyTexture.GetWidth(),
+                              applyTexture.GetHeight()};
+    rendererPtr->Copy(applyTexture, SDL2pp::NullOpt, applyTextRect);
+
+    // Mostrar tiempo restante
+    Uint32 elapsedMs = SDL_GetTicks() - upgradesScreenStartTime;
+    int remainingSeconds = (UPGRADES_SCREEN_DURATION_MS - elapsedMs) / 1000;
+    if (remainingSeconds < 0)
+        remainingSeconds = 0;
+
+    std::string timerStr = "Se cerrara en " + std::to_string(remainingSeconds) + " segundos";
+    auto timerSurface = labelFont.RenderText_Solid(timerStr.c_str(), labelColor);
+    SDL2pp::Texture timerTexture(*rendererPtr, timerSurface);
+    int timerX = (width - timerTexture.GetWidth()) / 2;
+    int timerY = height - 80;
+    SDL_Rect timerRect = {timerX, timerY, timerTexture.GetWidth(),
+                          timerTexture.GetHeight()};
+    rendererPtr->Copy(timerTexture, SDL2pp::NullOpt, timerRect);
+
+    std::string instructText = "Usa los botones + y - para ajustar mejoras";
+    auto instructSurface = labelFont.RenderText_Solid(instructText.c_str(), labelColor);
+    SDL2pp::Texture instructTexture(*rendererPtr, instructSurface);
+    int instructX = (width - instructTexture.GetWidth()) / 2;
+    int instructY = height - 40;
+    SDL_Rect instructRect = {instructX, instructY, instructTexture.GetWidth(),
+                             instructTexture.GetHeight()};
+    rendererPtr->Copy(instructTexture, SDL2pp::NullOpt, instructRect);
+}
+
+void Game::handleUpgradesInput(const SDL_Event& event) {
+    if (event.type != SDL_MOUSEBUTTONDOWN)
+        return;
+
+    int mouseX = event.button.x;
+    int mouseY = event.button.y;
+    SDL_Point mousePoint = {mouseX, mouseY};
+
+    int width = rendererPtr->GetOutputWidth();
+    int centerX = width / 2;
+    int startY = 100;
+    int rowHeight = 50;
+
+    // Array de valores de upgrades para modificar
+    float* upgradeValues[] = {&selectedUpgrades.acceleration_boost, &selectedUpgrades.speed_boost,
+                              &selectedUpgrades.handling_boost, &selectedUpgrades.health_boost};
+    const float maxUpgrades = 100.0f;
+    const float increment = 5.0f;  // Incrementos de 5 puntos por click
+
+    // Verificar clics en botones +/-
+    for (int i = 0; i < 4; i++) {
+        int yPos = startY + (i * rowHeight);
+        int boxWidth = 400;
+
+        // Botón "-"
+        int minusX = centerX - boxWidth / 2 + 140;
+        int minusY = yPos - 5;
+        SDL_Rect minusRect = {minusX, minusY, 30, 30};
+        if (SDL_PointInRect(&mousePoint, &minusRect)) {
+            *upgradeValues[i] = std::max(0.0f, *upgradeValues[i] - increment);
+            std::cout << "[UPGRADES] Decrement upgrade " << i << " to "
+                      << *upgradeValues[i] << std::endl;
+            return;
+        }
+
+        // Botón "+"
+        int plusX = centerX + 30;
+        int plusY = yPos - 5;
+        SDL_Rect plusRect = {plusX, plusY, 30, 30};
+        if (SDL_PointInRect(&mousePoint, &plusRect)) {
+            *upgradeValues[i] = std::min(maxUpgrades, *upgradeValues[i] + increment);
+            std::cout << "[UPGRADES] Increment upgrade " << i << " to "
+                      << *upgradeValues[i] << std::endl;
+            return;
+        }
+    }
+
+    // Verificar clic en botón "APLICAR UPGRADES"
+    int applyButtonY = startY + (4 * rowHeight) + 60;
+    int applyButtonWidth = 200;
+    int applyButtonHeight = 40;
+    int applyButtonX = centerX - applyButtonWidth / 2;
+    SDL_Rect applyRect = {applyButtonX, applyButtonY, applyButtonWidth, applyButtonHeight};
+    if (SDL_PointInRect(&mousePoint, &applyRect)) {
+        // Enviar comando al servidor
+        client_session.send_command(new ClientToServerApplyUpgrades(selectedUpgrades));
+        std::cout << "[UPGRADES] Upgrades enviados al servidor: A=" << selectedUpgrades.acceleration_boost
+                  << " S=" << selectedUpgrades.speed_boost
+                  << " H=" << selectedUpgrades.handling_boost
+                  << " HP=" << selectedUpgrades.health_boost << std::endl;
+
+        // Cerrar pantalla de upgrades
+        showUpgradesScreen = false;
+        selectedUpgrades = CarUpgrades();  // Reset para la próxima vez
+
+        return;
+    }
 }

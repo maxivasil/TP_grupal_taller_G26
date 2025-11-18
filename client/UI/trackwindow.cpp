@@ -21,6 +21,7 @@ TrackWindow::TrackWindow(ClientSession& client_session, MainWindow& mainwindow, 
         mainwindow(mainwindow),
         ui(new Ui::TrackWindow) {
     ui->setupUi(this);
+    this->setWindowIcon(QIcon(":/new/prefix1/Assets/logo.png"));
     QScreen* screen = QGuiApplication::primaryScreen();
     QSize screenSize = screen->availableGeometry().size();
 

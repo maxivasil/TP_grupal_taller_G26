@@ -77,7 +77,7 @@ public:
 
     void retranslateUi(QMainWindow* TrackWindow) {
         TrackWindow->setWindowTitle(
-                QCoreApplication::translate("TrackWindow", "InitialWindow", nullptr));
+                QCoreApplication::translate("NFS-2D", "NFS-2D", nullptr));
         intro_text_2->setText(QCoreApplication::translate(
                 "TrackWindow", "Seleccione sobre que Pista se jugar\303\241 la carrera", nullptr));
         expert->setText(QString());

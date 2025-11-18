@@ -13,6 +13,7 @@ add_library(server_game_logic
     SensorData.h
     BridgeSensorManager.h
     Race.h
+    NPCTraffic.h
 
     Car.cpp
     PhysicsEngine.cpp
@@ -24,6 +25,7 @@ add_library(server_game_logic
     City.cpp
     BridgeSensorManager.cpp
     Race.cpp
+    NPCTraffic.cpp
 )
 
 target_link_libraries(server_game_logic PUBLIC box2d::box2d yaml-cpp)

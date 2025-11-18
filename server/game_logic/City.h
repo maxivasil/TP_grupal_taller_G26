@@ -36,6 +36,8 @@ public:
     const std::vector<StaticObjectData> getStaticObjects() const;
 
     const std::vector<BridgeSensorData>& getBridgeSensors() const;
+    
+    CityName getCityName() const { return name; }
 };
 
 

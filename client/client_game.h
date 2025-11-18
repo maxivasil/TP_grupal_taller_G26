@@ -21,6 +21,8 @@
 #include "graphics/collision_explosion.h"
 #include "graphics/hud.h"
 #include "graphics/minimap.h"
+#include "npc_system.h"
+#include "npc_routes.h"
 
 #include "session.h"
 #include "../server/game_logic/CarUpgrades.h"
@@ -49,6 +51,8 @@ private:
     CheckpointArrow arrow;
     CollisionExplosion explosion;
     CarSoundEngine carSoundEngine;
+    NPCManager npcManager;  // Gestor de NPCs (autos de tráfico)
+    NPCRouteManager npcRouteManager;  // Gestor de rutas para NPCs
     std::map<int, std::shared_ptr<SDL2pp::Texture>> textures;
     std::map<uint8_t, std::shared_ptr<SDL2pp::Texture>>
             carTextures;  // Texturas individuales por auto
@@ -68,7 +72,7 @@ private:
 
     std::vector<RaceCheckpoint> trackCheckpoints;
 
-    std::unordered_map<int, bool> previousCollisionState;
+    std::vector<NPCRoute> currentTrackRoutes;  // Rutas del track actual
 
     std::unordered_map<int, float> previousHealthState;
 
@@ -139,6 +143,12 @@ private:
     void renderUpgradesScreen();
 
     void handleUpgradesInput(const SDL_Event& event);
+
+    void renderNPCs();
+
+    void updateNPCs(float deltaTime);
+
+    void checkNPCCollisions();
 
 public:
     explicit Game(ClientSession& client_session);

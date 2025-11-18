@@ -20,9 +20,6 @@ void CheckpointArrow::updateTarget(float playerX, float playerY, float checkpoin
     if (hasTarget) {
         angleToCheckpoint = std::atan2(dx, -dy);
 
-        std::cout << "Arrow: distance=" << distanceToCheckpoint
-                  << ", world angle=" << (angleToCheckpoint * 180.0f / 3.14159265f) << " deg"
-                  << " (player heading=" << playerHeading << " deg)" << std::endl;
     }
 }
 
@@ -96,8 +93,6 @@ void CheckpointArrow::render(SDL2pp::Renderer& renderer) {
     }
 
     drawArrow(renderer, arrowX, arrowY, angleToCheckpoint, arrowSize);
-
-    std::cout << "Distance to checkpoint: " << distanceToCheckpoint << " units" << std::endl;
 
     renderer.SetDrawColor(r, g, b, a);
 }

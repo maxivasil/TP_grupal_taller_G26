@@ -19,6 +19,8 @@
 #include "Player.h"
 #include "StaticObject.h"
 #include "Track.h"
+#include "NPCTraffic.h"
+#include "npc_route_manager.h"
 
 #define MAX_RACE_TIME 600.0f
 
@@ -35,6 +37,9 @@ private:
     CheckpointManager checkpointManager;
     BridgeSensorManager bridgeSensorManager;
     std::list<StaticObject> staticObjects;
+    std::vector<std::unique_ptr<NPCTraffic>> npcs;  // NPCs con física
+    NPCRouteManager routeManager;  // Gestor de rutas para NPCs
+    std::vector<NPCRoute> currentRoutes;  // Rutas para la ciudad actual
     PhysicsEngine physics;
     std::vector<std::unique_ptr<Player>>& players;
 
@@ -47,6 +52,7 @@ private:
     void initStaticObjects(b2WorldId world);
     void initBridgeSensors(b2WorldId world);
     void initCars(b2WorldId world);
+    void initNPCs(b2WorldId world);  // Inicializar NPCs de tráfico
 
 public:
     Race(CityName cityName, std::string& trackFile, std::vector<std::unique_ptr<Player>>& players);

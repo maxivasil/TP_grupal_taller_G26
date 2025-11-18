@@ -126,6 +126,8 @@ private:
 
     void initMinimapAndCheckpoints(const std::string& trackName);
 
+    void renderCheckpoints(SDL2pp::Renderer& renderer);
+
 public:
     explicit Game(ClientSession& client_session);
 

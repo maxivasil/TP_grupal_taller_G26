@@ -4,20 +4,21 @@
 #include <QMainWindow>
 #include <string>
 
+#include "readywindow.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
 }
 QT_END_NAMESPACE
 
-class ClientSession;
-
 class MainWindow: public QMainWindow {
     Q_OBJECT
 
 private:
-    ClientSession& client_session;
     Ui::MainWindow* ui;
+    ReadyWindow& readywindow;
+    std::string lobbycode;
     std::string car;
 
     void selector();
@@ -25,7 +26,7 @@ private:
     void ready();
 
 public:
-    explicit MainWindow(ClientSession& client_session, QWidget* parent = nullptr);
+    explicit MainWindow(ReadyWindow& readywindow, QWidget* parent = nullptr);
     ~MainWindow();
 
     void connectEvents();

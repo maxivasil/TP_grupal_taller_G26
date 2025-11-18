@@ -1,6 +1,5 @@
 #include "Race.h"
-#include "npc_route_manager.h"
-#include "npc_checkpoint_loader.h"
+#include "npc_route_from_track.h"
 
 #include <algorithm>
 #include <chrono>
@@ -63,78 +62,59 @@ void Race::initCars(b2WorldId world) {
 }
 
 void Race::initNPCs(b2WorldId world) {
-    // Determinar nombre de ciudad
-    std::string cityName;
-    CityName cn = city.getCityName();
+    // Usar los checkpoints del track como base para generar rutas de NPCs
+    const auto& trackCheckpoints = track.getCheckpoints();
     
-    std::cout << "[RACE] City enum value: " << (int)cn << std::endl;
-    
-    if (cn == LibertyCity) {
-        cityName = "liberty_city";
-        std::cout << "[RACE] Detected: LibertyCity (enum=0)" << std::endl;
-    } else if (cn == SanAndreas) {
-        cityName = "san_andreas";
-        std::cout << "[RACE] Detected: SanAndreas (enum=1)" << std::endl;
-    } else if (cn == ViceCity) {
-        cityName = "vice_city";
-        std::cout << "[RACE] Detected: ViceCity (enum=2)" << std::endl;
-    } else {
-        cityName = "san_andreas";
-        std::cout << "[RACE] Unknown city, defaulting to san_andreas" << std::endl;
-    }
-    
-    std::cout << "[RACE] Initializing NPCs for city: " << cityName << std::endl;
-    
-    // Cargar checkpoints desde el archivo YAML
-    std::string yamlPath = NPCCheckpointLoader::getCheckpointFilePath(cityName);
-    std::vector<SimpleCheckpoint> simpleCheckpoints = NPCCheckpointLoader::loadCheckpointsFromYAML(yamlPath);
-    
-    if (simpleCheckpoints.empty()) {
-        std::cerr << "[RACE ERROR] Failed to load checkpoints from " << yamlPath << std::endl;
+    if (trackCheckpoints.empty()) {
+        std::cerr << "[RACE ERROR] No track checkpoints available for NPC route generation" << std::endl;
         return;
     }
     
-    // Convertir SimpleCheckpoint a NPCCheckpoint
-    std::vector<NPCCheckpoint> checkpoints;
-    for (const auto& scp : simpleCheckpoints) {
-        checkpoints.push_back(NPCCheckpoint{scp.x, scp.y, scp.width, scp.height});
+    std::cout << "[RACE] Generating NPC routes from " << trackCheckpoints.size() 
+              << " track checkpoints" << std::endl;
+    
+    // Convertir checkpoints del track a RoutePoint format
+    std::vector<RoutePoint> trackRoutePoints;
+    for (const auto& ckpt : trackCheckpoints) {
+        trackRoutePoints.push_back(RoutePoint(ckpt.x, ckpt.y, 5.0f));
     }
     
-    // Generar rutas desde los checkpoints del YAML
-    routeManager.initializeCityFromCheckpoints(cityName, checkpoints);
+    // Generar 5 variaciones del track (menos que antes para evitar congestión)
+    int numRoutes = 5;
+    currentRoutes = NPCRouteFromTrack::generateRoutesFromTrackCheckpoints(trackRoutePoints, numRoutes);
     
-    const auto& routes = routeManager.getRoutes(cityName);
-    currentRoutes.assign(routes.begin(), routes.end());
+    std::cout << "[RACE] Generated " << currentRoutes.size() << " NPC routes from track" << std::endl;
     
-    std::cout << "[RACE] Generated " << currentRoutes.size() << " routes for city: " << cityName << std::endl;
-    
-    // Distribuir 6 NPCs por ruta (60 total para 10 rutas)
-    // Cada NPC inicia en un punto diferente y separado en la ruta
+    // Distribuir NPCs: 4 NPCs por ruta (20 total para 5 rutas) - REDUCIDO AÚN MÁS
+    // Los NPCs se distribuyen a lo largo de la RUTA COMPLETA, no todos juntos al inicio
     int npcCount = 0;
-    int npcsPerRoute = 6;
-    int maxNPCs = 60;
+    int npcsPerRoute = 4;  // Cambié de 6 a 4
+    int maxNPCs = 20;      // Cambié de 30 a 20
     
     for (size_t routeIdx = 0; routeIdx < currentRoutes.size(); ++routeIdx) {
         const auto& route = currentRoutes[routeIdx];
         if (route.points.empty()) continue;
         
-        // Distribuir NPCs equitativamente a lo largo de la ruta
+        // Distribuir NPCs equitativamente a lo largo de TODA la ruta
         size_t routeLength = route.points.size();
+        
+        // Calcular espaciado para distribuir a lo largo de la ruta completa
+        // Esto asegura que no todos empiezan juntos
         size_t spacing = (routeLength > npcsPerRoute) ? (routeLength / npcsPerRoute) : 1;
         
         for (int i = 0; i < npcsPerRoute && npcCount < maxNPCs; ++i) {
-            // Calcular índice base espaciado uniformemente
+            // Calcular índice base: distribuir uniformemente en toda la ruta
             size_t basePointIdx = (i * spacing) % routeLength;
             
             // Agregar variación aleatoria pequeña para no estar exactamente en línea
-            int randomOffset = (rand() % 5) - 2;  // ±2 puntos
+            int randomOffset = (rand() % 3) - 1;  // ±1 punto
             size_t pointIdx = (basePointIdx + randomOffset + routeLength) % routeLength;
             
             const auto& point = route.points[pointIdx];
             
-            // Agregar pequeño offset perpendicular para no superponer
-            float offsetX = (rand() % 10 - 5) * 0.1f;  // ±0.5
-            float offsetY = (rand() % 10 - 5) * 0.1f;
+            // Pequeño offset perpendicular para no superponer exactamente
+            float offsetX = (rand() % 8 - 4) * 0.1f;  // ±0.4
+            float offsetY = (rand() % 8 - 4) * 0.1f;
             
             b2Vec2 pos{point.x + offsetX, point.y + offsetY};
             uint8_t carType = rand() % 7;  // 7 tipos de autos (0-6)
@@ -143,16 +123,54 @@ void Race::initNPCs(b2WorldId world) {
             npc->setRoute(&route.points);  // Asignar la ruta al NPC
             npcs.push_back(std::move(npc));
             
-            std::cout << "[RACE] NPC #" << npcCount << " created at (" << pos.x << ", " << pos.y 
-                      << ") on route " << (routeIdx + 1) << " with " << route.points.size() 
-                      << " waypoints [Car Type: " << (int)carType << "]" << std::endl;
+            std::cout << "[RACE] NPC #" << npcCount << " (moving) created at (" << pos.x << ", " << pos.y 
+                      << ") on route " << (routeIdx + 1) << " [spacing: " << spacing << " waypoints]"
+                      << " [Car Type: " << (int)carType << "]" << std::endl;
             
             npcCount++;
         }
     }
     
-    std::cout << "[RACE] Initialized " << npcCount << " NPC traffic vehicles across " 
-              << currentRoutes.size() << " routes" << std::endl;
+    // AGREGAR AUTOS ESTACIONADOS
+    // Colocar algunos autos sin ruta (estacionados) en posiciones estratégicas
+    std::vector<b2Vec2> parkedPositions;
+    
+    // Usar checkpoints del track como ubicaciones base para autos estacionados
+    if (trackCheckpoints.size() >= 2) {
+        // Estacionar autos cerca de algunos checkpoints
+        parkedPositions.push_back(b2Vec2{trackCheckpoints[0].x + 10, trackCheckpoints[0].y + 5});
+        parkedPositions.push_back(b2Vec2{trackCheckpoints[trackCheckpoints.size() / 2].x - 8, 
+                                         trackCheckpoints[trackCheckpoints.size() / 2].y - 5});
+    }
+    
+    // Si hay más de 4 checkpoints, agregar más posiciones estacionadas
+    if (trackCheckpoints.size() >= 4) {
+        parkedPositions.push_back(b2Vec2{trackCheckpoints[trackCheckpoints.size() - 1].x + 5, 
+                                         trackCheckpoints[trackCheckpoints.size() - 1].y + 8});
+        parkedPositions.push_back(b2Vec2{trackCheckpoints[trackCheckpoints.size() / 4].x - 6, 
+                                         trackCheckpoints[trackCheckpoints.size() / 4].y + 10});
+    }
+    
+    // Crear NPCs estacionados
+    int parkedCount = 0;
+    for (const auto& parkedPos : parkedPositions) {
+        if (npcCount >= maxNPCs + 4) break;  // Máximo 4 autos estacionados adicionales
+        
+        uint8_t carType = rand() % 7;
+        auto npc = std::make_unique<NPCTraffic>(world, carType, parkedPos);
+        // NO asignar ruta - esto los deja estacionados
+        npcs.push_back(std::move(npc));
+        
+        std::cout << "[RACE] NPC #" << npcCount << " (PARKED) created at (" << parkedPos.x << ", " << parkedPos.y 
+                  << ") [Car Type: " << (int)carType << "]" << std::endl;
+        
+        npcCount++;
+        parkedCount++;
+    }
+    
+    std::cout << "[RACE] Initialized " << npcCount << " NPC traffic vehicles: " 
+              << (npcCount - parkedCount) << " moving across " << currentRoutes.size() 
+              << " routes, " << parkedCount << " parked" << std::endl;
 }
 
 Race::Race(CityName cityName, std::string& trackFile,

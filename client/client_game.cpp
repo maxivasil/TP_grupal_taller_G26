@@ -14,10 +14,13 @@
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
+#define PX_PER_METER_X (62.0f / 8.9f)
+#define PX_PER_METER_Y (24.0f / 3.086f)
 
 #define FPS 1000 / 30
 
 #define DATA_PATH "assets/"
+
 
 // Estructura de información de sprite
 struct SpriteInfo {
@@ -238,8 +241,8 @@ bool Game::update(ServerToClientSnapshot cmd_snapshot) {
                            [&](const CarSnapshot& car) { return car.id == client_id; });
 
     if (it != snapshots.end()) {
-        float worldX = (it->pos_x * 62) / 8.9;
-        float worldY = (it->pos_y * 24) / 3.086;
+        float worldX = it->pos_x * PX_PER_METER_X;
+        float worldY = it->pos_y * PX_PER_METER_Y;
         camera.follow(worldX, worldY);
 
         float previousHealth = previousHealthState[it->id];
@@ -286,12 +289,17 @@ bool Game::update(ServerToClientSnapshot cmd_snapshot) {
 
             arrow.updateTarget(it->pos_x, it->pos_y, checkpointX, checkpointY, it->angle);
 
-            float dx = checkpointX - it->pos_x;
-            float dy = checkpointY - it->pos_y;
-            float distToCheckpoint = std::sqrt(dx * dx + dy * dy);
+            float halfW = current.width / 2.0f;
+            float halfH = current.height / 2.0f;
+            float minX = checkpointX - halfW;
+            float maxX = checkpointX + halfW;
+            float minY = checkpointY - halfH;
+            float maxY = checkpointY + halfH;
 
-            const float CHECKPOINT_RADIUS = 5.0f;  // Radio de detección
-            if (distToCheckpoint < CHECKPOINT_RADIUS) {
+            float px = it->pos_x;
+            float py = it->pos_y;
+
+            if (px >= minX && px <= maxX && py >= minY && py <= maxY) {
                 if (currentCheckpoint == totalCheckpoints - 1) {
                     setWon();
                 } else {
@@ -326,13 +334,13 @@ bool Game::update(ServerToClientSnapshot cmd_snapshot) {
     // Get player position for distance calculations
     float playerWorldX = 0.0f, playerWorldY = 0.0f;
     if (it != snapshots.end()) {
-        playerWorldX = (it->pos_x * 62) / 8.9;
-        playerWorldY = (it->pos_y * 24) / 3.086;
+        playerWorldX = it->pos_x * PX_PER_METER_X;
+        playerWorldY = it->pos_y * PX_PER_METER_Y;
     }
 
     for (const auto& car: snapshots) {
-        float worldX = (car.pos_x * 62) / 8.9;
-        float worldY = (car.pos_y * 24) / 3.086;
+        float worldX = car.pos_x * PX_PER_METER_X;
+        float worldY = car.pos_y * PX_PER_METER_Y;
 
         float relX = (worldX - src.x) * scale;
         float relY = (worldY - src.y) * scale;
@@ -486,7 +494,7 @@ void Game::render() {
         minimap.render(*rendererPtr, localPlayer, otherPlayers, currentCheckpoint);
     }
 
-
+    renderCheckpoints(*rendererPtr);
     explosion.render(*rendererPtr);
 
     rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
@@ -550,27 +558,64 @@ void Game::render() {
         int windowWidth = rendererPtr->GetOutputWidth();
         int windowHeight = rendererPtr->GetOutputHeight();
         const int borderWidth = 10;  // Grosor del borde indicador (engrosado)
-        
+
         rendererPtr->SetDrawColor(0, 255, 100, 255);  // Verde brillante
-        
+
         // Borde superior
         SDL_Rect topBorder = {0, 0, windowWidth, borderWidth};
         rendererPtr->FillRect(topBorder);
-        
+
         // Borde inferior
         SDL_Rect bottomBorder = {0, windowHeight - borderWidth, windowWidth, borderWidth};
         rendererPtr->FillRect(bottomBorder);
-        
+
         // Borde izquierdo
         SDL_Rect leftBorder = {0, 0, borderWidth, windowHeight};
         rendererPtr->FillRect(leftBorder);
-        
+
         // Borde derecho
         SDL_Rect rightBorder = {windowWidth - borderWidth, 0, borderWidth, windowHeight};
         rendererPtr->FillRect(rightBorder);
     }
 
     rendererPtr->Present();
+}
+
+void Game::renderCheckpoints(SDL2pp::Renderer& renderer) {
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+
+    float scaleX = float(dst.w) / float(src.w);
+    float scaleY = float(dst.h) / float(src.h);
+
+    size_t lastIndex = trackCheckpoints.size() - 1;
+    for (size_t i = currentCheckpoint; i < trackCheckpoints.size(); ++i) {
+        const RaceCheckpoint& cp = trackCheckpoints[i];
+
+        float worldX = cp.x * PX_PER_METER_X;
+        float worldY = cp.y * PX_PER_METER_Y;
+
+        float worldW = cp.width * PX_PER_METER_X;
+        float worldH = cp.height * PX_PER_METER_Y;
+        float screenX = (worldX - src.x) * scaleX;
+        float screenY = (worldY - src.y) * scaleY;
+
+        float screenW = worldW * scaleX;
+        float screenH = worldH * scaleY;
+
+        SDL_Rect rect{int(screenX - screenW / 2), int(screenY - screenH / 2), int(screenW),
+                      int(screenH)};
+
+        if (i == static_cast<size_t>(currentCheckpoint) && i != lastIndex) {
+            renderer.SetDrawColor(0, 255, 0, 130);
+        } else if (i == lastIndex) {
+            renderer.SetDrawColor(255, 0, 0, 140);
+        } else {
+            int dist = int(i - (currentCheckpoint + 1));
+            int alpha = std::max(0, 130 - dist * 60);
+            renderer.SetDrawColor(0, 255, 0, alpha);
+        }
+        renderer.FillRect(rect);
+    }
 }
 
 void Game::init_textures() {
@@ -790,8 +835,6 @@ void Game::renderMyOwnTime() {
     int width = rendererPtr->GetOutputWidth();
     int height = rendererPtr->GetOutputHeight();
 
-    // std::cout << myOwnResults.size()
-    //           << " resultados propios para renderizar el tiempo recibido." << std::endl;
     int minutes = (int)myOwnResults.finishTime / 60;
     int seconds = (int)myOwnResults.finishTime % 60;
     int millis = (int)((myOwnResults.finishTime - (int)myOwnResults.finishTime) * 1000);
@@ -1018,7 +1061,7 @@ void Game::initMinimapAndCheckpoints(const std::string& trackName) {
 
     if (it2 != city_map_paths.end()) {
         minimap.loadMapImage(*rendererPtr, it2->second);
-        minimap.setWorldScale(62.0f / 8.9f, 24.0f / 3.086f);
+        minimap.setWorldScale(PX_PER_METER_X, PX_PER_METER_Y);
         minimap.setZoomPixels(900.0f, 900.0f);
     }
 

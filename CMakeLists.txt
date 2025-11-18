@@ -233,36 +233,41 @@ if(TALLER_TESTS)
     FetchContent_MakeAvailable(googletest)
     include(GoogleTest)
 
-    # target for testing
-    # HEY!! TODO XXX: Change the name of the executable to the one you like!
     add_executable(taller_tests)
-
-    # HEY!! TODO XXX: I'm assuming that the code under testing is in taller_common
-    # Change this if you have to.
     add_dependencies(taller_tests taller_common)
-
-    # Say where to find the xoz headers
-    # HEY!! TODO XXX: add more subfolders here
-    target_include_directories(taller_tests PUBLIC .)
-
-    # Add the source files to the taller_tests target
-    # HEY!! TODO XXX: add more subfolders here
     add_subdirectory(tests/)
 
-    # Set the compiler warnings to the tests target (but be a little lesser strict)
     set_project_warnings(taller_tests ${TALLER_MAKE_WARNINGS_AS_ERRORS} TRUE)
 
-    # Say where googletest headers can be found
+    file(GLOB EVENT_SOURCES 
+        "${CMAKE_SOURCE_DIR}/common/*.h"
+        "${CMAKE_SOURCE_DIR}/client/*.h"
+        "${CMAKE_SOURCE_DIR}/client/cmd/*.h"
+    )
+
+    # eliminar main.cpp
+    # list(REMOVE_ITEM EVENT_SOURCES "${CMAKE_SOURCE_DIR}/client/main.cpp")
+
+    target_sources(taller_tests
+        PRIVATE
+            ${EVENT_SOURCES}
+    )
+
     target_include_directories(taller_tests
         PUBLIC
         ${gtest_SOURCE_DIR}/include
         ${gmock_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/client/game
         )
 
-    # HEY!! TODO XXX: I'm assuming that the code under testing is in taller_common
-    # Change this if you have to.
     target_link_libraries(taller_tests
         taller_common
         GTest::gtest_main
+        Qt${QT_VERSION_MAJOR}::Widgets
+        SDL2pp::SDL2pp 
+        SDL2_mixer::SDL2_mixer
+        SDL2_ttf::SDL2_ttf
+        yaml-cpp
     )
+
 endif()

@@ -15,9 +15,8 @@
 #include "../session.h"
 #include "./ui_trackwindow.h"
 
-TrackWindow::TrackWindow(ClientSession& client_session, MainWindow& mainwindow, QWidget* parent):
+TrackWindow::TrackWindow(MainWindow& mainwindow, QWidget* parent):
         QMainWindow(parent),
-        client_session(client_session),
         mainwindow(mainwindow),
         ui(new Ui::TrackWindow) {
 
@@ -87,7 +86,7 @@ void TrackWindow::selectTrack() {
         return;
 
     std::string tourFile = senderButton->property("track_souce").toString().toStdString();
-    client_session.send_command(new ClientToServerTour(tourFile));
+    client_session->send_command(new ClientToServerTour(tourFile));
 
     this->hide();
     mainwindow.show();
@@ -115,6 +114,10 @@ bool TrackWindow::eventFilter(QObject* obj, QEvent* event) {
         painter.drawPixmap(0, 0, bg);
     }
     return false;
+}
+
+void TrackWindow::setSession(ClientSession* session){
+    client_session = session;
 }
 
 TrackWindow::~TrackWindow() { delete ui; }

@@ -20,6 +20,8 @@ target_sources(nfs2d_client
     UI/trackwindow.ui
     UI/readywindow.cpp
     UI/readywindow.ui
+    UI/hostwindow.cpp
+    UI/hostwindow.ui
     PUBLIC
     # .h files
     parser.h
@@ -31,6 +33,7 @@ target_sources(nfs2d_client
     UI/initialwindow.h
     UI/trackwindow.h
     UI/readywindow.h
+    UI/hostwindow.h
     )
 
 target_link_libraries(nfs2d_client 

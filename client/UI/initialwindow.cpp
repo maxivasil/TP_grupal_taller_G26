@@ -19,10 +19,9 @@
 #include "../session.h"
 #include "./ui_initialwindow.h"
 
-InitialWindow::InitialWindow(ClientSession& client_session, MainWindow& mainwindow,
+InitialWindow::InitialWindow(MainWindow& mainwindow,
                              TrackWindow& trackwindow, QWidget* parent):
         QMainWindow(parent),
-        client_session(client_session),
         mainwindow(mainwindow),
         trackwindow(trackwindow),
         ui(new Ui::InitialWindow),
@@ -81,9 +80,9 @@ void InitialWindow::joinLobby() {
         QLabel* labelOut = findChild<QLabel*>("intro_text");
         labelOut->setText("El Lobby debe tener exactamente 6 caracteres");
     } else {
-        client_session.send_command(new ClientToServerLobby(lobby, false));
+        client_session->send_command(new ClientToServerLobby(lobby, false));
         ServerToClientCmd_Client* raw_cmd;
-        Queue<ServerToClientCmd_Client*>& recv_queue = client_session.get_recv_queue();
+        Queue<ServerToClientCmd_Client*>& recv_queue = client_session->get_recv_queue();
         std::vector<ServerToClientCmd_Client*> stash;
         while (true) {
             if (recv_queue.try_pop(raw_cmd)) {
@@ -105,10 +104,10 @@ void InitialWindow::joinLobby() {
 }
 
 void InitialWindow::createLobby() {
-    client_session.send_command(new ClientToServerLobby("AAAAAA", true));
+    client_session->send_command(new ClientToServerLobby("AAAAAA", true));
     created = true;
     ServerToClientCmd_Client* raw_cmd;
-    Queue<ServerToClientCmd_Client*>& recv_queue = client_session.get_recv_queue();
+    Queue<ServerToClientCmd_Client*>& recv_queue = client_session->get_recv_queue();
     std::vector<ServerToClientCmd_Client*> stash;
     while (true) {
         if (recv_queue.try_pop(raw_cmd)) {
@@ -130,7 +129,8 @@ void InitialWindow::createLobby() {
 
 void InitialWindow::changeScreen(const std::string& lobby) {
     this->hide();
-    mainwindow.updateLobby(lobby);
+    mainwindow.updateSession(lobby, client_session);
+    trackwindow.setSession(client_session);
     if (created) {
         trackwindow.show();
     } else {
@@ -167,6 +167,10 @@ bool InitialWindow::eventFilter(QObject* obj, QEvent* event) {
         painter.drawPixmap(0, 0, bg);
     }
     return false;
+}
+
+void InitialWindow::setSession(ClientSession* session){
+    client_session = session;
 }
 
 InitialWindow::~InitialWindow() { delete ui; }

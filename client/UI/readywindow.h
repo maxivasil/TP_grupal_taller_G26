@@ -16,16 +16,17 @@ class ReadyWindow: public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit ReadyWindow(ClientSession& client_session, QWidget* parent = nullptr);
+    explicit ReadyWindow(QWidget* parent = nullptr);
     ~ReadyWindow();
     void updateLobby(const std::string& lobby, const std::string& new_car);
+    void setSession(ClientSession* session);
 
 private:
     const int BASE_WIDTH = 1920;
     const int BASE_HEIGHT = 1080;
 
     Ui::ReadyWindow* ui;
-    ClientSession& client_session;
+    ClientSession* client_session = nullptr;
     std::string car;
     void connectEvents();
     void setReady();

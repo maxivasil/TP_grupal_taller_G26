@@ -20,8 +20,8 @@
 #include "../session.h"
 #include "./ui_readywindow.h"
 
-ReadyWindow::ReadyWindow(ClientSession& client_session, QWidget* parent):
-        QMainWindow(parent), ui(new Ui::ReadyWindow), client_session(client_session) {
+ReadyWindow::ReadyWindow(QWidget* parent):
+        QMainWindow(parent), ui(new Ui::ReadyWindow) {
     ui->setupUi(this);
     this->setWindowState(Qt::WindowFullScreen);
     this->setWindowIcon(QIcon(":/new/prefix1/Assets/logo.png"));
@@ -83,8 +83,8 @@ void ReadyWindow::setReady() {
     QPushButton* senderButton = qobject_cast<QPushButton*>(sender());
     senderButton->setEnabled(false);
     ServerToClientCmd_Client* raw_cmd;
-    Queue<ServerToClientCmd_Client*>& recv_queue = client_session.get_recv_queue();
-    client_session.send_command(new ClientToServerReady(car));
+    Queue<ServerToClientCmd_Client*>& recv_queue = client_session->get_recv_queue();
+    client_session->send_command(new ClientToServerReady(car));
     std::vector<ServerToClientCmd_Client*> stash;
     while (true) {
         if (recv_queue.try_pop(raw_cmd)) {
@@ -126,6 +126,10 @@ bool ReadyWindow::eventFilter(QObject* obj, QEvent* event) {
         painter.drawPixmap(0, 0, bg);
     }
     return false;
+}
+
+void ReadyWindow::setSession(ClientSession* session){
+    client_session = session;
 }
 
 ReadyWindow::~ReadyWindow() { delete ui; }

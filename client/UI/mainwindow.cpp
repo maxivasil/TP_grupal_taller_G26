@@ -119,19 +119,11 @@ void MainWindow::selector() {
                               "   font-family: 'DejaVu Sans Mono';"
                               "}");
 
-    QLabel* carBox = findChild<QLabel*>("label_2");
-    if (carBox) {
-        int carWidth = carBox->width();
-        int carPosX = (width() - carWidth) / 2;
-        carBox->move(carPosX, carBox->y());
-    }
-
-    car = carName.toStdString();
-
     car = carName.toStdString();
 }
 
-void MainWindow::updateLobby(const std::string& lobby) {
+void MainWindow::updateSession(const std::string& lobby, ClientSession* session) {
+    readywindow.setSession(session);
     lobbycode = lobby;
     QLabel* lobbyLabel = findChild<QLabel*>("Lobby_text");
     if (lobbyLabel) {

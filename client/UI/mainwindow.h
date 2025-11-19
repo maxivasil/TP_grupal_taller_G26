@@ -5,6 +5,7 @@
 #include <string>
 
 #include "readywindow.h"
+#include "../session.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -35,6 +36,6 @@ public:
 
     void connectEvents();
 
-    void updateLobby(const std::string& lobby);
+    void updateSession(const std::string& lobby, ClientSession* session);
 };
 #endif  // MAINWINDOW_H

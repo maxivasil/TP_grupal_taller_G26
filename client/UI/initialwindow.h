@@ -19,17 +19,18 @@ class InitialWindow: public QMainWindow {
     Q_OBJECT
 
 public:
-    InitialWindow(ClientSession& client_session, MainWindow& mainwindow, TrackWindow& trackwindow,
+    InitialWindow(MainWindow& mainwindow, TrackWindow& trackwindow,
                   QWidget* parent = nullptr);
     ~InitialWindow();
     void changeScreen(const std::string& lobby);
     void showError();
+    void setSession(ClientSession* session);
 
 private:
     const int BASE_WIDTH = 1920;
     const int BASE_HEIGHT = 1080;
 
-    ClientSession& client_session;
+    ClientSession* client_session = nullptr;
     MainWindow& mainwindow;
     TrackWindow& trackwindow;
     Ui::InitialWindow* ui;

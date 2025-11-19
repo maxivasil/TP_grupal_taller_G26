@@ -8,11 +8,12 @@
 #include <SDL_ttf.h>
 #include <unistd.h>
 
+#include "../common/constants.h"
+#include "cmd/client_to_server_applyUpgrades.h"
 #include "cmd/client_to_server_cheat.h"
 #include "cmd/client_to_server_move.h"
-#include "cmd/client_to_server_applyUpgrades.h"
 #include "graphics/track_loader.h"
-#include "../common/constants.h"
+
 #include "npc_system.h"
 
 #define WINDOW_WIDTH 640
@@ -49,7 +50,6 @@ Game::Game(ClientSession& client_session):
         minimap(150),
         hud(WINDOW_WIDTH, WINDOW_HEIGHT),
         arrow(WINDOW_WIDTH, WINDOW_HEIGHT) {
-    raceStartTime = SDL_GetTicks() / 1000.0f;
     explosion.setSoundEngine(&carSoundEngine);
 }
 
@@ -131,7 +131,8 @@ int Game::start() {
                 if (elapsedMs >= UPGRADES_SCREEN_DURATION_MS) {
                     showUpgradesScreen = false;
                     selectedUpgrades = CarUpgrades();  // Reset
-                    std::cout << "[UPGRADES] Upgrade screen auto-closed after 10 seconds" << std::endl;
+                    std::cout << "[UPGRADES] Upgrade screen auto-closed after 10 seconds"
+                              << std::endl;
                 }
             }
 
@@ -523,7 +524,7 @@ void Game::render() {
     rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     hudData.checkpointCurrent = currentCheckpoint;
     hudData.checkpointTotal = totalCheckpoints;
-    hudData.raceTime = (SDL_GetTicks() / 1000.0f) - raceStartTime;
+    hudData.raceTime = elapsedTime;
     hud.render(*rendererPtr, hudData);
 
     if (!snapshots.empty()) {
@@ -651,18 +652,20 @@ void Game::init_textures() {
             *rendererPtr,
             SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/Liberty_City.png").SetColorKey(true, 0));
     textures[3] = std::make_shared<SDL2pp::Texture>(
-            *rendererPtr,
-            SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/Liberty_City_bridges.png").SetColorKey(true, 0));
+            *rendererPtr, SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/Liberty_City_bridges.png")
+                                  .SetColorKey(true, 0));
     textures[1] = std::make_shared<SDL2pp::Texture>(
-            *rendererPtr, SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/San_Andreas.png").SetColorKey(true, 0));
+            *rendererPtr,
+            SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/San_Andreas.png").SetColorKey(true, 0));
     textures[4] = std::make_shared<SDL2pp::Texture>(
-            *rendererPtr,
-            SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/San_Andreas_bridges.png").SetColorKey(true, 0));
+            *rendererPtr, SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/San_Andreas_bridges.png")
+                                  .SetColorKey(true, 0));
     textures[2] = std::make_shared<SDL2pp::Texture>(
-            *rendererPtr, SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/Vice_City.png").SetColorKey(true, 0));
-    textures[5] = std::make_shared<SDL2pp::Texture>(
             *rendererPtr,
-            SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/Vice_City_bridges.png").SetColorKey(true, 0));
+            SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/Vice_City.png").SetColorKey(true, 0));
+    textures[5] = std::make_shared<SDL2pp::Texture>(
+            *rendererPtr, SDL2pp::Surface(ABS_DIR ASSETS_DIR "cities/Vice_City_bridges.png")
+                                  .SetColorKey(true, 0));
 
     // Cargar cada auto desde su PNG individual
     std::vector<std::pair<uint8_t, std::string>> carFiles = {
@@ -694,8 +697,9 @@ SDL_Rect Game::getSpriteForCarId(uint8_t car_id) {
     return SPRITE_MAP[car_id].rect;
 }
 
-void Game::update_snapshots(const std::vector<CarSnapshot>& snapshots) {
+void Game::update_snapshots(const std::vector<CarSnapshot>& snapshots, float elapsedTime) {
     this->snapshots = snapshots;
+    this->elapsedTime = elapsedTime;
 }
 
 void Game::renderEndGameScreen() {
@@ -1070,7 +1074,6 @@ void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
     accumulatedResults.clear();
     raceResults.clear();
     myOwnResults = ClientPlayerResult();
-    raceStartTime = SDL_GetTicks() / 1000.0f;
     currentCheckpoint = 0;
     playerDestroyed = false;
     previousHealthState.clear();
@@ -1096,8 +1099,8 @@ void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
 
     // Cargar las rutas predefinidas de la ciudad actual
     currentTrackRoutes = npcRouteManager.getRoutes(cityName);
-    std::cout << "[GAME] Rutas cargadas para ciudad ID " << static_cast<int>(nextCityId) 
-              << " (" << cityName << "): " << currentTrackRoutes.size() << " rutas" << std::endl;
+    std::cout << "[GAME] Rutas cargadas para ciudad ID " << static_cast<int>(nextCityId) << " ("
+              << cityName << "): " << currentTrackRoutes.size() << " rutas" << std::endl;
 
     // Calculate map bounds from checkpoints and add margin
     float minX = 0.0f, maxX = 150.0f;
@@ -1109,7 +1112,7 @@ void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
         minY = trackCheckpoints[0].y;
         maxY = trackCheckpoints[0].y;
 
-        for (const auto& checkpoint : trackCheckpoints) {
+        for (const auto& checkpoint: trackCheckpoints) {
             float halfW = checkpoint.width / 2.0f;
             float halfH = checkpoint.height / 2.0f;
             minX = std::min(minX, checkpoint.x - halfW);
@@ -1199,17 +1202,16 @@ void Game::renderUpgradesScreen() {
     rendererPtr->Copy(titleTexture, SDL2pp::NullOpt, titleRect);
 
     // Fuentes
-    SDL2pp::Font labelFont(hud.fontPath.empty() ?
-                                   "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" :
-                                   hud.fontPath,
-                           18);
+    SDL2pp::Font labelFont(
+            hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
+            18);
     SDL2pp::Font valueFont(hud.fontPath.empty() ?
                                    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" :
                                    hud.fontPath,
                            16);
 
     SDL_Color labelColor = {200, 200, 200, 255};
-    SDL_Color valueColor = {100, 255, 100, 255};  // Verde
+    SDL_Color valueColor = {100, 255, 100, 255};    // Verde
     SDL_Color penaltyColor = {255, 100, 100, 255};  // Rojo para penalización
 
     // Dimensiones del upgrade display
@@ -1231,8 +1233,7 @@ void Game::renderUpgradesScreen() {
         auto labelSurface = labelFont.RenderText_Solid(upgradeLabels[i], labelColor);
         SDL2pp::Texture labelTexture(*rendererPtr, labelSurface);
         int labelX = centerX - boxWidth / 2;
-        SDL_Rect labelRect = {labelX, yPos, labelTexture.GetWidth(),
-                              labelTexture.GetHeight()};
+        SDL_Rect labelRect = {labelX, yPos, labelTexture.GetWidth(), labelTexture.GetHeight()};
         rendererPtr->Copy(labelTexture, SDL2pp::NullOpt, labelRect);
 
         // Botón "-"
@@ -1257,8 +1258,7 @@ void Game::renderUpgradesScreen() {
         SDL2pp::Texture valueTexture(*rendererPtr, valueSurface);
         int valueX = centerX - 20;
         int valueY = yPos + 5;
-        SDL_Rect valueRect = {valueX, valueY, valueTexture.GetWidth(),
-                              valueTexture.GetHeight()};
+        SDL_Rect valueRect = {valueX, valueY, valueTexture.GetWidth(), valueTexture.GetHeight()};
         rendererPtr->Copy(valueTexture, SDL2pp::NullOpt, valueRect);
 
         // Botón "+"
@@ -1329,8 +1329,7 @@ void Game::renderUpgradesScreen() {
     SDL2pp::Texture timerTexture(*rendererPtr, timerSurface);
     int timerX = (width - timerTexture.GetWidth()) / 2;
     int timerY = height - 80;
-    SDL_Rect timerRect = {timerX, timerY, timerTexture.GetWidth(),
-                          timerTexture.GetHeight()};
+    SDL_Rect timerRect = {timerX, timerY, timerTexture.GetWidth(), timerTexture.GetHeight()};
     rendererPtr->Copy(timerTexture, SDL2pp::NullOpt, timerRect);
 
     std::string instructText = "Usa los botones + y - para ajustar mejoras";
@@ -1373,8 +1372,8 @@ void Game::handleUpgradesInput(const SDL_Event& event) {
         SDL_Rect minusRect = {minusX, minusY, 30, 30};
         if (SDL_PointInRect(&mousePoint, &minusRect)) {
             *upgradeValues[i] = std::max(0.0f, *upgradeValues[i] - increment);
-            std::cout << "[UPGRADES] Decrement upgrade " << i << " to "
-                      << *upgradeValues[i] << std::endl;
+            std::cout << "[UPGRADES] Decrement upgrade " << i << " to " << *upgradeValues[i]
+                      << std::endl;
             return;
         }
 
@@ -1384,8 +1383,8 @@ void Game::handleUpgradesInput(const SDL_Event& event) {
         SDL_Rect plusRect = {plusX, plusY, 30, 30};
         if (SDL_PointInRect(&mousePoint, &plusRect)) {
             *upgradeValues[i] = std::min(maxUpgrades, *upgradeValues[i] + increment);
-            std::cout << "[UPGRADES] Increment upgrade " << i << " to "
-                      << *upgradeValues[i] << std::endl;
+            std::cout << "[UPGRADES] Increment upgrade " << i << " to " << *upgradeValues[i]
+                      << std::endl;
             return;
         }
     }
@@ -1399,8 +1398,8 @@ void Game::handleUpgradesInput(const SDL_Event& event) {
     if (SDL_PointInRect(&mousePoint, &applyRect)) {
         // Enviar comando al servidor
         client_session.send_command(new ClientToServerApplyUpgrades(selectedUpgrades));
-        std::cout << "[UPGRADES] Upgrades enviados al servidor: A=" << selectedUpgrades.acceleration_boost
-                  << " S=" << selectedUpgrades.speed_boost
+        std::cout << "[UPGRADES] Upgrades enviados al servidor: A="
+                  << selectedUpgrades.acceleration_boost << " S=" << selectedUpgrades.speed_boost
                   << " H=" << selectedUpgrades.handling_boost
                   << " HP=" << selectedUpgrades.health_boost << std::endl;
 
@@ -1423,8 +1422,9 @@ void Game::updateNPCs(float) {
 
 void Game::checkNPCCollisions() {
     // Buscar posición del jugador desde snapshots
-    auto it = std::find_if(snapshots.begin(), snapshots.end(),
-                           [&](const CarSnapshot& car) { return car.id == client_id && !car.isNPC; });
+    auto it = std::find_if(snapshots.begin(), snapshots.end(), [&](const CarSnapshot& car) {
+        return car.id == client_id && !car.isNPC;
+    });
 
     if (it == snapshots.end())
         return;
@@ -1437,14 +1437,14 @@ void Game::checkNPCCollisions() {
 
     // Detectar colisiones con NPCs desde snapshots
     std::vector<int> collidingNPCs;
-    for (const auto& car : snapshots) {
+    for (const auto& car: snapshots) {
         if (!car.isNPC)
             continue;
-        
+
         float dx = playerX - car.pos_x;
         float dy = playerY - car.pos_y;
         float distance = std::sqrt(dx * dx + dy * dy);
-        
+
         if (distance < (playerRadius + 0.25f)) {  // 0.25f es el radio de colisión de NPCs
             collidingNPCs.push_back(car.id);
         }
@@ -1460,9 +1460,10 @@ void Game::checkNPCCollisions() {
         collisionFlashStartTime = SDL_GetTicks();
 
         // Reproducir sonido de colisión para cada NPC
-        for (int npcId : collidingNPCs) {
-            auto npcIt = std::find_if(snapshots.begin(), snapshots.end(),
-                                      [npcId](const CarSnapshot& car) { return car.id == npcId && car.isNPC; });
+        for (int npcId: collidingNPCs) {
+            auto npcIt = std::find_if(
+                    snapshots.begin(), snapshots.end(),
+                    [npcId](const CarSnapshot& car) { return car.id == npcId && car.isNPC; });
             if (npcIt != snapshots.end()) {
                 float dx = playerX - npcIt->pos_x;
                 float dy = playerY - npcIt->pos_y;
@@ -1506,11 +1507,11 @@ void Game::renderNPCs() {
     };
 
     // Renderizar NPCs desde snapshots (datos sincronizados del servidor)
-    for (const auto& car : snapshots) {
+    for (const auto& car: snapshots) {
         // Solo renderizar NPCs, no jugadores
         if (!car.isNPC)
             continue;
-        
+
         // Convertir coordenadas del servidor a pixeles del mundo
         float worldX = car.pos_x * PX_PER_METER_X;
         float worldY = car.pos_y * PX_PER_METER_Y;
@@ -1527,12 +1528,8 @@ void Game::renderNPCs() {
         int scaledHeight = static_cast<int>(carHeight * scale);
 
         // Crear rectángulo destino centrado en la posición
-        SDL_Rect npcDst = {
-            static_cast<int>(relX) - scaledWidth / 2,
-            static_cast<int>(relY) - scaledHeight / 2,
-            scaledWidth,
-            scaledHeight
-        };
+        SDL_Rect npcDst = {static_cast<int>(relX) - scaledWidth / 2,
+                           static_cast<int>(relY) - scaledHeight / 2, scaledWidth, scaledHeight};
 
         // Crear rectángulo fuente (toda la textura del auto)
         if (carTextures.count(car.car_type)) {

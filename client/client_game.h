@@ -14,6 +14,7 @@
 #include <SDL2pp/SDL2pp.hh>
 #include <SDL_image.h>
 
+#include "../server/game_logic/CarUpgrades.h"
 #include "audio/car_sound_engine.h"
 #include "cmd/server_to_client_raceResults.h"
 #include "graphics/camera.h"
@@ -21,11 +22,10 @@
 #include "graphics/collision_explosion.h"
 #include "graphics/hud.h"
 #include "graphics/minimap.h"
-#include "npc_system.h"
-#include "npc_routes.h"
 
+#include "npc_routes.h"
+#include "npc_system.h"
 #include "session.h"
-#include "../server/game_logic/CarUpgrades.h"
 
 struct RenderCar {
     SDL_Rect src;
@@ -51,7 +51,7 @@ private:
     CheckpointArrow arrow;
     CollisionExplosion explosion;
     CarSoundEngine carSoundEngine;
-    NPCManager npcManager;  // Gestor de NPCs (autos de tráfico)
+    NPCManager npcManager;            // Gestor de NPCs (autos de tráfico)
     NPCRouteManager npcRouteManager;  // Gestor de rutas para NPCs
     std::map<int, std::shared_ptr<SDL2pp::Texture>> textures;
     std::map<uint8_t, std::shared_ptr<SDL2pp::Texture>>
@@ -68,7 +68,7 @@ private:
     uint8_t currentCityId = 0;
     int currentCheckpoint = 0;
     int totalCheckpoints = 4;
-    float raceStartTime = 0.0f;
+    float elapsedTime = 0.0f;
 
     std::vector<RaceCheckpoint> trackCheckpoints;
 
@@ -155,7 +155,7 @@ public:
 
     int start();
     void setClientId(uint8_t id);
-    void update_snapshots(const std::vector<CarSnapshot>& snapshots);
+    void update_snapshots(const std::vector<CarSnapshot>& snapshots, float elapsedTime);
     void setRaceResults(const std::vector<ClientPlayerResult>& results, bool isFinished);
     void setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res);
     void resetForNextRace(uint8_t nextCityId, const std::string& trackName);

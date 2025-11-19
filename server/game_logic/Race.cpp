@@ -1,14 +1,15 @@
 #include "Race.h"
-#include "npc_route_from_track.h"
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <utility>
 #include <vector>
-#include <cstdlib>
-#include <cmath>
+
+#include "npc_route_from_track.h"
 
 #define VELOCITY_ITERATIONS 4
 
@@ -64,113 +65,119 @@ void Race::initCars(b2WorldId world) {
 void Race::initNPCs(b2WorldId world) {
     // Usar los checkpoints del track como base para generar rutas de NPCs
     const auto& trackCheckpoints = track.getCheckpoints();
-    
+
     if (trackCheckpoints.empty()) {
-        std::cerr << "[RACE ERROR] No track checkpoints available for NPC route generation" << std::endl;
+        std::cerr << "[RACE ERROR] No track checkpoints available for NPC route generation"
+                  << std::endl;
         return;
     }
-    
-    std::cout << "[RACE] Generating NPC routes from " << trackCheckpoints.size() 
+
+    std::cout << "[RACE] Generating NPC routes from " << trackCheckpoints.size()
               << " track checkpoints" << std::endl;
-    
+
     // Convertir checkpoints del track a RoutePoint format
     std::vector<RoutePoint> trackRoutePoints;
-    for (const auto& ckpt : trackCheckpoints) {
+    for (const auto& ckpt: trackCheckpoints) {
         trackRoutePoints.push_back(RoutePoint(ckpt.x, ckpt.y, 5.0f));
     }
-    
+
     // Generar 5 variaciones del track (menos que antes para evitar congestión)
     int numRoutes = 5;
-    currentRoutes = NPCRouteFromTrack::generateRoutesFromTrackCheckpoints(trackRoutePoints, numRoutes);
-    
-    std::cout << "[RACE] Generated " << currentRoutes.size() << " NPC routes from track" << std::endl;
-    
+    currentRoutes =
+            NPCRouteFromTrack::generateRoutesFromTrackCheckpoints(trackRoutePoints, numRoutes);
+
+    std::cout << "[RACE] Generated " << currentRoutes.size() << " NPC routes from track"
+              << std::endl;
+
     // Distribuir NPCs: 4 NPCs por ruta (20 total para 5 rutas) - REDUCIDO AÚN MÁS
     // Los NPCs se distribuyen a lo largo de la RUTA COMPLETA, no todos juntos al inicio
     int npcCount = 0;
     int npcsPerRoute = 4;  // Cambié de 6 a 4
     int maxNPCs = 20;      // Cambié de 30 a 20
-    
+
     for (size_t routeIdx = 0; routeIdx < currentRoutes.size(); ++routeIdx) {
         const auto& route = currentRoutes[routeIdx];
-        if (route.points.empty()) continue;
-        
+        if (route.points.empty())
+            continue;
+
         // Distribuir NPCs equitativamente a lo largo de TODA la ruta
         size_t routeLength = route.points.size();
-        
+
         // Calcular espaciado para distribuir a lo largo de la ruta completa
         // Esto asegura que no todos empiezan juntos
         size_t spacing = (routeLength > npcsPerRoute) ? (routeLength / npcsPerRoute) : 1;
-        
+
         for (int i = 0; i < npcsPerRoute && npcCount < maxNPCs; ++i) {
             // Calcular índice base: distribuir uniformemente en toda la ruta
             size_t basePointIdx = (i * spacing) % routeLength;
-            
+
             // Agregar variación aleatoria pequeña para no estar exactamente en línea
             int randomOffset = (rand() % 3) - 1;  // ±1 punto
             size_t pointIdx = (basePointIdx + randomOffset + routeLength) % routeLength;
-            
+
             const auto& point = route.points[pointIdx];
-            
+
             // Pequeño offset perpendicular para no superponer exactamente
             float offsetX = (rand() % 8 - 4) * 0.1f;  // ±0.4
             float offsetY = (rand() % 8 - 4) * 0.1f;
-            
+
             b2Vec2 pos{point.x + offsetX, point.y + offsetY};
             uint8_t carType = rand() % 7;  // 7 tipos de autos (0-6)
-            
+
             auto npc = std::make_unique<NPCTraffic>(world, carType, pos);
             npc->setRoute(&route.points);  // Asignar la ruta al NPC
             npcs.push_back(std::move(npc));
-            
-            std::cout << "[RACE] NPC #" << npcCount << " (moving) created at (" << pos.x << ", " << pos.y 
-                      << ") on route " << (routeIdx + 1) << " [spacing: " << spacing << " waypoints]"
+
+            std::cout << "[RACE] NPC #" << npcCount << " (moving) created at (" << pos.x << ", "
+                      << pos.y << ") on route " << (routeIdx + 1) << " [spacing: " << spacing
+                      << " waypoints]"
                       << " [Car Type: " << (int)carType << "]" << std::endl;
-            
+
             npcCount++;
         }
     }
-    
+
     // AGREGAR AUTOS ESTACIONADOS
     // Colocar algunos autos sin ruta (estacionados) en posiciones estratégicas
     std::vector<b2Vec2> parkedPositions;
-    
+
     // Usar checkpoints del track como ubicaciones base para autos estacionados
     if (trackCheckpoints.size() >= 2) {
         // Estacionar autos cerca de algunos checkpoints
         parkedPositions.push_back(b2Vec2{trackCheckpoints[0].x + 10, trackCheckpoints[0].y + 5});
-        parkedPositions.push_back(b2Vec2{trackCheckpoints[trackCheckpoints.size() / 2].x - 8, 
+        parkedPositions.push_back(b2Vec2{trackCheckpoints[trackCheckpoints.size() / 2].x - 8,
                                          trackCheckpoints[trackCheckpoints.size() / 2].y - 5});
     }
-    
+
     // Si hay más de 4 checkpoints, agregar más posiciones estacionadas
     if (trackCheckpoints.size() >= 4) {
-        parkedPositions.push_back(b2Vec2{trackCheckpoints[trackCheckpoints.size() - 1].x + 5, 
+        parkedPositions.push_back(b2Vec2{trackCheckpoints[trackCheckpoints.size() - 1].x + 5,
                                          trackCheckpoints[trackCheckpoints.size() - 1].y + 8});
-        parkedPositions.push_back(b2Vec2{trackCheckpoints[trackCheckpoints.size() / 4].x - 6, 
+        parkedPositions.push_back(b2Vec2{trackCheckpoints[trackCheckpoints.size() / 4].x - 6,
                                          trackCheckpoints[trackCheckpoints.size() / 4].y + 10});
     }
-    
+
     // Crear NPCs estacionados
     int parkedCount = 0;
-    for (const auto& parkedPos : parkedPositions) {
-        if (npcCount >= maxNPCs + 4) break;  // Máximo 4 autos estacionados adicionales
-        
+    for (const auto& parkedPos: parkedPositions) {
+        if (npcCount >= maxNPCs + 4)
+            break;  // Máximo 4 autos estacionados adicionales
+
         uint8_t carType = rand() % 7;
         auto npc = std::make_unique<NPCTraffic>(world, carType, parkedPos);
         // NO asignar ruta - esto los deja estacionados
         npcs.push_back(std::move(npc));
-        
-        std::cout << "[RACE] NPC #" << npcCount << " (PARKED) created at (" << parkedPos.x << ", " << parkedPos.y 
-                  << ") [Car Type: " << (int)carType << "]" << std::endl;
-        
+
+        std::cout << "[RACE] NPC #" << npcCount << " (PARKED) created at (" << parkedPos.x << ", "
+                  << parkedPos.y << ") [Car Type: " << (int)carType << "]" << std::endl;
+
         npcCount++;
         parkedCount++;
     }
-    
-    std::cout << "[RACE] Initialized " << npcCount << " NPC traffic vehicles: " 
-              << (npcCount - parkedCount) << " moving across " << currentRoutes.size() 
-              << " routes, " << parkedCount << " parked" << std::endl;
+
+    std::cout << "[RACE] Initialized " << npcCount
+              << " NPC traffic vehicles: " << (npcCount - parkedCount) << " moving across "
+              << currentRoutes.size() << " routes, " << parkedCount << " parked" << std::endl;
 }
 
 Race::Race(CityName cityName, std::string& trackFile,
@@ -213,9 +220,6 @@ void Race::checkFinishConditions() {
         }
     }
 
-    // std::cout << "[RACE] Finish check: " << playerFinishTimes.size() << "/" << players.size()
-    //           << " players finished" << std::endl;
-
     if (playerFinishTimes.size() == players.size() ||
         std::chrono::duration<float>(std::chrono::steady_clock::now() - startTime).count() >=
                 MAX_RACE_TIME) {
@@ -229,13 +233,13 @@ void Race::checkFinishConditions() {
 
 void Race::updatePhysics(float dt) {
     // Actualizar física de los NPCs
-    for (auto& npc : npcs) {
+    for (auto& npc: npcs) {
         if (!npc->isDestroyed()) {
             // Los NPCs tienen asignadas sus rutas, pasar nullptr
             npc->updatePhysics(dt, nullptr);
         }
     }
-    
+
     physics.step(dt, VELOCITY_ITERATIONS);
     checkFinishConditions();
 }
@@ -286,14 +290,14 @@ std::vector<CarSnapshot> Race::getSnapshot() const {
         b2Rot rot = player->getRotation();
         float angle = b2Rot_GetAngle(rot) * 180.0f / B2_PI;
         float speed = player->getSpeed();  // Get actual speed from player
-        CarSnapshot cs{(uint8_t)player->getId(), pos.x, pos.y, false,
-                       player->getCurrentHealth(), speed, angle,
-                       player->isOnBridge(), player->getCarType()};
+        CarSnapshot cs{(uint8_t)player->getId(),   pos.x, pos.y, false,
+                       player->getCurrentHealth(), speed, angle, player->isOnBridge(),
+                       player->getCarType()};
         cs.hasInfiniteHealth = player->hasInfiniteHealth();
         cs.isNPC = false;
         snapshot.push_back(cs);
     }
-    
+
     // Agregar snapshots de NPCs
     // IDs de NPCs comienzan en 100 para evitar conflictos con IDs de jugadores (típicamente 0-3)
     uint8_t npcIdOffset = 100;
@@ -304,9 +308,10 @@ std::vector<CarSnapshot> Race::getSnapshot() const {
         float angle = b2Rot_GetAngle(rot) * 180.0f / B2_PI;
         b2Vec2 velocity = npc->getLinearVelocity();
         float speed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
-        
+
         CarSnapshot cs{(uint8_t)(npcIdOffset + i), pos.x, pos.y, false,
-                       npc->getCurrentHealth(), speed, angle, false, npc->getCarType()};
+                       npc->getCurrentHealth(),    speed, angle, false,
+                       npc->getCarType()};
         cs.isNPC = true;
         snapshot.push_back(cs);
     }

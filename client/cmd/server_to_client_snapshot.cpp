@@ -7,22 +7,11 @@
 
 #include "../client_game.h"
 
-ServerToClientSnapshot::ServerToClientSnapshot(std::vector<CarSnapshot> cars):
-        cars_snapshot(std::move(cars)) {}
+ServerToClientSnapshot::ServerToClientSnapshot(std::vector<CarSnapshot> cars, float elapsedTime):
+        cars_snapshot(std::move(cars)), elapsedTime(elapsedTime) {}
 
 void ServerToClientSnapshot::execute(ClientContext& ctx) {
-    ctx.game->update_snapshots(cars_snapshot);
-
-    // std::cout << "[Snapshot recibido] Autos en escena: " << cars_snapshot.size() << std::endl;
-
-    // for (const auto& car: cars_snapshot) {
-    //     std::cout << "  Auto ID: " << car.id << " | Posición: (" << car.pos_x << ", " << car.pos_y
-    //               << ")"
-    //               << " | Colisión: " << (car.collision ? "sí" : "no")
-    //               << " | Vida: " << static_cast<int>(car.health) << " | Velocidad: " << car.speed
-    //               << " | Ángulo: " << car.angle << " | OnBridge: " << (car.onBridge ? "SI" : "NO")
-    //               << std::endl;
-    // }
+    ctx.game->update_snapshots(cars_snapshot, elapsedTime);
 }
 
 ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint8_t>& data) {
@@ -35,6 +24,10 @@ ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint
     uint8_t header = data[offset++];
     if (header != SNAPSHOT_COMMAND)
         throw std::runtime_error("Invalid header for snapshot");
+
+    float elapsedTime;
+    std::memcpy(&elapsedTime, &data[offset], sizeof(elapsedTime));
+    offset += sizeof(elapsedTime);
 
     uint8_t car_count;
     std::memcpy(&car_count, &data[offset], sizeof(uint8_t));
@@ -93,5 +86,5 @@ ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint
         cars.push_back(car);
     }
 
-    return ServerToClientSnapshot(cars);
+    return ServerToClientSnapshot(cars, elapsedTime);
 }

@@ -17,17 +17,19 @@ struct CarSnapshot {
     float speed;
     float angle;
     bool onBridge;
-    uint8_t car_type;  // Tipo de auto: 0=Van, 1=Ferrari, 2=Celeste, 3=Jeep, 4=Pickup, 5=Limo, 6=Descapotable
+    uint8_t car_type;  // Tipo de auto: 0=Van, 1=Ferrari, 2=Celeste, 3=Jeep, 4=Pickup, 5=Limo,
+                       // 6=Descapotable
     bool hasInfiniteHealth = false;  // Indica si el cheat de vida infinita está activado
-    bool isNPC = false;  // True si es un auto de tráfico (NPC), false si es jugador
+    bool isNPC = false;              // True si es un auto de tráfico (NPC), false si es jugador
 };
 
 class ServerToClientSnapshot: public ServerToClientCmd_Server {
 private:
     std::vector<CarSnapshot> cars;
+    float elapsedTime;
 
 public:
-    explicit ServerToClientSnapshot(const std::vector<CarSnapshot>& cars);
+    ServerToClientSnapshot(const std::vector<CarSnapshot>& cars, float elapsedTime);
 
     std::vector<uint8_t> to_bytes() const override;
 

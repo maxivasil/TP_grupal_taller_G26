@@ -3,13 +3,17 @@
 /**
  * <HEADER>;<CANT_AUTOS>;<ID_AUTO>;<POS_X>;<POS_Y>;<COLISION¿?>;<HEALTH>;<SPEED>;<ANGLE>;<ON_BRIDGE¿?>;<CAR_TYPE>;<HAS_INFINITE_HEALTH¿?>;<IS_NPC¿?>
  */
-ServerToClientSnapshot::ServerToClientSnapshot(const std::vector<CarSnapshot>& cars): cars(cars) {}
+ServerToClientSnapshot::ServerToClientSnapshot(const std::vector<CarSnapshot>& cars,
+                                               float elapsedTime):
+        cars(cars), elapsedTime(elapsedTime) {}
 
 std::vector<uint8_t> ServerToClientSnapshot::to_bytes() const {
     std::vector<uint8_t> data;
 
     uint8_t header = SNAPSHOT_COMMAND;
     data.push_back(header);
+
+    BufferUtils::append_bytes(data, &elapsedTime, sizeof(elapsedTime));
 
     uint8_t car_count = static_cast<uint8_t>(cars.size());
     BufferUtils::append_bytes(data, &car_count, sizeof(car_count));

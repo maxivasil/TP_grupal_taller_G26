@@ -63,11 +63,8 @@ void ServerGameLoop::process_pending_commands(ServerContext& ctx) {
 
 void ServerGameLoop::update_game_state(Race& race) {
     std::vector<CarSnapshot> snapshot_data = race.getSnapshot();
-
-    // Crear comando Snapshot
-    auto snapshot_cmd = std::make_shared<ServerToClientSnapshot>(snapshot_data);
-
-    // Broadcast a todos los clientes conectados
+    auto snapshot_cmd =
+            std::make_shared<ServerToClientSnapshot>(snapshot_data, race.getCurrentElapsedTime());
     protected_clients.broadcast(snapshot_cmd);
 }
 

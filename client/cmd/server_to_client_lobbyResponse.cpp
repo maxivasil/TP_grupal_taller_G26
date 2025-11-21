@@ -5,8 +5,8 @@
 
 #include <arpa/inet.h>
 
-#include "../client_game.h"
 #include "../UI/initialwindow.h"
+#include "../client_game.h"
 
 ServerToClientLobbyResponse::ServerToClientLobbyResponse(uint8_t status, std::string lobbyId,
                                                          uint8_t errorCode):
@@ -17,8 +17,7 @@ void ServerToClientLobbyResponse::execute(ClientContext& ctx) {
     InitialWindow* window = qobject_cast<InitialWindow*>(ctx.mainwindow);
     if (status == STATUS_OK) {
         window->changeScreen(lobbyId);
-    }
-    else if (status == STATUS_ERROR) {
+    } else if (status == STATUS_ERROR) {
         window->showError();
     }
 }

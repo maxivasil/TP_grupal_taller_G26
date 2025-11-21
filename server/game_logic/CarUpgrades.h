@@ -11,16 +11,13 @@
  * El costo de aplicar una mejora se computa como una penalización de tiempo.
  */
 struct CarUpgrades {
-    float acceleration_boost;   // Incremento de aceleración
-    float speed_boost;          // Incremento de velocidad máxima
-    float handling_boost;       // Incremento de controlabilidad
-    float health_boost;         // Incremento de salud máxima
+    float acceleration_boost;  // Incremento de aceleración
+    float speed_boost;         // Incremento de velocidad máxima
+    float handling_boost;      // Incremento de controlabilidad
+    float health_boost;        // Incremento de salud máxima
 
     CarUpgrades():
-            acceleration_boost(0.0f),
-            speed_boost(0.0f),
-            handling_boost(0.0f),
-            health_boost(0.0f) {}
+            acceleration_boost(0.0f), speed_boost(0.0f), handling_boost(0.0f), health_boost(0.0f) {}
 
     /**
      * @brief Obtiene el costo total de tiempo (en segundos) de las mejoras aplicadas.
@@ -35,10 +32,10 @@ struct CarUpgrades {
      */
     float getTimePenalty() const {
         float penalty = 0.0f;
-        penalty += acceleration_boost * 0.02f;     // 2% por unidad de aceleración
-        penalty += speed_boost * 0.015f;            // 1.5% por unidad de velocidad
-        penalty += handling_boost * 0.01f;          // 1% por unidad de controlabilidad
-        penalty += health_boost * 0.005f;           // 0.5% por unidad de salud
+        penalty += acceleration_boost * 0.02f;  // 2% por unidad de aceleración
+        penalty += speed_boost * 0.015f;        // 1.5% por unidad de velocidad
+        penalty += handling_boost * 0.01f;      // 1% por unidad de controlabilidad
+        penalty += health_boost * 0.005f;       // 0.5% por unidad de salud
         return penalty;
     }
 

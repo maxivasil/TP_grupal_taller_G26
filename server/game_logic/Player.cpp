@@ -1,7 +1,7 @@
 #include "Player.h"
 
-#include <utility>
 #include <cmath>
+#include <utility>
 
 Player::Player(std::string name, int id, CarStats& stats, uint8_t car_type):
         name(std::move(name)), id(id), car(nullptr), stats(std::move(stats)), car_type(car_type) {}
@@ -60,13 +60,13 @@ float Player::getSpeed() const {
     if (!car) {
         return 0.0f;
     }
-    
+
     // Get the linear velocity vector from Box2D
     b2Vec2 velocity = car->getLinearVelocity();
-    
+
     // Calculate the magnitude of the velocity vector
     float speed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
-    
+
     return speed;
 }
 
@@ -86,9 +86,7 @@ const CarUpgrades& Player::getCarUpgrades() const {
     return empty;
 }
 
-uint8_t Player::getCarType() const {
-    return car_type;
-}
+uint8_t Player::getCarType() const { return car_type; }
 
 bool Player::hasInfiniteHealth() const {
     if (car) {

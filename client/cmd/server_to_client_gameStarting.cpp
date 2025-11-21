@@ -2,16 +2,15 @@
 
 #include <cstring>
 #include <stdexcept>
-#include "../UI/mainwindow.h"
 
 #include <arpa/inet.h>
 
-ServerToClientGameStarting::ServerToClientGameStarting(){}
+#include "../UI/mainwindow.h"
+
+ServerToClientGameStarting::ServerToClientGameStarting() {}
 
 
-void ServerToClientGameStarting::execute(ClientContext& ctx) {
-    ctx.mainwindow->close();
-}
+void ServerToClientGameStarting::execute(ClientContext& ctx) { ctx.mainwindow->close(); }
 
 ServerToClientGameStarting ServerToClientGameStarting::from_bytes(
         const std::vector<uint8_t>& data) {

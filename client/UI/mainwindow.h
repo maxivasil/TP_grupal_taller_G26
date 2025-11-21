@@ -4,8 +4,9 @@
 #include <QMainWindow>
 #include <string>
 
-#include "readywindow.h"
 #include "../session.h"
+
+#include "readywindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

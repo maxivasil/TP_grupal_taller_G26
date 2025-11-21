@@ -19,18 +19,16 @@
 
 QT_BEGIN_NAMESPACE
 
-class Ui_InitialWindow
-{
+class Ui_InitialWindow {
 public:
-    QWidget *centralwidget;
-    QLabel *intro_text;
-    QPushButton *newlobby;
-    QLineEdit *lobby;
-    QLabel *intro_text_2;
-    QPushButton *joinlobby;
+    QWidget* centralwidget;
+    QLabel* intro_text;
+    QPushButton* newlobby;
+    QLineEdit* lobby;
+    QLabel* intro_text_2;
+    QPushButton* joinlobby;
 
-    void setupUi(QMainWindow *InitialWindow)
-    {
+    void setupUi(QMainWindow* InitialWindow) {
         if (InitialWindow->objectName().isEmpty())
             InitialWindow->setObjectName(QString::fromUtf8("InitialWindow"));
         InitialWindow->resize(1920, 1080);
@@ -47,11 +45,11 @@ public:
         font.setItalic(false);
         intro_text->setFont(font);
         intro_text->setStyleSheet(QString::fromUtf8("Color: white; \n"
-"font-size: 36px; \n"
-"\n"
-"	      "));
+                                                    "font-size: 36px; \n"
+                                                    "\n"
+                                                    "	      "));
         intro_text->setTextFormat(Qt::MarkdownText);
-        intro_text->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
+        intro_text->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
         newlobby = new QPushButton(centralwidget);
         newlobby->setObjectName(QString::fromUtf8("newlobby"));
         newlobby->setGeometry(QRect(850, 580, 261, 41));
@@ -85,11 +83,11 @@ public:
         font3.setItalic(false);
         intro_text_2->setFont(font3);
         intro_text_2->setStyleSheet(QString::fromUtf8("Color: white; \n"
-"font-size: 36px; \n"
-"\n"
-"	      "));
+                                                      "font-size: 36px; \n"
+                                                      "\n"
+                                                      "	      "));
         intro_text_2->setTextFormat(Qt::MarkdownText);
-        intro_text_2->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
+        intro_text_2->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
         joinlobby = new QPushButton(centralwidget);
         joinlobby->setObjectName(QString::fromUtf8("joinlobby"));
         joinlobby->setGeometry(QRect(1080, 470, 61, 41));
@@ -101,24 +99,24 @@ public:
         retranslateUi(InitialWindow);
 
         QMetaObject::connectSlotsByName(InitialWindow);
-    } // setupUi
+    }  // setupUi
 
-    void retranslateUi(QMainWindow *InitialWindow)
-    {
+    void retranslateUi(QMainWindow* InitialWindow) {
         InitialWindow->setWindowTitle(QCoreApplication::translate("NFS-2D", "NFS-2D", nullptr));
         intro_text->setText(QString());
-        newlobby->setText(QCoreApplication::translate("InitialWindow", "Crear nueva partida", nullptr));
+        newlobby->setText(
+                QCoreApplication::translate("InitialWindow", "Crear nueva partida", nullptr));
         lobby->setText(QString());
-        intro_text_2->setText(QCoreApplication::translate("InitialWindow", "Unirse a una partida Existente", nullptr));
+        intro_text_2->setText(QCoreApplication::translate(
+                "InitialWindow", "Unirse a una partida Existente", nullptr));
         joinlobby->setText(QCoreApplication::translate("InitialWindow", "\342\256\225", nullptr));
-    } // retranslateUi
-
+    }  // retranslateUi
 };
 
 namespace Ui {
-    class InitialWindow: public Ui_InitialWindow {};
-} // namespace Ui
+class InitialWindow: public Ui_InitialWindow {};
+}  // namespace Ui
 
 QT_END_NAMESPACE
 
-#endif // UI_INITIALWINDOW_H
+#endif  // UI_INITIALWINDOW_H

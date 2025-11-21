@@ -2,9 +2,10 @@
 #define CLIENT_TO_SERVER_CHEAT_H
 
 #include "../common/constants.h"
+
 #include "cmd_base_server.h"
 
-class ClientToServerCheat : public ClientToServerCmd_Server {
+class ClientToServerCheat: public ClientToServerCmd_Server {
 public:
     explicit ClientToServerCheat(uint8_t cheat_type, int client_id = -1);
 

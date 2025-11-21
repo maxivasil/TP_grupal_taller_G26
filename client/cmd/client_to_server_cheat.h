@@ -5,9 +5,10 @@
 #include <vector>
 
 #include "../../common/constants.h"
+
 #include "cmd_base_client.h"
 
-class ClientToServerCheat : public ClientToServerCmd_Client {
+class ClientToServerCheat: public ClientToServerCmd_Client {
 public:
     explicit ClientToServerCheat(uint8_t cheat_type);
 

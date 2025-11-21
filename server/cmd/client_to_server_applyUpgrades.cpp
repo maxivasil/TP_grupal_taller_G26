@@ -1,12 +1,12 @@
 #include "client_to_server_applyUpgrades.h"
 
+#include <cstring>
 #include <iostream>
 #include <stdexcept>
-#include <cstring>
 
+#include "../Lobby.h"
 #include "../game_logic/Player.h"
 #include "../game_logic/Race.h"
-#include "../Lobby.h"
 
 // Comando ID para aplicar mejoras (0x0D)
 #define APPLY_UPGRADES_COMMAND 0x0D
@@ -34,7 +34,7 @@ void ClientToServerApplyUpgrades::execute(ServerContext& ctx) {
     const auto& players = ctx.race->getPlayers();
 
     // Encontrar el jugador correspondiente al cliente
-    for (const auto& player : players) {
+    for (const auto& player: players) {
         if (player->getId() == client_id) {
             player->applyCarUpgrades(upgrades);
             std::cout << "Mejoras aplicadas para cliente " << client_id

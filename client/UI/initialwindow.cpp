@@ -19,8 +19,7 @@
 #include "../session.h"
 #include "./ui_initialwindow.h"
 
-InitialWindow::InitialWindow(MainWindow& mainwindow,
-                             TrackWindow& trackwindow, QWidget* parent):
+InitialWindow::InitialWindow(MainWindow& mainwindow, TrackWindow& trackwindow, QWidget* parent):
         QMainWindow(parent),
         mainwindow(mainwindow),
         trackwindow(trackwindow),
@@ -169,8 +168,6 @@ bool InitialWindow::eventFilter(QObject* obj, QEvent* event) {
     return false;
 }
 
-void InitialWindow::setSession(ClientSession* session){
-    client_session = session;
-}
+void InitialWindow::setSession(ClientSession* session) { client_session = session; }
 
 InitialWindow::~InitialWindow() { delete ui; }

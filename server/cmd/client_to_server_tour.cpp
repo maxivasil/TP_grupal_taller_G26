@@ -3,10 +3,9 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "../../common/constants.h"
-
 #include <yaml-cpp/yaml.h>
 
+#include "../../common/constants.h"
 #include "../game_logic/Race.h"
 
 ClientToServerTour::ClientToServerTour(std::string& tourFile):

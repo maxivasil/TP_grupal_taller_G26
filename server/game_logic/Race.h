@@ -15,11 +15,11 @@
 #include "BridgeSensorManager.h"
 #include "CheckpointManager.h"
 #include "City.h"
+#include "NPCTraffic.h"
 #include "PhysicsEngine.h"
 #include "Player.h"
 #include "StaticObject.h"
 #include "Track.h"
-#include "NPCTraffic.h"
 #include "npc_route_manager.h"
 
 #define MAX_RACE_TIME 600.0f
@@ -38,8 +38,8 @@ private:
     BridgeSensorManager bridgeSensorManager;
     std::list<StaticObject> staticObjects;
     std::vector<std::unique_ptr<NPCTraffic>> npcs;  // NPCs con física
-    NPCRouteManager routeManager;  // Gestor de rutas para NPCs
-    std::vector<NPCRoute> currentRoutes;  // Rutas para la ciudad actual
+    NPCRouteManager routeManager;                   // Gestor de rutas para NPCs
+    std::vector<NPCRoute> currentRoutes;            // Rutas para la ciudad actual
     PhysicsEngine physics;
     std::vector<std::unique_ptr<Player>>& players;
 

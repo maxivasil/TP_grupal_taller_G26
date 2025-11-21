@@ -17,4 +17,4 @@ private:
     uint8_t direction;
 };
 
-#endif  
+#endif

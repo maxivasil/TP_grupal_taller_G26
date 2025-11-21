@@ -19,8 +19,7 @@ class InitialWindow: public QMainWindow {
     Q_OBJECT
 
 public:
-    InitialWindow(MainWindow& mainwindow, TrackWindow& trackwindow,
-                  QWidget* parent = nullptr);
+    InitialWindow(MainWindow& mainwindow, TrackWindow& trackwindow, QWidget* parent = nullptr);
     ~InitialWindow();
     void changeScreen(const std::string& lobby);
     void showError();

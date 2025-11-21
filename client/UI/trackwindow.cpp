@@ -16,9 +16,7 @@
 #include "./ui_trackwindow.h"
 
 TrackWindow::TrackWindow(MainWindow& mainwindow, QWidget* parent):
-        QMainWindow(parent),
-        mainwindow(mainwindow),
-        ui(new Ui::TrackWindow) {
+        QMainWindow(parent), mainwindow(mainwindow), ui(new Ui::TrackWindow) {
 
     ui->setupUi(this);
     this->setWindowState(Qt::WindowFullScreen);
@@ -116,8 +114,6 @@ bool TrackWindow::eventFilter(QObject* obj, QEvent* event) {
     return false;
 }
 
-void TrackWindow::setSession(ClientSession* session){
-    client_session = session;
-}
+void TrackWindow::setSession(ClientSession* session) { client_session = session; }
 
 TrackWindow::~TrackWindow() { delete ui; }

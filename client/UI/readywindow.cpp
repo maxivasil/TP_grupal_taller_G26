@@ -20,8 +20,7 @@
 #include "../session.h"
 #include "./ui_readywindow.h"
 
-ReadyWindow::ReadyWindow(QWidget* parent):
-        QMainWindow(parent), ui(new Ui::ReadyWindow) {
+ReadyWindow::ReadyWindow(QWidget* parent): QMainWindow(parent), ui(new Ui::ReadyWindow) {
     ui->setupUi(this);
     this->setWindowState(Qt::WindowFullScreen);
     this->setWindowIcon(QIcon(":/new/prefix1/Assets/logo.png"));
@@ -128,8 +127,6 @@ bool ReadyWindow::eventFilter(QObject* obj, QEvent* event) {
     return false;
 }
 
-void ReadyWindow::setSession(ClientSession* session){
-    client_session = session;
-}
+void ReadyWindow::setSession(ClientSession* session) { client_session = session; }
 
 ReadyWindow::~ReadyWindow() { delete ui; }

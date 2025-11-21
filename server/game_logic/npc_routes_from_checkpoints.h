@@ -1,12 +1,12 @@
 #ifndef NPC_ROUTES_FROM_CHECKPOINTS_H
 #define NPC_ROUTES_FROM_CHECKPOINTS_H
 
-#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <iostream>
 #include <map>
 #include <string>
-#include <cmath>
-#include <algorithm>
-#include <iostream>
+#include <vector>
 
 /**
  * @struct RoutePoint
@@ -17,8 +17,7 @@ struct RoutePoint {
     float y;
     float speed;  // Velocidad en este segmento (m/s)
 
-    RoutePoint(float x = 0.0f, float y = 0.0f, float speed = 3.5f)
-        : x(x), y(y), speed(speed) {}
+    RoutePoint(float x = 0.0f, float y = 0.0f, float speed = 3.5f): x(x), y(y), speed(speed) {}
 };
 
 /**
@@ -30,8 +29,7 @@ struct NPCRoute {
     bool looping = true;  // ¿La ruta se repite?
 
     NPCRoute() = default;
-    NPCRoute(const std::vector<RoutePoint>& pts, bool loop = true)
-        : points(pts), looping(loop) {}
+    NPCRoute(const std::vector<RoutePoint>& pts, bool loop = true): points(pts), looping(loop) {}
 };
 
 #endif  // NPC_ROUTES_FROM_CHECKPOINTS_H

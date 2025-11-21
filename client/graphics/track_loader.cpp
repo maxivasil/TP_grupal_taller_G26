@@ -1,10 +1,11 @@
 #include "track_loader.h"
 
-#include "../../common/constants.h"
 #include <filesystem>
 #include <iostream>
 
 #include <yaml-cpp/yaml.h>
+
+#include "../../common/constants.h"
 
 
 std::vector<RaceCheckpoint> TrackLoader::loadTrackCheckpoints(const std::string& trackFile) {

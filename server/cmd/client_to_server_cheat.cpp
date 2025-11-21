@@ -9,9 +9,9 @@ ClientToServerCheat::ClientToServerCheat(uint8_t cheat_type, int client_id):
         cheat_type(cheat_type), ClientToServerCmd_Server(client_id) {}
 
 void ClientToServerCheat::execute(ServerContext& ctx) {
-    std::cout << "CHEAT activado: " << static_cast<int>(cheat_type) 
-              << " por cliente: " << client_id << std::endl;
-    
+    std::cout << "CHEAT activado: " << static_cast<int>(cheat_type) << " por cliente: " << client_id
+              << std::endl;
+
     if (!ctx.inLobby || !*(ctx.inLobby) || !ctx.race) {
         return;
     }
@@ -49,4 +49,3 @@ ClientToServerCheat* ClientToServerCheat::from_bytes(const std::vector<uint8_t>&
 
     return new ClientToServerCheat(cheat_value, client_id);
 }
-

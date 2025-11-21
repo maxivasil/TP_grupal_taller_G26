@@ -1,23 +1,20 @@
 #include "hostwindow.h"
-#include "./ui_hostwindow.h"
 
 #include <QGuiApplication>
 #include <QLabel>
-#include <QPixmap>
 #include <QPainter>
+#include <QPixmap>
 #include <QPushButton>
 #include <QResizeEvent>
 #include <QScreen>
+#include <exception>
 #include <string>
 
-#include <exception>
+#include "./ui_hostwindow.h"
 
-HostWindow::HostWindow(Queue<ServerToClientCmd_Client*>& queue, InitialWindow& initialwindow, QWidget *parent)
-	: QMainWindow(parent)
-	, ui(new Ui::HostWindow)
-	, queue(queue)
-	, initialwindow(initialwindow)
-{
+HostWindow::HostWindow(Queue<ServerToClientCmd_Client*>& queue, InitialWindow& initialwindow,
+                       QWidget* parent):
+        QMainWindow(parent), ui(new Ui::HostWindow), queue(queue), initialwindow(initialwindow) {
     ui->setupUi(this);
     this->setWindowState(Qt::WindowFullScreen);
     this->setWindowIcon(QIcon(":/new/prefix1/Assets/logo.png"));
@@ -55,31 +52,31 @@ HostWindow::HostWindow(Queue<ServerToClientCmd_Client*>& queue, InitialWindow& i
             font.setPointSizeF(12 * scaleFactor);
         }
         w->setFont(font);
-	}
-	connectEvents();
+    }
+    connectEvents();
 }
 
-void HostWindow::createConection(){
-	QTextEdit* username = findChild<QTextEdit*>("Username");
-	std::string username_text = (username->toPlainText()).toStdString();
-	QTextEdit* ip = findChild<QTextEdit*>("IP");
-	std::string ip_text = (ip->toPlainText()).toStdString();
-	QTextEdit* puerto = findChild<QTextEdit*>("Puerto");
-	std::string puerto_text = (puerto->toPlainText()).toStdString();
-	if (username_text.size()==0 || ip_text.size()==0 || puerto_text.size()==0){
-		QLabel* error_text = findChild<QLabel*>("intro_text");
-		error_text->setText("Se deben rellenar todos los campos!");
-		return;
-	}
-	try{
-		client_session.emplace(ip_text.c_str(), puerto_text.c_str(), queue);
-		client_session->start();
-		this->hide();
-		initialwindow.show();
-		initialwindow.setSession(&client_session.value());
-	} catch (...) {
+void HostWindow::createConection() {
+    QTextEdit* username = findChild<QTextEdit*>("Username");
+    std::string username_text = (username->toPlainText()).toStdString();
+    QTextEdit* ip = findChild<QTextEdit*>("IP");
+    std::string ip_text = (ip->toPlainText()).toStdString();
+    QTextEdit* puerto = findChild<QTextEdit*>("Puerto");
+    std::string puerto_text = (puerto->toPlainText()).toStdString();
+    if (username_text.size() == 0 || ip_text.size() == 0 || puerto_text.size() == 0) {
         QLabel* error_text = findChild<QLabel*>("intro_text");
-		error_text->setText("Error al intentar conectarse");
+        error_text->setText("Se deben rellenar todos los campos!");
+        return;
+    }
+    try {
+        client_session.emplace(ip_text.c_str(), puerto_text.c_str(), queue);
+        client_session->start();
+        this->hide();
+        initialwindow.show();
+        initialwindow.setSession(&client_session.value());
+    } catch (...) {
+        QLabel* error_text = findChild<QLabel*>("intro_text");
+        error_text->setText("Error al intentar conectarse");
     }
 }
 
@@ -88,9 +85,7 @@ void HostWindow::connectEvents() {
     QObject::connect(bcontinue, &QPushButton::clicked, this, &HostWindow::createConection);
 }
 
-ClientSession& HostWindow::getSession(){
-	return client_session.value();
-}
+ClientSession& HostWindow::getSession() { return client_session.value(); }
 
 bool HostWindow::eventFilter(QObject* obj, QEvent* event) {
     if (obj == centralWidget() && event->type() == QEvent::Paint) {
@@ -103,7 +98,4 @@ bool HostWindow::eventFilter(QObject* obj, QEvent* event) {
     return false;
 }
 
-HostWindow::~HostWindow()
-{
-	delete ui;
-}
+HostWindow::~HostWindow() { delete ui; }

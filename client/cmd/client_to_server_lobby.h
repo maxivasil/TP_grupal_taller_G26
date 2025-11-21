@@ -19,4 +19,4 @@ private:
     bool isCreate;
 };
 
-#endif 
+#endif

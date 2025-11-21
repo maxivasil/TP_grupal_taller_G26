@@ -1,11 +1,11 @@
 #include "cmd_server_register.h"
 
+#include "client_to_server_applyUpgrades.h"
 #include "client_to_server_cheat.h"
 #include "client_to_server_joinLobby.h"
 #include "client_to_server_move.h"
 #include "client_to_server_readyToStart.h"
 #include "client_to_server_tour.h"
-#include "client_to_server_applyUpgrades.h"
 
 ServerRegisteredCommands::ServerRegisteredCommands():
         recv_registry(build_server_recv_command_registry()) {}

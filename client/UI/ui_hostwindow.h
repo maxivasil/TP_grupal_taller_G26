@@ -13,27 +13,25 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QWidget>
-#include <QtWidgets/QPushButton>
 
 QT_BEGIN_NAMESPACE
 
-class Ui_HostWindow
-{
+class Ui_HostWindow {
 public:
-    QWidget *centralwidget;
-    QLabel *intro_text;
-    QTextEdit *Username;
-    QLabel *label_3;
-    QTextEdit *IP;
-    QTextEdit *Puerto;
-    QLabel *label_4;
-    QLabel *label_5;
-    QPushButton *bcontinue;
+    QWidget* centralwidget;
+    QLabel* intro_text;
+    QTextEdit* Username;
+    QLabel* label_3;
+    QTextEdit* IP;
+    QTextEdit* Puerto;
+    QLabel* label_4;
+    QLabel* label_5;
+    QPushButton* bcontinue;
 
-    void setupUi(QMainWindow *HostWindow)
-    {
+    void setupUi(QMainWindow* HostWindow) {
         if (HostWindow->objectName().isEmpty())
             HostWindow->setObjectName(QString::fromUtf8("HostWindow"));
         HostWindow->resize(1920, 1080);
@@ -63,11 +61,11 @@ public:
         bcontinue->setFont(font2);
         intro_text->setFont(font1);
         intro_text->setStyleSheet(QString::fromUtf8("Color: white; \n"
-"font-size: 36px; \n"
-"\n"
-"	      "));
+                                                    "font-size: 36px; \n"
+                                                    "\n"
+                                                    "	      "));
         intro_text->setTextFormat(Qt::MarkdownText);
-        intro_text->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
+        intro_text->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
         Username = new QTextEdit(centralwidget);
         Username->setObjectName(QString::fromUtf8("Username"));
         Username->setGeometry(QRect(860, 340, 351, 51));
@@ -106,24 +104,34 @@ public:
         retranslateUi(HostWindow);
 
         QMetaObject::connectSlotsByName(HostWindow);
-    } // setupUi
+    }  // setupUi
 
-    void retranslateUi(QMainWindow *HostWindow)
-    {
+    void retranslateUi(QMainWindow* HostWindow) {
         HostWindow->setWindowTitle(QCoreApplication::translate("NFS-2D", "NFS-2D", nullptr));
         intro_text->setText(QString());
         bcontinue->setText(QCoreApplication::translate("HostWindow", "Continuar", nullptr));
-        label_3->setText(QCoreApplication::translate("HostWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:36pt;\">Username:</span></p></body></html>", nullptr));
-        label_4->setText(QCoreApplication::translate("HostWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:36pt;\">IP:</span></p></body></html>", nullptr));
-        label_5->setText(QCoreApplication::translate("HostWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:36pt;\">Puerto:</span></p></body></html>", nullptr));
-    } // retranslateUi
-
+        label_3->setText(
+                QCoreApplication::translate("HostWindow",
+                                            "<html><head/><body><p align=\"center\"><span style=\" "
+                                            "font-size:36pt;\">Username:</span></p></body></html>",
+                                            nullptr));
+        label_4->setText(
+                QCoreApplication::translate("HostWindow",
+                                            "<html><head/><body><p align=\"center\"><span style=\" "
+                                            "font-size:36pt;\">IP:</span></p></body></html>",
+                                            nullptr));
+        label_5->setText(
+                QCoreApplication::translate("HostWindow",
+                                            "<html><head/><body><p align=\"center\"><span style=\" "
+                                            "font-size:36pt;\">Puerto:</span></p></body></html>",
+                                            nullptr));
+    }  // retranslateUi
 };
 
 namespace Ui {
-    class HostWindow: public Ui_HostWindow {};
-} // namespace Ui
+class HostWindow: public Ui_HostWindow {};
+}  // namespace Ui
 
 QT_END_NAMESPACE
 
-#endif // UI_HOSTWINDOW_H
+#endif  // UI_HOSTWINDOW_H

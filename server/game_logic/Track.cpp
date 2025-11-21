@@ -1,8 +1,8 @@
 #include "Track.h"
 
-#include "../../common/constants.h"
-
 #include <yaml-cpp/yaml.h>
+
+#include "../../common/constants.h"
 
 Track::Track(std::string& filename) {
     YAML::Node config = YAML::LoadFile(ABS_DIR "tracks/" + filename);

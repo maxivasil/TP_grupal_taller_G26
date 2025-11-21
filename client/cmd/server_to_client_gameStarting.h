@@ -7,7 +7,6 @@
 
 #include "../../common/constants.h"
 
-
 #include "cmd_base_client.h"
 
 class ServerToClientGameStarting: public ServerToClientCmd_Client {

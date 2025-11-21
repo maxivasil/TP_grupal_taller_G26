@@ -19,7 +19,6 @@ void CheckpointArrow::updateTarget(float playerX, float playerY, float checkpoin
 
     if (hasTarget) {
         angleToCheckpoint = std::atan2(dx, -dy);
-
     }
 }
 

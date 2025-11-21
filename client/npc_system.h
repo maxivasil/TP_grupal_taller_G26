@@ -1,10 +1,11 @@
 #ifndef NPC_SYSTEM_H
 #define NPC_SYSTEM_H
 
-#include <vector>
+#include <cmath>
 #include <cstdint>
 #include <random>
-#include <cmath>
+#include <vector>
+
 #include "npc_routes.h"  // Incluir para RoutePoint
 
 /**
@@ -29,9 +30,9 @@ struct NPC {
     float speed = 3.0f;  // Velocidad base de NPCs
 
     // Ruta predeterminada
-    int routeId = -1;          // ID de la ruta que sigue (-1 = sin ruta)
-    int currentRoutePoint = 0; // Índice del punto actual en la ruta
-    float routeProgress = 0.0f; // Progreso hacia el siguiente punto (0.0-1.0)
+    int routeId = -1;            // ID de la ruta que sigue (-1 = sin ruta)
+    int currentRoutePoint = 0;   // Índice del punto actual en la ruta
+    float routeProgress = 0.0f;  // Progreso hacia el siguiente punto (0.0-1.0)
 
     // Tiempo hasta el próximo cambio de dirección (en segundos) - OBSOLETO en modo ruta
     float timeTillDirectionChange = 2.0f;
@@ -46,9 +47,13 @@ struct NPC {
     // Constructor
     NPC() = default;
 
-    NPC(float x, float y, uint8_t type)
-        : pos_x(x), pos_y(y), car_type(type),
-          direction(rand() % 4), angle(0.0f), speed(2.0f + (rand() % 3)) {}
+    NPC(float x, float y, uint8_t type):
+            pos_x(x),
+            pos_y(y),
+            car_type(type),
+            direction(rand() % 4),
+            angle(0.0f),
+            speed(2.0f + (rand() % 3)) {}
 
     /**
      * @brief Actualiza la posición del NPC según su ruta o movimiento aleatorio
@@ -69,7 +74,8 @@ struct NPC {
      * @brief Sigue una ruta predeterminada
      */
     void followRoute(float deltaTime, const std::vector<RoutePoint>* routePoints) {
-        if (routePoints->empty()) return;
+        if (routePoints->empty())
+            return;
 
         // Obtener punto actual y siguiente
         size_t currentIdx = currentRoutePoint;
@@ -98,7 +104,8 @@ struct NPC {
 
         // Actualizar ángulo (atan2 retorna radianes)
         angle = std::atan2(dy, dx) * 180.0f / 3.14159265f;
-        if (angle < 0.0f) angle += 360.0f;
+        if (angle < 0.0f)
+            angle += 360.0f;
 
         // Mover hacia el waypoint
         float moveDistance = speed * deltaTime;
@@ -234,7 +241,7 @@ private:
     int maxNPCs = 30;  // Máximo número de NPCs simultáneamente
 
 public:
-    NPCManager() : rng(std::random_device{}()) {}
+    NPCManager(): rng(std::random_device{}()) {}
 
     /**
      * @brief Genera NPCs iniciales distribuidos aleatoriamente en la ciudad
@@ -286,7 +293,7 @@ public:
      * @brief Actualiza todos los NPCs
      */
     void update(float deltaTime) {
-        for (auto& npc : npcs) {
+        for (auto& npc: npcs) {
             // Llamar al update sin rutas (movimiento aleatorio)
             // Las rutas se integrarán después en client_game.cpp
             npc.update(deltaTime, nullptr);

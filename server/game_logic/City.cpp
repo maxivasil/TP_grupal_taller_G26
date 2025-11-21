@@ -1,8 +1,8 @@
 #include "City.h"
 
-#include "../../common/constants.h"
-
 #include <yaml-cpp/yaml.h>
+
+#include "../../common/constants.h"
 
 #define LIBERTY_CITY_MAP_PATH "cities/liberty_city.yaml"
 #define SAN_ANDREAS_MAP_PATH "cities/san_andreas.yaml"

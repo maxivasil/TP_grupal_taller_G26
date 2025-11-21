@@ -1,9 +1,10 @@
 #ifndef NPC_TRAFFIC_H
 #define NPC_TRAFFIC_H
 
-#include <box2d/box2d.h>
-#include <vector>
 #include <cmath>
+#include <vector>
+
+#include <box2d/box2d.h>
 
 #include "Collidable.h"
 #include "npc_routes_from_checkpoints.h"
@@ -11,94 +12,94 @@
 /**
  * @class NPCTraffic
  * @brief Representa un auto de tráfico (NPC) con física y colisiones
- * 
+ *
  * Los NPCs son autos controlados por IA que circulan por rutas predefinidas.
  * Tienen cuerpos físicos Box2D y pueden colisionar con otros vehículos.
  */
-class NPCTraffic : public Collidable {
+class NPCTraffic: public Collidable {
 private:
     b2BodyId body;
-    uint8_t carType;           // Tipo de auto (0-6)
-    float current_health;      // Vida actual
-    float maxHealth;           // Vida máxima
-    
+    uint8_t carType;       // Tipo de auto (0-6)
+    float current_health;  // Vida actual
+    float maxHealth;       // Vida máxima
+
     // Datos de ruta
-    int currentRoutePoint = 0; // Índice del waypoint actual
-    float routeProgress = 0.0f; // Progreso hacia el siguiente waypoint (0-1)
-    float targetSpeed = 3.0f;  // Velocidad objetivo según la ruta
+    int currentRoutePoint = 0;   // Índice del waypoint actual
+    float routeProgress = 0.0f;  // Progreso hacia el siguiente waypoint (0-1)
+    float targetSpeed = 3.0f;    // Velocidad objetivo según la ruta
     const std::vector<RoutePoint>* assignedRoute = nullptr;  // Ruta asignada
-    
+
     // Masas típicas para autos (kg)
     static constexpr float CAR_MASS = 1000.0f;
-    
+
     b2BodyDef initNPCBodyDef(b2Vec2 position);
     void setShape(b2BodyId body);
-    
+
 public:
     NPCTraffic(b2WorldId world, uint8_t carType, b2Vec2 position);
     ~NPCTraffic();
-    
+
     /**
      * @brief Asigna una ruta al NPC
      * @param route Puntos de la ruta a seguir
      */
     void setRoute(const std::vector<RoutePoint>* route) { assignedRoute = route; }
-    
+
     /**
      * @brief Actualiza la posición del NPC siguiendo una ruta
      * @param deltaTime Tiempo transcurrido en segundos
      * @param route Puntos de la ruta a seguir (puede ser nullptr si ya hay ruta asignada)
      */
     void updatePhysics(float deltaTime, const std::vector<RoutePoint>* route);
-    
+
     /**
      * @brief Obtiene la posición actual del NPC
      */
     b2Vec2 getPosition() const;
-    
+
     /**
      * @brief Obtiene la rotación actual del NPC
      */
     b2Rot getRotation() const;
-    
+
     /**
      * @brief Obtiene la velocidad lineal del NPC
      */
     b2Vec2 getLinearVelocity() const;
-    
+
     /**
      * @brief Obtiene el tipo de auto
      */
     uint8_t getCarType() const { return carType; }
-    
+
     /**
      * @brief Obtiene la salud actual del NPC
      */
     float getCurrentHealth() const { return current_health; }
-    
+
     /**
      * @brief Verifica si el NPC fue destruido
      */
     bool isDestroyed() const { return current_health <= 0.0f; }
-    
+
     /**
      * @brief Aplica daño al NPC
      */
     void takeDamage(float damage) { current_health -= damage; }
-    
+
     /**
      * @brief Repara el NPC a salud máxima
      */
     void repair() { current_health = maxHealth; }
-    
+
     // Métodos de Collidable
     void onCollision(Collidable* other, float approachSpeed, float deltaTime,
                      const b2Vec2& contactNormal) override;
-    
+
     float getMass() const override { return CAR_MASS; }
-    
+
     b2Rot getRotation(const b2Vec2& contactNormal) const override;
-    
+
     void applyCollision(const CollisionInfo& info) override;
 };
 

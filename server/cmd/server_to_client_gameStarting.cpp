@@ -1,6 +1,6 @@
 #include "server_to_client_gameStarting.h"
 
-ServerToClientGameStarting::ServerToClientGameStarting(){}
+ServerToClientGameStarting::ServerToClientGameStarting() {}
 
 std::vector<uint8_t> ServerToClientGameStarting::to_bytes() const {
     std::vector<uint8_t> data;

@@ -1,12 +1,13 @@
 #ifndef CMD_BASE_CLIENT_H
 #define CMD_BASE_CLIENT_H
 
+#include <QMainWindow>
 #include <functional>
 #include <memory>
 #include <unordered_map>
 #include <vector>
+
 #include "../parser.h"
-#include <QMainWindow>
 
 struct ClientContext {
     class Game* game;

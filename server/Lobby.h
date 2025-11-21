@@ -17,6 +17,7 @@ struct Lobby {
     ServerGameLoop gameloop;
     // Map to store selected car for each client: client_id -> car_name
     std::unordered_map<int, std::string> clientCarSelection;
+    std::unordered_map<int, std::string> clientUsernames;
 
     explicit Lobby(std::string lobbyId):
             lobbyId(lobbyId),

@@ -20,6 +20,7 @@ public:
     ~ReadyWindow();
     void updateLobby(const std::string& lobby, const std::string& new_car);
     void setSession(ClientSession* session);
+    void setName(const std::string& name);
 
 private:
     const int BASE_WIDTH = 1920;
@@ -28,6 +29,7 @@ private:
     Ui::ReadyWindow* ui;
     ClientSession* client_session = nullptr;
     std::string car;
+    std::string username;
     void connectEvents();
     void setReady();
     bool eventFilter(QObject* obj, QEvent* event) override;

@@ -83,7 +83,7 @@ void ReadyWindow::setReady() {
     senderButton->setEnabled(false);
     ServerToClientCmd_Client* raw_cmd;
     Queue<ServerToClientCmd_Client*>& recv_queue = client_session->get_recv_queue();
-    client_session->send_command(new ClientToServerReady(car));
+    client_session->send_command(new ClientToServerReady(car, username));
     std::vector<ServerToClientCmd_Client*> stash;
     while (true) {
         if (recv_queue.try_pop(raw_cmd)) {
@@ -126,6 +126,8 @@ bool ReadyWindow::eventFilter(QObject* obj, QEvent* event) {
     }
     return false;
 }
+
+void ReadyWindow::setName(const std::string& name) { username = name; }
 
 void ReadyWindow::setSession(ClientSession* session) { client_session = session; }
 

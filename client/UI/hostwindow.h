@@ -8,6 +8,7 @@
 #include "../session.h"
 
 #include "initialwindow.h"
+#include "readywindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -20,7 +21,7 @@ class HostWindow: public QMainWindow {
 
 public:
     HostWindow(Queue<ServerToClientCmd_Client*>& queue, InitialWindow& initialwindow,
-               QWidget* parent = nullptr);
+               ReadyWindow& readywindow, QWidget* parent = nullptr);
     ~HostWindow();
     ClientSession& getSession();
 
@@ -31,6 +32,7 @@ private:
     std::optional<ClientSession> client_session;
     Queue<ServerToClientCmd_Client*>& queue;
     InitialWindow& initialwindow;
+    ReadyWindow& readywindow;
 
     void connectEvents();
     void createConection();

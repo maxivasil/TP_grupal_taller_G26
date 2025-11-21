@@ -130,13 +130,14 @@ void ServerGameLoop::run() {
 
             // Use generic stats for now (can be customized per car later)
             CarStats stats = CarStatsDatabase::getCarStats(carName);
+            std::string userName = lobby->clientUsernames[clientId];
             std::cout << "  Car stats - Accel: " << stats.acceleration
                       << ", Max Speed: " << stats.max_speed << ", Turn Speed: " << stats.turn_speed
                       << ", Mass: " << stats.mass << ", Brake Force: " << stats.brake_force
                       << ", Handling: " << stats.handling << ", Health Max: " << stats.health_max
                       << ", Length: " << stats.length << ", Width: " << stats.width << std::endl;
             uint8_t car_type = getCarTypeFromName(carName);
-            players.emplace_back(std::make_unique<Player>(carName, clientId, stats, car_type));
+            players.emplace_back(std::make_unique<Player>(userName, clientId, stats, car_type));
             playerId++;
         }
 

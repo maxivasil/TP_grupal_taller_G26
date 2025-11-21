@@ -21,7 +21,7 @@ int main() {
         MainWindow selector_lobby(ready_window);
         TrackWindow track_window(selector_lobby);
         InitialWindow lobby_window(selector_lobby, track_window);
-        HostWindow host_window(recv_queue, lobby_window);
+        HostWindow host_window(recv_queue, lobby_window, ready_window);
         host_window.show();
         menu_display.exec();
         ClientSession& session = host_window.getSession();

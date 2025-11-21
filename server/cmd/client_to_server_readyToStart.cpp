@@ -4,8 +4,9 @@
 #include <stdexcept>
 #include <vector>
 
-ClientToServerReady::ClientToServerReady(int client_id, std::string car):
-        ClientToServerCmd_Server(client_id), car(car) {}
+ClientToServerReady::ClientToServerReady(int client_id, const std::string& car,
+                                         const std::string& username):
+        ClientToServerCmd_Server(client_id), car(car), username(username) {}
 
 void ClientToServerReady::execute(ServerContext& ctx) {
     std::cout << "Cliente con id: " << client_id
@@ -14,6 +15,7 @@ void ClientToServerReady::execute(ServerContext& ctx) {
     // Store the selected car in the lobby
     if (ctx.lobby) {
         ctx.lobby->clientCarSelection[client_id] = car;
+        ctx.lobby->clientUsernames[client_id] = username;
         std::cout << "Auto guardado para cliente " << client_id << ": " << car << std::endl;
     }
 
@@ -28,10 +30,12 @@ void ClientToServerReady::execute(ServerContext& ctx) {
 // Deserialización desde bytes
 ClientToServerReady* ClientToServerReady::from_bytes(const std::vector<uint8_t>& data,
                                                      const int client_id) {
-    if (data.size() < 1) {
+    if (data.size() < 2) {
         throw std::runtime_error("ReadyToStartCmd: datos insuficientes");
     }
-    std::string car(data.begin() + 1, data.end());
+    uint8_t len = data[1];
+    std::string car(data.begin() + 2, data.begin() + 2 + len);
+    std::string username(data.begin() + 2 + len, data.end());
 
-    return new ClientToServerReady(client_id, car);
+    return new ClientToServerReady(client_id, car, username);
 }

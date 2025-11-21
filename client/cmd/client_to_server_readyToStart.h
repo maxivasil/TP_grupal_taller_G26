@@ -11,9 +11,10 @@
 
 class ClientToServerReady: public ClientToServerCmd_Client {
 public:
-    explicit ClientToServerReady(std::string car);
+    explicit ClientToServerReady(const std::string& car, const std::string& username);
     std::vector<uint8_t> to_bytes() const override;  // Implementación de serialización
 private:
     std::string car;
+    std::string username;
 };
 #endif  // CLIENT_TO_SERVER_READY_TO_START_H

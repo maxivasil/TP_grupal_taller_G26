@@ -7,14 +7,19 @@
 #include <QPushButton>
 #include <QResizeEvent>
 #include <QScreen>
+#include <algorithm>
 #include <exception>
 #include <string>
 
 #include "./ui_hostwindow.h"
 
 HostWindow::HostWindow(Queue<ServerToClientCmd_Client*>& queue, InitialWindow& initialwindow,
-                       QWidget* parent):
-        QMainWindow(parent), ui(new Ui::HostWindow), queue(queue), initialwindow(initialwindow) {
+                       ReadyWindow& readywindow, QWidget* parent):
+        QMainWindow(parent),
+        ui(new Ui::HostWindow),
+        queue(queue),
+        initialwindow(initialwindow),
+        readywindow(readywindow) {
     ui->setupUi(this);
     this->setWindowState(Qt::WindowFullScreen);
     this->setWindowIcon(QIcon(":/new/prefix1/Assets/logo.png"));
@@ -74,6 +79,7 @@ void HostWindow::createConection() {
         this->hide();
         initialwindow.show();
         initialwindow.setSession(&client_session.value());
+        readywindow.setName(username_text);
     } catch (...) {
         QLabel* error_text = findChild<QLabel*>("intro_text");
         error_text->setText("Error al intentar conectarse");
@@ -81,7 +87,7 @@ void HostWindow::createConection() {
 }
 
 void HostWindow::connectEvents() {
-    QPushButton* bcontinue = findChild<QPushButton*>("bcontinue");
+    const QPushButton* bcontinue = findChild<QPushButton*>("bcontinue");
     QObject::connect(bcontinue, &QPushButton::clicked, this, &HostWindow::createConection);
 }
 

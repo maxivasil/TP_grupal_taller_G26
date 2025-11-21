@@ -10,7 +10,7 @@
 #include "cmd_base_server.h"
 
 struct PlayerResult {
-    uint8_t playerId;
+    int playerId;
     std::string playerName;
     float finishTime;
     uint8_t position;

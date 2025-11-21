@@ -9,7 +9,7 @@
 #include "cmd_base_client.h"
 
 struct CarSnapshot {
-    uint8_t id;
+    int id;
     float pos_x;
     float pos_y;
     bool collision;
@@ -17,7 +17,8 @@ struct CarSnapshot {
     float speed;
     float angle;
     bool onBridge;
-    uint8_t car_type;  // Tipo de auto: 0=Van, 1=Ferrari, 2=Celeste, 3=Jeep, 4=Pickup, 5=Limo, 6=Descapotable
+    uint8_t car_type;  // Tipo de auto: 0=Van, 1=Ferrari, 2=Celeste, 3=Jeep, 4=Pickup, 5=Limo,
+                       // 6=Descapotable
     bool hasInfiniteHealth = false;  // Indica si el cheat de vida infinita está activado
 };
 

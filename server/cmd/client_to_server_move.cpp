@@ -12,7 +12,7 @@ ClientToServerMove::ClientToServerMove(uint8_t direction, int client_id):
 void ClientToServerMove::execute(ServerContext& ctx) {
     std::cout << "Ejecutando movimiento en dirección: " << static_cast<int>(direction)
               << " del cliente con id: " << client_id << std::endl;
-    if (!ctx.inLobby || !*(ctx.inLobby))
+    if (!ctx.inLobby || !*(ctx.inLobby) || !ctx.race)
         return;
     switch (direction) {
         case MOVE_UP:

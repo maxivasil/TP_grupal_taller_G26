@@ -23,6 +23,8 @@ class HostWindow : public QMainWindow {
 	ClientSession& getSession();
 
     private:
+	const int BASE_WIDTH = 1920;
+    const int BASE_HEIGHT = 1080;
 	Ui::HostWindow *ui;
 	std::optional<ClientSession> client_session;
 	Queue<ServerToClientCmd_Client*>& queue;
@@ -30,5 +32,6 @@ class HostWindow : public QMainWindow {
 
 	void connectEvents();
     void createConection();
+	bool eventFilter(QObject* obj, QEvent* event) override;
 };
 #endif // HOSTWINDOW_H

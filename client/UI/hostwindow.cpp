@@ -4,6 +4,7 @@
 #include <QGuiApplication>
 #include <QLabel>
 #include <QPixmap>
+#include <QPainter>
 #include <QPushButton>
 #include <QResizeEvent>
 #include <QScreen>
@@ -17,32 +18,44 @@ HostWindow::HostWindow(Queue<ServerToClientCmd_Client*>& queue, InitialWindow& i
 	, queue(queue)
 	, initialwindow(initialwindow)
 {
-	ui->setupUi(this);
-	this->setWindowIcon(QIcon(":/new/prefix1/Assets/logo.png"));
+    ui->setupUi(this);
+    this->setWindowState(Qt::WindowFullScreen);
+    this->setWindowIcon(QIcon(":/new/prefix1/Assets/logo.png"));
 
-	QScreen* screen = QGuiApplication::primaryScreen();
-	QSize screenSize = screen->availableGeometry().size();
+    QWidget* cw = centralWidget();
+    cw->installEventFilter(this);
 
-	int width = screenSize.width();
-	int height = screenSize.height();
+    QWidget* root = this;
+    QList<QWidget*> widgets = root->findChildren<QWidget*>();
 
-	if (width * 9 != height * 16) {
-		if ((float)width / height > 16.0 / 9.0) {
-			width = height * 16 / 9;
-		} else {
-			height = width * 9 / 16;
-		}
+    for (QWidget* w: widgets) {
+        w->setProperty("origGeometry", w->geometry());
+        w->setProperty("origFontSize", w->font().pointSizeF());
+    }
+
+    QScreen* screen = QGuiApplication::primaryScreen();
+    QSize screenSize = screen->availableGeometry().size();
+
+    float scaleX = (float)screenSize.width() / BASE_WIDTH;
+    float scaleY = (float)screenSize.height() / BASE_HEIGHT;
+    float scaleFactor = std::min(scaleX, scaleY);
+
+    for (QWidget* w: widgets) {
+        if (w->property("doNotScale").toBool())
+            continue;
+
+        w->resize(w->width() * scaleFactor, w->height() * scaleFactor);
+        w->move(w->x() * scaleFactor, w->y() * scaleFactor);
+
+        QFont font = w->font();
+        float originalSize = w->property("origFontSize").toFloat();
+        if (originalSize > 0) {
+            font.setPointSizeF(originalSize * scaleFactor);
+        } else {
+            font.setPointSizeF(12 * scaleFactor);
+        }
+        w->setFont(font);
 	}
-	setFixedSize(width, height);
-	move((screenSize.width() - width) / 2, (screenSize.height() - height) / 2);
-
-	QPixmap bg(":/new/prefix1/Assets/Background.png");
-	bg = bg.scaled(this->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
-
-	QPalette palette;
-	palette.setBrush(QPalette::Window, bg);
-	this->setPalette(palette);
-	this->setAutoFillBackground(true);
 	connectEvents();
 }
 
@@ -77,6 +90,17 @@ void HostWindow::connectEvents() {
 
 ClientSession& HostWindow::getSession(){
 	return client_session.value();
+}
+
+bool HostWindow::eventFilter(QObject* obj, QEvent* event) {
+    if (obj == centralWidget() && event->type() == QEvent::Paint) {
+        QPainter painter(centralWidget());
+        QPixmap bg(":/new/prefix1/Assets/Background.png");
+        bg = bg.scaled(centralWidget()->size(), Qt::KeepAspectRatioByExpanding,
+                       Qt::SmoothTransformation);
+        painter.drawPixmap(0, 0, bg);
+    }
+    return false;
 }
 
 HostWindow::~HostWindow()

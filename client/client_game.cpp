@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 #include "../common/constants.h"
+#include "audio/car_sound_engine.h"
 #include "cmd/client_to_server_applyUpgrades.h"
 #include "cmd/client_to_server_cheat.h"
 #include "cmd/client_to_server_move.h"
@@ -190,11 +191,22 @@ bool Game::handleEvents() {
                     // Check if mute button was clicked (only during PLAYING state)
                     if (gameState == GameState::PLAYING) {
                         if (hud.isMuteButtonClicked(event.button.x, event.button.y)) {
-                            carSoundEngine.toggleAudioMute();
-                            hud.setAudioMuted(carSoundEngine.isAudioMuted());
-                            std::cout << "[GAME] Mute button clicked: " 
-                                      << (carSoundEngine.isAudioMuted() ? "MUTED" : "UNMUTED") 
-                                      << std::endl;
+                            carSoundEngine.toggleAudioState();
+                            hud.setAudioState(carSoundEngine.getAudioState());
+
+                            std::string stateStr;
+                            switch (carSoundEngine.getAudioState()) {
+                                case AudioState::FULL_SOUND:
+                                    stateStr = "FULL SOUND";
+                                    break;
+                                case AudioState::MUSIC_ONLY:
+                                    stateStr = "MUSIC ONLY";
+                                    break;
+                                case AudioState::MUTED:
+                                    stateStr = "MUTED";
+                                    break;
+                            }
+                            std::cout << "[GAME] Audio button clicked: " << stateStr << std::endl;
                         }
                     }
                 }
@@ -316,7 +328,10 @@ bool Game::update(ServerToClientSnapshot cmd_snapshot) {
         bool isBraking = keyState[SDL_SCANCODE_DOWN];
         bool isTurning = keyState[SDL_SCANCODE_LEFT] || keyState[SDL_SCANCODE_RIGHT];
 
-        carSoundEngine.update(isAccelerating, isTurning, isBraking);
+        // Solo actualizar sonido si la carrera está en curso
+        if (gameState == GameState::PLAYING) {
+            carSoundEngine.update(isAccelerating, isTurning, isBraking);
+        }
 
         if (currentCheckpoint < totalCheckpoints) {
             const RaceCheckpoint& current = trackCheckpoints[currentCheckpoint];
@@ -779,6 +794,7 @@ void Game::setWon() {
     gameState = GameState::WON;
     endGameMessage = "¡GANASTE!";
     endGameTime = SDL_GetTicks();
+    carSoundEngine.stopAll();  // Detener todos los sonidos de movimiento
     carSoundEngine.playRaceFinish();
     std::cout << "¡VICTORIA! Presiona ESC para volver al lobby\n";
 }
@@ -789,6 +805,7 @@ void Game::setLost() {
     gameState = GameState::LOST;
     endGameMessage = "GAME OVER";
     endGameTime = SDL_GetTicks();
+    carSoundEngine.stopAll();  // Detener todos los sonidos de movimiento
     carSoundEngine.playGameOver();
     std::cout << "DERROTA. Presiona ESC para volver al lobby\n";
 }

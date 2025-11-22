@@ -464,6 +464,9 @@ void CarSoundEngine::playAcceleration() {
     stopAcceleration();
 
     engineStartChannel = Mix_PlayChannel(-1, engineAccelerationSound, 0);
+    if (engineStartChannel != -1) {
+        activeEffectChannels.insert(engineStartChannel);
+    }
 
     Mix_ChannelFinished(CarSoundEngine::onChannelFinished);
 }
@@ -482,6 +485,7 @@ void CarSoundEngine::playTurnSound() {
                   << std::endl;
     } else {
         turnChannel = channel;
+        activeEffectChannels.insert(channel);
         std::cout << "[CarSoundEngine] ▶ Turn sound playing on channel " << channel << std::endl;
     }
 }
@@ -500,6 +504,7 @@ void CarSoundEngine::playBrakeSound() {
                   << std::endl;
     } else {
         brakeChannel = channel;
+        activeEffectChannels.insert(channel);
         std::cout << "[CarSoundEngine] ▶ Brake sound playing on channel " << channel << std::endl;
     }
 }
@@ -511,6 +516,7 @@ void CarSoundEngine::playCollisionSound() {
     }
 
     if (collisionChannel != -1) {
+        activeEffectChannels.erase(collisionChannel);
         Mix_HaltChannel(collisionChannel);
     }
 
@@ -520,17 +526,20 @@ void CarSoundEngine::playCollisionSound() {
                   << std::endl;
     } else {
         collisionChannel = channel;
+        activeEffectChannels.insert(channel);
         std::cout << "[CarSoundEngine] COLLISION sound playing on channel " << channel << std::endl;
     }
 }
 
 void CarSoundEngine::stopAcceleration() {
     if (engineStartChannel != -1) {
+        activeEffectChannels.erase(engineStartChannel);
         Mix_HaltChannel(engineStartChannel);
         engineStartChannel = -1;
     }
 
     if (engineLoopChannel != -1) {
+        activeEffectChannels.erase(engineLoopChannel);
         Mix_HaltChannel(engineLoopChannel);
         engineLoopChannel = -1;
     }
@@ -538,6 +547,7 @@ void CarSoundEngine::stopAcceleration() {
 
 void CarSoundEngine::stopTurn() {
     if (turnChannel != -1) {
+        activeEffectChannels.erase(turnChannel);
         Mix_HaltChannel(turnChannel);
         turnChannel = -1;
     }
@@ -545,6 +555,7 @@ void CarSoundEngine::stopTurn() {
 
 void CarSoundEngine::stopBrake() {
     if (brakeChannel != -1) {
+        activeEffectChannels.erase(brakeChannel);
         Mix_HaltChannel(brakeChannel);
         brakeChannel = -1;
     }
@@ -553,6 +564,7 @@ void CarSoundEngine::stopBrake() {
 void CarSoundEngine::stopAll() {
     if (!audioInitialized)
         return;
+    activeEffectChannels.clear();
     Mix_HaltChannel(-1);
 }
 
@@ -589,6 +601,7 @@ void CarSoundEngine::playRaceFinish() {
     }
 
     if (contextSoundChannel != -1) {
+        activeEffectChannels.erase(contextSoundChannel);
         Mix_HaltChannel(contextSoundChannel);
     }
 
@@ -598,6 +611,7 @@ void CarSoundEngine::playRaceFinish() {
                   << std::endl;
     } else {
         contextSoundChannel = channel;
+        activeEffectChannels.insert(channel);
         Mix_Volume(channel, MIX_MAX_VOLUME);  // Full volume
         std::cout << "[CarSoundEngine] 🏁 RACE FINISH sound playing on channel " << channel
                   << std::endl;
@@ -611,6 +625,7 @@ void CarSoundEngine::playGameOver() {
     }
 
     if (contextSoundChannel != -1) {
+        activeEffectChannels.erase(contextSoundChannel);
         Mix_HaltChannel(contextSoundChannel);
     }
 
@@ -620,6 +635,7 @@ void CarSoundEngine::playGameOver() {
                   << std::endl;
     } else {
         contextSoundChannel = channel;
+        activeEffectChannels.insert(channel);
         Mix_Volume(channel, MIX_MAX_VOLUME);  // Full volume
         std::cout << "[CarSoundEngine] ☠️ GAME OVER sound playing on channel " << channel
                   << std::endl;
@@ -633,6 +649,7 @@ void CarSoundEngine::playCheatActivated() {
     }
 
     if (contextSoundChannel != -1) {
+        activeEffectChannels.erase(contextSoundChannel);
         Mix_HaltChannel(contextSoundChannel);
     }
 
@@ -642,6 +659,7 @@ void CarSoundEngine::playCheatActivated() {
                   << std::endl;
     } else {
         contextSoundChannel = channel;
+        activeEffectChannels.insert(channel);
         Mix_Volume(channel, MIX_MAX_VOLUME * 0.8f);  // 80% volume
         std::cout << "[CarSoundEngine] 🎮 CHEAT ACTIVATED sound playing on channel " << channel
                   << std::endl;
@@ -673,6 +691,7 @@ void CarSoundEngine::playOtherCarCollision(float distance, float intensity) {
                   << std::endl;
     } else {
         otherCarChannel = channel;
+        activeEffectChannels.insert(channel);
         int volume = static_cast<int>(MIX_MAX_VOLUME * volumeFactor);
         Mix_Volume(channel, volume);
         std::cout << "[CarSoundEngine] Other car collision at distance " << distance
@@ -701,6 +720,7 @@ void CarSoundEngine::playDistantBrake(float distance) {
         return;
     } else {
         otherCarChannel = channel;
+        activeEffectChannels.insert(channel);
         int volume = static_cast<int>(MIX_MAX_VOLUME * volumeFactor);
         Mix_Volume(channel, volume);
         std::cout << "[CarSoundEngine] Distant brake at distance " << distance << std::endl;
@@ -780,27 +800,79 @@ void CarSoundEngine::onChannelFinished(int channel) {
     if (!instance)
         return;
 
+    // Remove channel from active effect channels when it finishes
+    instance->activeEffectChannels.erase(channel);
+
     if (channel == instance->engineStartChannel) {
         instance->engineLoopChannel = Mix_PlayChannel(-1, instance->engineLoopSound, -1);
+        // Register the loop channel as an effect channel
+        if (instance->engineLoopChannel != -1) {
+            instance->activeEffectChannels.insert(instance->engineLoopChannel);
+        }
     }
 }
 
-void CarSoundEngine::toggleAudioMute() {
-    setAudioMute(!audioMuted);
+void CarSoundEngine::toggleAudioState() {
+    // Cycle through: FULL_SOUND -> MUSIC_ONLY -> MUTED -> FULL_SOUND
+    int nextState = (static_cast<int>(audioState) + 1) % 3;
+    setAudioState(static_cast<AudioState>(nextState));
 }
 
-void CarSoundEngine::setAudioMute(bool muted) {
-    audioMuted = muted;
-    
-    if (audioMuted) {
-        // Mute: pause all channels
-        Mix_Pause(-1);  // Pause all channels
-        Mix_PauseMusic();
-        std::cout << "[CarSoundEngine] Audio MUTED" << std::endl;
-    } else {
-        // Unmute: resume all channels
-        Mix_Resume(-1);  // Resume all channels
-        Mix_ResumeMusic();
-        std::cout << "[CarSoundEngine] Audio UNMUTED" << std::endl;
+void CarSoundEngine::setAudioState(AudioState state) {
+    audioState = state;
+
+    switch (audioState) {
+        case AudioState::FULL_SOUND:
+            // Restore all sounds (music and effects)
+            Mix_ResumeMusic();                            // Resume music
+            Mix_VolumeMusic(int(MIX_MAX_VOLUME * 0.3f));  // Restore music volume
+            for (int channel: activeEffectChannels) {
+                if (Mix_Playing(channel)) {
+                    Mix_Resume(channel);
+                    Mix_Volume(channel, MIX_MAX_VOLUME);  // Restore channel volume
+                }
+            }
+            // Restore all channel volumes to max
+            for (int i = 0; i < MIX_CHANNELS; i++) {
+                Mix_Volume(i, MIX_MAX_VOLUME);
+            }
+            std::cout << "[CarSoundEngine] Audio: FULL SOUND (all channels active)" << std::endl;
+            break;
+
+        case AudioState::MUSIC_ONLY:
+            // Play ONLY effects (no music) - inverse behavior
+            Mix_PauseMusic();  // Pause music
+            for (int channel: activeEffectChannels) {
+                if (Mix_Playing(channel)) {
+                    Mix_Resume(channel);
+                }
+            }
+            std::cout << "[CarSoundEngine] Audio: EFFECTS ONLY (music muted)" << std::endl;
+            break;
+
+        case AudioState::MUTED:
+            // Mute everything - use aggressive mute
+            muteAllSound();
+            std::cout << "[CarSoundEngine] Audio: COMPLETE SILENCE" << std::endl;
+            break;
+    }
+}
+
+void CarSoundEngine::muteAllSound() {
+    // Pause music (don't halt - we need to resume it later)
+    Mix_PauseMusic();
+
+    // Pause all channels as backup
+    Mix_Pause(-1);
+
+    // Also pause each known effect channel
+    for (int channel: activeEffectChannels) {
+        Mix_Pause(channel);
+    }
+
+    // Set volume to 0 for additional safety
+    Mix_VolumeMusic(0);
+    for (int i = 0; i < MIX_CHANNELS; i++) {
+        Mix_Volume(i, 0);
     }
 }

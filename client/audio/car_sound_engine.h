@@ -5,9 +5,13 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include <SDL_mixer.h>
+
+// Audio state: Full Sound -> Music Only -> Muted -> Full Sound (cycling)
+enum class AudioState { FULL_SOUND = 0, MUSIC_ONLY = 1, MUTED = 2 };
 
 // Car sound states
 enum class CarSoundState { IDLE, ACCELERATING, TURNING, BRAKING };
@@ -43,6 +47,9 @@ private:
     bool turnPlaying = false;
     bool brakePlaying = false;
     bool engineNoisePlaying = false;
+
+    // Track active effect channels (for MUSIC_ONLY filtering)
+    std::unordered_set<int> activeEffectChannels;
 
     // Distance-based sound throttling
     Uint32 lastCollisionSoundTime = 0;
@@ -94,13 +101,14 @@ public:
     // maxDistance: sounds beyond this distance are silent (0.0)
     static float calculateDistanceVolume(float distance, float maxDistance = 100.0f);
 
-    // Audio mute/unmute control
-    void toggleAudioMute();
-    void setAudioMute(bool muted);
-    bool isAudioMuted() const { return audioMuted; }
+    // Audio state control (3-state: Full Sound -> Music Only -> Muted -> Full Sound)
+    void toggleAudioState();  // Cycle through: FULL_SOUND -> MUSIC_ONLY -> MUTED -> FULL_SOUND
+    void setAudioState(AudioState state);
+    AudioState getAudioState() const { return audioState; }
+    void muteAllSound();  // Force complete mute (aggressive)
 
 private:
-    bool audioMuted = false;  // Track mute state
+    AudioState audioState = AudioState::FULL_SOUND;  // Track audio state
 };
 
 #endif  // CAR_SOUND_ENGINE_H

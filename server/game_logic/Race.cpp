@@ -104,13 +104,13 @@ void Race::initNPCsFromTrack(b2WorldId world) {
         std::cout << "[RACE NPC CONFIG] Small track detected (4 checkpoints): "
                   << maxNPCs << " moving, " << maxParked << " parked (well-spaced)" << std::endl;
     } else if (numCheckpoints >= 12) {
-        numRoutes = 10;
-        npcsPerRoute = 2;
-        maxNPCs = 20;
+        numRoutes = 15;
+        npcsPerRoute = 3;
+        maxNPCs = 45;
         maxParked = 10;
         std::cout << "[RACE NPC CONFIG] Large track detected (12+ checkpoints): "
-                  << maxNPCs << " moving across " << numRoutes << " routes (2 per route), " << maxParked 
-                  << " parked (1 per route, well-spaced)" << std::endl;
+                  << maxNPCs << " moving across " << numRoutes << " routes (3 per route), " << maxParked 
+                  << " parked (well-spaced)" << std::endl;
     }
 
     currentRoutes =
@@ -147,68 +147,80 @@ void Race::initNPCsFromTrack(b2WorldId world) {
               << " → Using " << (lateralDistribution ? "LATERAL" : "LONGITUDINAL") 
               << " distribution (numLanes: " << numLanes << ")" << std::endl;
 
-    for (size_t routeIdx = 0; routeIdx < currentRoutes.size(); ++routeIdx) {
+    // GARANTIZAR AL MENOS 1 NPC EN CADA CHECKPOINT
+    int checkpointsToFill = numCheckpoints;
+    int remainingNPCs = maxNPCs;
+    
+    // Primero, distribuir NPCs para cubrir todos los checkpoints (1 por checkpoint aprox)
+    for (int checkpointIdx = 0; checkpointIdx < checkpointsToFill && npcCount < maxNPCs; ++checkpointIdx) {
+        if (remainingNPCs <= 0) break;
+        
+        // Seleccionar ruta aleatoria que pase por este checkpoint
+        size_t routeIdx = checkpointIdx % currentRoutes.size();
+        if (routeIdx >= currentRoutes.size()) continue;
+        
+        const auto& route = currentRoutes[routeIdx];
+        if (route.points.empty()) continue;
+        
+        // Mapear checkpoint a waypoint en la ruta
+        // Distribuir checkpoints a lo largo de la ruta de forma balanceada
+        size_t routeLength = route.points.size();
+        size_t waypointIdx = (routeLength * checkpointIdx) / checkpointsToFill;
+        waypointIdx = std::min(waypointIdx, routeLength - 1);
+        
+        // Pequeña variación aleatoria para que no todos estén exactamente en el mismo punto
+        int randomOffset = (rand() % 3) - 1;  // -1, 0, 1
+        int finalWaypoint = std::max(0, std::min(static_cast<int>(routeLength - 1), 
+                                                   static_cast<int>(waypointIdx) + randomOffset));
+        
+        const auto& point = route.points[finalWaypoint];
+        b2Vec2 pos{point.x, point.y};
+        uint8_t carType = rand() % 7;
+        
+        auto npc = std::make_unique<NPCTraffic>(world, carType, pos);
+        npc->setRoute(&route.points);
+        npcs.push_back(std::move(npc));
+        
+        std::cout << "[RACE] NPC #" << npcCount << " (moving, CHECKPOINT_COVERAGE) created at (" 
+                  << pos.x << ", " << pos.y << ") on route " << (routeIdx + 1) 
+                  << " [checkpoint: " << checkpointIdx << "/" << checkpointsToFill 
+                  << "] [waypoint: " << finalWaypoint << "/" << routeLength 
+                  << "] [Car Type: " << (int)carType << "]" << std::endl;
+        
+        npcCount++;
+        remainingNPCs--;
+    }
+    
+    // Distribuir NPCs restantes de forma balanceada
+    for (size_t routeIdx = 0; routeIdx < currentRoutes.size() && npcCount < maxNPCs; ++routeIdx) {
         const auto& route = currentRoutes[routeIdx];
         if (route.points.empty())
             continue;
 
         size_t routeLength = route.points.size();
+        
+        // Agregar 2-3 NPCs adicionales por ruta para llenar espacios vacíos
+        for (int extraIdx = 0; extraIdx < 3 && npcCount < maxNPCs; ++extraIdx) {
+            // Distribuir en diferentes posiciones
+            size_t basePointIdx = (routeLength * (extraIdx + 1)) / 5;  // Divide ruta en 5 secciones
+            int randomOffset = (rand() % 3) - 1;
+            int pointIdx = std::max(0, std::min(static_cast<int>(routeLength - 1), 
+                                                static_cast<int>(basePointIdx) + randomOffset));
 
-        if (lateralDistribution) {
-            // DISTRIBUCIÓN LATERAL
-            for (int i = 0; i < npcsPerRoute && npcCount < maxNPCs; ++i) {
-                size_t basePointIdx = (routeLength * i) / npcsPerRoute;
-                int randomOffset = (rand() % 5) - 2;
-                size_t pointIdx = (basePointIdx + randomOffset + routeLength) % routeLength;
+            const auto& point = route.points[pointIdx];
+            b2Vec2 pos{point.x, point.y};
+            uint8_t carType = rand() % 7;
 
-                const auto& point = route.points[pointIdx];
+            auto npc = std::make_unique<NPCTraffic>(world, carType, pos);
+            npc->setRoute(&route.points);
+            npcs.push_back(std::move(npc));
 
-                float laneOffset = 0.0f;
-                if (numLanes == 2) {
-                    laneOffset = (i % 2 == 0) ? -0.2f : 0.2f;
-                } else if (numLanes == 3) {
-                    laneOffset = ((i % 3) - 1) * 0.2f;
-                }
+            std::cout << "[RACE] NPC #" << npcCount << " (moving, FILLER) created at (" 
+                      << pos.x << ", " << pos.y << ") on route " << (routeIdx + 1) 
+                      << " [waypoint: " << pointIdx << "/" << routeLength 
+                      << "] [Car Type: " << (int)carType << "]" << std::endl;
 
-                b2Vec2 pos{point.x + laneOffset, point.y};
-                uint8_t carType = rand() % 7;
-
-                auto npc = std::make_unique<NPCTraffic>(world, carType, pos);
-                npc->setRoute(&route.points);
-                npcs.push_back(std::move(npc));
-
-                std::cout << "[RACE] NPC #" << npcCount << " (moving, LATERAL) created at (" 
-                          << pos.x << ", " << pos.y << ") on route " << (routeIdx + 1) 
-                          << " [waypoint: " << pointIdx << "/" << routeLength 
-                          << "] [lane offset: " << laneOffset << "] [Car Type: " 
-                          << (int)carType << "]" << std::endl;
-
-                npcCount++;
-            }
-        } else {
-            // DISTRIBUCIÓN LONGITUDINAL - Spread across entire route
-            for (int i = 0; i < npcsPerRoute && npcCount < maxNPCs; ++i) {
-                // Distribute evenly across the ENTIRE route
-                size_t basePointIdx = (routeLength * i) / npcsPerRoute;
-                int randomOffset = (rand() % 2);
-                size_t pointIdx = (basePointIdx + randomOffset) % routeLength;
-
-                const auto& point = route.points[pointIdx];
-
-                b2Vec2 pos{point.x, point.y};
-                uint8_t carType = rand() % 7;
-
-                auto npc = std::make_unique<NPCTraffic>(world, carType, pos);
-                npc->setRoute(&route.points);
-                npcs.push_back(std::move(npc));
-
-                std::cout << "[RACE] NPC #" << npcCount << " (moving, LONGITUDINAL) created at (" 
-                          << pos.x << ", " << pos.y << ") on route " << (routeIdx + 1) 
-                          << " [waypoint: " << pointIdx << "/" << routeLength 
-                          << "] [Car Type: " << (int)carType << "]" << std::endl;
-
-                npcCount++;
-            }
+            npcCount++;
         }
     }
 

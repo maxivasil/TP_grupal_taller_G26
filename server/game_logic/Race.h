@@ -52,7 +52,8 @@ private:
     void initStaticObjects(b2WorldId world);
     void initBridgeSensors(b2WorldId world);
     void initCars(b2WorldId world);
-    void initNPCs(b2WorldId world);  // Inicializar NPCs de tráfico
+    void initNPCs(b2WorldId world);  // Initialize NPC traffic
+    void initNPCsFromTrack(b2WorldId world);  // Track-based NPC system
 
 public:
     Race(CityName cityName, std::string& trackFile, std::vector<std::unique_ptr<Player>>& players);

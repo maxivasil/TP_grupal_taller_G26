@@ -784,3 +784,23 @@ void CarSoundEngine::onChannelFinished(int channel) {
         instance->engineLoopChannel = Mix_PlayChannel(-1, instance->engineLoopSound, -1);
     }
 }
+
+void CarSoundEngine::toggleAudioMute() {
+    setAudioMute(!audioMuted);
+}
+
+void CarSoundEngine::setAudioMute(bool muted) {
+    audioMuted = muted;
+    
+    if (audioMuted) {
+        // Mute: pause all channels
+        Mix_Pause(-1);  // Pause all channels
+        Mix_PauseMusic();
+        std::cout << "[CarSoundEngine] Audio MUTED" << std::endl;
+    } else {
+        // Unmute: resume all channels
+        Mix_Resume(-1);  // Resume all channels
+        Mix_ResumeMusic();
+        std::cout << "[CarSoundEngine] Audio UNMUTED" << std::endl;
+    }
+}

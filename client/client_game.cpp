@@ -185,8 +185,23 @@ bool Game::handleEvents() {
                     arrow.onWindowResize(w, h, uiScale);
                 }
                 break;
+            case SDL_MOUSEBUTTONDOWN:
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    // Check if mute button was clicked (only during PLAYING state)
+                    if (gameState == GameState::PLAYING) {
+                        if (hud.isMuteButtonClicked(event.button.x, event.button.y)) {
+                            carSoundEngine.toggleAudioMute();
+                            hud.setAudioMuted(carSoundEngine.isAudioMuted());
+                            std::cout << "[GAME] Mute button clicked: " 
+                                      << (carSoundEngine.isAudioMuted() ? "MUTED" : "UNMUTED") 
+                                      << std::endl;
+                        }
+                    }
+                }
+                break;
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_m) {
+                    // M key: toggle minimap (all states)
                     showMinimap = !showMinimap;
                 } else if (event.key.keysym.sym == SDLK_t) {
                     if (gameState != GameState::PLAYING && raceFullyFinished &&

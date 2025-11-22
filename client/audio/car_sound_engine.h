@@ -93,6 +93,14 @@ public:
     // Distance-based volume calculation
     // maxDistance: sounds beyond this distance are silent (0.0)
     static float calculateDistanceVolume(float distance, float maxDistance = 100.0f);
+
+    // Audio mute/unmute control
+    void toggleAudioMute();
+    void setAudioMute(bool muted);
+    bool isAudioMuted() const { return audioMuted; }
+
+private:
+    bool audioMuted = false;  // Track mute state
 };
 
 #endif  // CAR_SOUND_ENGINE_H

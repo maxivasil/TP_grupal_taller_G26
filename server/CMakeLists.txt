@@ -1,20 +1,17 @@
 add_subdirectory(game_logic)
 add_subdirectory(cmd)
 
-target_sources(taller_server
-    PRIVATE
+add_library(server_core
     # .cpp files
     acceptor.cpp
     client_handler.cpp
     gameloop.cpp
-    main.cpp
     protected_clients.cpp
     session.cpp
     server_receiver.cpp
     server_sender.cpp
     LobbiesMonitor.cpp
-    
-    PUBLIC
+
     # .h files
     acceptor.h
     client_handler.h
@@ -26,11 +23,18 @@ target_sources(taller_server
     LobbiesMonitor.h
     Lobby.h
     LobbyStatus.h
-    
-    )
+)
+
+target_link_libraries(server_core PUBLIC box2d::box2d yaml-cpp)
+
+target_sources(taller_server
+    PRIVATE
+        main.cpp
+)
 
 target_link_libraries(taller_server 
     PRIVATE 
         server_cmd
         server_game_logic
+        server_core
     )

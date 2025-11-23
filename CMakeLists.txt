@@ -239,35 +239,6 @@ if(TALLER_TESTS)
 
     set_project_warnings(taller_tests ${TALLER_MAKE_WARNINGS_AS_ERRORS} TRUE)
 
-    file(GLOB EVENT_SOURCES 
-        "${CMAKE_SOURCE_DIR}/common/*.h"
-        "${CMAKE_SOURCE_DIR}/client/*.h"
-        "${CMAKE_SOURCE_DIR}/client/cmd/*.h"
-    )
-
-    # eliminar main.cpp
-    # list(REMOVE_ITEM EVENT_SOURCES "${CMAKE_SOURCE_DIR}/client/main.cpp")
-
-    target_sources(taller_tests
-        PRIVATE
-            ${EVENT_SOURCES}
-    )
-
-    target_include_directories(taller_tests
-        PUBLIC
-        ${gtest_SOURCE_DIR}/include
-        ${gmock_SOURCE_DIR}/include
-        ${CMAKE_SOURCE_DIR}/client/game
-        )
-
-    target_link_libraries(taller_tests
-        taller_common
-        GTest::gtest_main
-        Qt${QT_VERSION_MAJOR}::Widgets
-        SDL2pp::SDL2pp 
-        SDL2_mixer::SDL2_mixer
-        SDL2_ttf::SDL2_ttf
-        yaml-cpp
-    )
+    target_link_libraries(taller_tests tests)
 
 endif()

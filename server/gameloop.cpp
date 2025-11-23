@@ -6,16 +6,16 @@
 #include <string>
 #include <utility>
 
-#include "../cmd/server_to_client_gameStarting.h"
-#include "../cmd/server_to_client_raceResults.h"
 #include "../common/CarStats.h"
 #include "../common/constants.h"
+#include "cmd/server_to_client_gameStarting.h"
+#include "cmd/server_to_client_raceResults.h"
+#include "game_logic/Car.h"
+#include "game_logic/City.h"
+#include "game_logic/Player.h"
+#include "game_logic/Race.h"
 
-#include "Car.h"
-#include "City.h"
 #include "Lobby.h"
-#include "Player.h"
-#include "Race.h"
 
 #define FPS 60
 
@@ -56,7 +56,7 @@ void ServerGameLoop::process_pending_commands(ServerContext& ctx) {
     }
 }
 
-void ServerGameLoop::update_game_state(Race& race) {
+void ServerGameLoop::update_game_state(const Race& race) {
     std::vector<CarSnapshot> snapshot_data = race.getSnapshot();
 
     // Crear comando Snapshot
@@ -229,7 +229,7 @@ void ServerGameLoop::send_partial_results(Race& race,
     }
 }
 
-void ServerGameLoop::send_acumulated_results(Race& race,
+void ServerGameLoop::send_acumulated_results(const Race& race,
                                              std::vector<std::unique_ptr<Player>> const& players,
                                              bool& resultsAlreadySent) {
     resultsAlreadySent = true;

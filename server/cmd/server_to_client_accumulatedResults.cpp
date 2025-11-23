@@ -5,8 +5,8 @@
 #include <arpa/inet.h>
 
 ServerToClientAccumulatedResults::ServerToClientAccumulatedResults(
-        std::vector<AccumulatedResultDTO> accumulatedResults):
-        accumulatedResults(std::move(accumulatedResults)) {}
+        std::vector<AccumulatedResultDTO> results):
+        results(std::move(results)) {}
 
 std::vector<uint8_t> ServerToClientAccumulatedResults::to_bytes() const {
     std::vector<uint8_t> bytes;
@@ -14,12 +14,12 @@ std::vector<uint8_t> ServerToClientAccumulatedResults::to_bytes() const {
     uint8_t cmd = static_cast<uint8_t>(ACCUMULATED_RESULTS_COMMAND);
     BufferUtils::append_bytes(bytes, &cmd, sizeof(cmd));
 
-    uint16_t count = htons(static_cast<uint16_t>(accumulatedResults.size()));
+    uint16_t count = htons(static_cast<uint16_t>(results.size()));
     BufferUtils::append_bytes(bytes, &count, sizeof(count));
 
-    for (const auto& dto: accumulatedResults) {
+    for (const auto& dto: results) {
 
-        uint32_t pid = htonl(static_cast<uint32_t>(dto.playerId));
+        uint32_t pid = htonl(dto.playerId);
         BufferUtils::append_bytes(bytes, &pid, sizeof(uint32_t));
 
         uint16_t races = htons(dto.completedRaces);

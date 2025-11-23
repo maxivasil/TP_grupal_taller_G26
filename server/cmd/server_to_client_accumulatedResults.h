@@ -11,17 +11,17 @@
 #include "cmd_base_server.h"
 
 struct AccumulatedResultDTO {
-    int playerId;
+    uint32_t playerId;
     uint16_t completedRaces;
     float totalTime;
 };
 
 class ServerToClientAccumulatedResults: public ServerToClientCmd_Server {
 private:
-    std::vector<AccumulatedResultDTO> accumulatedResults;
+    std::vector<AccumulatedResultDTO> results;
 
 public:
-    explicit ServerToClientAccumulatedResults(std::vector<AccumulatedResultDTO> accumulatedResults);
+    explicit ServerToClientAccumulatedResults(std::vector<AccumulatedResultDTO> results);
 
     std::vector<uint8_t> to_bytes() const override;
 

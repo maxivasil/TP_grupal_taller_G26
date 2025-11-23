@@ -12,7 +12,6 @@
 
 struct AccumulatedResultDTO {
     uint32_t playerId;
-    std::string name;
     uint16_t completedRaces;
     float totalTime;
 };

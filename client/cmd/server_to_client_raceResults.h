@@ -9,7 +9,7 @@
 #include "cmd_base_client.h"
 
 struct ClientPlayerResult {
-    int playerId;
+    uint32_t playerId;
     std::string playerName;
     float finishTime;
     uint8_t position;
@@ -26,9 +26,6 @@ public:
 
     static ServerToClientRaceResults from_bytes(const std::vector<uint8_t>& data);
     void execute(ClientContext& ctx) override;
-
-    const std::vector<ClientPlayerResult>& getResults() const { return results; }
-    bool getRaceFinished() const { return isFinished; }
 };
 
 #endif

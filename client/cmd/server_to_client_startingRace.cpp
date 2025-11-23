@@ -24,7 +24,8 @@ ServerToClientStartingRace ServerToClientStartingRace::from_bytes(
     if (header != STARTING_RACE_COMMAND)
         throw std::runtime_error("Invalid header for Race Starting");
     uint8_t cityId;
-    std::memcpy(&cityId, &data[1], sizeof(cityId));
+    size_t offset = 1;
+    BufferUtils::read_uint8(data, offset, cityId);
     std::string trackFile;
     if (data.size() > 2) {
         trackFile = std::string(data.begin() + 2, data.end());

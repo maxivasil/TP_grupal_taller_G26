@@ -11,25 +11,16 @@ ServerToClientAccumulatedResults::ServerToClientAccumulatedResults(
 std::vector<uint8_t> ServerToClientAccumulatedResults::to_bytes() const {
     std::vector<uint8_t> bytes;
 
-    uint8_t cmd = static_cast<uint8_t>(ACCUMULATED_RESULTS_COMMAND);
-    BufferUtils::append_bytes(bytes, &cmd, sizeof(cmd));
+    BufferUtils::append_uint8(bytes, ACCUMULATED_RESULTS_COMMAND);
 
-    uint16_t count = htons(static_cast<uint16_t>(results.size()));
-    BufferUtils::append_bytes(bytes, &count, sizeof(count));
+    BufferUtils::append_uint16(bytes, static_cast<uint16_t>(results.size()));
 
     for (const auto& dto: results) {
+        BufferUtils::append_uint32(bytes, dto.playerId);
 
-        uint32_t pid = htonl(dto.playerId);
-        BufferUtils::append_bytes(bytes, &pid, sizeof(uint32_t));
+        BufferUtils::append_uint16(bytes, dto.completedRaces);
 
-        uint16_t races = htons(dto.completedRaces);
-        BufferUtils::append_bytes(bytes, &races, sizeof(races));
-
-        uint32_t timeBits;
-        memcpy(&timeBits, &dto.totalTime, sizeof(float));
-
-        timeBits = htonl(timeBits);
-        BufferUtils::append_bytes(bytes, &timeBits, sizeof(timeBits));
+        BufferUtils::append_float(bytes, dto.totalTime);
     }
 
     return bytes;

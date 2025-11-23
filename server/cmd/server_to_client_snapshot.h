@@ -9,7 +9,7 @@
 #include "cmd_base_server.h"
 
 struct CarSnapshot {
-    int id;
+    uint32_t id;
     float pos_x;
     float pos_y;
     bool collision;

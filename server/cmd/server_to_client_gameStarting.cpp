@@ -4,8 +4,7 @@ ServerToClientGameStarting::ServerToClientGameStarting(){}
 
 std::vector<uint8_t> ServerToClientGameStarting::to_bytes() const {
     std::vector<uint8_t> data;
-    uint8_t header = GAME_STARTING_COMMAND;
-    data.push_back(header);
+    BufferUtils::append_uint8(data, GAME_STARTING_COMMAND);
     return data;
 }
 

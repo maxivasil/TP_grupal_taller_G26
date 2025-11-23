@@ -29,3 +29,30 @@ void BufferUtils::append_float(std::vector<uint8_t>& buf, float f) {
     bits = htonl(bits);
     BufferUtils::append_bytes(buf, &bits, sizeof(uint32_t));
 }
+
+void BufferUtils::read_uint8(const std::vector<uint8_t>& buf, size_t& offset, uint8_t& v) {
+    memcpy(&v, buf.data() + offset, sizeof(uint8_t));
+    offset += sizeof(uint8_t);
+}
+
+void BufferUtils::read_uint16(const std::vector<uint8_t>& buf, size_t& offset, uint16_t& v) {
+    uint16_t net;
+    memcpy(&net, buf.data() + offset, sizeof(uint16_t));
+    v = ntohs(net);
+    offset += sizeof(uint16_t);
+}
+
+void BufferUtils::read_uint32(const std::vector<uint8_t>& buf, size_t& offset, uint32_t& v) {
+    uint32_t net;
+    memcpy(&net, buf.data() + offset, sizeof(uint32_t));
+    v = ntohl(net);
+    offset += sizeof(uint32_t);
+}
+
+void BufferUtils::read_float(const std::vector<uint8_t>& buf, size_t& offset, float& f) {
+    uint32_t bits;
+    memcpy(&bits, buf.data() + offset, sizeof(uint32_t));
+    bits = ntohl(bits);
+    memcpy(&f, &bits, sizeof(float));
+    offset += sizeof(uint32_t);
+}

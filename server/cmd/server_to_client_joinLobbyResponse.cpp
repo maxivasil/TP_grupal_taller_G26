@@ -28,13 +28,12 @@ ServerToClientJoinResponse::ServerToClientJoinResponse(uint8_t status, uint8_t e
 std::vector<uint8_t> ServerToClientJoinResponse::to_bytes() const {
     std::vector<uint8_t> data;
 
-    uint8_t header = JOIN_RESPONSE_COMMAND;
-    data.push_back(header);
-    data.push_back(status);
+    BufferUtils::append_uint8(data, JOIN_RESPONSE_COMMAND);
+    BufferUtils::append_uint8(data, status);
     if (status == STATUS_OK) {
         BufferUtils::append_bytes(data, lobbyId.data(), lobbyId.size());
     } else {
-        data.push_back(errorCode);
+        BufferUtils::append_uint8(data, errorCode);
     }
     return data;
 }

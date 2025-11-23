@@ -19,7 +19,7 @@ class LobbiesMonitor;
 
 class ServerClientHandler: public Thread {
 public:
-    explicit ServerClientHandler(int client_id, Socket&& s, LobbiesMonitor& lobbiesMonitor);
+    explicit ServerClientHandler(uint32_t client_id, Socket&& s, LobbiesMonitor& lobbiesMonitor);
     void run() override;
     bool is_dead() const;
     void stop() override;
@@ -29,7 +29,7 @@ public:
     void initReceiver(Queue<ClientToServerCmd_Server*>& gameloop_queue);
 
 private:
-    int client_id;
+    uint32_t client_id;
     Protocol protocol;
 
     Queue<std::shared_ptr<ServerToClientCmd_Server>> send_queue;

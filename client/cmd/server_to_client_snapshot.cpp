@@ -12,17 +12,6 @@ ServerToClientSnapshot::ServerToClientSnapshot(std::vector<CarSnapshot> cars):
 
 void ServerToClientSnapshot::execute(ClientContext& ctx) {
     ctx.game->update_snapshots(cars_snapshot);
-
-    // std::cout << "[Snapshot recibido] Autos en escena: " << cars_snapshot.size() << std::endl;
-
-    // for (const auto& car: cars_snapshot) {
-    //     std::cout << "  Auto ID: " << car.id << " | Posición: (" << car.pos_x << ", " << car.pos_y
-    //               << ")"
-    //               << " | Colisión: " << (car.collision ? "sí" : "no")
-    //               << " | Vida: " << static_cast<int>(car.health) << " | Velocidad: " << car.speed
-    //               << " | Ángulo: " << car.angle << " | OnBridge: " << (car.onBridge ? "SI" : "NO")
-    //               << std::endl;
-    // }
 }
 
 ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint8_t>& data) {
@@ -37,8 +26,7 @@ ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint
         throw std::runtime_error("Invalid header for snapshot");
 
     uint8_t car_count;
-    std::memcpy(&car_count, &data[offset], sizeof(uint8_t));
-    offset += sizeof(uint8_t);
+    BufferUtils::read_uint8(data, offset, car_count);
 
     std::vector<CarSnapshot> cars;
     cars.reserve(car_count);
@@ -52,26 +40,20 @@ ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint
             data.size())
             throw std::runtime_error("Incomplete snapshot: missing car data");
 
-        std::memcpy(&car.id, &data[offset], sizeof(car.id));
-        offset += sizeof(car.id);
+        BufferUtils::read_uint32(data, offset, car.id);
 
-        std::memcpy(&car.pos_x, &data[offset], sizeof(car.pos_x));
-        offset += sizeof(car.pos_x);
+        BufferUtils::read_float(data, offset, car.pos_x);
 
-        std::memcpy(&car.pos_y, &data[offset], sizeof(car.pos_y));
-        offset += sizeof(car.pos_y);
+        BufferUtils::read_float(data, offset, car.pos_y);
 
         std::memcpy(&car.collision, &data[offset], sizeof(car.collision));
         offset += sizeof(car.collision);
 
-        std::memcpy(&car.health, &data[offset], sizeof(car.health));
-        offset += sizeof(car.health);
+        BufferUtils::read_float(data, offset, car.health);
 
-        std::memcpy(&car.speed, &data[offset], sizeof(car.speed));
-        offset += sizeof(car.speed);
+        BufferUtils::read_float(data, offset, car.speed);
 
-        std::memcpy(&car.angle, &data[offset], sizeof(car.angle));
-        offset += sizeof(car.angle);
+        BufferUtils::read_float(data, offset, car.angle);
 
         std::memcpy(&car.onBridge, &data[offset], sizeof(car.onBridge));
         offset += sizeof(car.onBridge);
@@ -79,10 +61,8 @@ ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint
         std::memcpy(&car.car_type, &data[offset], sizeof(car.car_type));
         offset += sizeof(car.car_type);
 
-        uint8_t hasInfiniteHealth = 0;
-        std::memcpy(&hasInfiniteHealth, &data[offset], sizeof(hasInfiniteHealth));
-        offset += sizeof(hasInfiniteHealth);
-        car.hasInfiniteHealth = (hasInfiniteHealth != 0);
+        std::memcpy(&car.hasInfiniteHealth, &data[offset], sizeof(car.hasInfiniteHealth));
+        offset += sizeof(car.hasInfiniteHealth);
 
         cars.push_back(car);
     }

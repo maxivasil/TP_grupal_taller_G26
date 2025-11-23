@@ -2,17 +2,18 @@
 
 #include <iostream>
 
+#include <arpa/inet.h>
+
 #include "../../common/buffer_utils.h"
 
-ServerToClientAssignId::ServerToClientAssignId(uint8_t client_id): client_id(client_id) {}
+ServerToClientAssignId::ServerToClientAssignId(uint32_t client_id): client_id(client_id) {}
 
 std::vector<uint8_t> ServerToClientAssignId::to_bytes() const {
     std::vector<uint8_t> data;
 
-    uint8_t header = ASSIGN_ID_COMMAND;
-    data.push_back(header);
+    BufferUtils::append_uint8(data, ASSIGN_ID_COMMAND);
 
-    BufferUtils::append_bytes(data, &client_id, sizeof(client_id));
+    BufferUtils::append_uint32(data, client_id);
 
     return data;
 }

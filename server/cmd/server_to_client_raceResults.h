@@ -10,13 +10,13 @@
 #include "cmd_base_server.h"
 
 struct PlayerResult {
-    int playerId;
+    uint32_t playerId;
     std::string playerName;
     float finishTime;
     uint8_t position;
 
     PlayerResult(): playerId(0), playerName(""), finishTime(0.0f), position(0) {}
-    PlayerResult(uint8_t id, const std::string& name, float time, uint8_t pos):
+    PlayerResult(uint32_t id, const std::string& name, float time, uint8_t pos):
             playerId(id), playerName(name), finishTime(time), position(pos) {}
 };
 
@@ -31,9 +31,6 @@ public:
 
     std::vector<uint8_t> to_bytes() const override;
     ServerToClientCmd_Server* clone() const override;
-
-    const std::vector<PlayerResult>& getResults() const { return results; }
-    bool getRaceFinished() const { return isFinished; }
 };
 
 #endif  // SERVER_TO_CLIENT_RACE_RESULTS_H

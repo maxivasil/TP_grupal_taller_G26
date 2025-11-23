@@ -8,7 +8,8 @@
 #include "LobbiesMonitor.h"
 #include "client_handler.h"
 
-ServerClientHandler::ServerClientHandler(int client_id, Socket&& s, LobbiesMonitor& lobbiesMonitor):
+ServerClientHandler::ServerClientHandler(uint32_t client_id, Socket&& s,
+                                         LobbiesMonitor& lobbiesMonitor):
         client_id(client_id),
         protocol(std::move(s)),
         send_queue(UINT32_MAX),

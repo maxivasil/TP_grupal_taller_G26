@@ -10,10 +10,10 @@
 
 class ServerToClientAssignId: public ServerToClientCmd_Client {
 private:
-    uint8_t client_id;
+    uint32_t client_id;
 
 public:
-    explicit ServerToClientAssignId(uint8_t client_id);
+    explicit ServerToClientAssignId(uint32_t client_id);
 
     virtual void execute(ClientContext& ctx) override;
 

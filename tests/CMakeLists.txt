@@ -6,9 +6,18 @@ add_library(tests
     main_test.cpp
     test_accumulatedResults_deserialization.cpp
     test_accumulatedResults_serialization.cpp
-    test_snapshot.cpp
-
-    testable_server_to_client_accumulatedResults.h
+    test_assign_id_serialization.cpp
+    test_assing_id_deserialization.cpp
+    test_lobbyResponse_serialization.cpp
+    test_lobbyResponse_deserialization.cpp
+    test_raceResults_serialization.cpp
+    test_raceResults_deserialization.cpp
+    test_snapshot_serialization.cpp
+    test_snapshot_deserialization.cpp
+    test_startingRace_serialization.cpp
+    test_startingRace_deserialization.cpp
+    
+    testable_server_to_client.h
 )
 
 target_link_libraries(tests 

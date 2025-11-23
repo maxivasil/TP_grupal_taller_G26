@@ -19,9 +19,7 @@ ServerToClientAccumulatedResults ServerToClientAccumulatedResults::from_bytes(
     offset += 1;
 
     uint16_t count;
-    memcpy(&count, &data[offset], sizeof(uint16_t));
-    count = ntohs(count);
-    offset += sizeof(uint16_t);
+    BufferUtils::read_uint16(data, offset, count);
 
     std::vector<AccumulatedResultDTO> res;
     res.reserve(count);
@@ -30,25 +28,16 @@ ServerToClientAccumulatedResults ServerToClientAccumulatedResults::from_bytes(
         AccumulatedResultDTO dto;
 
         uint32_t playerId;
-        memcpy(&playerId, &data[offset], sizeof(uint32_t));
-        playerId = ntohl(playerId);
+        BufferUtils::read_uint32(data, offset, playerId);
         dto.playerId = playerId;
-        offset += sizeof(uint32_t);
 
         uint16_t races;
-        memcpy(&races, &data[offset], sizeof(uint16_t));
-        races = ntohs(races);
+        BufferUtils::read_uint16(data, offset, races);
         dto.completedRaces = races;
-        offset += sizeof(uint16_t);
-
-        uint32_t timeBits;
-        memcpy(&timeBits, &data[offset], sizeof(uint32_t));
-        timeBits = ntohl(timeBits);
 
         float totalTime;
-        memcpy(&totalTime, &timeBits, sizeof(float));
+        BufferUtils::read_float(data, offset, totalTime);
         dto.totalTime = totalTime;
-        offset += sizeof(uint32_t);
 
         res.push_back(dto);
     }

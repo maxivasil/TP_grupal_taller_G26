@@ -4,9 +4,9 @@
 
 #include "../common/buffer_utils.h"
 
-#include "testable_server_to_client_accumulatedResults.h"
+#include "testable_server_to_client.h"
 
-TEST(ProtocolDeserializationTest, AccumulatedResultsFromBytes_UsingBufferUtils) {
+TEST(STCProtocolDeserializationTest, AccumulatedResults) {
     std::vector<uint8_t> bytes;
 
     BufferUtils::append_uint8(bytes, ACCUMULATED_RESULTS_COMMAND);

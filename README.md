@@ -96,8 +96,10 @@ En esta pantalla deberás esperar que todos tus amigos se una a tu partida media
 Para ejecutar el editor:
 
 ```bash
-nfs2d_editor
+sudo nfs2d_editor
 ```
+**Nota:** El editor requiere permisos de administrador.
+
 
 Al iniciar el editor verás la siguiente interfaz:
 

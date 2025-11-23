@@ -8,10 +8,12 @@ target_sources(nfs2d_editor
     main.cpp
     mainwindow.cpp
     mapview.cpp
+    toureditor.cpp
 
     PUBLIC
     # .h files
     mainwindow.h
     mapview.h
     checkpoint.h
+    toureditor.h
     )

@@ -105,7 +105,7 @@ public:
 
     void retranslateUi(QMainWindow *InitialWindow)
     {
-        InitialWindow->setWindowTitle(QCoreApplication::translate("InitialWindow", "InitialWindow", nullptr));
+        InitialWindow->setWindowTitle(QCoreApplication::translate("NFS-2D", "NFS-2D", nullptr));
         intro_text->setText(QString());
         newlobby->setText(QCoreApplication::translate("InitialWindow", "Crear nueva partida", nullptr));
         lobby->setText(QString());

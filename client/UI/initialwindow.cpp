@@ -13,17 +13,18 @@
 #include <vector>
 
 #include "../cmd/client_to_server_lobby.h"
-#include "../cmd/client_to_server_tour.h"
 #include "../cmd/server_to_client_lobbyResponse.h"
 #include "../session.h"
 #include "./ui_initialwindow.h"
 
 InitialWindow::InitialWindow(ClientSession& client_session, MainWindow& mainwindow,
-                             QWidget* parent):
+                             TrackWindow& trackwindow, QWidget* parent):
         QMainWindow(parent),
         client_session(client_session),
         mainwindow(mainwindow),
-        ui(new Ui::InitialWindow) {
+        trackwindow(trackwindow),
+        ui(new Ui::InitialWindow),
+        created(false) {
     ui->setupUi(this);
 
     this->setWindowIcon(QIcon(":/new/prefix1/Assets/logo.png"));
@@ -86,6 +87,7 @@ void InitialWindow::joinLobby() {
 
 void InitialWindow::createLobby() {
     client_session.send_command(new ClientToServerLobby("AAAAAA", true));
+    created = true;
     ServerToClientCmd_Client* raw_cmd;
     Queue<ServerToClientCmd_Client*>& recv_queue = client_session.get_recv_queue();
     std::vector<ServerToClientCmd_Client*> stash;
@@ -95,10 +97,6 @@ void InitialWindow::createLobby() {
             auto* response_cmd = dynamic_cast<ServerToClientLobbyResponse*>(cmd.get());
             if (response_cmd) {
                 ClientContext ctx = {.game = nullptr, .mainwindow = (this)};
-                // HARDCODEADO
-                std::string tourFile("./tours/tour1.yaml");
-                client_session.send_command(new ClientToServerTour(tourFile));
-                //
                 response_cmd->execute(ctx);
                 break;
             } else {
@@ -113,14 +111,18 @@ void InitialWindow::createLobby() {
 
 void InitialWindow::changeScreen(const std::string& lobby) {
     this->hide();
-    mainwindow.show();
     mainwindow.updateLobby(lobby);
+    if (created) {
+        trackwindow.show();
+    } else {
+        mainwindow.show();
+    }
 }
 
 void InitialWindow::showError() {
     QLabel* labelOut = findChild<QLabel*>("intro_text");
-    labelOut->setText("Error al intentar unirse a la partida \n Compruebe que el código sea "
-                      "correcto o no esté en marcha");
+    labelOut->setText("Error al intentar unirse a la partida Compruebe que el código sea correcto");
+    created = false;
 }
 
 void InitialWindow::connectEvents() {

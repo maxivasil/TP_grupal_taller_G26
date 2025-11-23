@@ -1,8 +1,8 @@
 
 races:
   - city: "San_Andreas"
-    track: "./tracks/track_San_Andreas_Example.yaml"
+    track: "San_Andreas_track_completo.yaml"
   - city: "Vice_City"
-    track: "./tracks/track_Vice_City_Example.yaml"
+    track: "Vice_City_track_Vice_City_Example.yaml"
   - city: "Liberty_City"
-    track: "./tracks/track_four_checkpoints_vice_city.yaml"
+    track: "Liberty_City_track_four_checkpoints.yaml"

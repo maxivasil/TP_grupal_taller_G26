@@ -49,7 +49,8 @@ ServerToClientRaceResults ServerToClientRaceResults::from_bytes(const std::vecto
 
         if (offset >= data.size())
             throw std::runtime_error("Incomplete race results: missing player ID");
-        result.playerId = data[offset++];
+        result.playerId = data[offset];
+        offset += sizeof(result.playerId);
 
         if (offset + sizeof(uint16_t) > data.size())
             throw std::runtime_error("Incomplete race results: missing name length");

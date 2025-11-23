@@ -89,3 +89,10 @@ const CarUpgrades& Player::getCarUpgrades() const {
 uint8_t Player::getCarType() const {
     return car_type;
 }
+
+bool Player::hasInfiniteHealth() const {
+    if (car) {
+        return car->hasInfiniteHealthActive();
+    }
+    return false;
+}

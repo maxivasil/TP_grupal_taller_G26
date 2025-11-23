@@ -9,12 +9,13 @@
 #include <vector>
 
 struct ServerContext {
-    class Race* race;
-    class ServerClientHandler* client;
-    bool* inLobby;
-    std::set<int>* clientsReady;
-    struct Lobby* lobby;  // Pointer to the current lobby for car selection storage
-    std::vector<struct RaceInfo>* racesInfo;
+    class Race* race = nullptr;
+    class ServerClientHandler* client = nullptr;
+    bool* inLobby = nullptr;
+    std::set<int>* clientsReady = nullptr;
+    struct Lobby* lobby = nullptr;  // Pointer to the current lobby for car selection storage
+    std::vector<struct RaceInfo>* racesInfo = nullptr;
+    std::vector<std::unique_ptr<class Player>>* players = nullptr;
 };
 
 // Aquí van las definiciones de comandos del cliente al servidor

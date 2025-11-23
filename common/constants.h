@@ -46,4 +46,8 @@
 #define CHEAT_WIN 0x02
 #define CHEAT_LOSE 0x03
 
+// Absolute directory
+#define ABS_DIR "/var/nfs2d/"
+#define ASSETS_DIR "assets/"
+
 #endif

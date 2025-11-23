@@ -40,6 +40,7 @@ private:
     void send_acumulated_results(const Race& race,
                                  std::vector<std::unique_ptr<Player>> const& players,
                                  bool& resultsAlreadySent);
+    void handle_upgrades(std::vector<std::unique_ptr<Player>>& players);
 };
 
 #endif

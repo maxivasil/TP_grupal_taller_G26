@@ -10,7 +10,13 @@ add_library(client_core
     session.cpp
     client_game.cpp
     UI/mainwindow.cpp
+    UI/mainwindow.ui
     UI/initialwindow.cpp
+    UI/initialwindow.ui
+    UI/readywindow.cpp
+    UI/readywindow.ui
+    UI/trackwindow.cpp
+    UI/trackwindow.ui
     UI/resources.qrc
 
     # .h files
@@ -21,6 +27,8 @@ add_library(client_core
     client_game.h
     UI/mainwindow.h
     UI/initialwindow.h
+    UI/readywindow.h
+    UI/trackwindow.h
 )
 
 target_link_libraries(client_core
@@ -31,12 +39,12 @@ target_link_libraries(client_core
         SDL2_ttf::SDL2_ttf
 )
 
-target_sources(taller_client
+target_sources(nfs2d_client
     PRIVATE
         main.cpp
 )
 
-target_link_libraries(taller_client 
+target_link_libraries(nfs2d_client 
     PRIVATE 
         client_core
         client_cmd
@@ -47,5 +55,5 @@ target_link_libraries(taller_client
 
 # Link to Qt Widgets if it was found by the top-level CMake (guard against missing Qt)
 if(DEFINED QT_VERSION_MAJOR AND TARGET Qt${QT_VERSION_MAJOR}::Widgets)
-    target_link_libraries(taller_client PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+    target_link_libraries(nfs2d_client PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 endif()

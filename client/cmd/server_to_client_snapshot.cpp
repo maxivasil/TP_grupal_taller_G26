@@ -79,6 +79,11 @@ ServerToClientSnapshot ServerToClientSnapshot::from_bytes(const std::vector<uint
         std::memcpy(&car.car_type, &data[offset], sizeof(car.car_type));
         offset += sizeof(car.car_type);
 
+        uint8_t hasInfiniteHealth = 0;
+        std::memcpy(&hasInfiniteHealth, &data[offset], sizeof(hasInfiniteHealth));
+        offset += sizeof(hasInfiniteHealth);
+        car.hasInfiniteHealth = (hasInfiniteHealth != 0);
+
         cars.push_back(car);
     }
 

@@ -42,6 +42,30 @@ private:
 
     float getImpactAngle(const Collidable* other, const b2Vec2& contactNormal);
 
+    /**
+     * @brief Obtiene la estadística de velocidad máxima incluyendo upgrades.
+     * @return Velocidad máxima actual del auto (stats base + upgrades)
+     */
+    float getMaxSpeed() const;
+
+    /**
+     * @brief Obtiene la estadística de aceleración incluyendo upgrades.
+     * @return Aceleración actual del auto (stats base + upgrades)
+     */
+    float getAcceleration() const;
+
+    /**
+     * @brief Obtiene la estadística de controlabilidad incluyendo upgrades.
+     * @return Controlabilidad actual del auto (stats base + upgrades)
+     */
+    float getHandling() const;
+
+    /**
+     * @brief Obtiene la salud máxima incluyendo upgrades.
+     * @return Salud máxima actual del auto (stats base + upgrades)
+     */
+    float getMaxHealth() const;
+
 public:
     Car(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation);
     ~Car();
@@ -77,6 +101,8 @@ public:
 
     bool getIsOnBridge() const;
 
+    bool hasInfiniteHealthActive() const;
+
     /**
      * @brief Aplica las mejoras acumuladas del auto modificando sus estadísticas.
      * @param newUpgrades Las nuevas mejoras a aplicar
@@ -88,30 +114,6 @@ public:
      * @return Referencia constante a las mejoras aplicadas
      */
     const CarUpgrades& getUpgrades() const;
-
-    /**
-     * @brief Obtiene la estadística de velocidad máxima incluyendo upgrades.
-     * @return Velocidad máxima actual del auto (stats base + upgrades)
-     */
-    float getMaxSpeed() const;
-
-    /**
-     * @brief Obtiene la estadística de aceleración incluyendo upgrades.
-     * @return Aceleración actual del auto (stats base + upgrades)
-     */
-    float getAcceleration() const;
-
-    /**
-     * @brief Obtiene la estadística de controlabilidad incluyendo upgrades.
-     * @return Controlabilidad actual del auto (stats base + upgrades)
-     */
-    float getHandling() const;
-
-    /**
-     * @brief Obtiene la salud máxima incluyendo upgrades.
-     * @return Salud máxima actual del auto (stats base + upgrades)
-     */
-    float getMaxHealth() const;
 };
 
 

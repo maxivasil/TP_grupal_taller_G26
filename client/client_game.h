@@ -23,6 +23,7 @@
 #include "graphics/minimap.h"
 
 #include "session.h"
+#include "../server/game_logic/CarUpgrades.h"
 
 struct RenderCar {
     SDL_Rect src;
@@ -30,6 +31,7 @@ struct RenderCar {
     float angle;
     bool onBridge;
     uint8_t car_id;
+    bool hasInfiniteHealth = false;  // Indica si tiene vida infinita activada
 };
 
 enum class GameState { PLAYING, WON, LOST };
@@ -94,6 +96,13 @@ private:
     std::vector<AccumulatedResultDTO> accumulatedResults;
     ClientPlayerResult myOwnResults = {0, "", 0.0f, 0};
 
+    // Upgrades system
+    bool showUpgradesScreen = false;
+    Uint32 upgradesScreenStartTime = 0;
+    const Uint32 UPGRADES_SCREEN_DURATION_MS = 10000;  // 10 segundos
+    CarUpgrades currentUpgrades;
+    CarUpgrades selectedUpgrades;
+
     SDL_Rect src;
     SDL_Rect dst;
 
@@ -124,6 +133,12 @@ private:
     void renderAccumulatedTable();
 
     void initMinimapAndCheckpoints(const std::string& trackName);
+
+    void renderCheckpoints(SDL2pp::Renderer& renderer);
+
+    void renderUpgradesScreen();
+
+    void handleUpgradesInput(const SDL_Event& event);
 
 public:
     explicit Game(ClientSession& client_session);

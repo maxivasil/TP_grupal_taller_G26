@@ -47,12 +47,17 @@ ServerGameLoop::ServerGameLoop(Queue<ClientToServerCmd_Server*>& gameloop_queue,
         lobby(lobby) {}
 
 void ServerGameLoop::process_pending_commands(ServerContext& ctx) {
-    ClientToServerCmd_Server* raw;
-    while (gameloop_queue.try_pop(raw)) {
-        if (raw) {
-            std::unique_ptr<ClientToServerCmd_Server> cmd(raw);
-            cmd->execute(ctx);
+    try {
+        ClientToServerCmd_Server* raw;
+        while (gameloop_queue.try_pop(raw)) {
+            if (raw) {
+                std::unique_ptr<ClientToServerCmd_Server> cmd(raw);
+                cmd->execute(ctx);
+            }
         }
+    } catch (const ClosedQueue&) {
+        stop();
+        status = LobbyStatus::FINISHED;
     }
 }
 
@@ -76,7 +81,8 @@ void ServerGameLoop::run() {
                              .inLobby = &inLobby,
                              .clientsReady = &clientsReady,
                              .lobby = lobby,
-                             .racesInfo = &racesInfo};
+                             .racesInfo = &racesInfo,
+                             .players = nullptr};
         while (should_keep_running() && status == LobbyStatus::WAITING_PLAYERS &&
                clientsReady.size() < protected_clients.size()) {
             process_pending_commands(ctx);
@@ -138,6 +144,7 @@ void ServerGameLoop::run() {
             playerId++;
         }
 
+        bool first = true;
         // cppcheck-suppress knownEmptyContainer
         for (auto& raceInfo: racesInfo) {
             Race race(raceInfo.city, raceInfo.trackFile, players);
@@ -146,14 +153,26 @@ void ServerGameLoop::run() {
                    .inLobby = &inLobby,
                    .clientsReady = &clientsReady,
                    .lobby = lobby,
-                   .racesInfo = nullptr};
+                   .racesInfo = nullptr,
+                   .players = &players};
+
+            if (!first) {
+                handle_upgrades(players);
+            }
+            first = false;
 
             auto startingRaceCmd =
                     std::make_shared<ServerToClientStartingRace>(raceInfo.city, raceInfo.trackFile);
             protected_clients.broadcast(startingRaceCmd);
 
-            ClientToServerCmd_Server* raw;
-            while (gameloop_queue.try_pop(raw)) {}
+            try {
+                ClientToServerCmd_Server* raw;
+                while (gameloop_queue.try_pop(raw)) {}
+            } catch (const ClosedQueue&) {
+                stop();
+                status = LobbyStatus::FINISHED;
+                break;
+            }
 
             race.start();
 
@@ -189,7 +208,6 @@ void ServerGameLoop::run() {
         status = LobbyStatus::FINISHED;
     }
 }
-
 
 void ServerGameLoop::send_partial_results(Race& race,
                                           std::set<int>& playersWhoAlreadyReceivedPartial) {
@@ -234,96 +252,97 @@ void ServerGameLoop::send_acumulated_results(const Race& race,
                                              bool& resultsAlreadySent) {
     resultsAlreadySent = true;
     const auto& finishTimes = race.getFinishTimes();
-    std::vector<std::pair<int, float>> pairs;
-    for (const auto& [pid, ftime]: finishTimes) pairs.emplace_back(pid, ftime);
-    std::sort(pairs.begin(), pairs.end(), [](const auto& a, const auto& b) {
-        float ta = a.second;
-        float tb = b.second;
+    std::vector<std::pair<int, float>> sortedFinishTimes(finishTimes.begin(), finishTimes.end());
 
+    std::sort(sortedFinishTimes.begin(), sortedFinishTimes.end(), [](const auto& a, const auto& b) {
+        float ta = a.second, tb = b.second;
         if (ta < 0 && tb < 0)
             return false;
         if (ta < 0)
             return false;
         if (tb < 0)
             return true;
-
         return ta < tb;
     });
-    std::vector<PlayerResult> fullResults;
-    for (size_t i = 0; i < pairs.size(); i++) {
-        int playerId_ = pairs[i].first;
-        float finishTime = pairs[i].second;
-        std::string playerName = "Unknown";
-        for (const auto& p: players)
-            if (p->getId() == playerId_)
-                playerName = p->getName();
 
-        float upgradePenalty = 0.0f;
+    std::vector<PlayerResult> fullResults;
+    for (size_t i = 0; i < sortedFinishTimes.size(); ++i) {
+        int playerId = sortedFinishTimes[i].first;
+        float finishTime = sortedFinishTimes[i].second;
 
         auto it = std::find_if(players.begin(), players.end(),
-                               [playerId_](const auto& p) { return p->getId() == playerId_; });
+                               [playerId](const auto& p) { return p->getId() == playerId; });
 
-        if (it != players.end()) {
-            playerName = (*it)->getName();
-            upgradePenalty = (*it)->getCarUpgrades().getTimePenalty();
-        }
+        std::string playerName = (it != players.end()) ? (*it)->getName() : "Unknown";
+        float upgradePenalty =
+                (it != players.end()) ? (*it)->getCarUpgrades().getTimePenalty() : 0.0f;
 
-        fullResults.emplace_back((uint8_t)playerId_, playerName, finishTime + upgradePenalty,
-                                 (uint8_t)(i + 1));
+        fullResults.emplace_back(static_cast<uint8_t>(playerId), playerName,
+                                 finishTime + upgradePenalty, static_cast<uint8_t>(i + 1));
     }
     auto fullCmd = std::make_shared<ServerToClientRaceResults>(fullResults, true);
     protected_clients.broadcast(fullCmd);
     std::cout << "[RACE] Sent FULL results to all players.\n";
 
     for (const auto& p: players) {
-        int pid = p->getId();
-
-        auto it = std::find_if(
-                accumulatedResults.begin(), accumulatedResults.end(),
-                [pid](const AccumulatedResultDTO& dto) { return dto.playerId == pid; });
+        auto it = std::find_if(accumulatedResults.begin(), accumulatedResults.end(),
+                               [pid = p->getId()](const AccumulatedResultDTO& dto) {
+                                   return dto.playerId == pid;
+                               });
 
         if (it == accumulatedResults.end()) {
-            accumulatedResults.push_back({pid, 0, -1.0f});
+            accumulatedResults.push_back({p->getId(), 0, -1.0f});
         }
     }
 
-    for (auto& [pid, ftime]: finishTimes) {
-
-        if (ftime < 0)
+    for (const auto& playerResult: fullResults) {
+        if (playerResult.finishTime < 0)
             continue;
 
-        auto it = std::find_if(
-                accumulatedResults.begin(), accumulatedResults.end(),
-                [pid](const AccumulatedResultDTO& dto) { return dto.playerId == pid; });
+        auto it = std::find_if(accumulatedResults.begin(), accumulatedResults.end(),
+                               [playerResult](const AccumulatedResultDTO& dto) {
+                                   return dto.playerId == playerResult.playerId;
+                               });
 
-        it->completedRaces += 1;
-
-        if (it->totalTime < 0)
-            it->totalTime = 0;
-
-        it->totalTime += ftime;
+        if (it != accumulatedResults.end()) {
+            it->completedRaces += 1;
+            if (it->totalTime < 0)
+                it->totalTime = 0;
+            it->totalTime += playerResult.finishTime;
+        }
     }
-
-    std::vector<AccumulatedResultDTO> orderedAccum = accumulatedResults;
-
+    auto orderedAccum = accumulatedResults;
     std::sort(orderedAccum.begin(), orderedAccum.end(),
               [](const AccumulatedResultDTO& a, const AccumulatedResultDTO& b) {
                   if (a.completedRaces != b.completedRaces)
                       return a.completedRaces > b.completedRaces;
-
                   if (a.totalTime != b.totalTime)
                       return a.totalTime < b.totalTime;
-
                   return a.playerId < b.playerId;
               });
 
     auto accumCmd = std::make_shared<ServerToClientAccumulatedResults>(orderedAccum);
     protected_clients.broadcast(accumCmd);
+
     std::cout << "\n--- ACUMULADO HASTA AHORA ---\n";
-    for (const auto& acc: accumulatedResults) {
-        int pid = acc.playerId;
-        std::cout << "Player " << pid << ": completed=" << acc.completedRaces
+    for (const auto& acc: orderedAccum) {
+        std::cout << "Player " << acc.playerId << ": completed=" << acc.completedRaces
                   << ", totalTime=" << acc.totalTime << "\n";
     }
-    std::this_thread::sleep_for(std::chrono::seconds(10));
+}
+
+void ServerGameLoop::handle_upgrades(std::vector<std::unique_ptr<Player>>& players) {
+    auto start_time = std::chrono::high_resolution_clock::now();
+    ServerContext ctx = {.players = &players};
+    while (should_keep_running()) {
+        auto current_time = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed_time = current_time - start_time;
+        if (elapsed_time.count() >= 10.0) {
+            break;
+        }
+
+        process_pending_commands(ctx);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    }
 }

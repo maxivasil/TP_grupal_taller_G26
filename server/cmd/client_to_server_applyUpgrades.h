@@ -1,8 +1,8 @@
 #ifndef CLIENT_TO_SERVER_APPLY_UPGRADES_H
 #define CLIENT_TO_SERVER_APPLY_UPGRADES_H
 
-#include <vector>
 #include <cstdint>
+#include <vector>
 
 #include "../../common/constants.h"
 #include "../../server/game_logic/CarUpgrades.h"
@@ -27,9 +27,7 @@ public:
     void execute(ServerContext& ctx) override;
 
     static ClientToServerApplyUpgrades* from_bytes(const std::vector<uint8_t>& data,
-                                                    const int client_id);
-
-    std::vector<uint8_t> to_bytes() const;
+                                                   const int client_id);
 
 private:
     CarUpgrades upgrades;

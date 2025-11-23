@@ -14,14 +14,11 @@
 #include <vector>
 
 #include "../../common/CarStats.h"
-#include "../cmd/client_to_server_readyToStart.h"
-#include "../cmd/server_to_client_gameStarting.h"
-#include "../session.h"
 
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(ClientSession& client_session, QWidget* parent):
-        QMainWindow(parent), client_session(client_session), ui(new Ui::MainWindow) {
+MainWindow::MainWindow(ReadyWindow& readywindow, QWidget* parent):
+        QMainWindow(parent), ui(new Ui::MainWindow), readywindow(readywindow) {
     ui->setupUi(this);
     this->setWindowIcon(QIcon(":/new/prefix1/Assets/logo.png"));
 
@@ -55,26 +52,9 @@ void MainWindow::ready() {
     QLabel* labelOut = findChild<QLabel*>("intro_text");
     labelOut->setText("Has seleccionado un " + QString::fromStdString(car) +
                       "\n\n Esperando al resto de jugadores...");
-    ServerToClientCmd_Client* raw_cmd;
-    Queue<ServerToClientCmd_Client*>& recv_queue = client_session.get_recv_queue();
-    client_session.send_command(new ClientToServerReady(car));
-    std::vector<ServerToClientCmd_Client*> stash;
-    while (true) {
-        if (recv_queue.try_pop(raw_cmd)) {
-            std::unique_ptr<ServerToClientCmd_Client> cmd(raw_cmd);
-            auto* start_cmd = dynamic_cast<ServerToClientGameStarting*>(cmd.get());
-            if (start_cmd) {
-                ClientContext ctx = {.game = nullptr, .mainwindow = (this)};
-                start_cmd->execute(ctx);
-                break;
-            } else {
-                stash.push_back(cmd.release());
-            }
-        }
-    }
-    for (auto* c: stash) {
-        recv_queue.push(c);
-    }
+    readywindow.updateLobby(lobbycode, car);
+    this->hide();
+    readywindow.show();
 }
 
 
@@ -101,9 +81,9 @@ void MainWindow::selector() {
 }
 
 void MainWindow::updateLobby(const std::string& lobby) {
+    lobbycode = lobby;
     QLabel* labelOut = findChild<QLabel*>("Lobby_text");
-    std::cout << "Updating lobby code to: " << lobby << std::endl;
-    labelOut->setText("Lobby Code: " + QString::fromStdString(lobby));
+    labelOut->setText("Código de Sala: " + QString::fromStdString(lobby));
 }
 
 

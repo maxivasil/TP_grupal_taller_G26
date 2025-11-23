@@ -1,5 +1,7 @@
 #include "City.h"
 
+#include "../../common/constants.h"
+
 #include <yaml-cpp/yaml.h>
 
 #define LIBERTY_CITY_MAP_PATH "cities/liberty_city.yaml"
@@ -8,7 +10,7 @@
 
 City::City(CityName name): name(name) {
     std::string filename = getYamlFileName();
-    YAML::Node data = YAML::LoadFile(filename);
+    YAML::Node data = YAML::LoadFile(ABS_DIR + filename);
 
     for (const auto& obj: data["objects"]) {
         std::string type = obj["type"].as<std::string>();

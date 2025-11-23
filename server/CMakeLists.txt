@@ -27,12 +27,12 @@ add_library(server_core
 
 target_link_libraries(server_core PUBLIC box2d::box2d yaml-cpp)
 
-target_sources(taller_server
+target_sources(nfs2d_server
     PRIVATE
         main.cpp
 )
 
-target_link_libraries(taller_server 
+target_link_libraries(nfs2d_server 
     PRIVATE 
         server_cmd
         server_game_logic

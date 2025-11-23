@@ -51,8 +51,8 @@ Car::Car(b2WorldId world, const CarStats& stats_, b2Vec2 position, b2Rot rotatio
 }
 
 void Car::handleAccelerating(bool accelerating, float speed, b2Vec2 forward) {
-    if (accelerating && speed < stats.max_speed) {
-        b2Vec2 force = b2MulSV(b2Body_GetMass(body) * stats.acceleration, forward);
+    if (accelerating && speed < getMaxSpeed()) {
+        b2Vec2 force = b2MulSV(b2Body_GetMass(body) * getAcceleration(), forward);
         b2Body_ApplyForceToCenter(body, force, true);
     }
 }
@@ -63,10 +63,10 @@ void Car::handleBraking(bool braking, b2Vec2 velocity) {
 
     if (braking) {
         if (reverseMode) {
-            float reverseSpeedFactor = std::clamp(speed / stats.max_speed, 0.5f, 1.0f);
+            float reverseSpeedFactor = std::clamp(speed / getMaxSpeed(), 0.5f, 1.0f);
             b2Vec2 backward = b2RotateVector(b2Body_GetRotation(body), {-1, 0});
             b2Vec2 reverse_force = b2MulSV(
-                    b2Body_GetMass(body) * (stats.acceleration * reverseSpeedFactor), backward);
+                    b2Body_GetMass(body) * (getAcceleration() * reverseSpeedFactor), backward);
             b2Body_ApplyForceToCenter(body, reverse_force, true);
         } else {
             if (speed > reverseThreshold) {
@@ -104,14 +104,14 @@ void Car::handleTurning(Direction turn_direction, float speed) {
         turn = -turn;
     }
 
-    float speedFactor = std::clamp(speed / stats.max_speed, 0.3f, 1.0f);
-    float torque = turn * stats.turn_speed * stats.handling * speedFactor * 1700.0f;
+    float speedFactor = std::clamp(speed / getMaxSpeed(), 0.3f, 1.0f);
+    float torque = turn * stats.turn_speed * getHandling() * speedFactor * 1700.0f;
     b2Body_ApplyTorque(body, torque, true);
 }
 
 void Car::verifyMaxSpeed(b2Vec2 velocity, float speed) {
-    if (speed > stats.max_speed) {
-        b2Vec2 limited = b2Normalize(velocity) * stats.max_speed;
+    if (speed > getMaxSpeed()) {
+        b2Vec2 limited = b2Normalize(velocity) * getMaxSpeed();
         b2Body_SetLinearVelocity(body, limited);
     }
 }
@@ -158,12 +158,9 @@ void Car::applyCollision(const CollisionInfo& info) {
     } else {
         b2Body_SetLinearVelocity(body, {0.0f, 0.0f});
     }
-
-    // ver de hacer que segun el damage se notifique para que se
-    // haga la animacion de choque
 }
 
-void Car::repair() { current_health = stats.health_max; }
+void Car::repair() { current_health = getMaxHealth(); }
 
 bool Car::isDestroyed() const { return current_health <= 0; }
 B2_API b2BodyId b2CreateBody(b2WorldId worldId, const b2BodyDef* def);
@@ -220,6 +217,8 @@ b2Rot Car::getRotation([[maybe_unused]] const b2Vec2& contactNormal) const { ret
 
 void Car::setInfiniteHealth() { hasInfiniteHealth = true; }
 
+bool Car::hasInfiniteHealthActive() const { return hasInfiniteHealth; }
+
 void Car::setLevel(bool onBridge) {
     isOnBridge = onBridge;
 
@@ -256,7 +255,7 @@ void Car::applyUpgrades(const CarUpgrades& newUpgrades) {
     // Actualizar la salud máxima si cambia
     float newMaxHealth = stats.health_max + upgrades.health_boost;
     if (newMaxHealth > 0) {
-        current_health = std::min(current_health, newMaxHealth);
+        current_health = current_health == stats.health_max ? newMaxHealth : current_health;
     }
 }
 
@@ -269,6 +268,7 @@ float Car::getAcceleration() const { return stats.acceleration + upgrades.accele
 float Car::getHandling() const { return stats.handling + upgrades.handling_boost; }
 
 float Car::getMaxHealth() const { return stats.health_max + upgrades.health_boost; }
+
 void Car::setDestroyed() { current_health = 0.0f; }
 
 Car::~Car() {}

@@ -1,5 +1,6 @@
 #include "track_loader.h"
 
+#include "../../common/constants.h"
 #include <filesystem>
 #include <iostream>
 
@@ -11,7 +12,7 @@ std::vector<RaceCheckpoint> TrackLoader::loadTrackCheckpoints(const std::string&
 
     try {
         std::cout << "Loading track from: " << trackFile << std::endl;
-        YAML::Node config = YAML::LoadFile(trackFile);
+        YAML::Node config = YAML::LoadFile(ABS_DIR "tracks/" + trackFile);
 
         if (!config["checkpoints"]) {
             std::cerr << "ERROR: No 'checkpoints' field in track file" << std::endl;

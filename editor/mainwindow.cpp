@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QInputDialog>
 #include <QLabel>
 #include <QListWidget>
 #include <QMessageBox>
@@ -11,6 +12,7 @@
 #include <QScrollArea>
 #include <QTextStream>
 #include <QVBoxLayout>
+#include <fstream>
 
 #include "../common/constants.h"
 
@@ -18,6 +20,7 @@ MainWindow::MainWindow(QWidget* parent):
         QMainWindow(parent), central(new QWidget(this)), mapView(new MapView(this)) {
     setWindowTitle("Editor de Carreras");
     setMinimumSize(1000, 600);
+    setWindowIcon(QIcon(ABS_DIR ASSETS_DIR "logo.png"));
 
     // Left: mapView
     QWidget* leftPanel = new QWidget;
@@ -78,6 +81,9 @@ MainWindow::MainWindow(QWidget* parent):
     rightLayout->addWidget(removeBtn);
     rightLayout->addStretch();
     rightLayout->addWidget(exportBtn);
+
+    editToursBtn = new QPushButton("Editar Tours");
+    rightLayout->addWidget(editToursBtn);
 
     // Main layout
     QHBoxLayout* mainLayout = new QHBoxLayout(central);
@@ -142,6 +148,29 @@ MainWindow::MainWindow(QWidget* parent):
                                  QString("Dirección inicial: (x=%1, y=%2)")
                                          .arg(dir.x(), 0, 'f', 2)
                                          .arg(dir.y(), 0, 'f', 2));
+    });
+
+    connect(editToursBtn, &QPushButton::clicked, this, [this]() {
+        QVector<QString> availableRaces;
+
+        QDir dir(ABS_DIR "tracks/");
+        QStringList files = dir.entryList(QStringList() << "*.yaml", QDir::Files);
+
+        for (const QString& file: files) {
+            QString city = "Desconocido";
+            if (file.startsWith("San_Andreas", Qt::CaseInsensitive))
+                city = "San_Andreas";
+            else if (file.startsWith("Vice_City", Qt::CaseInsensitive))
+                city = "Vice_City";
+            else if (file.startsWith("Liberty_City", Qt::CaseInsensitive))
+                city = "Liberty_City";
+
+            QString item = city + " - " + file;
+            availableRaces.append(item);
+        }
+        TourEditor dlg(this);
+        dlg.setAvailableRaces(availableRaces);
+        dlg.exec();
     });
 }
 
@@ -218,46 +247,43 @@ void MainWindow::onExportYaml() {
         return;
     }
 
-    QString filename =
-            QFileDialog::getSaveFileName(this, "Guardar YAML", QString(), "YAML (*.yaml *.yml)");
-    if (filename.isEmpty()) {
+    bool ok;
+    QString raceName =
+            QInputDialog::getText(this, "Nombre de la carrera",
+                                  "Ingresa el nombre de la carrera:", QLineEdit::Normal, "", &ok);
+    if (!ok || raceName.isEmpty())
         return;
-    }
 
-    QList<Checkpoint> ordered;
-    for (int i = 0; i < checkpointList->count(); ++i) {
-        Checkpoint cp = checkpointList->item(i)->data(Qt::UserRole + 1).value<Checkpoint>();
-        ordered.append(cp);
-    }
+    QString safeMapName = currentMapName;
+    safeMapName.replace(' ', '_');
 
-    QFile f(filename);
-    if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(this, "Error", "No se pudo crear archivo.");
-        return;
-    }
+    QString safeRaceName = raceName;
+    safeRaceName.replace(' ', '_');
 
-    QTextStream out(&f);
-    if (!initialDirection.isNull()) {
-        out << "initial_direction:\n";
-        out << "  x: " << QString::number(initialDirection.x(), 'f', 3) << "\n";
-        out << "  y: " << QString::number(initialDirection.y(), 'f', 3) << "\n\n";
-    }
+    QString filename = QString(ABS_DIR "tracks/%1_%2.yaml").arg(safeMapName, safeRaceName);
+
+    YAML::Node root;
+    root["initial_direction"]["x"] = initialDirection.x();
+    root["initial_direction"]["y"] = initialDirection.y();
 
     double scaleX = 0.14325000;
     double scaleY = 0.12858333;
-    out << "checkpoints:\n";
-    for (const Checkpoint& cp: ordered) {
-        double cx = cp.rect.center().x() * scaleX;
-        double cy = cp.rect.center().y() * scaleY;
-        double w = cp.rect.width() * scaleX;
-        double h = cp.rect.height() * scaleY;
-        out << "  - x: " << QString::number(cx, 'f', 1) << "\n";
-        out << "    y: " << QString::number(cy, 'f', 1) << "\n";
-        out << "    width: " << QString::number(w, 'f', 1) << "\n";
-        out << "    height: " << QString::number(h, 'f', 1) << "\n";
+    YAML::Node checkpointsNode;
+    for (int i = 0; i < checkpointList->count(); ++i) {
+        Checkpoint cp = checkpointList->item(i)->data(Qt::UserRole + 1).value<Checkpoint>();
+        YAML::Node cpNode;
+        cpNode["x"] = cp.rect.center().x() * scaleX;
+        cpNode["y"] = cp.rect.center().y() * scaleY;
+        cpNode["width"] = cp.rect.width() * scaleX;
+        cpNode["height"] = cp.rect.height() * scaleY;
+        checkpointsNode.push_back(cpNode);
     }
+    root["checkpoints"] = checkpointsNode;
 
-    f.close();
+    std::ofstream fout(filename.toStdString());
+    fout << root;
+    fout.close();
+
     QMessageBox::information(this, "Exportado", "YAML guardado en:\n" + filename);
 
     mapView->clearCheckpoints();

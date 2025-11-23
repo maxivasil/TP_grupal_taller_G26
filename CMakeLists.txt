@@ -198,6 +198,7 @@ if(TALLER_EDITOR)
     set(CMAKE_AUTORCC ON)
     find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
     find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+    find_package(yaml-cpp REQUIRED)
     
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
     add_executable(nfs2d_editor)
@@ -212,7 +213,7 @@ if(TALLER_EDITOR)
     set_project_warnings(nfs2d_editor ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # Link the taller_common lib target
-    target_link_libraries(nfs2d_editor taller_common Qt${QT_VERSION_MAJOR}::Widgets)
+    target_link_libraries(nfs2d_editor taller_common Qt${QT_VERSION_MAJOR}::Widgets yaml-cpp)
 endif()
 
 

@@ -18,12 +18,29 @@ struct RoutePoint {
 };
 
 /**
+ * @struct SpawnPoint
+ * @brief Un punto donde puede aparecer un NPC
+ */
+struct SpawnPoint {
+    float x;
+    float y;
+    float direction;  // Ángulo inicial en grados (0-360)
+    uint8_t car_type;  // Tipo de auto (0-6)
+    int route_index;  // Índice de ruta a seguir (-1 = movimiento aleatorio)
+
+    SpawnPoint(float x = 0.0f, float y = 0.0f, float direction = 0.0f, 
+               uint8_t car_type = 0, int route_index = -1):
+            x(x), y(y), direction(direction), car_type(car_type), route_index(route_index) {}
+};
+
+/**
  * @struct NPCRoute
  * @brief Una ruta completa que un NPC puede seguir
  */
 struct NPCRoute {
     std::vector<RoutePoint> points;
     bool looping = true;  // ¿La ruta se repite?
+    std::vector<SpawnPoint> spawn_points;  // Puntos de aparición de NPCs
 
     NPCRoute() = default;
     NPCRoute(const std::vector<RoutePoint>& pts, bool loop = true): points(pts), looping(loop) {}
@@ -53,7 +70,12 @@ private:
                     RoutePoint(550.0f, 402.0f, 4.9f), RoutePoint(500.0f, 402.0f, 5.0f),
                     RoutePoint(450.0f, 402.0f, 4.9f), RoutePoint(400.0f, 402.0f, 4.9f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            // Spawn points estratégicos en esta ruta
+            r.spawn_points.push_back(SpawnPoint(280.0f, 400.0f, 0.0f, 0, 0));
+            r.spawn_points.push_back(SpawnPoint(450.0f, 400.0f, 90.0f, 2, 0));
+            r.spawn_points.push_back(SpawnPoint(600.0f, 400.0f, 180.0f, 1, 0));
+            routes.emplace_back(r);
         }
 
         // RUTA 2: Autopista Norte-Sur (recorre verticalmente)
@@ -67,7 +89,12 @@ private:
                     RoutePoint(400.0f, 600.0f, 4.9f), RoutePoint(398.0f, 550.0f, 4.9f),
                     RoutePoint(400.0f, 500.0f, 5.0f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            // Spawn points estratégicos en esta ruta
+            r.spawn_points.push_back(SpawnPoint(400.0f, 150.0f, 90.0f, 1, 1));
+            r.spawn_points.push_back(SpawnPoint(400.0f, 350.0f, 180.0f, 0, 1));
+            r.spawn_points.push_back(SpawnPoint(400.0f, 550.0f, 270.0f, 2, 1));
+            routes.emplace_back(r);
         }
 
         // RUTA 3: Diagonal Noroeste-Sureste
@@ -186,7 +213,11 @@ private:
                     RoutePoint(450.0f, 354.0f, 5.0f), RoutePoint(400.0f, 354.0f, 4.9f),
                     RoutePoint(350.0f, 352.0f, 4.9f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(330.0f, 350.0f, 0.0f, 0, 0));
+            r.spawn_points.push_back(SpawnPoint(450.0f, 350.0f, 0.0f, 1, 0));
+            r.spawn_points.push_back(SpawnPoint(570.0f, 350.0f, 0.0f, 2, 0));
+            routes.emplace_back(r);
         }
 
         // RUTA 2: Autopista Norte-Sur (recorre verticalmente)
@@ -199,7 +230,11 @@ private:
                     RoutePoint(398.0f, 500.0f, 4.9f), RoutePoint(400.0f, 450.0f, 4.9f),
                     RoutePoint(402.0f, 400.0f, 5.0f), RoutePoint(400.0f, 350.0f, 4.9f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(400.0f, 280.0f, 90.0f, 3, 1));
+            r.spawn_points.push_back(SpawnPoint(400.0f, 400.0f, 90.0f, 4, 1));
+            r.spawn_points.push_back(SpawnPoint(400.0f, 520.0f, 90.0f, 5, 1));
+            routes.emplace_back(r);
         }
 
         // RUTA 3: Diagonal Noroeste-Sureste
@@ -214,7 +249,11 @@ private:
                     RoutePoint(430.0f, 400.0f, 4.9f), RoutePoint(390.0f, 360.0f, 4.8f),
                     RoutePoint(350.0f, 320.0f, 4.8f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(350.0f, 320.0f, 45.0f, 2, 2));
+            r.spawn_points.push_back(SpawnPoint(430.0f, 400.0f, 45.0f, 0, 2));
+            r.spawn_points.push_back(SpawnPoint(510.0f, 480.0f, 45.0f, 3, 2));
+            routes.emplace_back(r);
         }
 
         // RUTA 4: Diagonal Noreste-Suroeste
@@ -229,7 +268,11 @@ private:
                     RoutePoint(430.0f, 400.0f, 4.9f), RoutePoint(470.0f, 360.0f, 4.8f),
                     RoutePoint(510.0f, 320.0f, 4.8f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(510.0f, 320.0f, 225.0f, 1, 3));
+            r.spawn_points.push_back(SpawnPoint(430.0f, 400.0f, 225.0f, 4, 3));
+            r.spawn_points.push_back(SpawnPoint(350.0f, 480.0f, 225.0f, 5, 3));
+            routes.emplace_back(r);
         }
 
         // RUTA 5: Circuito Perimetral (borde)
@@ -245,7 +288,11 @@ private:
                     RoutePoint(290.0f, 480.0f, 4.6f), RoutePoint(270.0f, 400.0f, 4.5f),
                     RoutePoint(290.0f, 310.0f, 4.6f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(380.0f, 260.0f, 0.0f, 2, 4));
+            r.spawn_points.push_back(SpawnPoint(560.0f, 400.0f, 270.0f, 0, 4));
+            r.spawn_points.push_back(SpawnPoint(400.0f, 540.0f, 180.0f, 1, 4));
+            routes.emplace_back(r);
         }
 
         // RUTA 6: Zig-Zag Oeste
@@ -257,7 +304,10 @@ private:
                     RoutePoint(330.0f, 410.0f, 4.2f), RoutePoint(330.0f, 360.0f, 4.2f),
                     RoutePoint(330.0f, 310.0f, 4.1f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(315.0f, 360.0f, 90.0f, 3, 5));
+            r.spawn_points.push_back(SpawnPoint(320.0f, 410.0f, 90.0f, 4, 5));
+            routes.emplace_back(r);
         }
 
         // RUTA 7: Zig-Zag Este
@@ -269,7 +319,10 @@ private:
                     RoutePoint(510.0f, 410.0f, 4.2f), RoutePoint(510.0f, 360.0f, 4.2f),
                     RoutePoint(510.0f, 310.0f, 4.1f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(525.0f, 360.0f, 270.0f, 5, 6));
+            r.spawn_points.push_back(SpawnPoint(520.0f, 460.0f, 270.0f, 0, 6));
+            routes.emplace_back(r);
         }
 
         // RUTA 8: Espiral Centro
@@ -280,7 +333,10 @@ private:
                     RoutePoint(410.0f, 460.0f, 4.0f), RoutePoint(375.0f, 445.0f, 4.1f),
                     RoutePoint(365.0f, 410.0f, 4.0f), RoutePoint(375.0f, 375.0f, 4.0f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(450.0f, 375.0f, 45.0f, 1, 7));
+            r.spawn_points.push_back(SpawnPoint(410.0f, 410.0f, 180.0f, 2, 7));
+            routes.emplace_back(r);
         }
 
         // RUTA 9: Pasillo Vertical Oeste
@@ -292,7 +348,10 @@ private:
                     RoutePoint(360.0f, 400.0f, 4.3f), RoutePoint(360.0f, 340.0f, 4.3f),
                     RoutePoint(360.0f, 280.0f, 4.3f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(350.0f, 340.0f, 90.0f, 3, 8));
+            r.spawn_points.push_back(SpawnPoint(350.0f, 460.0f, 90.0f, 4, 8));
+            routes.emplace_back(r);
         }
 
         // RUTA 10: Pasillo Vertical Este
@@ -304,7 +363,10 @@ private:
                     RoutePoint(480.0f, 400.0f, 4.3f), RoutePoint(480.0f, 340.0f, 4.3f),
                     RoutePoint(480.0f, 280.0f, 4.3f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(490.0f, 340.0f, 90.0f, 5, 9));
+            r.spawn_points.push_back(SpawnPoint(490.0f, 460.0f, 90.0f, 0, 9));
+            routes.emplace_back(r);
         }
 
         cityRoutes["liberty_city"] = routes;
@@ -336,7 +398,10 @@ private:
                     RoutePoint(256.4f, 42.0f, 4.8f),
                     RoutePoint(230.0f, 48.0f, 4.9f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(256.4f, 42.0f, 0.0f, 0, 0));
+            r.spawn_points.push_back(SpawnPoint(350.0f, 45.0f, 0.0f, 1, 0));
+            routes.emplace_back(r);
         }
 
         // RUTA 2: Autopista Norte-Sur Central
@@ -349,7 +414,10 @@ private:
                     RoutePoint(55.0f, 90.0f, 4.9f),  RoutePoint(53.0f, 70.0f, 4.9f),
                     RoutePoint(55.0f, 50.0f, 5.0f),  RoutePoint(57.0f, 30.0f, 4.9f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(55.0f, 45.0f, 90.0f, 2, 1));
+            r.spawn_points.push_back(SpawnPoint(55.0f, 90.0f, 90.0f, 3, 1));
+            routes.emplace_back(r);
         }
 
         // RUTA 3: Diagonal Noroeste-Sureste
@@ -364,7 +432,10 @@ private:
                     RoutePoint(62.0f, 58.0f, 4.9f),   RoutePoint(45.0f, 42.0f, 4.8f),
                     RoutePoint(28.0f, 28.0f, 4.8f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(45.0f, 42.0f, 45.0f, 4, 2));
+            r.spawn_points.push_back(SpawnPoint(80.0f, 75.0f, 45.0f, 5, 2));
+            routes.emplace_back(r);
         }
 
         // RUTA 4: Diagonal Noreste-Suroeste
@@ -379,7 +450,10 @@ private:
                     RoutePoint(62.0f, 58.0f, 4.9f),  RoutePoint(80.0f, 42.0f, 4.8f),
                     RoutePoint(98.0f, 28.0f, 4.8f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(80.0f, 42.0f, 225.0f, 0, 3));
+            r.spawn_points.push_back(SpawnPoint(45.0f, 72.0f, 225.0f, 1, 3));
+            routes.emplace_back(r);
         }
 
         // RUTA 5: Circuito Perimetral Externo
@@ -395,7 +469,10 @@ private:
                     RoutePoint(8.0f, 85.0f, 4.6f),    RoutePoint(5.0f, 50.0f, 4.5f),
                     RoutePoint(8.0f, 20.0f, 4.6f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(65.0f, 10.0f, 0.0f, 2, 4));
+            r.spawn_points.push_back(SpawnPoint(115.0f, 65.0f, 270.0f, 3, 4));
+            routes.emplace_back(r);
         }
 
         // RUTA 6: Zig-Zag Oeste
@@ -407,7 +484,9 @@ private:
                     RoutePoint(28.0f, 70.0f, 4.2f),  RoutePoint(28.0f, 50.0f, 4.2f),
                     RoutePoint(28.0f, 30.0f, 4.1f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(20.0f, 60.0f, 90.0f, 4, 5));
+            routes.emplace_back(r);
         }
 
         // RUTA 7: Zig-Zag Este
@@ -419,7 +498,9 @@ private:
                     RoutePoint(100.0f, 70.0f, 4.2f),  RoutePoint(100.0f, 50.0f, 4.2f),
                     RoutePoint(100.0f, 30.0f, 4.1f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(107.5f, 60.0f, 270.0f, 5, 6));
+            routes.emplace_back(r);
         }
 
         // RUTA 8: Espiral Centro
@@ -430,7 +511,9 @@ private:
                     RoutePoint(55.0f, 70.0f, 4.0f), RoutePoint(40.0f, 65.0f, 4.1f),
                     RoutePoint(35.0f, 50.0f, 4.0f), RoutePoint(40.0f, 35.0f, 4.0f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(65.0f, 42.0f, 45.0f, 0, 7));
+            routes.emplace_back(r);
         }
 
         // RUTA 9: Pasillo Vertical Oeste
@@ -442,7 +525,9 @@ private:
                     RoutePoint(33.0f, 90.0f, 4.3f), RoutePoint(33.0f, 70.0f, 4.3f),
                     RoutePoint(33.0f, 50.0f, 4.3f), RoutePoint(33.0f, 30.0f, 4.3f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(30.0f, 50.0f, 90.0f, 1, 8));
+            routes.emplace_back(r);
         }
 
         // RUTA 10: Pasillo Vertical Este
@@ -454,7 +539,9 @@ private:
                     RoutePoint(82.0f, 90.0f, 4.3f), RoutePoint(82.0f, 70.0f, 4.3f),
                     RoutePoint(82.0f, 50.0f, 4.3f), RoutePoint(82.0f, 30.0f, 4.3f),
             };
-            routes.emplace_back(route, true);
+            NPCRoute r(route, true);
+            r.spawn_points.push_back(SpawnPoint(85.0f, 50.0f, 90.0f, 2, 9));
+            routes.emplace_back(r);
         }
 
         cityRoutes["vice_city"] = routes;

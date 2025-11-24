@@ -1165,15 +1165,35 @@ void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
     // Initialize NPCs for traffic with calculated bounds
     float mapWidth = maxX - minX;
     float mapHeight = maxY - minY;
-    // Aumentar cantidad de NPCs basado en tamaño del mapa
-    int npcCount = std::max(20, static_cast<int>((mapWidth * mapHeight) / 500.0f));
-    npcManager.reinitializeWithBounds(npcCount, minX, maxX, minY, maxY);
+    int npcCount = 0;
+    
+    // Intentar usar spawn points si están definidos (NIVEL 1 - Spawn Points)
+    bool hasSpawnPoints = false;
+    if (!currentTrackRoutes.empty() && !currentTrackRoutes[0].spawn_points.empty()) {
+        // Usar spawn points estratégicos
+        npcManager.initializeFromSpawnPoints(currentTrackRoutes, minX, maxX, minY, maxY);
+        npcCount = npcManager.getNPCs().size();
+        
+        // NIVEL 2: Ajustar distancia mínima según la ciudad (tamaño del mapa)
+        float minSpawnDist = 75.0f;  // Por defecto
+        if (trackName.find("vice_city") != std::string::npos) {
+            minSpawnDist = 40.0f;  // Vice City es más pequeña
+        } else if (trackName.find("liberty_city") != std::string::npos) {
+            minSpawnDist = 65.0f;  // Liberty City es mediana
+        }
+        npcManager.setMinSpawnDistance(minSpawnDist);
+        hasSpawnPoints = true;
+    } else {
+        // Fallback a método aleatorio si no hay spawn points
+        npcCount = std::max(20, static_cast<int>((mapWidth * mapHeight) / 500.0f));
+        npcManager.reinitializeWithBounds(npcCount, minX, maxX, minY, maxY);
+    }
 
-    // Asignar rutas aleatorias a los NPCs
+    // Asignar rutas aleatorias a los NPCs (si no se asignaron via spawn points)
     auto& npcs = npcManager.getNPCs();
-    if (!currentTrackRoutes.empty()) {
+    if (!currentTrackRoutes.empty() && !hasSpawnPoints) {
         for (size_t i = 0; i < npcs.size(); ++i) {
-            int routeId = i % currentTrackRoutes.size();  // Distribuir rutas entre NPCs
+            int routeId = i % currentTrackRoutes.size();
             npcs[i].routeId = routeId;
             npcs[i].currentRoutePoint = rand() % (currentTrackRoutes[routeId].points.size());
         }

@@ -10,7 +10,7 @@
 
 class ClientToServerTour: public ClientToServerCmd_Server {
 public:
-    explicit ClientToServerTour(std::string& tourFile);
+    explicit ClientToServerTour(std::string& tourFile, uint32_t client_id);
 
     ~ClientToServerTour() override = default;
 

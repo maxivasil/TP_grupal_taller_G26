@@ -10,8 +10,10 @@ void LobbiesMonitor::killFinishedLobbies() {
     for (auto& [_, lobby]: lobbies) {
         if (lobby->status == LobbyStatus::FINISHED) {
             lobby->connectedClients.stop_all_and_delete();
+            lobby->gameloop.empty_gameloop_queue();
             lobby->gameloop_queue->close();
             lobby->gameloop.stop();
+            lobby->gameloop.join();
         }
     }
 }
@@ -54,6 +56,7 @@ void LobbiesMonitor::closeAllLobbies() {
     for (auto& [_, lobby]: lobbies) {
         lobby->gameloop.stop();
         lobby->connectedClients.stop_all_and_delete();
+        lobby->gameloop.empty_gameloop_queue();
         lobby->gameloop_queue->close();
         lobby->gameloop.join();
     }

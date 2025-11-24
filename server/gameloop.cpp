@@ -166,8 +166,7 @@ void ServerGameLoop::run() {
             protected_clients.broadcast(startingRaceCmd);
 
             try {
-                ClientToServerCmd_Server* raw;
-                while (gameloop_queue.try_pop(raw)) {}
+                empty_gameloop_queue();
             } catch (const ClosedQueue&) {
                 stop();
                 status = LobbyStatus::FINISHED;
@@ -344,5 +343,12 @@ void ServerGameLoop::handle_upgrades(std::vector<std::unique_ptr<Player>>& playe
         process_pending_commands(ctx);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    }
+}
+
+void ServerGameLoop::empty_gameloop_queue() {
+    ClientToServerCmd_Server* raw;
+    while (gameloop_queue.try_pop(raw)) {
+        std::unique_ptr<ClientToServerCmd_Server> cmd(raw);
     }
 }

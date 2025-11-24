@@ -25,6 +25,7 @@ public:
                             ServerProtectedClients& protected_clients, LobbyStatus& status,
                             struct Lobby* lobby);
     void run() override;
+    void empty_gameloop_queue();
 
 private:
     Queue<ClientToServerCmd_Server*>& gameloop_queue;

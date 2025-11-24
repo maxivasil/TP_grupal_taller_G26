@@ -7,8 +7,8 @@ ClientToServerLobby::ClientToServerLobby(std::string lobbyId, bool isCreate):
 
 std::vector<uint8_t> ClientToServerLobby::to_bytes() const {
     std::vector<uint8_t> data;
-    data.push_back(JOIN_COMMAND);
-    data.push_back(isCreate ? TYPE_CREATE : TYPE_JOIN);
+    BufferUtils::append_uint8(data, JOIN_COMMAND);
+    BufferUtils::append_uint8(data, isCreate ? TYPE_CREATE : TYPE_JOIN);
     BufferUtils::append_bytes(data, lobbyId.data(), lobbyId.size());
     return data;
 }

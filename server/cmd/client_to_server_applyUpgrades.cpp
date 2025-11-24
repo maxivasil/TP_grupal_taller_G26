@@ -4,14 +4,12 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "../../common/buffer_utils.h"
 #include "../Lobby.h"
 #include "../game_logic/Player.h"
 #include "../game_logic/Race.h"
 
-// Comando ID para aplicar mejoras (0x0D)
-#define APPLY_UPGRADES_COMMAND 0x0D
-
-ClientToServerApplyUpgrades::ClientToServerApplyUpgrades(int client_id,
+ClientToServerApplyUpgrades::ClientToServerApplyUpgrades(uint32_t client_id,
                                                          const CarUpgrades& upgrades):
         ClientToServerCmd_Server(client_id), upgrades(upgrades) {}
 
@@ -23,7 +21,6 @@ void ClientToServerApplyUpgrades::execute(ServerContext& ctx) {
         std::cerr << "Error: Upgrades inválidos para cliente " << client_id << std::endl;
         return;
     }
-
     // Encontrar el jugador correspondiente al cliente
     auto it = std::find_if(ctx.players->begin(), ctx.players->end(),
                            [this](const auto& player) { return player->getId() == client_id; });
@@ -33,24 +30,21 @@ void ClientToServerApplyUpgrades::execute(ServerContext& ctx) {
         std::cout << "Mejoras aplicadas para cliente " << client_id
                   << " - Penalización de tiempo: " << upgrades.getTimePenalty() << "s" << std::endl;
     }
-
     std::cerr << "Error: No se encontró al jugador con id " << client_id << std::endl;
 }
 
 ClientToServerApplyUpgrades* ClientToServerApplyUpgrades::from_bytes(
-        const std::vector<uint8_t>& data, const int client_id) {
+        const std::vector<uint8_t>& data, const uint32_t client_id) {
     // Estructura esperada: [command_type (1 byte) + 4 floats = 17 bytes mínimo]
     if (data.size() < 17) {
         throw std::runtime_error("ApplyUpgradesCmd: datos insuficientes (esperados 17 bytes)");
     }
-
     CarUpgrades upgrades;
-
+    size_t offset = 1;
     // Deserializar los 4 floats (cada uno es 4 bytes)
-    std::memcpy(&upgrades.acceleration_boost, data.data() + 1, sizeof(float));
-    std::memcpy(&upgrades.speed_boost, data.data() + 5, sizeof(float));
-    std::memcpy(&upgrades.handling_boost, data.data() + 9, sizeof(float));
-    std::memcpy(&upgrades.health_boost, data.data() + 13, sizeof(float));
-
+    BufferUtils::read_float(data, offset, upgrades.acceleration_boost);
+    BufferUtils::read_float(data, offset, upgrades.speed_boost);
+    BufferUtils::read_float(data, offset, upgrades.handling_boost);
+    BufferUtils::read_float(data, offset, upgrades.health_boost);
     return new ClientToServerApplyUpgrades(client_id, upgrades);
 }

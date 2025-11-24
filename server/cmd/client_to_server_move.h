@@ -9,11 +9,12 @@
 
 class ClientToServerMove: public ClientToServerCmd_Server {
 public:
-    explicit ClientToServerMove(uint8_t direction, int client_id);
+    explicit ClientToServerMove(uint8_t direction, uint32_t client_id);
 
     void execute(ServerContext& ctx) override;
 
-    static ClientToServerMove* from_bytes(const std::vector<uint8_t>& data, const int client_id);
+    static ClientToServerMove* from_bytes(const std::vector<uint8_t>& data,
+                                          const uint32_t client_id);
 
 private:
     uint8_t direction;

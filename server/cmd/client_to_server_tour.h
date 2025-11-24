@@ -10,13 +10,14 @@
 
 class ClientToServerTour: public ClientToServerCmd_Server {
 public:
-    explicit ClientToServerTour(std::string& tourFile);
+    ClientToServerTour(std::string tourFile, uint32_t client_id);
 
     ~ClientToServerTour() override = default;
 
     void execute(ServerContext& ctx) override;
 
-    static ClientToServerTour* from_bytes(const std::vector<uint8_t>& data, const int client_id);
+    static ClientToServerTour* from_bytes(const std::vector<uint8_t>& data,
+                                          const uint32_t client_id);
 
 private:
     std::string tourFile;

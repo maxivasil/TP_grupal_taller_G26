@@ -22,12 +22,12 @@
  */
 class ClientToServerApplyUpgrades: public ClientToServerCmd_Server {
 public:
-    explicit ClientToServerApplyUpgrades(int client_id, const CarUpgrades& upgrades);
+    ClientToServerApplyUpgrades(uint32_t client_id, const CarUpgrades& upgrades);
 
     void execute(ServerContext& ctx) override;
 
     static ClientToServerApplyUpgrades* from_bytes(const std::vector<uint8_t>& data,
-                                                   const int client_id);
+                                                   const uint32_t client_id);
 
 private:
     CarUpgrades upgrades;

@@ -16,8 +16,22 @@ add_library(tests
     test_snapshot_deserialization.cpp
     test_startingRace_serialization.cpp
     test_startingRace_deserialization.cpp
+
+    test_applyUpgrades_deserialization.cpp
+    test_applyUpgrades_serialization.cpp
+    test_cheat_deserialization.cpp
+    test_cheat_serialization.cpp
+    test_lobby_deserialization.cpp
+    test_lobby_serialization.cpp
+    test_move_deserialization.cpp
+    test_move_serialization.cpp
+    test_readyToStart_deserialization.cpp
+    test_readyToStart_serialization.cpp
+    test_tour_deserialization.cpp
+    test_tour_serialization.cpp
     
     testable_server_to_client.h
+    testable_client_to_server.h
 )
 
 target_link_libraries(tests 

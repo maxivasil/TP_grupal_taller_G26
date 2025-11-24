@@ -11,17 +11,18 @@
 class ServerRegisteredCommands {
 public:
     ServerRegisteredCommands();
-    const std::unordered_map<uint8_t, std::function<ClientToServerCmd_Server*(
-                                              const std::vector<uint8_t>&, const int client_id)>>&
+    const std::unordered_map<uint8_t,
+                             std::function<ClientToServerCmd_Server*(const std::vector<uint8_t>&,
+                                                                     const uint32_t client_id)>>&
             get_recv_registry() const;
 
 private:
     std::unordered_map<uint8_t, std::function<ClientToServerCmd_Server*(const std::vector<uint8_t>&,
-                                                                        const int client_id)>>
+                                                                        const uint32_t client_id)>>
             recv_registry;
 
     std::unordered_map<uint8_t, std::function<ClientToServerCmd_Server*(const std::vector<uint8_t>&,
-                                                                        const int client_id)>>
+                                                                        const uint32_t client_id)>>
             build_server_recv_command_registry();
 };
 

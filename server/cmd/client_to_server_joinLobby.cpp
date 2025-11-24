@@ -21,7 +21,7 @@
  */
 
 ClientToServerJoinLobby::ClientToServerJoinLobby(std::string&& lobbyId, uint8_t type,
-                                                 int client_id):
+                                                 uint32_t client_id):
         lobbyId(std::move(lobbyId)), ClientToServerCmd_Server(client_id), type(type) {}
 
 void ClientToServerJoinLobby::execute(ServerContext& ctx) {
@@ -58,7 +58,7 @@ void ClientToServerJoinLobby::execute(ServerContext& ctx) {
 
 // Deserialización desde bytes
 ClientToServerJoinLobby* ClientToServerJoinLobby::from_bytes(const std::vector<uint8_t>& data,
-                                                             const int client_id) {
+                                                             const uint32_t client_id) {
     if (data.size() < 8) {
         throw std::runtime_error("JoinLobbyCmd: datos insuficientes");
     }

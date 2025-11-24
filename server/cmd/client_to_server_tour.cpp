@@ -3,13 +3,12 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "../../common/constants.h"
-
 #include <yaml-cpp/yaml.h>
 
+#include "../../common/constants.h"
 #include "../game_logic/Race.h"
 
-ClientToServerTour::ClientToServerTour(std::string& tourFile):
+ClientToServerTour::ClientToServerTour(std::string tourFile, uint32_t client_id):
         tourFile(tourFile), ClientToServerCmd_Server(client_id) {}
 
 void ClientToServerTour::execute(ServerContext& ctx) {
@@ -47,12 +46,12 @@ void ClientToServerTour::execute(ServerContext& ctx) {
 
 // Deserialización desde bytes
 ClientToServerTour* ClientToServerTour::from_bytes(const std::vector<uint8_t>& data,
-                                                   const int client_id) {
+                                                   const uint32_t client_id) {
     if (data.size() < 1) {
         throw std::runtime_error("TourCmd: datos insuficientes");
     }
 
     std::string tour(data.begin() + 1, data.end());  // data[0] sería el TOUR_COMMAND
 
-    return new ClientToServerTour(tour);
+    return new ClientToServerTour(tour, client_id);
 }

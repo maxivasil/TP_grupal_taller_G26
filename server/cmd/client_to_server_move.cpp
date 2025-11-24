@@ -6,7 +6,7 @@
 
 #include "../game_logic/Race.h"
 
-ClientToServerMove::ClientToServerMove(uint8_t direction, int client_id):
+ClientToServerMove::ClientToServerMove(uint8_t direction, uint32_t client_id):
         direction(direction), ClientToServerCmd_Server(client_id) {}
 
 void ClientToServerMove::execute(ServerContext& ctx) {
@@ -34,16 +34,15 @@ void ClientToServerMove::execute(ServerContext& ctx) {
 
 // Deserialización desde bytes
 ClientToServerMove* ClientToServerMove::from_bytes(const std::vector<uint8_t>& data,
-                                                   const int client_id) {
+                                                   const uint32_t client_id) {
     if (data.size() < 2) {
         throw std::runtime_error("MoveCmd: datos insuficientes");
     }
 
-    uint8_t dir_value = data[1];  // data[0] sería el MOVE_COMMAND
+    uint8_t dir_value = data[1];
     if (dir_value > MOVE_RIGHT) {
         throw std::runtime_error("MoveCmd: dirección inválida");
     }
 
-    uint8_t dir = static_cast<uint8_t>(dir_value);
-    return new ClientToServerMove(dir, client_id);
+    return new ClientToServerMove(dir_value, client_id);
 }

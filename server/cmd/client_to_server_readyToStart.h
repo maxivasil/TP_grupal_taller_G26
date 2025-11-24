@@ -1,8 +1,8 @@
 #ifndef CLIENT_TO_SERVER_READY_TO_START_H
 #define CLIENT_TO_SERVER_READY_TO_START_H
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "../../common/constants.h"
 #include "../Lobby.h"
@@ -11,11 +11,13 @@
 
 class ClientToServerReady: public ClientToServerCmd_Server {
 public:
-    explicit ClientToServerReady(int client_id, std::string car);
+    ClientToServerReady(uint32_t client_id, std::string car);
 
     void execute(ServerContext& ctx) override;
 
-    static ClientToServerReady* from_bytes(const std::vector<uint8_t>& data, const int client_id);
+    static ClientToServerReady* from_bytes(const std::vector<uint8_t>& data,
+                                           const uint32_t client_id);
+
 private:
     std::string car;
 };

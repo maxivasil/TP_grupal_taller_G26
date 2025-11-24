@@ -12,21 +12,20 @@
 
 class ThreadReceiver: public Thread {
 public:
-    ThreadReceiver(
-            int id, Protocol& protocol, Queue<ClientToServerCmd_Server*>& receive_queue,
-            const std::unordered_map<
-                    uint8_t, std::function<ClientToServerCmd_Server*(
-                                     const std::vector<uint8_t>&, const int client_id)>>& registry);
+    ThreadReceiver(int id, Protocol& protocol, Queue<ClientToServerCmd_Server*>& receive_queue,
+                   const std::unordered_map<uint8_t, std::function<ClientToServerCmd_Server*(
+                                                             const std::vector<uint8_t>&,
+                                                             const uint32_t client_id)>>& registry);
 
     void run() override;
 
 private:
-    int client_id;
+    uint32_t client_id;
     Protocol& protocol;
     Queue<ClientToServerCmd_Server*>& receive_queue;
-    const std::unordered_map<uint8_t, std::function<ClientToServerCmd_Server*(
-                                              const std::vector<uint8_t>&, const int client_id)>>&
-            registry;
+    const std::unordered_map<
+            uint8_t, std::function<ClientToServerCmd_Server*(const std::vector<uint8_t>&,
+                                                             const uint32_t client_id)>>& registry;
 };
 
 #endif

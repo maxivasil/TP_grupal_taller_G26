@@ -10,12 +10,12 @@
 
 class ClientToServerJoinLobby: public ClientToServerCmd_Server {
 public:
-    explicit ClientToServerJoinLobby(std::string&& lobbyId, uint8_t type, int client_id);
+    explicit ClientToServerJoinLobby(std::string&& lobbyId, uint8_t type, uint32_t client_id);
 
     void execute(ServerContext& ctx) override;
 
     static ClientToServerJoinLobby* from_bytes(const std::vector<uint8_t>& data,
-                                               const int client_id);
+                                               const uint32_t client_id);
 
 private:
     std::string lobbyId;

@@ -2,11 +2,11 @@
 
 #include <gtest/gtest.h>
 
-#include "../client/cmd/client_to_server_tour.h"
+#include "../client/cmd/client_to_server_tour_client.h"
 
 TEST(CTSProtocolSerializationTest, Tour) {
     std::string tour = "tour.yaml";
-    ClientToServerTour cmd(tour);
+    ClientToServerTour_Client cmd(tour);
 
     std::vector<uint8_t> bytes = cmd.to_bytes();
 

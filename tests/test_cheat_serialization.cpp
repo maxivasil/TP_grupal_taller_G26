@@ -2,11 +2,11 @@
 
 #include <gtest/gtest.h>
 
-#include "../client/cmd/client_to_server_cheat.h"
+#include "../client/cmd/client_to_server_cheat_client.h"
 
 TEST(CTSProtocolSerializationTest, Cheat) {
     uint8_t cheatType = CHEAT_WIN;
-    ClientToServerCheat cmd(cheatType);
+    ClientToServerCheat_Client cmd(cheatType);
 
     std::vector<uint8_t> bytes = cmd.to_bytes();
 

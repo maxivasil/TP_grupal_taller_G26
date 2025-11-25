@@ -11,7 +11,7 @@
 #include <string>
 #include <utility>
 
-#include "../cmd/client_to_server_tour.h"
+#include "../cmd/client_to_server_tour_client.h"
 #include "../session.h"
 #include "./ui_trackwindow.h"
 
@@ -51,7 +51,7 @@ TrackWindow::TrackWindow(ClientSession& client_session, MainWindow& mainwindow, 
 void TrackWindow::selectTrack() {
     QPushButton* senderButton = qobject_cast<QPushButton*>(sender());
     std::string tourFile = senderButton->property("track_souce").toString().toStdString();
-    client_session.send_command(new ClientToServerTour(tourFile));
+    client_session.send_command(new ClientToServerTour_Client(tourFile));
     this->hide();
     mainwindow.show();
 }

@@ -12,8 +12,8 @@
 #include <utility>
 #include <vector>
 
-#include "../cmd/client_to_server_lobby.h"
-#include "../cmd/server_to_client_lobbyResponse.h"
+#include "../cmd/client_to_server_joinLobby_client.h"
+#include "../cmd/server_to_client_joinLobbyResponse_client.h"
 #include "../session.h"
 #include "./ui_initialwindow.h"
 
@@ -62,14 +62,15 @@ void InitialWindow::joinLobby() {
         QLabel* labelOut = findChild<QLabel*>("intro_text");
         labelOut->setText("El Lobby debe tener exactamente 6 caracteres");
     } else {
-        client_session.send_command(new ClientToServerLobby(lobby, false));
+        client_session.send_command(new ClientToServerJoinLobby_Client(lobby, false));
         ServerToClientCmd_Client* raw_cmd;
         Queue<ServerToClientCmd_Client*>& recv_queue = client_session.get_recv_queue();
         std::vector<ServerToClientCmd_Client*> stash;
         while (true) {
             if (recv_queue.try_pop(raw_cmd)) {
                 std::unique_ptr<ServerToClientCmd_Client> cmd(raw_cmd);
-                auto* response_cmd = dynamic_cast<ServerToClientLobbyResponse*>(cmd.get());
+                auto* response_cmd =
+                        dynamic_cast<ServerToClientJoinLobbyResponse_Client*>(cmd.get());
                 if (response_cmd) {
                     ClientContext ctx = {.game = nullptr, .mainwindow = (this)};
                     response_cmd->execute(ctx);
@@ -86,7 +87,7 @@ void InitialWindow::joinLobby() {
 }
 
 void InitialWindow::createLobby() {
-    client_session.send_command(new ClientToServerLobby("AAAAAA", true));
+    client_session.send_command(new ClientToServerJoinLobby_Client("AAAAAA", true));
     created = true;
     ServerToClientCmd_Client* raw_cmd;
     Queue<ServerToClientCmd_Client*>& recv_queue = client_session.get_recv_queue();
@@ -94,7 +95,7 @@ void InitialWindow::createLobby() {
     while (true) {
         if (recv_queue.try_pop(raw_cmd)) {
             std::unique_ptr<ServerToClientCmd_Client> cmd(raw_cmd);
-            auto* response_cmd = dynamic_cast<ServerToClientLobbyResponse*>(cmd.get());
+            auto* response_cmd = dynamic_cast<ServerToClientJoinLobbyResponse_Client*>(cmd.get());
             if (response_cmd) {
                 ClientContext ctx = {.game = nullptr, .mainwindow = (this)};
                 response_cmd->execute(ctx);

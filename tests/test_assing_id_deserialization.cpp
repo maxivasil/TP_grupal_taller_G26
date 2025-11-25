@@ -2,9 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include "../client/cmd/server_to_client_assign_id_client.h"
 #include "../common/buffer_utils.h"
-
-#include "testable_server_to_client.h"
 
 TEST(STCProtocolDeserializationTest, AssignId) {
     std::vector<uint8_t> bytes;
@@ -14,7 +13,9 @@ TEST(STCProtocolDeserializationTest, AssignId) {
     uint32_t client_id = 123456;
     BufferUtils::append_uint32(bytes, client_id);
 
-    auto msg = ServerToClientAssignId::from_bytes(bytes);
+    auto msg = ServerToClientAssignId_Client::from_bytes(bytes);
 
-    EXPECT_EQ(msg.client_id, client_id);
+    uint32_t deserialized_client_id = msg.get_only_for_test_client_id();
+
+    EXPECT_EQ(deserialized_client_id, client_id);
 }

@@ -2,12 +2,12 @@
 
 #include <gtest/gtest.h>
 
-#include "../client/cmd/client_to_server_readyToStart.h"
+#include "../client/cmd/client_to_server_readyToStart_client.h"
 
 
 TEST(CTSProtocolSerializationTest, ReadyToStart) {
     std::string car = "Ferrari";
-    ClientToServerReady cmd(car);
+    ClientToServerReady_Client cmd(car);
 
     std::vector<uint8_t> bytes = cmd.to_bytes();
 

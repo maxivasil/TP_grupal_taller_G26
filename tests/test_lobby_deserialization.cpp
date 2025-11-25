@@ -1,10 +1,10 @@
+#include <memory>
 #include <vector>
 
 #include <gtest/gtest.h>
 
 #include "../common/buffer_utils.h"
-
-#include "testable_client_to_server.h"
+#include "../server/cmd/client_to_server_joinLobby_server.h"
 
 TEST(CTSProtocolDeserializationTest, Lobby_Create) {
     std::vector<uint8_t> bytes;
@@ -15,13 +15,12 @@ TEST(CTSProtocolDeserializationTest, Lobby_Create) {
     BufferUtils::append_bytes(bytes, lobbyId.data(), lobbyId.size());
 
     uint32_t clientId = 55;
-    ClientToServerJoinLobby* cmd = ClientToServerJoinLobby::from_bytes(bytes, clientId);
+    std::unique_ptr<ClientToServerJoinLobby_Server> cmd(
+            ClientToServerJoinLobby_Server::from_bytes(bytes, clientId));
 
     ASSERT_NE(cmd, nullptr);
-    EXPECT_EQ(cmd->lobbyId, lobbyId);
-    EXPECT_EQ(cmd->type, TYPE_CREATE);
-
-    delete cmd;
+    EXPECT_EQ(cmd->get_only_for_test_lobbyId(), lobbyId);
+    EXPECT_EQ(cmd->get_only_for_test_type(), TYPE_CREATE);
 }
 
 TEST(CTSProtocolDeserializationTest, Lobby_Join) {
@@ -33,11 +32,10 @@ TEST(CTSProtocolDeserializationTest, Lobby_Join) {
     BufferUtils::append_bytes(bytes, lobbyId.data(), lobbyId.size());
 
     uint32_t clientId = 99;
-    ClientToServerJoinLobby* cmd = ClientToServerJoinLobby::from_bytes(bytes, clientId);
+    std::unique_ptr<ClientToServerJoinLobby_Server> cmd(
+            ClientToServerJoinLobby_Server::from_bytes(bytes, clientId));
 
     ASSERT_NE(cmd, nullptr);
-    EXPECT_EQ(cmd->lobbyId, lobbyId);
-    EXPECT_EQ(cmd->type, TYPE_JOIN);
-
-    delete cmd;
+    EXPECT_EQ(cmd->get_only_for_test_lobbyId(), lobbyId);
+    EXPECT_EQ(cmd->get_only_for_test_type(), TYPE_JOIN);
 }

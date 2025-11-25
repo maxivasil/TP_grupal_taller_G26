@@ -2,11 +2,11 @@
 
 #include <gtest/gtest.h>
 
-#include "../client/cmd/client_to_server_lobby.h"
+#include "../client/cmd/client_to_server_joinLobby_client.h"
 
 TEST(CTSProtocolSerializationTest, Lobby_Create) {
     std::string lobbyId = "ABC123";
-    ClientToServerLobby cmd(lobbyId, true);  // TYPE_CREATE
+    ClientToServerJoinLobby_Client cmd(lobbyId, true);  // TYPE_CREATE
 
     std::vector<uint8_t> bytes = cmd.to_bytes();
 
@@ -21,7 +21,7 @@ TEST(CTSProtocolSerializationTest, Lobby_Create) {
 
 TEST(CTSProtocolSerializationTest, Lobby_Join) {
     std::string lobbyId = "XYZ789";
-    ClientToServerLobby cmd(lobbyId, false);  // TYPE_JOIN
+    ClientToServerJoinLobby_Client cmd(lobbyId, false);  // TYPE_JOIN
 
     std::vector<uint8_t> bytes = cmd.to_bytes();
 

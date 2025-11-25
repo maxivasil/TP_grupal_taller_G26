@@ -29,9 +29,6 @@ add_library(tests
     test_readyToStart_serialization.cpp
     test_tour_deserialization.cpp
     test_tour_serialization.cpp
-    
-    testable_server_to_client.h
-    testable_client_to_server.h
 )
 
 target_link_libraries(tests 

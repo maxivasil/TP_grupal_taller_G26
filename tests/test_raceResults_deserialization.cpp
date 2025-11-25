@@ -4,9 +4,8 @@
 #include <arpa/inet.h>
 #include <gtest/gtest.h>
 
+#include "../client/cmd/server_to_client_raceResults_client.h"
 #include "../common/buffer_utils.h"
-
-#include "testable_server_to_client.h"
 
 TEST(STCProtocolDeserializationTest, RaceResults) {
     std::vector<uint8_t> bytes;
@@ -29,18 +28,21 @@ TEST(STCProtocolDeserializationTest, RaceResults) {
     appendPlayer(1, "Maxi", 63.789f, 1);
     appendPlayer(2, "Lara", 70.001f, 2);
 
-    auto cmd = ServerToClientRaceResults::from_bytes(bytes);
+    auto cmd = ServerToClientRaceResults_Client::from_bytes(bytes);
 
-    ASSERT_EQ(cmd.results.size(), 2);
-    EXPECT_TRUE(cmd.isFinished);
+    std::vector<ClientPlayerResult> results = cmd.get_only_for_test_results();
+    bool isFinished = cmd.get_only_for_test_isFinished();
 
-    const auto& r0 = cmd.results[0];
+    ASSERT_EQ(results.size(), 2);
+    EXPECT_TRUE(isFinished);
+
+    const auto& r0 = results[0];
     EXPECT_EQ(r0.playerId, 1);
     EXPECT_EQ(r0.playerName, "Maxi");
     EXPECT_FLOAT_EQ(r0.finishTime, 63.789f);
     EXPECT_EQ(r0.position, 1);
 
-    const auto& r1 = cmd.results[1];
+    const auto& r1 = results[1];
     EXPECT_EQ(r1.playerId, 2);
     EXPECT_EQ(r1.playerName, "Lara");
     EXPECT_FLOAT_EQ(r1.finishTime, 70.001f);

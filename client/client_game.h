@@ -16,7 +16,7 @@
 
 #include "../server/game_logic/CarUpgrades.h"
 #include "audio/car_sound_engine.h"
-#include "cmd/server_to_client_raceResults.h"
+#include "cmd/server_to_client_raceResults_client.h"
 #include "graphics/camera.h"
 #include "graphics/checkpoint_arrow.h"
 #include "graphics/collision_explosion.h"
@@ -110,7 +110,7 @@ private:
 
     void init_textures();
 
-    bool update(ServerToClientSnapshot cmd_snapshot);
+    bool update(ServerToClientSnapshot_Client cmd_snapshot);
 
     void render();
 

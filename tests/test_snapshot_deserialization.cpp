@@ -4,9 +4,8 @@
 #include <arpa/inet.h>
 #include <gtest/gtest.h>
 
+#include "../client/cmd/server_to_client_snapshot_client.h"
 #include "../common/buffer_utils.h"
-
-#include "testable_server_to_client.h"
 
 TEST(STCProtocolDeserializationTest, Snapshot) {
     std::vector<uint8_t> bytes;
@@ -38,10 +37,11 @@ TEST(STCProtocolDeserializationTest, Snapshot) {
     appendCar(10, 100.5f, 200.75f, true, 95.0f, 30.2f, 45.0f, false, 2, true);
     appendCar(22, -10.0f, 0.5f, false, 80.0f, 70.0f, 180.0f, true, 5, false);
 
-    auto cmd = ServerToClientSnapshot::from_bytes(bytes);
-    ASSERT_EQ(cmd.cars_snapshot.size(), 2);
+    auto cmd = ServerToClientSnapshot_Client::from_bytes(bytes);
+    const auto& cars_snapshot = cmd.get_only_for_test_cars_snapshot();
+    ASSERT_EQ(cars_snapshot.size(), 2);
 
-    const auto& c0 = cmd.cars_snapshot[0];
+    const auto& c0 = cars_snapshot[0];
     EXPECT_EQ(c0.id, 10);
     EXPECT_FLOAT_EQ(c0.pos_x, 100.5f);
     EXPECT_FLOAT_EQ(c0.pos_y, 200.75f);
@@ -53,7 +53,7 @@ TEST(STCProtocolDeserializationTest, Snapshot) {
     EXPECT_EQ(c0.car_type, 2);
     EXPECT_TRUE(c0.hasInfiniteHealth);
 
-    const auto& c1 = cmd.cars_snapshot[1];
+    const auto& c1 = cars_snapshot[1];
     EXPECT_EQ(c1.id, 22);
     EXPECT_FLOAT_EQ(c1.pos_x, -10.0f);
     EXPECT_FLOAT_EQ(c1.pos_y, 0.5f);

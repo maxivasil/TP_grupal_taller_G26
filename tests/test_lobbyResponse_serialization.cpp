@@ -2,11 +2,11 @@
 
 #include <gtest/gtest.h>
 
-#include "../server/cmd/server_to_client_joinLobbyResponse.h"
+#include "../server/cmd/server_to_client_joinLobbyResponse_server.h"
 
 TEST(STCProtocolSerializationTest, lobbyResponseStatusOK) {
     std::string lobbyId = "ABC123";
-    ServerToClientJoinResponse cmd(STATUS_OK, lobbyId);
+    ServerToClientJoinLobbyResponse_Server cmd(STATUS_OK, lobbyId);
 
     std::vector<uint8_t> bytes = cmd.to_bytes();
 
@@ -21,7 +21,7 @@ TEST(STCProtocolSerializationTest, lobbyResponseStatusOK) {
 
 TEST(STCProtocolSerializationTest, lobbyResponseStatusError) {
     uint8_t errorCode = 7;
-    ServerToClientJoinResponse cmd(STATUS_ERROR, errorCode);
+    ServerToClientJoinLobbyResponse_Server cmd(STATUS_ERROR, errorCode);
 
     std::vector<uint8_t> bytes = cmd.to_bytes();
 

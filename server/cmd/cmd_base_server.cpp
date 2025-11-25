@@ -4,8 +4,6 @@
 
 #include "../../common/constants.h"
 
-#include "client_to_server_move.h"
-
 ClientToServerCmd_Server* ClientToServerCmd_Server::from_bytes(
         const std::vector<uint8_t>& data,
         const std::unordered_map<

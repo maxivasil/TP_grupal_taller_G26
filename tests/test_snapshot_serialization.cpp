@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 
 #include "../common/buffer_utils.h"
-#include "../server/cmd/server_to_client_snapshot.h"
+#include "../server/cmd/server_to_client_snapshot_server.h"
 
 
 TEST(STCProtocolSerializationTest, Snapshot) {
@@ -13,7 +13,7 @@ TEST(STCProtocolSerializationTest, Snapshot) {
             {10, 100.5f, 200.75f, true, 95.0f, 30.2f, 45.0f, false, 2, true},
             {22, -10.0f, 0.5f, false, 80.0f, 70.0f, 180.0f, true, 5, false}};
 
-    ServerToClientSnapshot msg(cars);
+    ServerToClientSnapshot_Server msg(cars);
     std::vector<uint8_t> bytes = msg.to_bytes();
 
     ASSERT_GT(bytes.size(), 1);

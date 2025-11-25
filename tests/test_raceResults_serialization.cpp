@@ -5,12 +5,12 @@
 #include <gtest/gtest.h>
 
 #include "../common/buffer_utils.h"
-#include "../server/cmd/server_to_client_raceResults.h"
+#include "../server/cmd/server_to_client_raceResults_server.h"
 
 TEST(STCProtocolSerializationTest, RaceResults) {
     std::vector<PlayerResult> players = {{1, "Pedro", 65.123f, 1}, {2, "Lucia", 70.456f, 2}};
 
-    ServerToClientRaceResults msg(players, true);
+    ServerToClientRaceResults_Server msg(players, true);
     std::vector<uint8_t> bytes = msg.to_bytes();
 
     ASSERT_GT(bytes.size(), 1);

@@ -1,7 +1,7 @@
 #include "session.h"
 
 //
-#include "cmd/client_to_server_lobby.h"
+#include "cmd/client_to_server_joinLobby_client.h"
 //
 
 ClientSession::ClientSession(const char* hostname, const char* servname,

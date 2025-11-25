@@ -6,12 +6,12 @@
 #include <gtest/gtest.h>
 
 #include "../common/buffer_utils.h"
-#include "../server/cmd/server_to_client_accumulatedResults.h"
+#include "../server/cmd/server_to_client_accumulatedResults_server.h"
 
 TEST(STCProtocolSerializationTest, AccumulatedResults) {
     std::vector<AccumulatedResultDTO> results = {{0, 1, 12.34f}, {1, 2, 15.99f}};
 
-    ServerToClientAccumulatedResults msg(results);
+    ServerToClientAccumulatedResults_Server msg(results);
     std::vector<uint8_t> bytes = msg.to_bytes();
 
     ASSERT_GT(bytes.size(), 1);

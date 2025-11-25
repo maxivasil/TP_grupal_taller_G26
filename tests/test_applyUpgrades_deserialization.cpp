@@ -1,13 +1,13 @@
 #include <cstring>
+#include <memory>
 #include <vector>
 
 #include <arpa/inet.h>
 #include <gtest/gtest.h>
 
 #include "../common/buffer_utils.h"
+#include "../server/cmd/client_to_server_applyUpgrades_server.h"
 #include "../server/game_logic/CarUpgrades.h"
-
-#include "testable_client_to_server.h"
 
 TEST(CTSProtocolDeserializationTest, ApplyUpgrades) {
     std::vector<uint8_t> bytes;
@@ -20,16 +20,15 @@ TEST(CTSProtocolDeserializationTest, ApplyUpgrades) {
     BufferUtils::append_float(bytes, health);
 
     uint32_t dummyClientId = 42;
-    ClientToServerApplyUpgrades* cmd =
-            ClientToServerApplyUpgrades::from_bytes(bytes, dummyClientId);
+    std::unique_ptr<ClientToServerApplyUpgrades_Server> cmd(
+            ClientToServerApplyUpgrades_Server::from_bytes(bytes, dummyClientId));
 
     ASSERT_NE(cmd, nullptr);
 
-    const CarUpgrades& res = cmd->upgrades;
+    CarUpgrades res = cmd->get_only_for_test_upgrades();
+
     EXPECT_FLOAT_EQ(res.acceleration_boost, accel);
     EXPECT_FLOAT_EQ(res.speed_boost, speed);
     EXPECT_FLOAT_EQ(res.handling_boost, handling);
     EXPECT_FLOAT_EQ(res.health_boost, health);
-
-    delete cmd;
 }

@@ -4,13 +4,13 @@
 #include <arpa/inet.h>
 #include <gtest/gtest.h>
 
-#include "../server/cmd/server_to_client_startingRace.h"
+#include "../server/cmd/server_to_client_startingRace_server.h"
 
 TEST(STCProtocolSerializationTest, StartingRace) {
     uint8_t cityId = 3;
     std::string trackFile = "liberty_city.map";
 
-    ServerToClientStartingRace msg(cityId, trackFile);
+    ServerToClientStartingRace_Server msg(cityId, trackFile);
     auto bytes = msg.to_bytes();
 
     ASSERT_GT(bytes.size(), 2);

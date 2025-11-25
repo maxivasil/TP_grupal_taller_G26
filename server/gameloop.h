@@ -10,9 +10,9 @@
 #include "../common/queue.h"
 #include "../common/socket.h"
 #include "../common/thread.h"
-#include "cmd/server_to_client_accumulatedResults.h"
-#include "cmd/server_to_client_snapshot.h"
-#include "cmd/server_to_client_startingRace.h"
+#include "cmd/server_to_client_accumulatedResults_server.h"
+#include "cmd/server_to_client_snapshot_server.h"
+#include "cmd/server_to_client_startingRace_server.h"
 
 #include "LobbyStatus.h"
 #include "protected_clients.h"

@@ -4,7 +4,7 @@
 #include <arpa/inet.h>
 #include <gtest/gtest.h>
 
-#include "../client/cmd/client_to_server_applyUpgrades.h"
+#include "../client/cmd/client_to_server_applyUpgrades_client.h"
 #include "../common/buffer_utils.h"
 
 
@@ -15,7 +15,7 @@ TEST(CTSProtocolSerializationTest, ApplyUpgrades) {
     upgrades.handling_boost = 0.8f;
     upgrades.health_boost = 10.0f;
 
-    ClientToServerApplyUpgrades cmd(upgrades);
+    ClientToServerApplyUpgrades_Client cmd(upgrades);
     std::vector<uint8_t> bytes = cmd.to_bytes();
 
     ASSERT_EQ(bytes[0], APPLY_UPGRADES_COMMAND);

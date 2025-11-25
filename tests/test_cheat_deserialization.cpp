@@ -1,8 +1,9 @@
+#include <memory>
 #include <vector>
 
 #include <gtest/gtest.h>
 
-#include "testable_client_to_server.h"
+#include "../server/cmd/client_to_server_cheat_server.h"
 
 TEST(CTSProtocolDeserializationTest, Cheat) {
     uint8_t cheatType = CHEAT_LOSE;
@@ -10,10 +11,11 @@ TEST(CTSProtocolDeserializationTest, Cheat) {
 
     std::vector<uint8_t> bytes = {CHEAT_COMMAND, cheatType};
 
-    ClientToServerCheat* cmd = ClientToServerCheat::from_bytes(bytes, clientId);
+    std::unique_ptr<ClientToServerCheat_Server> cmd(
+            ClientToServerCheat_Server::from_bytes(bytes, clientId));
+
+    uint8_t deserialized_cheat_type = cmd->get_only_for_test_cheat_type();
 
     ASSERT_NE(cmd, nullptr);
-    EXPECT_EQ(cmd->cheat_type, cheatType);
-
-    delete cmd;
+    EXPECT_EQ(deserialized_cheat_type, cheatType);
 }

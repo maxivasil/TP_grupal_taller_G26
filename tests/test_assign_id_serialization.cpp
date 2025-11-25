@@ -6,12 +6,12 @@
 #include <gtest/gtest.h>
 
 #include "../common/buffer_utils.h"
-#include "../server/cmd/server_to_client_assign_id.h"
+#include "../server/cmd/server_to_client_assign_id_server.h"
 
 TEST(STCProtocolSerializationTest, AssignId) {
     uint32_t client_id = 42;
 
-    ServerToClientAssignId msg(client_id);
+    ServerToClientAssignId_Server msg(client_id);
     std::vector<uint8_t> bytes = msg.to_bytes();
 
     ASSERT_EQ(bytes.size(), 5);

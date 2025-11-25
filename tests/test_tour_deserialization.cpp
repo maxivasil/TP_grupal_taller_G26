@@ -3,8 +3,7 @@
 #include <gtest/gtest.h>
 
 #include "../common/buffer_utils.h"
-
-#include "testable_client_to_server.h"
+#include "../server/cmd/client_to_server_tour_server.h"
 
 TEST(CTSProtocolDeserializationTest, TourDeserialization) {
     std::string tour = "tour.yaml";
@@ -14,8 +13,9 @@ TEST(CTSProtocolDeserializationTest, TourDeserialization) {
     BufferUtils::append_uint8(bytes, TOUR_COMMAND);
     BufferUtils::append_bytes(bytes, tour.data(), tour.size());
 
-    std::unique_ptr<ClientToServerTour> cmd(ClientToServerTour::from_bytes(bytes, clientId));
+    std::unique_ptr<ClientToServerTour_Server> cmd(
+            ClientToServerTour_Server::from_bytes(bytes, clientId));
 
     ASSERT_NE(cmd, nullptr);
-    EXPECT_EQ(cmd->tourFile, tour);
+    EXPECT_EQ(cmd->get_tour_file(), tour);
 }

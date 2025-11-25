@@ -4,8 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "../common/buffer_utils.h"
-
-#include "testable_client_to_server.h"
+#include "../server/cmd/client_to_server_readyToStart_server.h"
 
 TEST(CTSProtocolDeserializationTest, ReadyToStart) {
     std::string car = "Mustang";
@@ -15,8 +14,9 @@ TEST(CTSProtocolDeserializationTest, ReadyToStart) {
     BufferUtils::append_uint8(bytes, READY_TO_START_COMMAND);
     BufferUtils::append_bytes(bytes, car.data(), car.size());
 
-    std::unique_ptr<ClientToServerReady> cmd(ClientToServerReady::from_bytes(bytes, clientId));
+    std::unique_ptr<ClientToServerReady_Server> cmd(
+            ClientToServerReady_Server::from_bytes(bytes, clientId));
 
     ASSERT_NE(cmd, nullptr);
-    EXPECT_EQ(cmd->car, car);
+    EXPECT_EQ(cmd->get_only_for_test_car(), car);
 }

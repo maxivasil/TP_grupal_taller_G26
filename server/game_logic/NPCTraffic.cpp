@@ -1,6 +1,10 @@
 #include "NPCTraffic.h"
 
 #include <cmath>
+#include <cstdlib>
+
+// Static random direction counter for variety
+static int randomDirectionCounter = 0;
 
 b2BodyDef NPCTraffic::initNPCBodyDef(b2Vec2 position) {
     b2BodyDef bodyDef = b2DefaultBodyDef();
@@ -27,7 +31,9 @@ void NPCTraffic::setShape(b2BodyId body) {
 }
 
 NPCTraffic::NPCTraffic(b2WorldId world, uint8_t carType_, b2Vec2 position):
-        carType(carType_), current_health(100.0f), maxHealth(100.0f) {
+        carType(carType_), current_health(100.0f), maxHealth(100.0f),
+        currentDirection(rand() % 4), lastPosition(position), stuckTimer(0.0f),
+        collisionCount(0), isParked(false) {
 
     b2BodyDef bodyDef = initNPCBodyDef(position);
     body = b2CreateBody(world, &bodyDef);
@@ -40,54 +46,86 @@ NPCTraffic::~NPCTraffic() {
 }
 
 void NPCTraffic::updatePhysics(float deltaTime, const std::vector<RoutePoint>* route) {
-    // Si no se proporciona ruta, usar la asignada
-    if (route == nullptr) {
-        route = assignedRoute;
-    }
-
-    // Si no hay ruta o el NPC está estacionado, no hacer nada
-    if (route == nullptr || route->empty() || isDestroyed()) {
+    if (isDestroyed()) {
         return;
     }
 
-    size_t currentIdx = currentRoutePoint % route->size();
-    size_t nextIdx = (currentIdx + 1) % route->size();
-
-    const RoutePoint& current = (*route)[currentIdx];
-    const RoutePoint& next = (*route)[nextIdx];
-
-    // Velocidad objetivo según la ruta
-    targetSpeed = current.speed;
+    // Si está estacionado, no moverse
+    if (isParked) {
+        b2Body_SetLinearVelocity(body, {0.0f, 0.0f});
+        b2Body_SetAngularVelocity(body, 0.0f);
+        return;
+    }
 
     // Obtener posición actual
     b2Vec2 currentPos = b2Body_GetPosition(body);
 
-    // Vector al siguiente waypoint
-    b2Vec2 targetPos = {next.x, next.y};
-    b2Vec2 direction = b2Sub(targetPos, currentPos);
-    float distance = b2Length(direction);
+    // ===== DETECCIÓN DE ESQUINAS (basada en colisiones/obstáculos) =====
+    // Detectar si el NPC está estancado (velocidad cercana a 0)
+    b2Vec2 currentVel = b2Body_GetLinearVelocity(body);
+    float currentSpeed = b2Length(currentVel);
+    float distMoved = b2Distance(lastPosition, currentPos);
 
-    // Si llegamos al waypoint, avanzar
-    if (distance < 0.5f) {
-        currentRoutePoint = (currentRoutePoint + 1) % route->size();
-        return;
+    stuckTimer += deltaTime;
+
+    // Si el NPC se movió muy poco en este frame Y se intenta mover
+    // Significa que hay un obstáculo -> decidir cambiar dirección
+    if (distMoved < 0.05f && stuckTimer > 0.3f) {
+        // Hay un obstáculo o esquina, cambiar dirección
+        stuckTimer = 0.0f;
+
+        // 40% cambiar a una dirección aleatoria
+        // 60% intentar girar 90° (esquina natural)
+        if ((rand() % 100) < 40) {
+            currentDirection = rand() % 4;
+        } else {
+            // Girar 90° (izquierda o derecha)
+            currentDirection = (currentDirection + (rand() % 2 == 0 ? 1 : 3)) % 4;
+        }
     }
 
-    // Normalizar dirección
-    if (distance > 0.0f) {
-        direction.x /= distance;
-        direction.y /= distance;
+    // Resetear stuck timer si se está moviendo bien
+    if (distMoved > 0.1f) {
+        stuckTimer = 0.0f;
+    }
+
+    // Recordar posición para próximo frame
+    lastPosition = currentPos;
+
+    // Velocidad base (metros/segundo)
+    targetSpeed = 4.0f + (rand() % 10) / 50.0f;  // Entre 4.0 y 4.2 m/s
+
+    // Vector de dirección según currentDirection
+    b2Vec2 direction = {0.0f, 0.0f};
+    float targetAngle = 0.0f;
+
+    switch (currentDirection % 4) {
+        case 0:  // Norte (arriba)
+            direction = {0.0f, -1.0f};
+            targetAngle = 1.5708f;  // π/2 radianes
+            break;
+        case 1:  // Este (derecha)
+            direction = {1.0f, 0.0f};
+            targetAngle = 0.0f;
+            break;
+        case 2:  // Sur (abajo)
+            direction = {0.0f, 1.0f};
+            targetAngle = -1.5708f;  // -π/2 radianes
+            break;
+        case 3:  // Oeste (izquierda)
+            direction = {-1.0f, 0.0f};
+            targetAngle = 3.14159f;  // π radianes
+            break;
     }
 
     // Aplicar velocidad en dirección de movimiento
     b2Vec2 desiredVelocity = b2MulSV(targetSpeed, direction);
-    b2Vec2 currentVelocity = b2Body_GetLinearVelocity(body);
 
     // Suavizar cambios de velocidad
-    b2Vec2 velocityChange = b2Sub(desiredVelocity, currentVelocity);
-    velocityChange = b2MulSV(0.5f, velocityChange);  // Suavizado
+    b2Vec2 velocityChange = b2Sub(desiredVelocity, currentVel);
+    velocityChange = b2MulSV(0.5f, velocityChange);
 
-    b2Vec2 newVelocity = b2Add(currentVelocity, velocityChange);
+    b2Vec2 newVelocity = b2Add(currentVel, velocityChange);
 
     // Limitar a velocidad máxima
     float speed = b2Length(newVelocity);
@@ -97,27 +135,20 @@ void NPCTraffic::updatePhysics(float deltaTime, const std::vector<RoutePoint>* r
 
     b2Body_SetLinearVelocity(body, newVelocity);
 
-    // ROTACIÓN: Hacer que el auto gire para apuntar en la dirección de movimiento
-    // Calcular el ángulo deseado (hacia dónde debería apuntar el auto)
-    float targetAngle = std::atan2(direction.y, direction.x);
-
-    // Obtener rotación actual del auto
+    // ===== ROTACIÓN HACIA LA DIRECCIÓN =====
     b2Rot currentRot = b2Body_GetRotation(body);
     float currentAngle = std::atan2(currentRot.s, currentRot.c);
 
-    // Calcular diferencia angular (en radianes)
     float angleDiff = targetAngle - currentAngle;
 
-    // Normalizar la diferencia al rango [-π, π]
+    // Normalizar la diferencia angular al rango [-π, π]
     while (angleDiff > 3.14159f) angleDiff -= 6.28318f;
     while (angleDiff < -3.14159f) angleDiff += 6.28318f;
 
-    // Aplicar torque para girar el auto suavemente
-    // Factor de giro: cuanto mayor, más rápido gira
-    float angularVelocity = angleDiff * 3.0f;  // Control de velocidad angular
+    float angularVelocity = angleDiff * 3.0f;
 
     // Limitar velocidad angular
-    float maxAngularVel = 5.0f;  // Radianes por segundo
+    float maxAngularVel = 5.0f;
     if (angularVelocity > maxAngularVel)
         angularVelocity = maxAngularVel;
     if (angularVelocity < -maxAngularVel)
@@ -139,6 +170,14 @@ void NPCTraffic::onCollision(Collidable* other, float approachSpeed, float delta
     float damage = std::max(0.0f, (approachSpeed - 2.0f) * 10.0f);
 
     takeDamage(damage);
+
+    // Incremente contador de colisiones para detectar esquinas/obstáculos
+    collisionCount++;
+    if (collisionCount > 2) {
+        // Si hay múltiples colisiones, forzar cambio de dirección
+        currentDirection = rand() % 4;
+        collisionCount = 0;
+    }
 }
 
 b2Rot NPCTraffic::getRotation(const b2Vec2& contactNormal) const { return getRotation(); }

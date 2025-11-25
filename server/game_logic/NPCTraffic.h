@@ -28,6 +28,16 @@ private:
     float routeProgress = 0.0f;  // Progreso hacia el siguiente waypoint (0-1)
     float targetSpeed = 3.0f;    // Velocidad objetivo según la ruta
     const std::vector<RoutePoint>* assignedRoute = nullptr;  // Ruta asignada
+    int routeIndex = -1;  // Índice de la ruta en la lista de rutas (para acceso dinámico)
+
+    // Movimiento aleatorio inteligente (basado en esquinas/colisiones)
+    int currentDirection = 0;  // 0=N, 1=E, 2=S, 3=O
+    b2Vec2 lastPosition;  // Posición anterior para detectar si se movió
+    float stuckTimer = 0.0f;  // Timer para detectar si está estancado
+    int collisionCount = 0;  // Contador de colisiones recientes
+
+    // Estado del auto
+    bool isParked = false;  // Si el auto está estacionado
 
     // Masas típicas para autos (kg)
     static constexpr float CAR_MASS = 1000.0f;
@@ -44,6 +54,22 @@ public:
      * @param route Puntos de la ruta a seguir
      */
     void setRoute(const std::vector<RoutePoint>* route) { assignedRoute = route; }
+
+    /**
+     * @brief Establece el índice de ruta para acceso dinámico
+     * @param idx Índice de la ruta en currentRoutes (para Race::updatePhysics)
+     */
+    void setRouteIndex(int idx) { routeIndex = idx; }
+
+    /**
+     * @brief Establece si el auto está estacionado (sin movimiento)
+     */
+    void setParked(bool parked) { isParked = parked; }
+
+    /**
+     * @brief Obtiene si el auto está estacionado
+     */
+    bool getParked() const { return isParked; }
 
     /**
      * @brief Actualiza la posición del NPC siguiendo una ruta

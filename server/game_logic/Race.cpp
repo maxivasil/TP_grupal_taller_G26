@@ -366,6 +366,30 @@ void Race::updatePhysics(float dt) {
             } else {
                 npc->updatePhysics(dt, nullptr);
             }
+
+            // ===== SISTEMA DE RESPAWN POR ATORAMIENTO =====
+            // Si el NPC se atoró demasiadas veces, hacerlo reaparecer en otro lugar
+            if (npc->getTotalCollisionsRecent() > 10) {
+                // Generar posición de respawn aleatoria en el mapa
+                if (!currentRoutes.empty()) {
+                    // Seleccionar una ruta aleatoria
+                    int randomRouteIdx = rand() % currentRoutes.size();
+                    const auto& route = currentRoutes[randomRouteIdx];
+                    
+                    if (!route.points.empty()) {
+                        // Seleccionar punto aleatorio en la ruta
+                        size_t randomPointIdx = rand() % route.points.size();
+                        const auto& point = route.points[randomPointIdx];
+                        
+                        // Agregar offset aleatorio para no siempre en el mismo lugar
+                        float offsetX = (rand() % 200) - 100;  // -100 a +100
+                        float offsetY = (rand() % 200) - 100;
+                        
+                        b2Vec2 respawnPos{point.x + offsetX, point.y + offsetY};
+                        npc->resetPosition(respawnPos);
+                    }
+                }
+            }
         }
     }
 

@@ -58,6 +58,16 @@ void NPCTraffic::updatePhysics(float deltaTime, const std::vector<RoutePoint>* r
         return;
     }
 
+    // ===== SISTEMA DE RESPAWN POR ATORAMIENTO =====
+    // Decrementar contador de colisiones si no hay colisiones
+    collisionResetTimer += deltaTime;
+    if (collisionResetTimer > COLLISION_RESET_TIME) {
+        collisionResetTimer = 0.0f;
+        if (totalCollisionsRecent > 0) {
+            totalCollisionsRecent--;  // Reducir contador gradualmente
+        }
+    }
+
     // Obtener posición actual
     b2Vec2 currentPos = b2Body_GetPosition(body);
 
@@ -75,6 +85,10 @@ void NPCTraffic::updatePhysics(float deltaTime, const std::vector<RoutePoint>* r
         // Hay un obstáculo o esquina, cambiar dirección
         stuckTimer = 0.0f;
 
+        // PRIMERO: Detener al auto completamente
+        b2Body_SetLinearVelocity(body, {0.0f, 0.0f});
+        
+        // SEGUNDO: Cambiar dirección
         // 40% cambiar a una dirección aleatoria
         // 60% intentar girar 90° (esquina natural)
         if ((rand() % 100) < 40) {
@@ -101,61 +115,49 @@ void NPCTraffic::updatePhysics(float deltaTime, const std::vector<RoutePoint>* r
     float targetAngle = 0.0f;
 
     switch (currentDirection % 4) {
-        case 0:  // Norte (arriba)
+        case 0:  // Norte (arriba, -Y)
             direction = {0.0f, -1.0f};
-            targetAngle = 1.5708f;  // π/2 radianes
+            targetAngle = -1.5708f;  // -π/2 radianes (apunta hacia arriba)
             break;
-        case 1:  // Este (derecha)
+        case 1:  // Este (derecha, +X)
             direction = {1.0f, 0.0f};
-            targetAngle = 0.0f;
+            targetAngle = 0.0f;  // 0 radianes (apunta hacia la derecha)
             break;
-        case 2:  // Sur (abajo)
+        case 2:  // Sur (abajo, +Y)
             direction = {0.0f, 1.0f};
-            targetAngle = -1.5708f;  // -π/2 radianes
+            targetAngle = 1.5708f;  // π/2 radianes (apunta hacia abajo)
             break;
-        case 3:  // Oeste (izquierda)
+        case 3:  // Oeste (izquierda, -X)
             direction = {-1.0f, 0.0f};
-            targetAngle = 3.14159f;  // π radianes
+            targetAngle = 3.14159f;  // π radianes (apunta hacia la izquierda)
             break;
     }
 
     // Aplicar velocidad en dirección de movimiento
     b2Vec2 desiredVelocity = b2MulSV(targetSpeed, direction);
 
-    // Suavizar cambios de velocidad
-    b2Vec2 velocityChange = b2Sub(desiredVelocity, currentVel);
-    velocityChange = b2MulSV(0.5f, velocityChange);
-
-    b2Vec2 newVelocity = b2Add(currentVel, velocityChange);
-
-    // Limitar a velocidad máxima
-    float speed = b2Length(newVelocity);
-    if (speed > targetSpeed) {
-        newVelocity = b2MulSV(targetSpeed / speed, newVelocity);
-    }
-
-    b2Body_SetLinearVelocity(body, newVelocity);
-
-    // ===== ROTACIÓN HACIA LA DIRECCIÓN =====
-    b2Rot currentRot = b2Body_GetRotation(body);
-    float currentAngle = std::atan2(currentRot.s, currentRot.c);
-
-    float angleDiff = targetAngle - currentAngle;
-
-    // Normalizar la diferencia angular al rango [-π, π]
-    while (angleDiff > 3.14159f) angleDiff -= 6.28318f;
-    while (angleDiff < -3.14159f) angleDiff += 6.28318f;
-
-    float angularVelocity = angleDiff * 3.0f;
-
-    // Limitar velocidad angular
-    float maxAngularVel = 5.0f;
-    if (angularVelocity > maxAngularVel)
-        angularVelocity = maxAngularVel;
-    if (angularVelocity < -maxAngularVel)
-        angularVelocity = -maxAngularVel;
-
-    b2Body_SetAngularVelocity(body, angularVelocity);
+    // ===== GARANTIZAR MOVIMIENTO HACIA ADELANTE PURO =====
+    // NO permitir que la física de Box2D cause retroceso
+    // Aplicar SOLO la velocidad deseada, sin angularidad
+    b2Body_SetLinearVelocity(body, desiredVelocity);
+    
+    // ===== ROTACIÓN INSTANTÁNEA =====
+    // En lugar de usar velocidad angular (que causa problemas), rotamos al ángulo deseado instantáneamente
+    // Esto asegura que el auto siempre apunta hacia donde se mueve
+    
+    // Crear la rotación deseada
+    b2Rot desiredRot;
+    desiredRot.c = std::cos(targetAngle);  // cos
+    desiredRot.s = std::sin(targetAngle);  // sin
+    
+    // Aplicar transformación con la nueva rotación
+    b2Transform transform;
+    transform.p = b2Body_GetPosition(body);
+    transform.q = desiredRot;
+    b2Body_SetTransform(body, transform.p, transform.q);
+    
+    // Sin velocidad angular - el auto NO gira, solo se rota al ángulo objetivo
+    b2Body_SetAngularVelocity(body, 0.0f);
 }
 
 b2Vec2 NPCTraffic::getPosition() const { return b2Body_GetPosition(body); }
@@ -172,12 +174,31 @@ void NPCTraffic::onCollision(Collidable* other, float approachSpeed, float delta
 
     takeDamage(damage);
 
-    // Incremente contador de colisiones para detectar esquinas/obstáculos
-    collisionCount++;
-    if (collisionCount > 2) {
-        // Si hay múltiples colisiones, forzar cambio de dirección
+    // ===== SISTEMA DE CONTEO DE COLISIONES =====
+    // Incrementar contador total de colisiones recientes
+    totalCollisionsRecent++;
+    collisionResetTimer = 0.0f;  // Resetear timer cuando hay colisión
+
+    // Si hay colisiones frecuentes, DETENER al auto y cambiar dirección
+    if (totalCollisionsRecent > 3) {
+        // Detener completamente
+        b2Body_SetLinearVelocity(body, {0.0f, 0.0f});
+        b2Body_SetAngularVelocity(body, 0.0f);
+        
+        // Cambiar dirección aleatoriamente
         currentDirection = rand() % 4;
-        collisionCount = 0;
+        totalCollisionsRecent = 0;
+        
+        std::cout << "[NPC] Demasiadas colisiones, cambiando dirección" << std::endl;
+    }
+
+    // Si supera el máximo, marcar para respawn
+    if (totalCollisionsRecent > MAX_COLLISIONS_BEFORE_RESPAWN) {
+        // El NPC necesita respawn - la carrera lo detectará y lo hará
+        std::cout << "[NPC] NPC en posición (" << b2Body_GetPosition(body).x << ", " 
+                  << b2Body_GetPosition(body).y << ") requiere respawn (colisiones: " 
+                  << totalCollisionsRecent << ")" << std::endl;
+        totalCollisionsRecent = 0;  // Resetear contador
     }
 }
 
@@ -187,3 +208,32 @@ void NPCTraffic::applyCollision(const CollisionInfo& info) {
     // Los NPCs aplican sus efectos de colisión si es necesario
     // Por ahora, solo el sistema de contactos maneja todo
 }
+
+void NPCTraffic::resetPosition(b2Vec2 newPos) {
+    // Teleportear el NPC a nueva posición estableciendo velocidad basada en nueva posición
+    // Aplicar un impulso que lo mueva a la nueva ubicación
+    b2Vec2 currentPos = b2Body_GetPosition(body);
+    b2Vec2 displacement = b2Sub(newPos, currentPos);
+    
+    // Resetear velocidades y rotación
+    b2Body_SetLinearVelocity(body, {0.0f, 0.0f});
+    b2Body_SetAngularVelocity(body, 0.0f);
+    
+    // Aplicar impulso para mover el cuerpo
+    float mass = b2Body_GetMass(body);
+    if (mass > 0) {
+        b2Vec2 impulse = b2MulSV(mass * 100.0f, displacement);  // Impulso grande para teleportación
+        b2Body_ApplyLinearImpulse(body, impulse, currentPos, true);
+    }
+    
+    // Resetear variables de movimiento
+    lastPosition = newPos;
+    stuckTimer = 0.0f;
+    collisionCount = 0;
+    totalCollisionsRecent = 0;
+    collisionResetTimer = 0.0f;
+    currentDirection = rand() % 4;
+    
+    std::cout << "[NPC] Respawn en posición (" << newPos.x << ", " << newPos.y << ")" << std::endl;
+}
+

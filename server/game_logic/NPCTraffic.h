@@ -36,6 +36,12 @@ private:
     float stuckTimer = 0.0f;  // Timer para detectar si está estancado
     int collisionCount = 0;  // Contador de colisiones recientes
 
+    // Sistema de respawn
+    int totalCollisionsRecent = 0;  // Total de colisiones recientes
+    float collisionResetTimer = 0.0f;  // Timer para resetear contador de colisiones
+    static constexpr int MAX_COLLISIONS_BEFORE_RESPAWN = 10;  // Máximo de colisiones antes de respawn
+    static constexpr float COLLISION_RESET_TIME = 5.0f;  // Resetear contador cada 5 segundos sin colisiones
+
     // Estado del auto
     bool isParked = false;  // Si el auto está estacionado
 
@@ -70,6 +76,16 @@ public:
      * @brief Obtiene si el auto está estacionado
      */
     bool getParked() const { return isParked; }
+
+    /**
+     * @brief Resetea la posición del NPC a una nueva ubicación
+     */
+    void resetPosition(b2Vec2 newPos);
+
+    /**
+     * @brief Obtiene el contador de colisiones recientes
+     */
+    int getTotalCollisionsRecent() const { return totalCollisionsRecent; }
 
     /**
      * @brief Actualiza la posición del NPC siguiendo una ruta

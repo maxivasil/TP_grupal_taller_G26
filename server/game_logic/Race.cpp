@@ -161,13 +161,18 @@ void Race::initNPCsFromTrack(b2WorldId world) {
         size_t waypointIdx = (routeLength * checkpointIdx) / checkpointsToFill;
         waypointIdx = std::min(waypointIdx, routeLength - 1);
 
-        // Pequeña variación aleatoria para que no todos estén exactamente en el mismo punto
-        int randomOffset = (rand() % 3) - 1;  // -1, 0, 1
+        // Mayor variación aleatoria para esparcir mejor los NPCs
+        int randomOffset = (rand() % 5) - 2;  // -2, -1, 0, 1, 2
         int finalWaypoint = std::max(0, std::min(static_cast<int>(routeLength - 1),
                                                  static_cast<int>(waypointIdx) + randomOffset));
 
         const auto& point = route.points[finalWaypoint];
-        b2Vec2 pos{point.x, point.y};
+        
+        // Agregar offset ESPACIAL para separar físicamente los autos
+        float offsetX = (rand() % 40) - 20;  // -20 a +20
+        float offsetY = (rand() % 40) - 20;  // -20 a +20
+        b2Vec2 pos{point.x + offsetX, point.y + offsetY};
+        
         uint8_t carType = rand() % 7;
 
         auto npc = std::make_unique<NPCTraffic>(world, carType, pos);
@@ -197,12 +202,17 @@ void Race::initNPCsFromTrack(b2WorldId world) {
         for (int extraIdx = 0; extraIdx < 3 && npcCount < maxNPCs; ++extraIdx) {
             // Distribuir en diferentes posiciones
             size_t basePointIdx = (routeLength * (extraIdx + 1)) / 5;  // Divide ruta en 5 secciones
-            int randomOffset = (rand() % 3) - 1;
+            int randomOffset = (rand() % 5) - 2;  // -2, -1, 0, 1, 2 (mayor rango)
             int pointIdx = std::max(0, std::min(static_cast<int>(routeLength - 1),
                                                 static_cast<int>(basePointIdx) + randomOffset));
 
             const auto& point = route.points[pointIdx];
-            b2Vec2 pos{point.x, point.y};
+            
+            // Agregar offset ESPACIAL para separar físicamente los autos
+            float offsetX = (rand() % 40) - 20;  // -20 a +20
+            float offsetY = (rand() % 40) - 20;  // -20 a +20
+            b2Vec2 pos{point.x + offsetX, point.y + offsetY};
+            
             uint8_t carType = rand() % 7;
 
             auto npc = std::make_unique<NPCTraffic>(world, carType, pos);

@@ -51,7 +51,7 @@ public:
     const std::vector<StaticObjectData> getStaticObjects() const;
 
     const std::vector<BridgeSensorData>& getBridgeSensors() const;
-    
+
     const NPCTrafficConfig& getNPCTrafficConfig() const { return npcTrafficConfig; }
 
     CityName getCityName() const { return name; }

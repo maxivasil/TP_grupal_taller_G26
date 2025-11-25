@@ -239,7 +239,7 @@ private:
     float worldMaxY = 100.0f;
 
     int maxNPCs = 30;  // Máximo número de NPCs simultáneamente
-    
+
     // Configuración de distancia mínima entre NPCs (NIVEL 2)
     float minSpawnDistance = 80.0f;  // Distancia mínima en metros
 
@@ -250,11 +250,11 @@ private:
      * @return true si es válida (sin NPCs cercanos), false si está muy cercano
      */
     bool isValidSpawnPosition(float x, float y, float minDistance) const {
-        for (const auto& npc : npcs) {
+        for (const auto& npc: npcs) {
             float dx = npc.pos_x - x;
             float dy = npc.pos_y - y;
             float distance = std::sqrt(dx * dx + dy * dy);
-            
+
             if (distance < minDistance) {
                 return false;  // Demasiado cerca de otro NPC
             }
@@ -315,17 +315,13 @@ public:
      * @brief Configura la distancia mínima entre NPCs en spawn points (NIVEL 2)
      * @param distance Nueva distancia mínima en píxeles (default: 80.0)
      */
-    void setMinSpawnDistance(float distance) {
-        minSpawnDistance = distance;
-    }
+    void setMinSpawnDistance(float distance) { minSpawnDistance = distance; }
 
     /**
      * @brief Obtiene la distancia mínima configurada
      * @return La distancia mínima entre NPCs al spawnear
      */
-    float getMinSpawnDistance() const {
-        return minSpawnDistance;
-    }
+    float getMinSpawnDistance() const { return minSpawnDistance; }
 
     /**
      * @brief Genera NPCs desde spawn points definidos en las rutas
@@ -333,8 +329,8 @@ public:
      * @param routes Las rutas que contienen spawn points
      * @param minX, maxX, minY, maxY Límites del mundo
      */
-    void initializeFromSpawnPoints(const std::vector<NPCRoute>& routes, 
-                                   float minX, float maxX, float minY, float maxY) {
+    void initializeFromSpawnPoints(const std::vector<NPCRoute>& routes, float minX, float maxX,
+                                   float minY, float maxY) {
         npcs.clear();
         worldMinX = minX;
         worldMaxX = maxX;
@@ -344,20 +340,20 @@ public:
         // Colectar todos los spawn points de todas las rutas
         std::vector<std::pair<SpawnPoint, int>> allSpawnPoints;  // (spawn, route_index)
         for (size_t routeIdx = 0; routeIdx < routes.size(); ++routeIdx) {
-            for (const auto& spawn : routes[routeIdx].spawn_points) {
+            for (const auto& spawn: routes[routeIdx].spawn_points) {
                 allSpawnPoints.push_back({spawn, (int)routeIdx});
             }
         }
 
         // Crear NPCs en cada spawn point CON VALIDACIÓN (NIVEL 2)
         int rejected = 0;
-        for (const auto& [spawn, routeIdx] : allSpawnPoints) {
+        for (const auto& [spawn, routeIdx]: allSpawnPoints) {
             // NIVEL 2: Verificar distancia mínima antes de spawnear
             if (!isValidSpawnPosition(spawn.x, spawn.y, minSpawnDistance)) {
                 rejected++;
                 continue;  // Rechazar este spawn point, está muy cerca de otro
             }
-            
+
             NPC npc(spawn.x, spawn.y, spawn.car_type);
             npc.angle = spawn.direction;
             npc.routeId = spawn.route_index >= 0 ? spawn.route_index : routeIdx;
@@ -365,11 +361,10 @@ public:
         }
 
         maxNPCs = npcs.size();
-        
+
         // Debug info (opcional, descomenta si necesitas ver qué pasa)
-        std::cout << "[NPC SPAWN] Spawn points procesados: " << allSpawnPoints.size() 
-                  << ", rechazados: " << rejected 
-                  << ", NPCs creados: " << npcs.size() 
+        std::cout << "[NPC SPAWN] Spawn points procesados: " << allSpawnPoints.size()
+                  << ", rechazados: " << rejected << ", NPCs creados: " << npcs.size()
                   << " (minDist: " << minSpawnDistance << ")" << std::endl;
     }
 

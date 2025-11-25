@@ -24,12 +24,12 @@ struct RoutePoint {
 struct SpawnPoint {
     float x;
     float y;
-    float direction;  // Ángulo inicial en grados (0-360)
+    float direction;   // Ángulo inicial en grados (0-360)
     uint8_t car_type;  // Tipo de auto (0-6)
-    int route_index;  // Índice de ruta a seguir (-1 = movimiento aleatorio)
+    int route_index;   // Índice de ruta a seguir (-1 = movimiento aleatorio)
 
-    SpawnPoint(float x = 0.0f, float y = 0.0f, float direction = 0.0f, 
-               uint8_t car_type = 0, int route_index = -1):
+    SpawnPoint(float x = 0.0f, float y = 0.0f, float direction = 0.0f, uint8_t car_type = 0,
+               int route_index = -1):
             x(x), y(y), direction(direction), car_type(car_type), route_index(route_index) {}
 };
 
@@ -39,7 +39,7 @@ struct SpawnPoint {
  */
 struct NPCRoute {
     std::vector<RoutePoint> points;
-    bool looping = true;  // ¿La ruta se repite?
+    bool looping = true;                   // ¿La ruta se repite?
     std::vector<SpawnPoint> spawn_points;  // Puntos de aparición de NPCs
 
     NPCRoute() = default;

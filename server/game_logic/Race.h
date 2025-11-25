@@ -52,7 +52,7 @@ private:
     void initStaticObjects(b2WorldId world);
     void initBridgeSensors(b2WorldId world);
     void initCars(b2WorldId world);
-    void initNPCs(b2WorldId world);  // Initialize NPC traffic
+    void initNPCs(b2WorldId world);           // Initialize NPC traffic
     void initNPCsFromTrack(b2WorldId world);  // Track-based NPC system
 
 public:

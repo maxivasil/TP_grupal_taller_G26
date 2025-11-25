@@ -19,7 +19,7 @@ class LobbiesMonitor;
 
 class ServerClientHandler: public Thread {
 public:
-    explicit ServerClientHandler(int client_id, Socket&& s, LobbiesMonitor& lobbiesMonitor);
+    ServerClientHandler(int client_id, Socket&& s, LobbiesMonitor& lobbiesMonitor);
     void run() override;
     bool is_dead() const;
     void stop() override;

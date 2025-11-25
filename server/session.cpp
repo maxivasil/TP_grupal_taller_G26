@@ -1,7 +1,10 @@
 #include "session.h"
 
 ServerSession::ServerSession(const char* servname):
-        servname(servname), lobbiesMonitor(), acceptor(servname, lobbiesMonitor) {}
+        servname(servname),
+        lobbiesMonitor(),
+        protected_clients(),
+        acceptor(servname, lobbiesMonitor, protected_clients) {}
 
 void ServerSession::run() {
     acceptor.start();
@@ -20,4 +23,5 @@ void ServerSession::stop() {
     acceptor.stop();
     acceptor.join();
     lobbiesMonitor.closeAllLobbies();
+    protected_clients.stop_all_and_delete();
 }

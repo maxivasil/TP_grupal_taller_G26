@@ -21,6 +21,7 @@ public:
 private:
     const char* servname;
     LobbiesMonitor lobbiesMonitor;
+    ServerProtectedClients protected_clients;
     Acceptor acceptor;
 };
 

@@ -4,7 +4,7 @@
 
 #include "../../common/constants.h"
 
-Track::Track(std::string& filename) {
+Track::Track(const std::string& filename) {
     YAML::Node config = YAML::LoadFile(ABS_DIR "tracks/" + filename);
 
     if (config["initial_direction"]) {

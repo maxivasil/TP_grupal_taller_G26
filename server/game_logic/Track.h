@@ -22,7 +22,7 @@ private:
     InitialDirection initialDirection;
 
 public:
-    explicit Track(std::string& filename);
+    explicit Track(const std::string& filename);
     ~Track();
 
     const std::vector<CheckpointData> getCheckpoints() const;

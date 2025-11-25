@@ -10,7 +10,7 @@
 
 class ServerToClientGameStarting: public ServerToClientCmd_Server {
 public:
-    explicit ServerToClientGameStarting();
+    ServerToClientGameStarting();
 
     std::vector<uint8_t> to_bytes() const override;
 

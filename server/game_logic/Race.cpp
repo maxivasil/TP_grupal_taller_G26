@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <numeric>
 #include <utility>
 #include <vector>
 
@@ -71,7 +72,7 @@ void Race::initNPCsFromTrack(b2WorldId world) {
     // Legacy track-based NPC system (kept for fallback)
     // Usar los checkpoints del track como base para generar rutas de NPCs
     const auto& trackCheckpoints = track.getCheckpoints();
-    const float CAR_WIDTH = 0.4f;  // Ancho de un auto (~40cm)
+
 
     if (trackCheckpoints.empty()) {
         std::cerr << "[RACE ERROR] No track checkpoints available for NPC route generation"
@@ -84,9 +85,9 @@ void Race::initNPCsFromTrack(b2WorldId world) {
 
     // Convertir checkpoints del track a RoutePoint format
     std::vector<RoutePoint> trackRoutePoints;
-    for (const auto& ckpt: trackCheckpoints) {
-        trackRoutePoints.push_back(RoutePoint(ckpt.x, ckpt.y, 5.0f));
-    }
+    std::transform(trackCheckpoints.begin(), trackCheckpoints.end(),
+                   std::back_inserter(trackRoutePoints),
+                   [](const auto& ckpt) { return RoutePoint(ckpt.x, ckpt.y, 5.0f); });
 
     // Detectar número de checkpoints para adaptar distribución dinámicamente
     int numCheckpoints = trackCheckpoints.size();
@@ -124,28 +125,16 @@ void Race::initNPCsFromTrack(b2WorldId world) {
 
     // Calcular ancho promedio de las calles
     float avgStreetWidth = 0.0f;
-    for (const auto& ckpt: trackCheckpoints) {
-        avgStreetWidth += ckpt.width;
-    }
+    avgStreetWidth = std::accumulate(trackCheckpoints.begin(), trackCheckpoints.end(), 0.0f,
+                                     [](float acc, const auto& ckpt) { return acc + ckpt.width; });
     avgStreetWidth /= trackCheckpoints.size();
 
     // Decidir si distribución es LATERAL o LONGITUDINAL
     // Force LONGITUDINAL distribution to avoid collisions (one car after another)
-    bool lateralDistribution = false;
 
-    // Calcular cuántos carriles de NPCs caben
-    int numLanes = 1;
-    if (lateralDistribution) {
-        if (avgStreetWidth >= CAR_WIDTH * 3) {
-            numLanes = 3;
-        } else if (avgStreetWidth >= CAR_WIDTH * 2.5f) {
-            numLanes = 2;
-        }
-    }
 
-    std::cout << "[RACE NPC DISTRIBUTION] avgStreetWidth: " << avgStreetWidth << " → Using "
-              << (lateralDistribution ? "LATERAL" : "LONGITUDINAL")
-              << " distribution (numLanes: " << numLanes << ")" << std::endl;
+    std::cout << "[RACE NPC DISTRIBUTION] avgStreetWidth: " << avgStreetWidth
+              << " → Using LONGITUDINAL" << std::endl;
 
     // GARANTIZAR AL MENOS 1 NPC EN CADA CHECKPOINT
     int checkpointsToFill = numCheckpoints;

@@ -1274,8 +1274,9 @@ void Game::renderUpgradesScreen() {
 
     // Array de upgrades labels
     const char* upgradeLabels[] = {"ACELERACION", "VELOCIDAD", "CONTROLABILIDAD", "SALUD"};
-    float* upgradeValues[] = {&selectedUpgrades.acceleration_boost, &selectedUpgrades.speed_boost,
-                              &selectedUpgrades.handling_boost, &selectedUpgrades.health_boost};
+    const float* upgradeValues[] = {&selectedUpgrades.acceleration_boost,
+                                    &selectedUpgrades.speed_boost, &selectedUpgrades.handling_boost,
+                                    &selectedUpgrades.health_boost};
 
     // Render cada upgrade con botones +/-
     for (int i = 0; i < 4; i++) {

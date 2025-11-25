@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdint>
 #include <random>
+#include <utility>
 #include <vector>
 
 #include "npc_routes.h"  // Incluir para RoutePoint
@@ -250,16 +251,14 @@ private:
      * @return true si es válida (sin NPCs cercanos), false si está muy cercano
      */
     bool isValidSpawnPosition(float x, float y, float minDistance) const {
-        for (const auto& npc: npcs) {
+        bool estado = std::none_of(npcs.begin(), npcs.end(), [&](const auto& npc) {
             float dx = npc.pos_x - x;
             float dy = npc.pos_y - y;
             float distance = std::sqrt(dx * dx + dy * dy);
+            return distance < minDistance;
+        });
 
-            if (distance < minDistance) {
-                return false;  // Demasiado cerca de otro NPC
-            }
-        }
-        return true;  // Posición válida
+        return estado;  // Posición válida
     }
 
 public:
@@ -341,6 +340,7 @@ public:
         std::vector<std::pair<SpawnPoint, int>> allSpawnPoints;  // (spawn, route_index)
         for (size_t routeIdx = 0; routeIdx < routes.size(); ++routeIdx) {
             for (const auto& spawn: routes[routeIdx].spawn_points) {
+                // cppcheck-suppress useStlAlgorithm
                 allSpawnPoints.push_back({spawn, (int)routeIdx});
             }
         }

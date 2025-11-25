@@ -34,17 +34,17 @@ void ClientToServerApplyUpgrades::execute(ServerContext& ctx) {
     const auto& players = ctx.race->getPlayers();
 
     // Encontrar el jugador correspondiente al cliente
-    for (const auto& player: players) {
-        if (player->getId() == client_id) {
-            player->applyCarUpgrades(upgrades);
-            std::cout << "Mejoras aplicadas para cliente " << client_id
-                      << " - Penalización de tiempo: " << upgrades.getTimePenalty() << "s"
-                      << std::endl;
-            return;
-        }
-    }
+    auto it = std::find_if(players.begin(), players.end(), [this](const auto& player_ptr) {
+        return player_ptr->getId() == this->client_id;
+    });
 
-    std::cerr << "Error: No se encontró al jugador con id " << client_id << std::endl;
+    if (it != players.end()) {
+        (*it)->applyCarUpgrades(upgrades);
+        std::cout << "Mejoras aplicadas para cliente " << client_id
+                  << " - Penalización de tiempo: " << upgrades.getTimePenalty() << "s" << std::endl;
+    } else {
+        std::cerr << "Error: No se encontró al jugador con id " << client_id << std::endl;
+    }
 }
 
 ClientToServerApplyUpgrades* ClientToServerApplyUpgrades::from_bytes(

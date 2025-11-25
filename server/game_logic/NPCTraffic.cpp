@@ -1,5 +1,6 @@
 #include "NPCTraffic.h"
 
+#include <algorithm>
 #include <cmath>
 
 b2BodyDef NPCTraffic::initNPCBodyDef(b2Vec2 position) {

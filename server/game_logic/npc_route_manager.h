@@ -141,8 +141,11 @@ public:
         {
             std::vector<RoutePoint> route;
 
-            float minX = checkpoints[0].x, maxX = checkpoints[0].x;
-            float minY = checkpoints[0].y, maxY = checkpoints[0].y;
+            float minX = checkpoints[0].x;
+            float maxX = minX;
+
+            float minY = checkpoints[0].y;
+            float maxY = minY;
 
             for (const auto& cp: checkpoints) {
                 minX = std::min(minX, cp.x - cp.width / 2);
@@ -157,9 +160,7 @@ public:
             route.push_back(RoutePoint(maxX + margin, maxY + margin, 4.6f));
             route.push_back(RoutePoint(minX - margin, maxY + margin, 4.6f));
 
-            if (route.size() > 1) {
-                routes.emplace_back(route, true);
-            }
+            routes.emplace_back(route, true);
         }
 
         // Crear rutas adicionales (hasta 10 total)

@@ -14,7 +14,8 @@ struct RoutePoint {
     float y;
     float speed;  // Velocidad en este segmento (m/s)
 
-    RoutePoint(float x = 0.0f, float y = 0.0f, float speed = 3.5f): x(x), y(y), speed(speed) {}
+    explicit RoutePoint(float x = 0.0f, float y = 0.0f, float speed = 3.5f):
+            x(x), y(y), speed(speed) {}
 };
 
 /**
@@ -28,8 +29,8 @@ struct SpawnPoint {
     uint8_t car_type;  // Tipo de auto (0-6)
     int route_index;   // Índice de ruta a seguir (-1 = movimiento aleatorio)
 
-    SpawnPoint(float x = 0.0f, float y = 0.0f, float direction = 0.0f, uint8_t car_type = 0,
-               int route_index = -1):
+    explicit SpawnPoint(float x = 0.0f, float y = 0.0f, float direction = 0.0f,
+                        uint8_t car_type = 0, int route_index = -1):
             x(x), y(y), direction(direction), car_type(car_type), route_index(route_index) {}
 };
 
@@ -43,7 +44,8 @@ struct NPCRoute {
     std::vector<SpawnPoint> spawn_points;  // Puntos de aparición de NPCs
 
     NPCRoute() = default;
-    NPCRoute(const std::vector<RoutePoint>& pts, bool loop = true): points(pts), looping(loop) {}
+    explicit NPCRoute(const std::vector<RoutePoint>& pts, bool loop = true):
+            points(pts), looping(loop) {}
 };
 
 /**

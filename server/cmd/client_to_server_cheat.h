@@ -1,6 +1,8 @@
 #ifndef CLIENT_TO_SERVER_CHEAT_H
 #define CLIENT_TO_SERVER_CHEAT_H
 
+#include <vector>
+
 #include "../common/constants.h"
 
 #include "cmd_base_server.h"

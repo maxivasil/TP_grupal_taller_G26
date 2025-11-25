@@ -17,7 +17,7 @@ class TrackWindow: public QMainWindow {
     Q_OBJECT
 
 public:
-    TrackWindow(MainWindow& mainwindow, QWidget* parent = nullptr);
+    explicit TrackWindow(MainWindow& mainwindow, QWidget* parent = nullptr);
     ~TrackWindow();
     void setSession(ClientSession* session);
 

@@ -1166,14 +1166,14 @@ void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
     float mapWidth = maxX - minX;
     float mapHeight = maxY - minY;
     int npcCount = 0;
-    
+
     // Intentar usar spawn points si están definidos (NIVEL 1 - Spawn Points)
     bool hasSpawnPoints = false;
     if (!currentTrackRoutes.empty() && !currentTrackRoutes[0].spawn_points.empty()) {
         // Usar spawn points estratégicos
         npcManager.initializeFromSpawnPoints(currentTrackRoutes, minX, maxX, minY, maxY);
         npcCount = npcManager.getNPCs().size();
-        
+
         // NIVEL 2: Ajustar distancia mínima según la ciudad (tamaño del mapa)
         float minSpawnDist = 75.0f;  // Por defecto
         if (trackName.find("vice_city") != std::string::npos) {
@@ -1274,8 +1274,9 @@ void Game::renderUpgradesScreen() {
 
     // Array de upgrades labels
     const char* upgradeLabels[] = {"ACELERACION", "VELOCIDAD", "CONTROLABILIDAD", "SALUD"};
-    float* upgradeValues[] = {&selectedUpgrades.acceleration_boost, &selectedUpgrades.speed_boost,
-                              &selectedUpgrades.handling_boost, &selectedUpgrades.health_boost};
+    const float* upgradeValues[] = {&selectedUpgrades.acceleration_boost,
+                                    &selectedUpgrades.speed_boost, &selectedUpgrades.handling_boost,
+                                    &selectedUpgrades.health_boost};
 
     // Render cada upgrade con botones +/-
     for (int i = 0; i < 4; i++) {

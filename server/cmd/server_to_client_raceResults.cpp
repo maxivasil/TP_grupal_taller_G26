@@ -33,7 +33,8 @@ std::vector<uint8_t> ServerToClientRaceResults::to_bytes() const {
         // Write string with length prefix
         uint16_t nameLen = static_cast<uint16_t>(result.playerName.length());
         BufferUtils::append_bytes(data, &nameLen, sizeof(nameLen));
-        BufferUtils::append_bytes(data, (const void*)result.playerName.c_str(), nameLen);
+        BufferUtils::append_bytes(data, static_cast<const void*>(result.playerName.c_str()),
+                                  nameLen);
 
         BufferUtils::append_bytes(data, &result.finishTime, sizeof(result.finishTime));
         BufferUtils::append_bytes(data, &result.position, sizeof(result.position));

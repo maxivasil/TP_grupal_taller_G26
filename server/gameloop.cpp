@@ -115,6 +115,7 @@ void ServerGameLoop::run() {
         int playerId = 0;
         // cppcheck-suppress knownEmptyContainer
         for (int clientId: clientsReady) {
+            std::string userName = "Player" + std::to_string(clientId);
             std::string carName = "Iveco Daily";
             if (lobby &&
                 lobby->clientCarSelection.find(clientId) != lobby->clientCarSelection.end()) {
@@ -130,7 +131,9 @@ void ServerGameLoop::run() {
 
             // Use generic stats for now (can be customized per car later)
             CarStats stats = CarStatsDatabase::getCarStats(carName);
-            std::string userName = lobby->clientUsernames[clientId];
+            if (lobby) {
+                userName = lobby->clientUsernames[clientId];
+            }
             std::cout << "  Car stats - Accel: " << stats.acceleration
                       << ", Max Speed: " << stats.max_speed << ", Turn Speed: " << stats.turn_speed
                       << ", Mass: " << stats.mass << ", Brake Force: " << stats.brake_force

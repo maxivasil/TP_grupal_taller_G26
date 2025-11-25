@@ -1,6 +1,7 @@
 #include "City.h"
 
 #include <iostream>
+
 #include <yaml-cpp/yaml.h>
 
 #include "../../common/constants.h"
@@ -25,30 +26,27 @@ City::City(CityName name): name(name) {
                                      obj["width"].as<float>(), obj["height"].as<float>()});
         }
     }
-    
+
     // Load NPC traffic configuration if it exists
     if (data["npc_traffic"]) {
         const auto& npcConfig = data["npc_traffic"];
         npcTrafficConfig.enabled = npcConfig["enabled"].as<bool>(false);
         npcTrafficConfig.total_npcs = npcConfig["total_npcs"].as<int>(120);
         npcTrafficConfig.parked_npcs = npcConfig["parked_npcs"].as<int>(40);
-        
+
         // Load spawn points
         if (npcConfig["spawn_points"]) {
             for (const auto& spawn: npcConfig["spawn_points"]) {
-                npcTrafficConfig.spawn_points.push_back({
-                    spawn["x"].as<float>(),
-                    spawn["y"].as<float>(),
-                    spawn["width"].as<float>(),
-                    spawn["height"].as<float>()
-                });
+                npcTrafficConfig.spawn_points.push_back(
+                        {spawn["x"].as<float>(), spawn["y"].as<float>(), spawn["width"].as<float>(),
+                         spawn["height"].as<float>()});
             }
         }
-        
+
         std::cout << "[CITY] NPC Traffic loaded for " << filename << ": "
-                  << npcTrafficConfig.total_npcs << " moving, "
-                  << npcTrafficConfig.parked_npcs << " parked, "
-                  << npcTrafficConfig.spawn_points.size() << " spawn zones" << std::endl;
+                  << npcTrafficConfig.total_npcs << " moving, " << npcTrafficConfig.parked_npcs
+                  << " parked, " << npcTrafficConfig.spawn_points.size() << " spawn zones"
+                  << std::endl;
     }
 }
 

@@ -6,7 +6,8 @@ ThreadReceiver::ThreadReceiver(
         int id, Protocol& protocol, Queue<ClientToServerCmd_Server*>& receive_queue,
         const std::unordered_map<
                 uint8_t, std::function<ClientToServerCmd_Server*(const std::vector<uint8_t>&,
-                                                                 const int client_id)>>& registry):
+                                                                 const uint32_t client_id)>>&
+                registry):
         client_id(id), protocol(protocol), receive_queue(receive_queue), registry(registry) {}
 
 void ThreadReceiver::run() {

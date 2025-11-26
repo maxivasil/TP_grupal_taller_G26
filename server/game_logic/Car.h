@@ -68,7 +68,7 @@ private:
 
 public:
     Car(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation);
-    ~Car();
+    ~Car() override;
 
     void repair();
 

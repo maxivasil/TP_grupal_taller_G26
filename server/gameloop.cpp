@@ -6,16 +6,16 @@
 #include <string>
 #include <utility>
 
-#include "../cmd/server_to_client_gameStarting.h"
-#include "../cmd/server_to_client_raceResults.h"
 #include "../common/CarStats.h"
 #include "../common/constants.h"
+#include "cmd/server_to_client_gameStarting_server.h"
+#include "cmd/server_to_client_raceResults_server.h"
+#include "game_logic/Car.h"
+#include "game_logic/City.h"
+#include "game_logic/Player.h"
+#include "game_logic/Race.h"
 
-#include "Car.h"
-#include "City.h"
 #include "Lobby.h"
-#include "Player.h"
-#include "Race.h"
 
 #define FPS 60
 
@@ -61,11 +61,11 @@ void ServerGameLoop::process_pending_commands(ServerContext& ctx) {
     }
 }
 
-void ServerGameLoop::update_game_state(Race& race) {
+void ServerGameLoop::update_game_state(const Race& race) {
     std::vector<CarSnapshot> snapshot_data = race.getSnapshot();
 
     // Crear comando Snapshot
-    auto snapshot_cmd = std::make_shared<ServerToClientSnapshot>(snapshot_data);
+    auto snapshot_cmd = std::make_shared<ServerToClientSnapshot_Server>(snapshot_data);
 
     // Broadcast a todos los clientes conectados
     protected_clients.broadcast(snapshot_cmd);
@@ -89,7 +89,7 @@ void ServerGameLoop::run() {
             std::this_thread::sleep_for(std::chrono::milliseconds(250));
         }
         std::cout << "Starting Game" << std::endl;
-        auto starting_cmd = std::make_shared<ServerToClientGameStarting>();
+        auto starting_cmd = std::make_shared<ServerToClientGameStarting_Server>();
         protected_clients.broadcast(starting_cmd);
         status = LobbyStatus::IN_GAME;
 
@@ -106,7 +106,7 @@ void ServerGameLoop::run() {
         }
         std::cout << "Clients ready: " << clientsReady.size() << std::endl;
         // cppcheck-suppress knownEmptyContainer
-        for (int clientId: clientsReady) {
+        for (uint32_t clientId: clientsReady) {
             std::cout << "  Client " << clientId << " is ready" << std::endl;
         }
         std::cout << "=====================\n" << std::endl;
@@ -116,9 +116,9 @@ void ServerGameLoop::run() {
         std::vector<std::unique_ptr<Player>> players;
 
         // First player: from clientsReady (the one who selected a car)
-        int playerId = 0;
+        uint32_t playerId = 0;
         // cppcheck-suppress knownEmptyContainer
-        for (int clientId: clientsReady) {
+        for (uint32_t clientId: clientsReady) {
             std::string carName = "Iveco Daily";
             if (lobby &&
                 lobby->clientCarSelection.find(clientId) != lobby->clientCarSelection.end()) {
@@ -161,8 +161,8 @@ void ServerGameLoop::run() {
             }
             first = false;
 
-            auto startingRaceCmd =
-                    std::make_shared<ServerToClientStartingRace>(raceInfo.city, raceInfo.trackFile);
+            auto startingRaceCmd = std::make_shared<ServerToClientStartingRace_Server>(
+                    raceInfo.city, raceInfo.trackFile);
             protected_clients.broadcast(startingRaceCmd);
 
             try {
@@ -237,7 +237,7 @@ void ServerGameLoop::send_partial_results(Race& race,
 
         partial.emplace_back(pid, playerName, finishTime + upgradePenalty, position);
 
-        auto partialCmd = std::make_shared<ServerToClientRaceResults>(partial, false);
+        auto partialCmd = std::make_shared<ServerToClientRaceResults_Server>(partial, false);
 
         protected_clients.broadcast(partialCmd);
 
@@ -246,8 +246,8 @@ void ServerGameLoop::send_partial_results(Race& race,
     }
 }
 
-void ServerGameLoop::send_acumulated_results(Race& race,
-                                             const std::vector<std::unique_ptr<Player>>& players,
+void ServerGameLoop::send_acumulated_results(const Race& race,
+                                             std::vector<std::unique_ptr<Player>> const& players,
                                              bool& resultsAlreadySent) {
     resultsAlreadySent = true;
     const auto& finishTimes = race.getFinishTimes();
@@ -279,7 +279,7 @@ void ServerGameLoop::send_acumulated_results(Race& race,
         fullResults.emplace_back(static_cast<uint8_t>(playerId), playerName,
                                  finishTime + upgradePenalty, static_cast<uint8_t>(i + 1));
     }
-    auto fullCmd = std::make_shared<ServerToClientRaceResults>(fullResults, true);
+    auto fullCmd = std::make_shared<ServerToClientRaceResults_Server>(fullResults, true);
     protected_clients.broadcast(fullCmd);
     std::cout << "[RACE] Sent FULL results to all players.\n";
 
@@ -320,7 +320,7 @@ void ServerGameLoop::send_acumulated_results(Race& race,
                   return a.playerId < b.playerId;
               });
 
-    auto accumCmd = std::make_shared<ServerToClientAccumulatedResults>(orderedAccum);
+    auto accumCmd = std::make_shared<ServerToClientAccumulatedResults_Server>(orderedAccum);
     protected_clients.broadcast(accumCmd);
 
     std::cout << "\n--- ACUMULADO HASTA AHORA ---\n";

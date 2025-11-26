@@ -8,7 +8,8 @@
 #include "LobbiesMonitor.h"
 #include "client_handler.h"
 
-ServerClientHandler::ServerClientHandler(int client_id, Socket&& s, LobbiesMonitor& lobbiesMonitor):
+ServerClientHandler::ServerClientHandler(uint32_t client_id, Socket&& s,
+                                         LobbiesMonitor& lobbiesMonitor):
         client_id(client_id),
         protocol(std::move(s)),
         send_queue(UINT32_MAX),
@@ -38,11 +39,12 @@ void ServerClientHandler::run() {
             cmd->execute(ctx);
         }
 
+        // cppcheck-suppress knownConditionTrueFalse
         if (!inLobby) {
             return;
         }
         std::cout << "[SERVER] Assigned client ID " << client_id << " to connected client.\n";
-        auto assignIdCmd = std::make_shared<ServerToClientAssignId>(client_id);
+        auto assignIdCmd = std::make_shared<ServerToClientAssignId_Server>(client_id);
         send_message(assignIdCmd);
 
         receiver->start();

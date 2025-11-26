@@ -14,8 +14,9 @@
 #include <SDL2pp/SDL2pp.hh>
 #include <SDL_image.h>
 
+#include "../server/game_logic/CarUpgrades.h"
 #include "audio/car_sound_engine.h"
-#include "cmd/server_to_client_raceResults.h"
+#include "cmd/server_to_client_raceResults_client.h"
 #include "graphics/camera.h"
 #include "graphics/checkpoint_arrow.h"
 #include "graphics/collision_explosion.h"
@@ -23,7 +24,6 @@
 #include "graphics/minimap.h"
 
 #include "session.h"
-#include "../server/game_logic/CarUpgrades.h"
 
 struct RenderCar {
     SDL_Rect src;
@@ -42,7 +42,7 @@ class Game {
 private:
     ClientSession& client_session;
     SDL2pp::Renderer* rendererPtr = nullptr;
-    uint8_t client_id = UINT8_MAX;
+    uint32_t client_id = UINT32_MAX;
     Camera camera;
     Minimap minimap;
     HUD hud;
@@ -110,7 +110,7 @@ private:
 
     void init_textures();
 
-    bool update(ServerToClientSnapshot cmd_snapshot);
+    bool update(ServerToClientSnapshot_Client cmd_snapshot);
 
     void render();
 
@@ -144,7 +144,7 @@ public:
     explicit Game(ClientSession& client_session);
 
     int start();
-    void setClientId(uint8_t id);
+    void setClientId(uint32_t id);
     void update_snapshots(const std::vector<CarSnapshot>& snapshots);
     void setRaceResults(const std::vector<ClientPlayerResult>& results, bool isFinished);
     void setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res);

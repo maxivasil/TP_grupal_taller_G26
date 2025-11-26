@@ -1,0 +1,20 @@
+#include <vector>
+
+#include <gtest/gtest.h>
+
+#include "../client/cmd/client_to_server_readyToStart_client.h"
+
+
+TEST(CTSProtocolSerializationTest, ReadyToStart) {
+    std::string car = "Ferrari";
+    ClientToServerReady_Client cmd(car);
+
+    std::vector<uint8_t> bytes = cmd.to_bytes();
+
+    ASSERT_EQ(bytes[0], READY_TO_START_COMMAND);
+
+    std::string extracted(bytes.begin() + 1, bytes.end());
+    EXPECT_EQ(extracted, car);
+
+    EXPECT_EQ(bytes.size(), 1 + car.size());
+}

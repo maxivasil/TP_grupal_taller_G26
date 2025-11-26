@@ -2,25 +2,23 @@ add_subdirectory(cmd)
 add_subdirectory(graphics)
 add_subdirectory(audio)
 
-target_sources(nfs2d_client
-    PRIVATE
+add_library(client_core
     # .cpp files
-    main.cpp
     parser.cpp
     client_receiver.cpp
     client_sender.cpp
     session.cpp
     client_game.cpp
-    UI/resources.qrc
     UI/mainwindow.cpp
     UI/mainwindow.ui
     UI/initialwindow.cpp
     UI/initialwindow.ui
-    UI/trackwindow.cpp
-    UI/trackwindow.ui
     UI/readywindow.cpp
     UI/readywindow.ui
-    PUBLIC
+    UI/trackwindow.cpp
+    UI/trackwindow.ui
+    UI/resources.qrc
+
     # .h files
     parser.h
     client_receiver.h
@@ -29,12 +27,26 @@ target_sources(nfs2d_client
     client_game.h
     UI/mainwindow.h
     UI/initialwindow.h
-    UI/trackwindow.h
     UI/readywindow.h
-    )
+    UI/trackwindow.h
+)
+
+target_link_libraries(client_core
+    PUBLIC
+        Qt${QT_VERSION_MAJOR}::Widgets
+        SDL2pp::SDL2pp 
+        SDL2_mixer::SDL2_mixer
+        SDL2_ttf::SDL2_ttf
+)
+
+target_sources(nfs2d_client
+    PRIVATE
+        main.cpp
+)
 
 target_link_libraries(nfs2d_client 
     PRIVATE 
+        client_core
         client_cmd
         client_graphics
         client_audio

@@ -8,6 +8,7 @@
 
 #include "Collidable.h"
 #include "npc_routes_from_checkpoints.h"
+#include "Car.h"
 
 /**
  * @class NPCTraffic
@@ -18,10 +19,8 @@
  */
 class NPCTraffic: public Collidable {
 private:
-    b2BodyId body;
+    Car* car;              // Instancia de Car para lógica de auto
     uint8_t carType;       // Tipo de auto (0-6)
-    float current_health;  // Vida actual
-    float maxHealth;       // Vida máxima
 
     // Datos de ruta
     int currentRoutePoint = 0;   // Índice del waypoint actual
@@ -119,22 +118,22 @@ public:
     /**
      * @brief Obtiene la salud actual del NPC
      */
-    float getCurrentHealth() const { return current_health; }
+    float getCurrentHealth() const { return car ? car->getCurrentHealth() : 0.0f; }
 
     /**
      * @brief Verifica si el NPC fue destruido
      */
-    bool isDestroyed() const { return current_health <= 0.0f; }
+    bool isDestroyed() const { return car ? car->isDestroyed() : true; }
 
     /**
      * @brief Aplica daño al NPC
      */
-    void takeDamage(float damage) { current_health -= damage; }
+    void takeDamage(float damage) { if (car) car->applyCollision(CollisionInfo{damage, 0.0f}); }
 
     /**
      * @brief Repara el NPC a salud máxima
      */
-    void repair() { current_health = maxHealth; }
+    void repair() { if (car) car->repair(); }
 
     // Métodos de Collidable
     void onCollision(Collidable* other, float approachSpeed, float deltaTime,

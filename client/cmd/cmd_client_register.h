@@ -6,13 +6,13 @@
 #include <vector>
 
 #include "cmd_base_client.h"
-#include "server_to_client_accumulatedResults.h"
-#include "server_to_client_assign_id.h"
-#include "server_to_client_gameStarting.h"
-#include "server_to_client_lobbyResponse.h"
-#include "server_to_client_raceResults.h"
-#include "server_to_client_snapshot.h"
-#include "server_to_client_startingRace.h"
+#include "server_to_client_accumulatedResults_client.h"
+#include "server_to_client_assign_id_client.h"
+#include "server_to_client_gameStarting_client.h"
+#include "server_to_client_joinLobbyResponse_client.h"
+#include "server_to_client_raceResults_client.h"
+#include "server_to_client_snapshot_client.h"
+#include "server_to_client_startingRace_client.h"
 
 class ClientRegisteredCommands {
 public:

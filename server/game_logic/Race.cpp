@@ -167,12 +167,12 @@ void Race::initNPCsFromTrack(b2WorldId world) {
                                                  static_cast<int>(waypointIdx) + randomOffset));
 
         const auto& point = route.points[finalWaypoint];
-        
+
         // Agregar offset ESPACIAL para separar físicamente los autos
         float offsetX = (rand() % 40) - 20;  // -20 a +20
         float offsetY = (rand() % 40) - 20;  // -20 a +20
         b2Vec2 pos{point.x + offsetX, point.y + offsetY};
-        
+
         uint8_t carType = rand() % 7;
 
         auto npc = std::make_unique<NPCTraffic>(world, carType, pos);
@@ -207,12 +207,12 @@ void Race::initNPCsFromTrack(b2WorldId world) {
                                                 static_cast<int>(basePointIdx) + randomOffset));
 
             const auto& point = route.points[pointIdx];
-            
+
             // Agregar offset ESPACIAL para separar físicamente los autos
             float offsetX = (rand() % 40) - 20;  // -20 a +20
             float offsetY = (rand() % 40) - 20;  // -20 a +20
             b2Vec2 pos{point.x + offsetX, point.y + offsetY};
-            
+
             uint8_t carType = rand() % 7;
 
             auto npc = std::make_unique<NPCTraffic>(world, carType, pos);
@@ -385,16 +385,16 @@ void Race::updatePhysics(float dt) {
                     // Seleccionar una ruta aleatoria
                     int randomRouteIdx = rand() % currentRoutes.size();
                     const auto& route = currentRoutes[randomRouteIdx];
-                    
+
                     if (!route.points.empty()) {
                         // Seleccionar punto aleatorio en la ruta
                         size_t randomPointIdx = rand() % route.points.size();
                         const auto& point = route.points[randomPointIdx];
-                        
+
                         // Agregar offset aleatorio para no siempre en el mismo lugar
                         float offsetX = (rand() % 200) - 100;  // -100 a +100
                         float offsetY = (rand() % 200) - 100;
-                        
+
                         b2Vec2 respawnPos{point.x + offsetX, point.y + offsetY};
                         npc->resetPosition(respawnPos);
                     }
@@ -452,9 +452,15 @@ std::vector<CarSnapshot> Race::getSnapshot() const {
         b2Vec2 pos = player->getPosition();
         b2Rot rot = player->getRotation();
         float angle = b2Rot_GetAngle(rot) * 180.0f / B2_PI;
-        float speed = player->getSpeed();  // Get actual speed from player
-        CarSnapshot cs{(uint8_t)player->getId(),   pos.x, pos.y, false,
-                       player->getCurrentHealth(), speed, angle, player->isOnBridge(),
+        float speed = player->getSpeed();
+        CarSnapshot cs{player->getId(),
+                       pos.x,
+                       pos.y,
+                       false,
+                       player->getCurrentHealth(),
+                       speed,
+                       angle,
+                       player->isOnBridge(),
                        player->getCarType()};
         cs.hasInfiniteHealth = player->hasInfiniteHealth();
         cs.isNPC = false;

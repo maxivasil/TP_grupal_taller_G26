@@ -35,7 +35,7 @@ public:
 
     void applyCollision(const CollisionInfo& info) override;
 
-    ~StaticObject();
+    ~StaticObject() override;
 };
 
 

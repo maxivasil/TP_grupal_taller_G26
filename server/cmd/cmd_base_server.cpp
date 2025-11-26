@@ -4,14 +4,12 @@
 
 #include "../../common/constants.h"
 
-#include "client_to_server_move.h"
-
 ClientToServerCmd_Server* ClientToServerCmd_Server::from_bytes(
         const std::vector<uint8_t>& data,
         const std::unordered_map<
-                uint8_t, std::function<ClientToServerCmd_Server*(const std::vector<uint8_t>&,
-                                                                 const int client_id)>>& registry,
-        const int client_id) {
+                uint8_t, std::function<ClientToServerCmd_Server*(
+                                 const std::vector<uint8_t>&, const uint32_t client_id)>>& registry,
+        const uint32_t client_id) {
 
     if (data.empty())
         return nullptr;

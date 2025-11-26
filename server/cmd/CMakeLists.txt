@@ -1,35 +1,35 @@
 add_library(server_cmd
     cmd_server_register.h
     cmd_base_server.h
-    client_to_server_move.h
-    server_to_client_snapshot.h
-    client_to_server_joinLobby.h
-    server_to_client_joinLobbyResponse.h
-    client_to_server_readyToStart.h
-    server_to_client_gameStarting.h
-    client_to_server_cheat.h
-    server_to_client_raceResults.h
-    server_to_client_assign_id.h
-    client_to_server_tour.h
-    server_to_client_startingRace.h
-    client_to_server_applyUpgrades.h
-    server_to_client_accumulatedResults.h
+    client_to_server_move_server.h
+    server_to_client_snapshot_server.h
+    client_to_server_joinLobby_server.h
+    server_to_client_joinLobbyResponse_server.h
+    client_to_server_readyToStart_server.h
+    server_to_client_gameStarting_server.h
+    client_to_server_cheat_server.h
+    server_to_client_raceResults_server.h
+    server_to_client_assign_id_server.h
+    client_to_server_tour_server.h
+    server_to_client_startingRace_server.h
+    client_to_server_applyUpgrades_server.h
+    server_to_client_accumulatedResults_server.h
 
     cmd_server_register.cpp
     cmd_base_server.cpp
-    client_to_server_move.cpp
-    server_to_client_snapshot.cpp
-    client_to_server_joinLobby.cpp
-    server_to_client_joinLobbyResponse.cpp
-    client_to_server_readyToStart.cpp
-    server_to_client_gameStarting.cpp  
-    client_to_server_cheat.cpp
-    server_to_client_raceResults.cpp
-    server_to_client_assign_id.cpp
-    client_to_server_tour.cpp
-    server_to_client_startingRace.cpp
-    client_to_server_applyUpgrades.cpp
-    server_to_client_accumulatedResults.cpp
+    client_to_server_move_server.cpp
+    server_to_client_snapshot_server.cpp
+    client_to_server_joinLobby_server.cpp
+    server_to_client_joinLobbyResponse_server.cpp
+    client_to_server_readyToStart_server.cpp
+    server_to_client_gameStarting_server.cpp  
+    client_to_server_cheat_server.cpp
+    server_to_client_raceResults_server.cpp
+    server_to_client_assign_id_server.cpp
+    client_to_server_tour_server.cpp
+    server_to_client_startingRace_server.cpp
+    client_to_server_applyUpgrades_server.cpp
+    server_to_client_accumulatedResults_server.cpp
 )
 
 target_link_libraries(server_cmd PRIVATE server_game_logic taller_common)

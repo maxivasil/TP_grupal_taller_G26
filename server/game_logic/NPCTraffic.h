@@ -32,15 +32,17 @@ private:
 
     // Movimiento aleatorio inteligente (basado en esquinas/colisiones)
     int currentDirection = 0;  // 0=N, 1=E, 2=S, 3=O
-    b2Vec2 lastPosition;  // Posición anterior para detectar si se movió
-    float stuckTimer = 0.0f;  // Timer para detectar si está estancado
-    int collisionCount = 0;  // Contador de colisiones recientes
+    b2Vec2 lastPosition;       // Posición anterior para detectar si se movió
+    float stuckTimer = 0.0f;   // Timer para detectar si está estancado
+    int collisionCount = 0;    // Contador de colisiones recientes
 
     // Sistema de respawn
-    int totalCollisionsRecent = 0;  // Total de colisiones recientes
+    int totalCollisionsRecent = 0;     // Total de colisiones recientes
     float collisionResetTimer = 0.0f;  // Timer para resetear contador de colisiones
-    static constexpr int MAX_COLLISIONS_BEFORE_RESPAWN = 10;  // Máximo de colisiones antes de respawn
-    static constexpr float COLLISION_RESET_TIME = 5.0f;  // Resetear contador cada 5 segundos sin colisiones
+    static constexpr int MAX_COLLISIONS_BEFORE_RESPAWN =
+            10;  // Máximo de colisiones antes de respawn
+    static constexpr float COLLISION_RESET_TIME =
+            5.0f;  // Resetear contador cada 5 segundos sin colisiones
 
     // Estado del auto
     bool isParked = false;  // Si el auto está estacionado
@@ -53,7 +55,7 @@ private:
 
 public:
     NPCTraffic(b2WorldId world, uint8_t carType, b2Vec2 position);
-    ~NPCTraffic();
+    ~NPCTraffic() override;
 
     /**
      * @brief Asigna una ruta al NPC

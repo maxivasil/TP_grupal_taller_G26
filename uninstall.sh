@@ -40,6 +40,11 @@ if [[ -f "${INSTALL_BIN_DIR}/nfs2d_client" ]]; then
     echo "✔ nfs2d_client eliminado"
 fi
 
+if [[ -f "${INSTALL_BIN_DIR}/nfs2d_editor" ]]; then
+    sudo rm -f "${INSTALL_BIN_DIR}/nfs2d_editor"
+    echo "✔ nfs2d_editor eliminado"
+fi
+
 echo "== Eliminando assets en ${INSTALL_VAR_DIR} =="
 if [[ -d "$INSTALL_VAR_DIR" ]]; then
     sudo rm -rf "$INSTALL_VAR_DIR"

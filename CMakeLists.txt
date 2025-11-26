@@ -198,6 +198,7 @@ if(TALLER_EDITOR)
     set(CMAKE_AUTORCC ON)
     find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
     find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+    find_package(yaml-cpp REQUIRED)
     
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
     add_executable(nfs2d_editor)
@@ -212,7 +213,7 @@ if(TALLER_EDITOR)
     set_project_warnings(nfs2d_editor ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # Link the taller_common lib target
-    target_link_libraries(nfs2d_editor taller_common Qt${QT_VERSION_MAJOR}::Widgets)
+    target_link_libraries(nfs2d_editor taller_common Qt${QT_VERSION_MAJOR}::Widgets yaml-cpp)
 endif()
 
 
@@ -233,36 +234,12 @@ if(TALLER_TESTS)
     FetchContent_MakeAvailable(googletest)
     include(GoogleTest)
 
-    # target for testing
-    # HEY!! TODO XXX: Change the name of the executable to the one you like!
-    add_executable(taller_tests)
-
-    # HEY!! TODO XXX: I'm assuming that the code under testing is in taller_common
-    # Change this if you have to.
-    add_dependencies(taller_tests taller_common)
-
-    # Say where to find the xoz headers
-    # HEY!! TODO XXX: add more subfolders here
-    target_include_directories(taller_tests PUBLIC .)
-
-    # Add the source files to the taller_tests target
-    # HEY!! TODO XXX: add more subfolders here
+    add_executable(nfs2d_tests)
+    add_dependencies(nfs2d_tests taller_common)
     add_subdirectory(tests/)
 
-    # Set the compiler warnings to the tests target (but be a little lesser strict)
-    set_project_warnings(taller_tests ${TALLER_MAKE_WARNINGS_AS_ERRORS} TRUE)
+    set_project_warnings(nfs2d_tests ${TALLER_MAKE_WARNINGS_AS_ERRORS} TRUE)
 
-    # Say where googletest headers can be found
-    target_include_directories(taller_tests
-        PUBLIC
-        ${gtest_SOURCE_DIR}/include
-        ${gmock_SOURCE_DIR}/include
-        )
+    target_link_libraries(nfs2d_tests tests)
 
-    # HEY!! TODO XXX: I'm assuming that the code under testing is in taller_common
-    # Change this if you have to.
-    target_link_libraries(taller_tests
-        taller_common
-        GTest::gtest_main
-    )
 endif()

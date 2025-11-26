@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "common/liberror.h"
+#include "../common/liberror.h"
 
 ThreadSender::ThreadSender(Protocol& protocol,
                            Queue<std::shared_ptr<ServerToClientCmd_Server>>& send_queue):

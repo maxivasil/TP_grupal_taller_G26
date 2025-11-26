@@ -10,9 +10,9 @@
 
 #include "../common/constants.h"
 #include "audio/car_sound_engine.h"
-#include "cmd/client_to_server_applyUpgrades.h"
-#include "cmd/client_to_server_cheat.h"
-#include "cmd/client_to_server_move.h"
+#include "cmd/client_to_server_applyUpgrades_client.h"
+#include "cmd/client_to_server_cheat_client.h"
+#include "cmd/client_to_server_move_client.h"
 #include "graphics/track_loader.h"
 
 #include "npc_system.h"
@@ -113,7 +113,7 @@ int Game::start() {
             while (recv_queue.try_pop(raw_cmd)) {
                 std::unique_ptr<ServerToClientCmd_Client> cmd(raw_cmd);
 
-                auto const* snapshot_cmd = dynamic_cast<ServerToClientSnapshot*>(cmd.get());
+                auto const* snapshot_cmd = dynamic_cast<ServerToClientSnapshot_Client*>(cmd.get());
                 if (snapshot_cmd) {
                     update(*snapshot_cmd);
                 } else {
@@ -239,15 +239,15 @@ bool Game::handleEvents() {
     // CHEATS
     if (state[SDL_SCANCODE_LCTRL]) {
         if (state[SDL_SCANCODE_H]) {
-            client_session.send_command(new ClientToServerCheat(CHEAT_INFINITE_HEALTH));
+            client_session.send_command(new ClientToServerCheat_Client(CHEAT_INFINITE_HEALTH));
             carSoundEngine.playCheatActivated();
             std::cout << "CHEAT: Vida infinita activada\n";
         } else if (state[SDL_SCANCODE_W]) {
-            client_session.send_command(new ClientToServerCheat(CHEAT_WIN));
+            client_session.send_command(new ClientToServerCheat_Client(CHEAT_WIN));
             std::cout << "CHEAT: Victoria automática\n";
             setWon();
         } else if (state[SDL_SCANCODE_L]) {
-            client_session.send_command(new ClientToServerCheat(CHEAT_LOSE));
+            client_session.send_command(new ClientToServerCheat_Client(CHEAT_LOSE));
             std::cout << "CHEAT: Derrota automática\n";
             setLost();
         }
@@ -255,25 +255,25 @@ bool Game::handleEvents() {
 
     if (state[SDL_SCANCODE_RIGHT]) {
         if (!playerDestroyed)
-            client_session.send_command(new ClientToServerMove(MOVE_RIGHT));
+            client_session.send_command(new ClientToServerMove_Client(MOVE_RIGHT));
     }
     if (state[SDL_SCANCODE_LEFT]) {
         if (!playerDestroyed)
-            client_session.send_command(new ClientToServerMove(MOVE_LEFT));
+            client_session.send_command(new ClientToServerMove_Client(MOVE_LEFT));
     }
     if (state[SDL_SCANCODE_UP]) {
         if (!playerDestroyed)
-            client_session.send_command(new ClientToServerMove(MOVE_UP));
+            client_session.send_command(new ClientToServerMove_Client(MOVE_UP));
     }
     if (state[SDL_SCANCODE_DOWN]) {
         if (!playerDestroyed)
-            client_session.send_command(new ClientToServerMove(MOVE_DOWN));
+            client_session.send_command(new ClientToServerMove_Client(MOVE_DOWN));
     }
 
     return false;
 }
 
-bool Game::update(ServerToClientSnapshot cmd_snapshot) {
+bool Game::update(ServerToClientSnapshot_Client cmd_snapshot) {
     carsToRender.clear();
     ClientContext ctx = {.game = this, .mainwindow = nullptr};
     cmd_snapshot.execute(ctx);
@@ -324,12 +324,12 @@ bool Game::update(ServerToClientSnapshot cmd_snapshot) {
         previousHealthState[it->id] = it->health;
 
         const Uint8* keyState = SDL_GetKeyboardState(NULL);
-        bool isAccelerating = keyState[SDL_SCANCODE_UP];
-        bool isBraking = keyState[SDL_SCANCODE_DOWN];
-        bool isTurning = keyState[SDL_SCANCODE_LEFT] || keyState[SDL_SCANCODE_RIGHT];
 
         // Solo actualizar sonido si la carrera está en curso
         if (gameState == GameState::PLAYING) {
+            bool isAccelerating = keyState[SDL_SCANCODE_UP];
+            bool isBraking = keyState[SDL_SCANCODE_DOWN];
+            bool isTurning = keyState[SDL_SCANCODE_LEFT] || keyState[SDL_SCANCODE_RIGHT];
             carSoundEngine.update(isAccelerating, isTurning, isBraking);
         }
 
@@ -783,7 +783,7 @@ void Game::renderEndGameScreen() {
     }
 }
 
-void Game::setClientId(uint8_t id) {
+void Game::setClientId(uint32_t id) {
     client_id = id;
     std::cout << "[GAME] Client ID set to " << (int)client_id << std::endl;
 }
@@ -1450,7 +1450,7 @@ void Game::handleUpgradesInput(const SDL_Event& event) {
     SDL_Rect applyRect = {applyButtonX, applyButtonY, applyButtonWidth, applyButtonHeight};
     if (SDL_PointInRect(&mousePoint, &applyRect)) {
         // Enviar comando al servidor
-        client_session.send_command(new ClientToServerApplyUpgrades(selectedUpgrades));
+        client_session.send_command(new ClientToServerApplyUpgrades_Client(selectedUpgrades));
         std::cout << "[UPGRADES] Upgrades enviados al servidor: A="
                   << selectedUpgrades.acceleration_boost << " S=" << selectedUpgrades.speed_boost
                   << " H=" << selectedUpgrades.handling_boost

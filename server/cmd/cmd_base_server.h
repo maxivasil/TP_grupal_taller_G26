@@ -9,21 +9,22 @@
 #include <vector>
 
 struct ServerContext {
-    class Race* race;
-    class ServerClientHandler* client;
-    bool* inLobby;
-    std::set<int>* clientsReady;
-    struct Lobby* lobby;  // Pointer to the current lobby for car selection storage
-    std::vector<struct RaceInfo>* racesInfo;
+    class Race* race = nullptr;
+    class ServerClientHandler* client = nullptr;
+    bool* inLobby = nullptr;
+    std::set<int>* clientsReady = nullptr;
+    struct Lobby* lobby = nullptr;  // Pointer to the current lobby for car selection storage
+    std::vector<struct RaceInfo>* racesInfo = nullptr;
+    std::vector<std::unique_ptr<class Player>>* players = nullptr;
 };
 
 // Aquí van las definiciones de comandos del cliente al servidor
 class ClientToServerCmd_Server {
 protected:
-    int client_id;
+    uint32_t client_id;
 
 public:
-    explicit ClientToServerCmd_Server(int client_id): client_id(client_id) {}
+    explicit ClientToServerCmd_Server(uint32_t client_id): client_id(client_id) {}
     virtual ~ClientToServerCmd_Server() = default;
 
     // Ejecuta el comando en el contexto del servidor (desde el cliente)
@@ -33,9 +34,10 @@ public:
     static ClientToServerCmd_Server* from_bytes(
             const std::vector<uint8_t>& data,
             const std::unordered_map<
-                    uint8_t, std::function<ClientToServerCmd_Server*(
-                                     const std::vector<uint8_t>&, const int client_id)>>& registry,
-            const int client_id);
+                    uint8_t, std::function<ClientToServerCmd_Server*(const std::vector<uint8_t>&,
+                                                                     const uint32_t client_id)>>&
+                    registry,
+            const uint32_t client_id);
 };
 
 class ServerToClientCmd_Server {

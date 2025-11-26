@@ -4,8 +4,11 @@
 #include <QListWidgetItem>
 #include <QMainWindow>
 
+#include <yaml-cpp/yaml.h>
+
 #include "checkpoint.h"
 #include "mapview.h"
+#include "toureditor.h"
 
 class QListWidget;
 class QPushButton;
@@ -34,6 +37,7 @@ private:
     QPushButton* exportBtn;
     QPushButton* removeBtn;
     QLabel* sidebarTitle;
+    QPushButton* editToursBtn;
 
     QString currentMapName;
     QString currentMapPath;

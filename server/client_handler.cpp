@@ -8,7 +8,8 @@
 #include "LobbiesMonitor.h"
 #include "client_handler.h"
 
-ServerClientHandler::ServerClientHandler(int client_id, Socket&& s, LobbiesMonitor& lobbiesMonitor):
+ServerClientHandler::ServerClientHandler(uint32_t client_id, Socket&& s,
+                                         LobbiesMonitor& lobbiesMonitor):
         client_id(client_id),
         protocol(std::move(s)),
         send_queue(UINT32_MAX),
@@ -38,8 +39,12 @@ void ServerClientHandler::run() {
             cmd->execute(ctx);
         }
 
+        // cppcheck-suppress knownConditionTrueFalse
+        if (!inLobby) {
+            return;
+        }
         std::cout << "[SERVER] Assigned client ID " << client_id << " to connected client.\n";
-        auto assignIdCmd = std::make_shared<ServerToClientAssignId>(client_id);
+        auto assignIdCmd = std::make_shared<ServerToClientAssignId_Server>(client_id);
         send_message(assignIdCmd);
 
         receiver->start();
@@ -49,12 +54,7 @@ void ServerClientHandler::run() {
         protocol.close_connection();
     } catch (const std::exception& e) {
         if (!should_keep_running()) {
-            if (receiver->is_alive()) {
-                receiver->join();
-            }
-            if (sender.is_alive()) {
-                sender.join();
-            }
+            stop();
             return;
         }
         std::cerr << "Unexpected exception in ClientHandler" << e.what() << std::endl;
@@ -62,13 +62,17 @@ void ServerClientHandler::run() {
 }
 
 void ServerClientHandler::stop() {
-    receiver->stop();
-    sender.stop();
-    send_queue.close();
+    Thread::stop();
+    if (receiver && receiver->is_alive()) {
+        receiver->stop();
+        receiver->join();
+    }
     if (!protocol.is_connection_closed()) {
         protocol.close_connection();
     }
-    Thread::stop();
+    send_queue.close();
+    sender.stop();
+    sender.join();
 }
 
 bool ServerClientHandler::is_dead() const {

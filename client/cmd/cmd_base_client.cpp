@@ -4,8 +4,6 @@
 
 #include "../../common/constants.h"
 
-#include "server_to_client_snapshot.h"
-
 ServerToClientCmd_Client* ServerToClientCmd_Client::from_bytes(
         const std::vector<uint8_t>& data,
         const std::unordered_map<

@@ -10,7 +10,7 @@
 
 #include "../../common/queue.h"
 #include "../cmd/cmd_base_server.h"
-#include "../cmd/server_to_client_snapshot.h"
+#include "../cmd/server_to_client_snapshot_server.h"
 
 #include "BridgeSensorManager.h"
 #include "CheckpointManager.h"

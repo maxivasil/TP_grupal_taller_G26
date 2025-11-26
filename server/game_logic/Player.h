@@ -10,7 +10,7 @@
 class Player {
 private:
     std::string name;
-    int id;
+    uint32_t id;
     std::unique_ptr<Car> car;
     CarStats stats;
     uint8_t car_type;  // 0=Van, 1=Ferrari, 2=Celeste, 3=Jeep, 4=Pickup, 5=Limo, 6=Descapotable
@@ -37,7 +37,7 @@ public:
 
     const CarStats getCarStats() const;
 
-    int getId() const;
+    uint32_t getId() const;
 
     const std::string& getName() const;
 

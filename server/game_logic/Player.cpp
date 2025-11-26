@@ -48,7 +48,7 @@ Car* Player::getCar() const { return car.get(); }
 
 const CarStats Player::getCarStats() const { return stats; }
 
-int Player::getId() const { return id; }
+uint32_t Player::getId() const { return id; }
 
 const std::string& Player::getName() const { return name; }
 

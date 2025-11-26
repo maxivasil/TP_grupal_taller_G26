@@ -8,7 +8,7 @@
 
 #include "Collidable.h"
 #include "npc_routes_from_checkpoints.h"
-#include "Car.h"
+#include "NPCCar.h"
 
 /**
  * @class NPCTraffic
@@ -19,7 +19,7 @@
  */
 class NPCTraffic: public Collidable {
 private:
-    Car* car;              // Instancia de Car para lógica de auto
+    NPCCar* car;              // Instancia de NPCCar para lógica de auto NPC
     uint8_t carType;       // Tipo de auto (0-6)
 
     // Datos de ruta
@@ -34,6 +34,16 @@ private:
     b2Vec2 lastPosition;       // Posición anterior para detectar si se movió
     float stuckTimer = 0.0f;   // Timer para detectar si está estancado
     int collisionCount = 0;    // Contador de colisiones recientes
+    
+    // Sistema de navegación aleatoria
+    float directionChangeTimer = 0.0f;  // Timer para cambiar dirección
+    float MIN_TIME_BETWEEN_TURNS = 3.0f;  // Mínimo tiempo antes de girar
+    Direction currentMovementDir = Direction::FORWARD;  // Dirección actual de movimiento
+    bool canTurn = false;  // Si puede girar en esta iteración
+    
+    // Sistema de retroceso controlado
+    float reverseTimer = 0.0f;  // Timer para controlar duración del retroceso
+    static constexpr float MAX_REVERSE_TIME = 1.5f;  // Máximo tiempo retrocediendo (1.5 segundos)
 
     // Sistema de respawn
     int totalCollisionsRecent = 0;     // Total de colisiones recientes
@@ -87,6 +97,21 @@ public:
      * @brief Obtiene el contador de colisiones recientes
      */
     int getTotalCollisionsRecent() const { return totalCollisionsRecent; }
+
+    /**
+     * @brief Obtiene el timer de atasco
+     */
+    float getStuckTimer() const { return stuckTimer; }
+
+    /**
+     * @brief Resetea el timer de atasco (stuck)
+     */
+    void resetStuckTimer() { stuckTimer = 0.0f; }
+
+    /**
+     * @brief Obtiene la velocidad actual del NPC (magnitud)
+     */
+    float getSpeed() const { return car ? car->getSpeed() : 0.0f; }
 
     /**
      * @brief Actualiza la posición del NPC siguiendo una ruta

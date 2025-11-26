@@ -7,12 +7,13 @@
 
 NPCTraffic::NPCTraffic(b2WorldId world, uint8_t carType_, b2Vec2 position):
         carType(carType_), car(nullptr), currentDirection(rand() % 4), stuckTimer(0.0f),
-        collisionCount(0), isParked(false) {
+        collisionCount(0), isParked(false), lastPosition(position), 
+        directionChangeTimer(0.0f), currentMovementDir(Direction::FORWARD) {
     // Obtener stats válidos según el tipo de auto
     std::vector<std::string> carNames = CarStatsDatabase::getAllCarNames();
     std::string selectedCar = carNames[carType_ % carNames.size()];
     CarStats stats = CarStatsDatabase::getCarStats(selectedCar);
-    car = new Car(world, stats, position, b2MakeRot(0));
+    car = new NPCCar(world, stats, position, b2MakeRot(0));
 }
 
 NPCTraffic::~NPCTraffic() {
@@ -23,17 +24,45 @@ void NPCTraffic::updatePhysics(float deltaTime, const std::vector<RoutePoint>* r
     if (isDestroyed()) {
         return;
     }
+    
     // Si está estacionado, no moverse
     if (isParked) {
         if (car) {
-            car->updatePhysics(CarInput{false, true, Direction::FORWARD});
+            car->updateNPCPhysics(0.0f, Direction::FORWARD);  // Parado
         }
         return;
     }
-    // Movimiento NPC: delegar a Car
-    if (car) {
-        car->updatePhysics(CarInput{true, false, Direction::FORWARD});
+    
+    if (!car) return;
+    
+    // ===== VELOCIDAD CONSTANTE Y SIMPLE =====
+    // Todos los NPCs avanzan a 0.5 (50% de velocidad máxima)
+    float cruiseSpeed = 0.5f;
+    
+    // ===== DECIDIR SI GIRAR O CONTINUAR RECTO =====
+    directionChangeTimer += deltaTime;
+    
+    // Cada 4-8 segundos, decidir si girar o continuar
+    if (directionChangeTimer >= MIN_TIME_BETWEEN_TURNS) {
+        // 80% probabilidad de continuar recto, 20% de girar
+        int randomChoice = rand() % 100;
+        
+        if (randomChoice < 20) {
+            // Girar: 50% izquierda, 50% derecha
+            currentMovementDir = (rand() % 2 == 0) ? Direction::LEFT : Direction::RIGHT;
+        } else {
+            // Continuar recto
+            currentMovementDir = Direction::FORWARD;
+        }
+        
+        // Resetear timer con variación (4-8 segundos)
+        directionChangeTimer = 0.0f;
+        MIN_TIME_BETWEEN_TURNS = 4.0f + (rand() % 40) / 10.0f;
     }
+    
+    // ===== APLICAR MOVIMIENTO SIMPLE =====
+    // Siempre avanzar a velocidad constante, cambiar dirección según timer o colisión
+    car->updateNPCPhysics(cruiseSpeed, currentMovementDir);
 }
 
 b2Vec2 NPCTraffic::getPosition() const {
@@ -53,33 +82,21 @@ void NPCTraffic::onCollision(Collidable* other, float approachSpeed, float delta
     float damage = std::max(0.0f, (approachSpeed - 2.0f) * 10.0f);
     takeDamage(damage);
 
-    // ===== SISTEMA DE CONTEO DE COLISIONES =====
-    // Incrementar contador total de colisiones recientes
-    totalCollisionsRecent++;
-    collisionResetTimer = 0.0f;  // Resetear timer cuando hay colisión
-
-    // Si hay colisiones frecuentes, DETENER al auto y cambiar dirección
-    if (totalCollisionsRecent > 3) {
-        // Detener completamente usando la clase Car
-        if (car) {
-            car->updatePhysics(CarInput{false, true, Direction::FORWARD});
+    // Rotar instantáneamente al colisionar
+    // Elegir dirección aleatoria (izquierda o derecha) para evitar obstáculo
+    Direction evasionDirection = (rand() % 2 == 0) ? Direction::LEFT : Direction::RIGHT;
+    
+    if (car) {
+        NPCCar* npcCar = dynamic_cast<NPCCar*>(car);
+        if (npcCar) {
+            npcCar->rotateBodyToDirection(evasionDirection);
         }
-        
-        // Cambiar dirección aleatoriamente
-        currentDirection = rand() % 4;
-        totalCollisionsRecent = 0;
-        
-        std::cout << "[NPC] Demasiadas colisiones, cambiando dirección" << std::endl;
     }
-
-    // Si supera el máximo, marcar para respawn
-    if (totalCollisionsRecent > MAX_COLLISIONS_BEFORE_RESPAWN) {
-        // El NPC necesita respawn - la carrera lo detectará y lo hará
-        std::cout << "[NPC] NPC en posición (" << getPosition().x << ", " 
-                  << getPosition().y << ") requiere respawn (colisiones: " 
-                  << totalCollisionsRecent << ")" << std::endl;
-        totalCollisionsRecent = 0;  // Resetear contador
-    }
+    
+    // Actualizar el estado interno también
+    currentMovementDir = evasionDirection;
+    totalCollisionsRecent = 0;  // Reset después de aplicar rotación
+    collisionResetTimer = 0.0f;
 }
 
 b2Rot NPCTraffic::getRotation(const b2Vec2& contactNormal) const {

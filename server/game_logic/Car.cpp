@@ -169,6 +169,11 @@ b2Vec2 Car::getPosition() const { return b2Body_GetPosition(body); }
 
 b2Vec2 Car::getLinearVelocity() const { return b2Body_GetLinearVelocity(body); }
 
+float Car::getSpeed() const {
+    b2Vec2 velocity = b2Body_GetLinearVelocity(body);
+    return std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+}
+
 b2Rot Car::getRotation() const { return b2Body_GetRotation(body); }
 
 float Car::getCurrentHealth() const { return current_health; }

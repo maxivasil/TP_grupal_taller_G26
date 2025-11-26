@@ -1,5 +1,6 @@
 add_library(server_game_logic
     Car.h
+    NPCCar.h
     PhysicsEngine.h
     WorldContactListener.h
     StaticObject.h
@@ -16,6 +17,7 @@ add_library(server_game_logic
     NPCTraffic.h
 
     Car.cpp
+    NPCCar.cpp
     PhysicsEngine.cpp
     WorldContactListener.cpp
     StaticObject.cpp

@@ -17,8 +17,10 @@ struct CarInput {
 };
 
 class Car: public Collidable {
-private:
+protected:
     b2BodyId body;
+
+private:
     CarStats stats;
     CarUpgrades upgrades;  // Acumulación de mejoras aplicadas
     float current_health;
@@ -34,14 +36,16 @@ private:
 
     void handleBraking(bool braking, b2Vec2 velocity);
 
-    void handleTurning(Direction turn_direction, float speed);
-
     void verifyMaxSpeed(b2Vec2 velocity, float speed);
 
     float getImpactForce(const Collidable* other, float approachSpeed, float deltaTime);
 
     float getImpactAngle(const Collidable* other, const b2Vec2& contactNormal);
 
+protected:
+    void handleTurning(Direction turn_direction, float speed);
+
+public:
     /**
      * @brief Obtiene la estadística de velocidad máxima incluyendo upgrades.
      * @return Velocidad máxima actual del auto (stats base + upgrades)
@@ -65,8 +69,6 @@ private:
      * @return Salud máxima actual del auto (stats base + upgrades)
      */
     float getMaxHealth() const;
-
-public:
     Car(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation);
     ~Car() override;
 
@@ -81,6 +83,12 @@ public:
     b2Vec2 getPosition() const;
 
     b2Vec2 getLinearVelocity() const;
+
+    /**
+     * @brief Obtiene la magnitud de la velocidad actual (0 si está detenido)
+     * @return Velocidad escalar en unidades/segundo
+     */
+    float getSpeed() const;
 
     b2Rot getRotation() const;
 

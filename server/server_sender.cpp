@@ -17,9 +17,9 @@ void ThreadSender::run() {
                 protocol.send_message(data);
             }
         }
-    } catch (const ClosedQueue& e) {
-        return;
     } catch (const LibError& e) {
+        return;
+    } catch (const ClosedQueue& e) {
         return;
     } catch (const std::exception& e) {
         std::cerr << "ThreadSender: exception occurred.\n" << e.what() << std::endl;

@@ -18,9 +18,11 @@ public:
     LobbiesMonitor();
     ~LobbiesMonitor();
 
-    Queue<ClientToServerCmd_Server*>* createLobby(const std::string& lobbyId, ServerClientHandler* client);
+    Queue<ClientToServerCmd_Server*>* createLobby(const std::string& lobbyId,
+                                                  std::shared_ptr<ServerClientHandler> client);
 
-    Queue<ClientToServerCmd_Server*>* joinLobby(std::string lobbyId, ServerClientHandler* client);
+    Queue<ClientToServerCmd_Server*>* joinLobby(std::string lobbyId,
+                                                std::shared_ptr<ServerClientHandler> client);
 
     void closeAllLobbies();
 };

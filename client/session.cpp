@@ -7,7 +7,6 @@
 ClientSession::ClientSession(const char* hostname, const char* servname,
                              Queue<ServerToClientCmd_Client*>& recv_queue):
         protocol(hostname, servname),
-        parser(),
         registered_commands(),
         send_queue(UINT32_MAX),
         receive_queue(recv_queue),

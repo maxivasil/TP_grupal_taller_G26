@@ -13,7 +13,7 @@ struct Lobby {
     std::string lobbyId;
     ServerProtectedClients connectedClients;
     LobbyStatus status;
-    std::shared_ptr<Queue<ClientToServerCmd_Server*>> gameloop_queue;
+    Queue<ClientToServerCmd_Server*> gameloop_queue;
     ServerGameLoop gameloop;
     // Map to store selected car for each client: client_id -> car_name
     std::unordered_map<int, std::string> clientCarSelection;
@@ -22,8 +22,8 @@ struct Lobby {
     explicit Lobby(std::string lobbyId):
             lobbyId(lobbyId),
             status(LobbyStatus::WAITING_PLAYERS),
-            gameloop_queue(std::make_shared<Queue<ClientToServerCmd_Server*>>(UINT32_MAX)),
-            gameloop(*gameloop_queue, connectedClients, status, this) {}
+            gameloop_queue(UINT32_MAX),
+            gameloop(gameloop_queue, connectedClients, status, this) {}
     ~Lobby() {}
     void lobbyStart() { gameloop.start(); }
 };

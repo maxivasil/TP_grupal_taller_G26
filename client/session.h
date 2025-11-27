@@ -18,7 +18,6 @@
 
 #include "client_receiver.h"
 #include "client_sender.h"
-#include "parser.h"
 
 class ClientSession: public Thread {
 public:
@@ -38,7 +37,6 @@ public:
 
 private:
     Protocol protocol;
-    ClientParser parser;
     ClientRegisteredCommands registered_commands;
     Queue<ClientToServerCmd_Client*> send_queue;
     Queue<ServerToClientCmd_Client*>& receive_queue;

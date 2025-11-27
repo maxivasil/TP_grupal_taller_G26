@@ -4,7 +4,6 @@ add_subdirectory(audio)
 
 add_library(client_core
     # .cpp files
-    parser.cpp
     client_receiver.cpp
     client_sender.cpp
     session.cpp
@@ -22,7 +21,6 @@ add_library(client_core
     UI/resources.qrc
 
     # .h files
-    parser.h
     client_receiver.h
     client_sender.h
     session.h

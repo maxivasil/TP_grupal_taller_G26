@@ -20,7 +20,7 @@ NPCTraffic::~NPCTraffic() {
     if (car) delete car;
 }
 
-void NPCTraffic::updatePhysics(float deltaTime, const std::vector<RoutePoint>* route) {
+void NPCTraffic::updatePhysics(float deltaTime, const void* route) {
     if (isDestroyed()) {
         return;
     }

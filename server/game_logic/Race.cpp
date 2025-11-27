@@ -10,8 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "npc_route_from_track.h"
-
 #define VELOCITY_ITERATIONS 4
 
 void Race::initCheckpoints(b2WorldId world) {
@@ -248,14 +246,8 @@ void Race::updatePhysics(float dt) {
     // Actualizar física de los NPCs
     for (auto& npc: npcs) {
         if (!npc->isDestroyed()) {
-            // Pasar la ruta correcta dinámicamente (evita problemas con punteros inválidos)
-            // El NPC tiene un índice de ruta que usamos para acceder a currentRoutes
-            if (!currentRoutes.empty()) {
-                // Esto garantiza que siempre accedemos al vector actual, no a un puntero antiguo
-                npc->updatePhysics(dt, nullptr);  // Usa la ruta almacenada internamente
-            } else {
-                npc->updatePhysics(dt, nullptr);
-            }
+            // Actualizar física del NPC
+            npc->updatePhysics(dt, nullptr);
 
             // ===== SISTEMA DE RESPAWN POR ATORAMIENTO (DESHABILITADO) =====
             // El respawn agresivo causa que NPCs desaparezcan del mapa visible.

@@ -7,7 +7,6 @@
 #include <box2d/box2d.h>
 
 #include "Collidable.h"
-#include "npc_routes_from_checkpoints.h"
 #include "NPCCar.h"
 
 /**
@@ -26,7 +25,6 @@ private:
     int currentRoutePoint = 0;   // Índice del waypoint actual
     float routeProgress = 0.0f;  // Progreso hacia el siguiente waypoint (0-1)
     float targetSpeed = 3.0f;    // Velocidad objetivo según la ruta
-    const std::vector<RoutePoint>* assignedRoute = nullptr;  // Ruta asignada
     int routeIndex = -1;  // Índice de la ruta en la lista de rutas (para acceso dinámico)
 
     // Movimiento aleatorio inteligente (basado en esquinas/colisiones)
@@ -67,10 +65,10 @@ public:
     ~NPCTraffic() override;
 
     /**
-     * @brief Asigna una ruta al NPC
+     * @brief Asigna una ruta al NPC (deprecado - usar checkpoint system)
      * @param route Puntos de la ruta a seguir
      */
-    void setRoute(const std::vector<RoutePoint>* route) { assignedRoute = route; }
+    void setRoute(const void* route) { /* deprecated */ }
 
     /**
      * @brief Establece el índice de ruta para acceso dinámico
@@ -116,9 +114,9 @@ public:
     /**
      * @brief Actualiza la posición del NPC siguiendo una ruta
      * @param deltaTime Tiempo transcurrido en segundos
-     * @param route Puntos de la ruta a seguir (puede ser nullptr si ya hay ruta asignada)
+     * @param route Puntos de la ruta a seguir (deprecado)
      */
-    void updatePhysics(float deltaTime, const std::vector<RoutePoint>* route);
+    void updatePhysics(float deltaTime, const void* route = nullptr);
 
     /**
      * @brief Obtiene la posición actual del NPC

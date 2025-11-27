@@ -30,5 +30,8 @@ add_library(server_game_logic
     NPCTraffic.cpp
 )
 
-target_link_libraries(server_game_logic PUBLIC box2d::box2d yaml-cpp)
+# Agregar subdirectorio de NPC checkpoint spawning
+add_subdirectory(npc_checkpoint_spawning)
+
+target_link_libraries(server_game_logic PUBLIC box2d::box2d yaml-cpp npc_checkpoint_spawning)
 

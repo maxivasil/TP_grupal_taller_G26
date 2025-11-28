@@ -144,7 +144,7 @@ void ServerGameLoop::run() {
             }
 
             auto startingRaceCmd = std::make_shared<ServerToClientStartingRace_Server>(
-                    raceInfo.city, raceInfo.trackFile);
+                    raceInfo.city, raceInfo.trackFile, raceNumber == racesInfo.size() - 1);
             protected_clients.broadcast(startingRaceCmd);
 
             try {

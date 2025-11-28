@@ -143,6 +143,7 @@ public:
     void setClientId(uint32_t id);
     void update_snapshots(const std::vector<CarSnapshot>& snapshots, float elapsedTime);
     void setRaceResults(const std::vector<ClientPlayerResult>& results, bool isFinished);
+    void setIsLastRace(bool lastRace) { isLastRace = lastRace; }
     void setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res, bool lastRace);
     void resetForNextRace(uint8_t nextCityId, const std::string& trackName);
 };

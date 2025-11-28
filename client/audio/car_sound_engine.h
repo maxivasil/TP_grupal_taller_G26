@@ -28,6 +28,7 @@ private:
     Mix_Chunk* raceFinishSound;      // Sound when race finishes (victory)
     Mix_Chunk* gameOverSound;        // Sound when player loses
     Mix_Chunk* cheatActivatedSound;  // Sound when cheat is activated
+    Mix_Chunk* championshipWinSound; // Sound when championship is won
     Mix_Music* musicTrack;
 
     int engineStartChannel = -1;
@@ -78,6 +79,7 @@ public:
     // Contextual sounds with distance modulation
     void playRaceFinish();      // When player finishes race (victory)
     void playGameOver();        // When player loses
+    void playChampionshipWin();  // When player wins championship
     void playCheatActivated();  // When cheat is activated
 
     // Audio state control (3-state: Full Sound -> Music Only -> Muted -> Full Sound)

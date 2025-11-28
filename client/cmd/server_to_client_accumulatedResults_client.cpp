@@ -7,6 +7,8 @@ ServerToClientAccumulatedResults_Client::ServerToClientAccumulatedResults_Client
         results(res), isLastRace(isLastRace) {}
 
 void ServerToClientAccumulatedResults_Client::execute(ClientContext& ctx) {
+    // Set isLastRace FIRST, before any other logic
+    ctx.game->setIsLastRace(isLastRace);
     ctx.game->setAccumulatedResults(results, isLastRace);
 }
 

@@ -757,7 +757,12 @@ void Game::setWon() {
     endGameMessage = "¡GANASTE!";
     endGameTime = SDL_GetTicks();
     carSoundEngine.stopAll();  // Detener todos los sonidos de movimiento
-    carSoundEngine.playRaceFinish();
+    
+    if (isLastRace) {
+        carSoundEngine.playChampionshipWin();
+    } else {
+        carSoundEngine.playRaceFinish();
+    }
     std::cout << "¡VICTORIA! Presiona ESC para volver al lobby\n";
 }
 

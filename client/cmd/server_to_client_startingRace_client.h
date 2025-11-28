@@ -13,9 +13,10 @@ class ServerToClientStartingRace_Client: public ServerToClientCmd_Client {
 private:
     uint8_t cityId;
     std::string trackFile;
+    bool isLastRace;
 
 public:
-    ServerToClientStartingRace_Client(uint8_t cityId, std::string& trackFile);
+    ServerToClientStartingRace_Client(uint8_t cityId, std::string& trackFile, bool isLastRace = false);
 
     virtual void execute(ClientContext& ctx) override;
 

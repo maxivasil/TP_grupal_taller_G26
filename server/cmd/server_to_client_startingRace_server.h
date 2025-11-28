@@ -13,9 +13,10 @@ class ServerToClientStartingRace_Server: public ServerToClientCmd_Server {
 private:
     uint8_t cityId;
     std::string trackFile;
+    bool isLastRace;
 
 public:
-    ServerToClientStartingRace_Server(uint8_t cityId, std::string& trackFile);
+    ServerToClientStartingRace_Server(uint8_t cityId, std::string& trackFile, bool isLastRace = false);
 
     std::vector<uint8_t> to_bytes() const override;
 

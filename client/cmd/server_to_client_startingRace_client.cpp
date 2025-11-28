@@ -6,11 +6,15 @@
 #include "../client_game.h"
 
 ServerToClientStartingRace_Client::ServerToClientStartingRace_Client(uint8_t cityId,
-                                                                     std::string& trackFile):
-        cityId(cityId), trackFile(trackFile) {}
+                                                                     std::string& trackFile,
+                                                                     bool isLastRace):
+        cityId(cityId), trackFile(trackFile), isLastRace(isLastRace) {}
 
 void ServerToClientStartingRace_Client::execute(ClientContext& ctx) {
-    ctx.game->resetForNextRace(cityId, trackFile);
+    if (ctx.game) {
+        ctx.game->resetForNextRace(cityId, trackFile);
+        ctx.game->setIsLastRace(isLastRace);
+    }
 }
 
 ServerToClientStartingRace_Client ServerToClientStartingRace_Client::from_bytes(
@@ -24,14 +28,23 @@ ServerToClientStartingRace_Client ServerToClientStartingRace_Client::from_bytes(
     uint8_t header = data[0];
     if (header != STARTING_RACE_COMMAND)
         throw std::runtime_error("Invalid header for Race Starting");
+    
     uint8_t cityId;
     size_t offset = 1;
     BufferUtils::read_uint8(data, offset, cityId);
-    std::string trackFile;
-    if (data.size() > 2) {
-        trackFile = std::string(data.begin() + 2, data.end());
+    
+    uint8_t isLastRaceFlag = 0;
+    bool isLastRace = false;
+    if (data.size() > offset) {
+        BufferUtils::read_uint8(data, offset, isLastRaceFlag);
+        isLastRace = (isLastRaceFlag != 0);
     }
-    return ServerToClientStartingRace_Client(cityId, trackFile);
+    
+    std::string trackFile;
+    if (data.size() > offset) {
+        trackFile = std::string(data.begin() + offset, data.end());
+    }
+    return ServerToClientStartingRace_Client(cityId, trackFile, isLastRace);
 }
 
 uint8_t ServerToClientStartingRace_Client::get_only_for_test_cityId() const { return cityId; }

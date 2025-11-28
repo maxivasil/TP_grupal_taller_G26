@@ -72,6 +72,7 @@ void CarSoundEngine::initAudio() {
     raceFinishSound = loadSound(basePath + "victory_game.mp3");
     gameOverSound = loadSound(basePath + "game_over.mp3");
     cheatActivatedSound = loadSound(basePath + "cheat_activated.mp3");
+    championshipWinSound = loadSound(basePath + "championship_win.mp3");
     musicTrack = Mix_LoadMUS((basePath + "music_theme.mp3").c_str());
 
     playMusicTrack();
@@ -246,6 +247,27 @@ void CarSoundEngine::playGameOver() {
     }
 }
 
+void CarSoundEngine::playChampionshipWin() {
+    if (!audioInitialized || !championshipWinSound) {
+        return;
+    }
+
+    if (contextSoundChannel != -1) {
+        activeEffectChannels.erase(contextSoundChannel);
+        Mix_HaltChannel(contextSoundChannel);
+    }
+
+    int channel = Mix_PlayChannel(-1, championshipWinSound, 0);
+    if (channel == -1) {
+        std::cerr << "[CarSoundEngine] Failed to play championship win sound: " << Mix_GetError()
+                  << std::endl;
+    } else {
+        contextSoundChannel = channel;
+        activeEffectChannels.insert(channel);
+        Mix_Volume(channel, MIX_MAX_VOLUME);  // Full volume
+    }
+}
+
 void CarSoundEngine::playCheatActivated() {
     if (!audioInitialized || !cheatActivatedSound) {
         return;
@@ -316,8 +338,18 @@ void CarSoundEngine::stopBrake() {
 void CarSoundEngine::stopAll() {
     if (!audioInitialized)
         return;
+    
+    // Stop only effect channels, preserve music
+    stopAcceleration();
+    stopBrake();
+    stopTurn();
+    
+    if (contextSoundChannel != -1 && Mix_Playing(contextSoundChannel)) {
+        Mix_HaltChannel(contextSoundChannel);
+        contextSoundChannel = -1;
+    }
+    
     activeEffectChannels.clear();
-    Mix_HaltChannel(-1);
 }
 
 void CarSoundEngine::toggleAudioState() {

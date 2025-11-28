@@ -182,27 +182,7 @@ bool Game::handleEvents() {
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 if (event.button.button == SDL_BUTTON_LEFT) {
-                    // Check if mute button was clicked (only during PLAYING state)
-                    if (gameState == GameState::PLAYING) {
-                        if (hud.isMuteButtonClicked(event.button.x, event.button.y)) {
-                            carSoundEngine.toggleAudioState();
-                            hud.setAudioState(carSoundEngine.getAudioState());
-
-                            std::string stateStr;
-                            switch (carSoundEngine.getAudioState()) {
-                                case AudioState::FULL_SOUND:
-                                    stateStr = "FULL SOUND";
-                                    break;
-                                case AudioState::MUSIC_ONLY:
-                                    stateStr = "MUSIC ONLY";
-                                    break;
-                                case AudioState::MUTED:
-                                    stateStr = "MUTED";
-                                    break;
-                            }
-                            std::cout << "[GAME] Audio button clicked: " << stateStr << std::endl;
-                        }
-                    }
+                    // Mute button removed
                 }
                 break;
             case SDL_KEYDOWN:

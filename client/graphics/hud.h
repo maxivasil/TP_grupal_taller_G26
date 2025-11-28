@@ -23,10 +23,6 @@ private:
     bool fontLoaded = false;
     std::string loadedFontPath;
     float hudScale = 1.0f;
-    AudioState audioState = AudioState::FULL_SOUND;  // Track audio state
-
-    // Mute button properties
-    SDL_Rect muteButtonRect{0, 0, 120, 40};  // Position and size will be set on resize
 
 public:
     explicit HUD(int windowWidth, int windowHeight);
@@ -46,14 +42,6 @@ public:
 
     // Acceso público para obtener fontPath desde el exterior
     std::string fontPath;
-
-    // Audio state tracking
-    void setAudioState(AudioState state) { audioState = state; }
-    AudioState getAudioState() const { return audioState; }
-
-    // Check if mute button was clicked
-    bool isMuteButtonClicked(int mouseX, int mouseY) const;
-    const SDL_Rect& getMuteButtonRect() const { return muteButtonRect; }
 };
 
 #endif

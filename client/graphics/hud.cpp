@@ -105,45 +105,6 @@ void HUD::render(SDL2pp::Renderer& renderer, const HUDData& data) {
         renderer.Copy(timeTexture, SDL2pp::NullOpt,
                       SDL2pp::Rect(x, y, timeSurface.GetWidth(), timeSurface.GetHeight()));
 
-        // ========== RENDER MUTE BUTTON (BOTTOM-RIGHT CORNER WITH TEXT) ==========
-        int buttonX = windowWidth - muteButtonRect.w - padding;
-        int buttonY = windowHeight - muteButtonRect.h - padding;
-        muteButtonRect.x = buttonX;
-        muteButtonRect.y = buttonY;
-
-        // Button background color based on audio state
-        if (audioState == AudioState::MUTED) {
-            renderer.SetDrawColor(200, 50, 50, 200);  // Red: muted
-        } else if (audioState == AudioState::MUSIC_ONLY) {
-            renderer.SetDrawColor(100, 150, 200, 200);  // Blue: effects only (no music)
-        } else {
-            renderer.SetDrawColor(50, 150, 50, 200);  // Green: full sound
-        }
-        renderer.FillRect(muteButtonRect);
-
-        // Button border
-        renderer.SetDrawColor(255, 255, 255, 150);
-        renderer.DrawRect(muteButtonRect);
-
-        // Button text based on audio state
-        std::string buttonText;
-        if (audioState == AudioState::MUTED) {
-            buttonText = "MUTED";  // Complete silence
-        } else if (audioState == AudioState::MUSIC_ONLY) {
-            buttonText = "EFFECTS";  // Effects only (no music)
-        } else {
-            buttonText = "SOUND";  // Full sound
-        }
-
-        SDL2pp::Surface buttonSurface =
-                font->RenderText_Solid(buttonText, SDL_Color{255, 255, 255, 255});
-        SDL2pp::Texture buttonTexture(renderer, buttonSurface);
-        int textX = buttonX + (muteButtonRect.w - buttonSurface.GetWidth()) / 2;
-        int textY = buttonY + (muteButtonRect.h - buttonSurface.GetHeight()) / 2;
-        renderer.Copy(
-                buttonTexture, SDL2pp::NullOpt,
-                SDL2pp::Rect(textX, textY, buttonSurface.GetWidth(), buttonSurface.GetHeight()));
-
     } catch (const std::exception& e) {
         std::cerr << "HUD: Error rendering text: " << e.what() << std::endl;
     }
@@ -156,11 +117,5 @@ void HUD::onWindowResize(int w, int h, float scale) {
     hudScale = scale;
 
     // Update button size based on scale
-    muteButtonRect.w = int(120 * scale);
-    muteButtonRect.h = int(40 * scale);
-}
-
-bool HUD::isMuteButtonClicked(int mouseX, int mouseY) const {
-    return mouseX >= muteButtonRect.x && mouseX <= muteButtonRect.x + muteButtonRect.w &&
-           mouseY >= muteButtonRect.y && mouseY <= muteButtonRect.y + muteButtonRect.h;
+    // Removed mute button scaling
 }

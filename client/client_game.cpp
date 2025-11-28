@@ -376,13 +376,6 @@ bool Game::update(ServerToClientSnapshot_Client cmd_snapshot) {
         }
     };
 
-    // Get player position for distance calculations
-    float playerWorldX = 0.0f, playerWorldY = 0.0f;
-    if (it != snapshots.end()) {
-        playerWorldX = it->pos_x * PX_PER_METER_X;
-        playerWorldY = it->pos_y * PX_PER_METER_Y;
-    }
-
     for (const auto& car: snapshots) {
         float worldX = car.pos_x * PX_PER_METER_X;
         float worldY = car.pos_y * PX_PER_METER_Y;
@@ -404,28 +397,6 @@ bool Game::update(ServerToClientSnapshot_Client cmd_snapshot) {
 
         if (car.id == client_id) {
             camera.follow(worldX, worldY);
-        } else {
-            float distToOtherCar = std::sqrt((worldX - playerWorldX) * (worldX - playerWorldX) +
-                                             (worldY - playerWorldY) * (worldY - playerWorldY));
-
-            float prevHealth = otherPlayersLastHealth[car.id];
-            if (prevHealth == 0.0f && car.health > 0.0f) {
-                prevHealth = car.health;  // First time
-            }
-
-            if (car.health < prevHealth && prevHealth > 0.0f) {
-                float healthDamage = prevHealth - car.health;
-                carSoundEngine.playOtherCarCollision(distToOtherCar, healthDamage);
-                std::cout << "[GAME] Other car (ID: " << car.id << ") collided at distance "
-                          << distToOtherCar << std::endl;
-            }
-            otherPlayersLastHealth[car.id] = car.health;
-
-            float prevSpeed = otherPlayersLastSpeed[car.id];
-            if (car.speed < prevSpeed && prevSpeed > 5.0f && car.speed < 2.0f) {
-                carSoundEngine.playDistantBrake(distToOtherCar);
-            }
-            otherPlayersLastSpeed[car.id] = car.speed;
         }
 
         rc.onBridge = car.onBridge;
@@ -1101,8 +1072,6 @@ void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
     currentCheckpoint = 0;
     playerDestroyed = false;
     previousHealthState.clear();
-    otherPlayersLastHealth.clear();
-    otherPlayersLastSpeed.clear();
     lastSpeedUpdateTime = 0;
     lastPlayerX = 0.0f;
     lastPlayerY = 0.0f;

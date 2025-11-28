@@ -27,6 +27,7 @@ void ServerProtectedClients::stop_all_and_delete() {
         client->stop();
         client->join();
     }
+    clients.clear();
 }
 
 void ServerProtectedClients::stop_and_delete_dead() {

@@ -15,6 +15,7 @@ void Acceptor::run() {
             auto c = std::make_shared<ServerClientHandler>(next_client_id++, std::move(peer),
                                                            lobbiesMonitor);
             protected_clients.add_client(c);
+            c->setSelfPtr(c);
             c->start();
             reap();
         }

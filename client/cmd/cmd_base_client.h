@@ -7,8 +7,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../parser.h"
-
 struct ClientContext {
     class Game* game;
     QMainWindow* mainwindow;

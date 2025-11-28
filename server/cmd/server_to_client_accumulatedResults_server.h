@@ -19,9 +19,11 @@ struct AccumulatedResultDTO {
 class ServerToClientAccumulatedResults_Server: public ServerToClientCmd_Server {
 private:
     std::vector<AccumulatedResultDTO> results;
+    bool isLastRace;
 
 public:
-    explicit ServerToClientAccumulatedResults_Server(std::vector<AccumulatedResultDTO> results);
+    ServerToClientAccumulatedResults_Server(std::vector<AccumulatedResultDTO> results,
+                                            bool isLastRace);
 
     std::vector<uint8_t> to_bytes() const override;
 

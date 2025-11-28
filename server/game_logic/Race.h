@@ -15,7 +15,8 @@
 #include "BridgeSensorManager.h"
 #include "CheckpointManager.h"
 #include "City.h"
-#include "NPCTraffic.h"
+#include "IntersectionManager.h"
+#include "NPCCar.h"
 #include "PhysicsEngine.h"
 #include "Player.h"
 #include "StaticObject.h"
@@ -35,10 +36,12 @@ private:
     Track track;
     CheckpointManager checkpointManager;
     BridgeSensorManager bridgeSensorManager;
+    IntersectionManager intersectionManager;
     std::list<StaticObject> staticObjects;
     std::vector<std::unique_ptr<NPCTraffic>> npcs;  // NPCs con física
     PhysicsEngine physics;
     std::vector<std::unique_ptr<Player>>& players;
+    std::vector<std::unique_ptr<NPCCar>> npcs;
 
     std::chrono::steady_clock::time_point startTime;
     std::unordered_map<int, float> playerFinishTimes;
@@ -48,9 +51,9 @@ private:
     void initCheckpoints(b2WorldId world);
     void initStaticObjects(b2WorldId world);
     void initBridgeSensors(b2WorldId world);
+    void initIntersections(b2WorldId world);
     void initCars(b2WorldId world);
-    void initNPCs(b2WorldId world);           // Initialize NPC traffic
-    void initNPCsFromTrack(b2WorldId world);  // Track-based NPC system
+    void initNPCs(b2WorldId world);  // Initialize NPC traffic
 
 public:
     Race(CityName cityName, std::string& trackFile, std::vector<std::unique_ptr<Player>>& players);

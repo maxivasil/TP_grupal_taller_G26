@@ -41,6 +41,10 @@ void ServerClientHandler::run() {
 
         // cppcheck-suppress knownConditionTrueFalse
         if (!inLobby) {
+            sender.stop();
+            send_queue.close();
+            sender.join();
+            protocol.close_connection();
             return;
         }
         std::cout << "[SERVER] Assigned client ID " << client_id << " to connected client.\n";
@@ -50,11 +54,10 @@ void ServerClientHandler::run() {
         receiver->start();
 
         receiver->join();
-        sender.join();
         protocol.close_connection();
+        sender.join();
     } catch (const std::exception& e) {
         if (!should_keep_running()) {
-            stop();
             return;
         }
         std::cerr << "Unexpected exception in ClientHandler" << e.what() << std::endl;
@@ -62,16 +65,16 @@ void ServerClientHandler::run() {
 }
 
 void ServerClientHandler::stop() {
+    resetSelfPtr();
     Thread::stop();
-    if (receiver && receiver->is_alive()) {
+    if (receiver) {
         receiver->stop();
-        receiver->join();
     }
     if (!protocol.is_connection_closed()) {
         protocol.close_connection();
     }
-    send_queue.close();
     sender.stop();
+    send_queue.close();
     sender.join();
 }
 
@@ -85,14 +88,18 @@ void ServerClientHandler::send_message(std::shared_ptr<ServerToClientCmd_Server>
 }
 
 Queue<ClientToServerCmd_Server*>* ServerClientHandler::createLobby(const std::string& lobbyId) {
-    return lobbiesMonitor.createLobby(lobbyId, this);
+    return lobbiesMonitor.createLobby(lobbyId, self_ptr);
 }
 
 Queue<ClientToServerCmd_Server*>* ServerClientHandler::joinLobby(const std::string& lobbyId) {
-    return lobbiesMonitor.joinLobby(lobbyId, this);
+    return lobbiesMonitor.joinLobby(lobbyId, self_ptr);
 }
 
 void ServerClientHandler::initReceiver(Queue<ClientToServerCmd_Server*>& gameloop_queue) {
     receiver = std::make_unique<ThreadReceiver>(client_id, protocol, gameloop_queue,
                                                 registered_commands.get_recv_registry());
 }
+
+void ServerClientHandler::setSelfPtr(std::shared_ptr<ServerClientHandler> self) { self_ptr = self; }
+
+void ServerClientHandler::resetSelfPtr() { self_ptr.reset(); }

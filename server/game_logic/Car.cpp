@@ -34,7 +34,8 @@ void Car::setShape(b2BodyId body) {
     shape_def.filter.categoryBits = CollisionCategories::CategoryGroundCar;
     shape_def.filter.maskBits =
             CollisionCategories::CategoryGroundObj | CollisionCategories::CategoryGroundCar |
-            CollisionCategories::CategoryCheckpoint | CollisionCategories::CategoryBridgeSensor;
+            CollisionCategories::CategoryCheckpoint | CollisionCategories::CategoryBridgeSensor |
+            CollisionCategories::CategoryIntersection;
     b2ShapeId shape = b2CreatePolygonShape(body, &shape_def, &polygon);
     b2Shape_EnableContactEvents(shape, true);
     b2Body_ApplyMassFromShapes(body);
@@ -236,13 +237,15 @@ void Car::setLevel(bool onBridge) {
             filter.maskBits = CollisionCategories::CategoryBridgeObj |
                               CollisionCategories::CategoryBridgeCar |
                               CollisionCategories::CategoryCheckpoint |
-                              CollisionCategories::CategoryBridgeSensor;
+                              CollisionCategories::CategoryBridgeSensor |
+                              CollisionCategories::CategoryIntersection;
         } else {
             filter.categoryBits = CollisionCategories::CategoryGroundCar;
             filter.maskBits = CollisionCategories::CategoryGroundObj |
                               CollisionCategories::CategoryGroundCar |
                               CollisionCategories::CategoryCheckpoint |
-                              CollisionCategories::CategoryBridgeSensor;
+                              CollisionCategories::CategoryBridgeSensor |
+                              CollisionCategories::CategoryIntersection;
         }
         b2Shape_SetFilter(shapes[0], filter);
     }
@@ -275,5 +278,7 @@ float Car::getHandling() const { return stats.handling + upgrades.handling_boost
 float Car::getMaxHealth() const { return stats.health_max + upgrades.health_boost; }
 
 void Car::setDestroyed() { current_health = 0.0f; }
+
+void Car::chooseIntersectionDirection(int intersectionId) {}
 
 Car::~Car() {}

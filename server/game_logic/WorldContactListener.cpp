@@ -71,6 +71,9 @@ void WorldContactListener::EndTouch(const b2SensorEndTouchEvent* sensor) {
         case SensorType::BridgeLevel:
             car->setLevel(false);  // Salió del sensor de puente
             break;
+        case SensorType::Intersection:
+            car->chooseIntersectionDirection(data->id);
+            break;
     }
 }
 

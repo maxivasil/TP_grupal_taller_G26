@@ -3,11 +3,11 @@
 #include "../client_game.h"
 
 ServerToClientAccumulatedResults_Client::ServerToClientAccumulatedResults_Client(
-        const std::vector<AccumulatedResultDTO>& res):
-        results(res) {}
+        const std::vector<AccumulatedResultDTO>& res, bool isLastRace):
+        results(res), isLastRace(isLastRace) {}
 
 void ServerToClientAccumulatedResults_Client::execute(ClientContext& ctx) {
-    ctx.game->setAccumulatedResults(results);
+    ctx.game->setAccumulatedResults(results, isLastRace);
 }
 
 ServerToClientAccumulatedResults_Client ServerToClientAccumulatedResults_Client::from_bytes(
@@ -17,6 +17,9 @@ ServerToClientAccumulatedResults_Client ServerToClientAccumulatedResults_Client:
     if (data[offset] != ACCUMULATED_RESULTS_COMMAND)
         throw std::runtime_error("Invalid command type for AccumulatedResults");
     offset += 1;
+
+    uint8_t isLastRace;
+    BufferUtils::read_uint8(data, offset, isLastRace);
 
     uint16_t count;
     BufferUtils::read_uint16(data, offset, count);
@@ -42,10 +45,14 @@ ServerToClientAccumulatedResults_Client ServerToClientAccumulatedResults_Client:
         res.push_back(dto);
     }
 
-    return ServerToClientAccumulatedResults_Client(res);
+    return ServerToClientAccumulatedResults_Client(res, isLastRace == 1);
 }
 
 const std::vector<AccumulatedResultDTO>
         ServerToClientAccumulatedResults_Client::get_only_for_test_results() const {
     return results;
+}
+
+bool ServerToClientAccumulatedResults_Client::get_only_for_test_isLastRace() const {
+    return isLastRace;
 }

@@ -15,8 +15,6 @@
 #include "cmd/client_to_server_move_client.h"
 #include "graphics/track_loader.h"
 
-#include "npc_system.h"
-
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
 #define PX_PER_METER_X (62.0f / 8.9f)
@@ -123,9 +121,6 @@ int Game::start() {
 
             explosion.update(deltaTime);
 
-            // Update NPCs
-            updateNPCs(deltaTime);
-
             // Auto-close upgrades screen after duration
             if (showUpgradesScreen) {
                 Uint32 elapsedMs = SDL_GetTicks() - upgradesScreenStartTime;
@@ -162,7 +157,6 @@ int Game::start() {
 }
 
 bool Game::handleEvents() {
-
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         // Handle upgrades screen input
@@ -382,13 +376,6 @@ bool Game::update(ServerToClientSnapshot_Client cmd_snapshot) {
         }
     };
 
-    // Get player position for distance calculations
-    float playerWorldX = 0.0f, playerWorldY = 0.0f;
-    if (it != snapshots.end()) {
-        playerWorldX = it->pos_x * PX_PER_METER_X;
-        playerWorldY = it->pos_y * PX_PER_METER_Y;
-    }
-
     for (const auto& car: snapshots) {
         float worldX = car.pos_x * PX_PER_METER_X;
         float worldY = car.pos_y * PX_PER_METER_Y;
@@ -410,28 +397,6 @@ bool Game::update(ServerToClientSnapshot_Client cmd_snapshot) {
 
         if (car.id == client_id) {
             camera.follow(worldX, worldY);
-        } else {
-            float distToOtherCar = std::sqrt((worldX - playerWorldX) * (worldX - playerWorldX) +
-                                             (worldY - playerWorldY) * (worldY - playerWorldY));
-
-            float prevHealth = otherPlayersLastHealth[car.id];
-            if (prevHealth == 0.0f && car.health > 0.0f) {
-                prevHealth = car.health;  // First time
-            }
-
-            if (car.health < prevHealth && prevHealth > 0.0f) {
-                float healthDamage = prevHealth - car.health;
-                carSoundEngine.playOtherCarCollision(distToOtherCar, healthDamage);
-                std::cout << "[GAME] Other car (ID: " << car.id << ") collided at distance "
-                          << distToOtherCar << std::endl;
-            }
-            otherPlayersLastHealth[car.id] = car.health;
-
-            float prevSpeed = otherPlayersLastSpeed[car.id];
-            if (car.speed < prevSpeed && prevSpeed > 5.0f && car.speed < 2.0f) {
-                carSoundEngine.playDistantBrake(distToOtherCar);
-            }
-            otherPlayersLastSpeed[car.id] = car.speed;
         }
 
         rc.onBridge = car.onBridge;
@@ -466,9 +431,6 @@ void Game::render() {
             }
         }
     }
-
-    // Render NPCs (traffic)
-    renderNPCs();
 
     auto it = std::find_if(snapshots.begin(), snapshots.end(),
                            [&](const CarSnapshot& car) { return car.id == client_id; });
@@ -1093,8 +1055,9 @@ void Game::renderAccumulatedTable() {
     }
 }
 
-void Game::setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res) {
+void Game::setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res, bool lastRace) {
     accumulatedResults = res;
+    isLastRace = lastRace;
 }
 
 void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
@@ -1109,100 +1072,10 @@ void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
     currentCheckpoint = 0;
     playerDestroyed = false;
     previousHealthState.clear();
-    otherPlayersLastHealth.clear();
-    otherPlayersLastSpeed.clear();
     lastSpeedUpdateTime = 0;
     lastPlayerX = 0.0f;
     lastPlayerY = 0.0f;
     initMinimapAndCheckpoints(trackName);
-
-    // Extraer nombre de ciudad del nombre de track (ej: "track.yaml" -> usar por cityId)
-    // Los nombres de ciudad en npc_routes.h son: "san_andreas", "liberty_city", "vice_city"
-    std::string cityName;
-    if (nextCityId == 0) {
-        cityName = "san_andreas";
-    } else if (nextCityId == 1) {
-        cityName = "liberty_city";
-    } else if (nextCityId == 2) {
-        cityName = "vice_city";
-    } else {
-        cityName = "san_andreas";  // por defecto
-    }
-
-    // Cargar las rutas predefinidas de la ciudad actual
-    currentTrackRoutes = npcRouteManager.getRoutes(cityName);
-    std::cout << "[GAME] Rutas cargadas para ciudad ID " << static_cast<int>(nextCityId) << " ("
-              << cityName << "): " << currentTrackRoutes.size() << " rutas" << std::endl;
-
-    // Calculate map bounds from checkpoints and add margin
-    float minX = 0.0f, maxX = 150.0f;
-    float minY = 0.0f, maxY = 150.0f;
-
-    if (!trackCheckpoints.empty()) {
-        minX = trackCheckpoints[0].x;
-        maxX = trackCheckpoints[0].x;
-        minY = trackCheckpoints[0].y;
-        maxY = trackCheckpoints[0].y;
-
-        for (const auto& checkpoint: trackCheckpoints) {
-            float halfW = checkpoint.width / 2.0f;
-            float halfH = checkpoint.height / 2.0f;
-            minX = std::min(minX, checkpoint.x - halfW);
-            maxX = std::max(maxX, checkpoint.x + halfW);
-            minY = std::min(minY, checkpoint.y - halfH);
-            maxY = std::max(maxY, checkpoint.y + halfH);
-        }
-
-        // Add 20% margin on each side
-        float marginX = (maxX - minX) * 0.2f;
-        float marginY = (maxY - minY) * 0.2f;
-        minX -= marginX;
-        maxX += marginX;
-        minY -= marginY;
-        maxY += marginY;
-    }
-
-    // Initialize NPCs for traffic with calculated bounds
-    float mapWidth = maxX - minX;
-    float mapHeight = maxY - minY;
-    int npcCount = 0;
-
-    // Intentar usar spawn points si están definidos (NIVEL 1 - Spawn Points)
-    bool hasSpawnPoints = false;
-    if (!currentTrackRoutes.empty() && !currentTrackRoutes[0].spawn_points.empty()) {
-        // Usar spawn points estratégicos
-        npcManager.initializeFromSpawnPoints(currentTrackRoutes, minX, maxX, minY, maxY);
-        npcCount = npcManager.getNPCs().size();
-
-        // NIVEL 2: Ajustar distancia mínima según la ciudad (tamaño del mapa)
-        float minSpawnDist = 75.0f;  // Por defecto
-        if (trackName.find("vice_city") != std::string::npos) {
-            minSpawnDist = 40.0f;  // Vice City es más pequeña
-        } else if (trackName.find("liberty_city") != std::string::npos) {
-            minSpawnDist = 65.0f;  // Liberty City es mediana
-        }
-        npcManager.setMinSpawnDistance(minSpawnDist);
-        hasSpawnPoints = true;
-    } else {
-        // Fallback a método aleatorio si no hay spawn points
-        npcCount = std::max(20, static_cast<int>((mapWidth * mapHeight) / 500.0f));
-        npcManager.reinitializeWithBounds(npcCount, minX, maxX, minY, maxY);
-    }
-
-    // Asignar rutas aleatorias a los NPCs (si no se asignaron via spawn points)
-    auto& npcs = npcManager.getNPCs();
-    if (!currentTrackRoutes.empty() && !hasSpawnPoints) {
-        for (size_t i = 0; i < npcs.size(); ++i) {
-            int routeId = i % currentTrackRoutes.size();
-            npcs[i].routeId = routeId;
-            npcs[i].currentRoutePoint = rand() % (currentTrackRoutes[routeId].points.size());
-        }
-    }
-
-    std::cout << "[GAME] NPCs inicializados: " << npcCount << " autos, " << mapWidth << "x"
-              << mapHeight << " metros (bounds: " << minX << "-" << maxX << ", " << minY << "-"
-              << maxY << ")" << std::endl;
-    std::cout << "[GAME] Preparado para la siguiente carrera." << std::endl;
 }
 
 void Game::initMinimapAndCheckpoints(const std::string& trackName) {
@@ -1227,6 +1100,9 @@ void Game::initMinimapAndCheckpoints(const std::string& trackName) {
 }
 
 void Game::renderUpgradesScreen() {
+    if (isLastRace) {
+        return;
+    }
     Uint8 r, g, b, a;
     rendererPtr->GetDrawColor(r, g, b, a);
     int width = rendererPtr->GetOutputWidth();
@@ -1461,140 +1337,5 @@ void Game::handleUpgradesInput(const SDL_Event& event) {
         selectedUpgrades = CarUpgrades();  // Reset para la próxima vez
 
         return;
-    }
-}
-
-void Game::updateNPCs(float) {
-    if (gameState != GameState::PLAYING)
-        return;
-
-    // Los NPCs se actualizan en el servidor y se sincronizan a través de snapshots
-    // Solo necesitamos verificar colisiones con el jugador
-    checkNPCCollisions();
-}
-
-void Game::checkNPCCollisions() {
-    // Buscar posición del jugador desde snapshots
-    auto it = std::find_if(snapshots.begin(), snapshots.end(), [&](const CarSnapshot& car) {
-        return car.id == client_id && !car.isNPC;
-    });
-
-    if (it == snapshots.end())
-        return;
-
-    float playerX = it->pos_x;
-    float playerY = it->pos_y;
-
-    // Radio de colisión basado en tamaño del auto (~0.35 metros)
-    const float playerRadius = 0.35f;
-
-    // Detectar colisiones con NPCs desde snapshots
-    std::vector<int> collidingNPCs;
-    for (const auto& car: snapshots) {
-        if (!car.isNPC)
-            continue;
-
-        float dx = playerX - car.pos_x;
-        float dy = playerY - car.pos_y;
-        float distance = std::sqrt(dx * dx + dy * dy);
-
-        if (distance < (playerRadius + 0.25f)) {  // 0.25f es el radio de colisión de NPCs
-            collidingNPCs.push_back(car.id);
-        }
-    }
-
-    // Si hay colisiones, aplicar daño y efectos
-    if (!collidingNPCs.empty()) {
-        // Daño por colisión con NPC: ~3-8 puntos de salud
-        float npcCollisionDamage = 3.0f + (rand() % 6);
-
-        // Aplicar daño visualmente
-        lastCollisionIntensity = npcCollisionDamage;
-        collisionFlashStartTime = SDL_GetTicks();
-
-        // Reproducir sonido de colisión para cada NPC
-        for (int npcId: collidingNPCs) {
-            auto npcIt = std::find_if(
-                    snapshots.begin(), snapshots.end(),
-                    [npcId](const CarSnapshot& car) { return car.id == npcId && car.isNPC; });
-            if (npcIt != snapshots.end()) {
-                float dx = playerX - npcIt->pos_x;
-                float dy = playerY - npcIt->pos_y;
-                float distToNPC = std::sqrt(dx * dx + dy * dy);
-                carSoundEngine.playOtherCarCollision(distToNPC, npcCollisionDamage);
-            }
-        }
-
-        std::cout << "[COLLISION] ¡Chocaste con " << collidingNPCs.size() << " NPC(s)! "
-                  << "Daño aplicado: " << npcCollisionDamage << " puntos" << std::endl;
-    }
-}
-
-void Game::renderNPCs() {
-    if (gameState != GameState::PLAYING)
-        return;
-
-    // Calcular escala de la pantalla
-    float scale = float(dst.w) / float(src.w);
-
-    // Lambda para calcular el tamaño del auto según su tipo
-    auto getCarSize = [](uint8_t car_type) -> std::pair<int, int> {
-        switch (car_type) {
-            case 0:
-                return {28, 22};  // Iveco Daily (Van)
-            case 1:
-                return {40, 24};  // Dodge Viper (Ferrari)
-            case 2:
-                return {39, 24};  // Chevrolet Corsa (Celeste)
-            case 3:
-                return {38, 24};  // Jeep Wrangler
-            case 4:
-                return {40, 22};  // Toyota Tacoma (Pickup)
-            case 5:
-                return {48, 20};  // Lincoln TownCar (Limo)
-            case 6:
-                return {40, 22};  // Lamborghini Diablo (Descapotable)
-            default:
-                return {28, 22};
-        }
-    };
-
-    // Renderizar NPCs desde snapshots (datos sincronizados del servidor)
-    for (const auto& car: snapshots) {
-        // Solo renderizar NPCs, no jugadores
-        if (!car.isNPC)
-            continue;
-
-        // Convertir coordenadas del servidor a pixeles del mundo
-        float worldX = car.pos_x * PX_PER_METER_X;
-        float worldY = car.pos_y * PX_PER_METER_Y;
-
-        // Aplicar camera offset con escala
-        float relX = (worldX - src.x) * scale;
-        float relY = (worldY - src.y) * scale;
-
-        // Obtener tamaño del auto
-        auto [carWidth, carHeight] = getCarSize(car.car_type);
-
-        // Aplicar escala al tamaño
-        int scaledWidth = static_cast<int>(carWidth * scale);
-        int scaledHeight = static_cast<int>(carHeight * scale);
-
-        // Crear rectángulo destino centrado en la posición
-        SDL_Rect npcDst = {static_cast<int>(relX) - scaledWidth / 2,
-                           static_cast<int>(relY) - scaledHeight / 2, scaledWidth, scaledHeight};
-
-        // Crear rectángulo fuente (toda la textura del auto)
-        if (carTextures.count(car.car_type)) {
-            SDL_Rect npcSrc = {0, 0, carTextures[car.car_type]->GetWidth(),
-                               carTextures[car.car_type]->GetHeight()};
-
-            // Renderizar el NPC si está dentro de pantalla
-            if (npcDst.x + npcDst.w > 0 && npcDst.x < dst.w && npcDst.y + npcDst.h > 0 &&
-                npcDst.y < dst.h) {
-                rendererPtr->Copy(*carTextures[car.car_type], npcSrc, npcDst, car.angle,
-                                  SDL2pp::NullOpt, SDL_FLIP_NONE);
-            }
-        }
     }
 }

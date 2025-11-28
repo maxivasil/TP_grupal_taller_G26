@@ -1,78 +1,56 @@
 #include "NPCCar.h"
+
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
+#include <vector>
 
-NPCCar::NPCCar(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation)
-        : Car(world, stats, position, rotation), targetVelocity(0.0f), accelerationRate(5.0f) {}
+#define MINMOVEMENT 0.1f
+#define MAXFRAMESBLOQUED 60
 
-void NPCCar::setTargetVelocity(float velocity) {
-    // Limitar a rango sensato: -1.0 (atrás) a 1.0 (adelante)
-    targetVelocity = std::clamp(velocity, -1.0f, 1.0f);
-}
+NPCCar::NPCCar(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation, bool parked,
+               uint8_t carType):
+        Car(world, stats, position, rotation),
+        isParked(parked),
+        isBlocked(false),
+        carType(carType) {}
 
-void NPCCar::applyAcceleration(float deltaTime) {
-    b2Vec2 velocity = b2Body_GetLinearVelocity(body);
-    
-    // Determinar dirección actual (hacia adelante del auto)
+void NPCCar::updatePhysics(const CarInput& input) {
     b2Vec2 forward = b2Normalize(b2RotateVector(b2Body_GetRotation(body), {1, 0}));
-    float forwardSpeed = b2Dot(velocity, forward);
-    
-    // Velocidad máxima del auto
-    float maxSpeed = getMaxSpeed();
-    
-    // Velocidad objetivo en unidades del mundo (simplemente targetVelocity * maxSpeed)
-    float targetSpeed = targetVelocity * maxSpeed;
-    
-    // Acelerar/frenar gradualmente hacia velocidad objetivo
-    float speedDifference = targetSpeed - forwardSpeed;
-    float acceleration = std::clamp(speedDifference, -accelerationRate * deltaTime, accelerationRate * deltaTime);
-    
-    float newForwardSpeed = forwardSpeed + acceleration;
-    
-    // Aplicar nueva velocidad en la dirección forward
-    b2Vec2 newVelocity = b2MulSV(newForwardSpeed, forward);
-    
-    b2Body_SetLinearVelocity(body, newVelocity);
-}
+    forward = b2MulSV(getMaxSpeed(), forward);
+    b2Body_SetLinearVelocity(body, forward);
 
-void NPCCar::updateNPCPhysics(float targetVel, Direction turnDir) {
-    // Establecer velocidad objetivo
-    setTargetVelocity(targetVel);
-    
-    // Aplicar aceleración suave
-    applyAcceleration(1.0f / 30.0f);  // Asumir 30 FPS
-    
-    // Aplicar giro usando la lógica existente de Car
-    b2Vec2 velocity = b2Body_GetLinearVelocity(body);
-    float speed = b2Length(velocity);
-    
-    // Usar método existente de manejo de giros
-    handleTurning(turnDir, speed);
-}
-
-void NPCCar::rotateBodyToDirection(Direction direction) {
-    // Obtener rotación y velocidad actual
-    b2Rot currentRot = b2Body_GetRotation(body);
-    b2Vec2 velocity = b2Body_GetLinearVelocity(body);
-    float speed = b2Length(velocity);
-    
-    // Si no hay movimiento suficiente, solo cambiar dirección gradualmente
-    if (speed < 0.1f) {
-        return;
+    if (!isParked) {
+        handleBlocked();
     }
-    
-    // Calcular el nuevo ángulo basado en dirección
-    float newAngle = b2Rot_GetAngle(currentRot);
-    
-    if (direction == Direction::LEFT) {
-        // Rotar 90 grados a la izquierda (pi/2 radianes)
-        newAngle = newAngle + (B2_PI / 2.0f);
-    } else if (direction == Direction::RIGHT) {
-        // Rotar 90 grados a la derecha (-pi/2 radianes)
-        newAngle = newAngle - (B2_PI / 2.0f);
-    } else if (direction == Direction::FORWARD) {
-        // Continuar en la misma dirección (sin cambios)
-        return;
+}
+
+void NPCCar::handleBlocked() {
+    b2Vec2 currentPos = b2Body_GetPosition(body);
+    float distMoved = b2Distance(currentPos, lastPos);
+
+    if (distMoved < MINMOVEMENT) {
+        blockedFrames++;
+
+        if (blockedFrames >= MAXFRAMESBLOQUED) {
+            isBlocked = true;
+        }
+    } else {
+        blockedFrames = 0;
+        isBlocked = false;
+    }
+
+    lastPos = currentPos;
+}
+
+void NPCCar::chooseIntersectionDirection(int intersectionId) {
+    std::vector<float> validAngles;
+
+    if (intersectionId & DIR_RIGHT) {
+        validAngles.push_back(0.0f);
+    }
+    if (intersectionId & DIR_LEFT) {
+        validAngles.push_back(B2_PI);
     }
     
     // Normalizar el ángulo a rango [-pi, pi]
@@ -147,3 +125,23 @@ void NPCCar::handleTurning(Direction turnDir, float speed) {
     // No necesitan giros adicionales aquí
     // Esta función está vacía para los NPCs
 }
+    if (intersectionId & DIR_UP) {
+        validAngles.push_back(-B2_PI / 2.0f);
+    }
+    if (intersectionId & DIR_DOWN) {
+        validAngles.push_back(B2_PI / 2.0f);
+    }
+
+    if (validAngles.empty())
+        return;
+
+    int choice = std::rand() % validAngles.size();
+    float newAngle = validAngles[choice];
+
+    b2Vec2 currentPos = b2Body_GetPosition(body);
+    b2Body_SetTransform(body, currentPos, b2MakeRot(newAngle));
+}
+
+bool NPCCar::isNPCBlocked() { return isBlocked; }
+
+uint8_t NPCCar::getCarType() const { return carType; }

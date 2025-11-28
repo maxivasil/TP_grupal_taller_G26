@@ -14,7 +14,7 @@ add_library(server_game_logic
     SensorData.h
     BridgeSensorManager.h
     Race.h
-    NPCTraffic.h
+    IntersectionManager.h
 
     Car.cpp
     NPCCar.cpp
@@ -27,7 +27,7 @@ add_library(server_game_logic
     City.cpp
     BridgeSensorManager.cpp
     Race.cpp
-    NPCTraffic.cpp
+    IntersectionManager.cpp
 )
 
 # Agregar subdirectorio de NPC checkpoint spawning

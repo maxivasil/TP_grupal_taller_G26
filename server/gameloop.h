@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "../common/CarStats.h"
 #include "../common/queue.h"
 #include "../common/socket.h"
 #include "../common/thread.h"
@@ -40,7 +41,7 @@ private:
     void send_partial_results(Race& race, std::set<int>& playersWhoAlreadyReceivedPartial);
     void send_acumulated_results(const Race& race,
                                  std::vector<std::unique_ptr<Player>> const& players,
-                                 bool& resultsAlreadySent);
+                                 bool& resultsAlreadySent, bool isLastRace);
     void handle_upgrades(std::vector<std::unique_ptr<Player>>& players);
 };
 

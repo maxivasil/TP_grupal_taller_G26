@@ -8,6 +8,7 @@ enum CollisionCategories {
     CategoryBridgeObj = 0x0008,
     CategoryBridgeSensor = 0x0010,
     CategoryCheckpoint = 0x0020,
+    CategoryIntersection = 0x0040,
     CategoryAll = 0xFFFF
 };
 

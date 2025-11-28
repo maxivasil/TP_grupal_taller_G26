@@ -20,32 +20,6 @@ class Car: public Collidable {
 protected:
     b2BodyId body;
 
-private:
-    CarStats stats;
-    CarUpgrades upgrades;  // Acumulación de mejoras aplicadas
-    float current_health;
-    bool hasInfiniteHealth;
-    bool isOnBridge;
-    bool reverseMode;
-
-    b2BodyDef initCarBodyDef(b2Vec2 position, b2Rot rotation);
-
-    void setShape(b2BodyId body);
-
-    void handleAccelerating(bool accelerating, float speed, b2Vec2 forward);
-
-    void handleBraking(bool braking, b2Vec2 velocity);
-
-    void verifyMaxSpeed(b2Vec2 velocity, float speed);
-
-    float getImpactForce(const Collidable* other, float approachSpeed, float deltaTime);
-
-    float getImpactAngle(const Collidable* other, const b2Vec2& contactNormal);
-
-protected:
-    void handleTurning(Direction turn_direction, float speed);
-
-public:
     /**
      * @brief Obtiene la estadística de velocidad máxima incluyendo upgrades.
      * @return Velocidad máxima actual del auto (stats base + upgrades)
@@ -69,12 +43,38 @@ public:
      * @return Salud máxima actual del auto (stats base + upgrades)
      */
     float getMaxHealth() const;
+
+private:
+    CarStats stats;
+    CarUpgrades upgrades;  // Acumulación de mejoras aplicadas
+    float current_health;
+    bool hasInfiniteHealth;
+    bool isOnBridge;
+    bool reverseMode;
+
+    b2BodyDef initCarBodyDef(b2Vec2 position, b2Rot rotation);
+
+    void setShape(b2BodyId body);
+
+    void handleAccelerating(bool accelerating, float speed, b2Vec2 forward);
+
+    void handleBraking(bool braking, b2Vec2 velocity);
+
+    void verifyMaxSpeed(b2Vec2 velocity, float speed);
+
+    float getImpactForce(const Collidable* other, float approachSpeed, float deltaTime);
+
+    float getImpactAngle(const Collidable* other, const b2Vec2& contactNormal);
+
+    void handleTurning(Direction turn_direction, float speed);
+
+public:
     Car(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation);
     ~Car() override;
 
     void repair();
 
-    void updatePhysics(const CarInput& input);
+    virtual void updatePhysics(const CarInput& input);
 
     void applyCollision(const CollisionInfo& info) override;
 
@@ -122,6 +122,8 @@ public:
      * @return Referencia constante a las mejoras aplicadas
      */
     const CarUpgrades& getUpgrades() const;
+
+    virtual void chooseIntersectionDirection(int intersectionId);
 };
 
 

@@ -27,6 +27,8 @@ public:
     Queue<ClientToServerCmd_Server*>* createLobby(const std::string& lobbyId);
     Queue<ClientToServerCmd_Server*>* joinLobby(const std::string& lobbyId);
     void initReceiver(Queue<ClientToServerCmd_Server*>& gameloop_queue);
+    void setSelfPtr(std::shared_ptr<ServerClientHandler> self);
+    void resetSelfPtr();
 
 private:
     uint32_t client_id;
@@ -37,6 +39,7 @@ private:
     std::unique_ptr<ThreadReceiver> receiver;
     ThreadSender sender;
     LobbiesMonitor& lobbiesMonitor;
+    std::shared_ptr<ServerClientHandler> self_ptr;
 };
 
 #endif

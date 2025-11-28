@@ -1,41 +1,32 @@
 #ifndef NPC_CAR_H
 #define NPC_CAR_H
 
-#include "Car.h"
 #include <box2d/box2d.h>
 
-/**
- * @class NPCCar
- * @brief Vehículo especializado para NPCs con control de movimiento predecible
- *
- * Hereda de Car pero reemplaza la lógica de movimiento para que sea más
- * controlable y predecible para sistemas de IA. Permite control directo
- * de velocidad deseada sin aceleración/frenado complejo.
- */
-class NPCCar : public Car {
+#include "Car.h"
+#include "SensorData.h"
+
+
+class NPCCar: public Car {
 private:
-    float targetVelocity = 0.0f;  // Velocidad objetivo directa
-    float accelerationRate = 5.0f;  // Qué tan rápido llega a velocidad objetivo (m/s²)
-    
+    bool isParked;
+    bool isBlocked;
+    b2Vec2 lastPos = {0, 0};
+    int blockedFrames = 0;
+    uint8_t carType;
+
+    void handleBlocked();
+
 public:
-    NPCCar(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation);
+    NPCCar(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation, bool parked,
+           uint8_t carType);
     ~NPCCar() override = default;
 
-    /**
-     * @brief Establece velocidad objetivo directamente
-     * @param velocity Velocidad deseada (0.0 = parado, > 0 = adelante, < 0 = atrás)
-     */
-    void setTargetVelocity(float velocity);
+    void updatePhysics(const CarInput& input) override;
 
-    /**
-     * @brief Obtiene la velocidad objetivo actual
-     */
-    float getTargetVelocity() const { return targetVelocity; }
+    void chooseIntersectionDirection(int intersectionId) override;
 
-    /**
-     * @brief Obtiene la tasa de aceleración
-     */
-    float getAccelerationRate() const { return accelerationRate; }
+    bool isNPCBlocked();
 
     /**
      * @brief Establece la tasa de aceleración

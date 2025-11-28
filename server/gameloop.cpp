@@ -19,25 +19,6 @@
 
 #define FPS 60
 
-// Función helper para convertir nombre del auto a car_type (0-6)
-static uint8_t getCarTypeFromName(const std::string& carName) {
-    if (carName == "Iveco Daily")
-        return 0;
-    if (carName == "Dodge Viper")
-        return 1;
-    if (carName == "Chevrolet Corsa")
-        return 2;
-    if (carName == "Jeep Wrangler")
-        return 3;
-    if (carName == "Toyota Tacoma")
-        return 4;
-    if (carName == "Lincoln TownCar")
-        return 5;
-    if (carName == "Lamborghini Diablo")
-        return 6;
-    return 0;  // Default
-}
-
 ServerGameLoop::ServerGameLoop(Queue<ClientToServerCmd_Server*>& gameloop_queue,
                                ServerProtectedClients& protected_clients, LobbyStatus& status,
                                struct Lobby* lobby):
@@ -141,12 +122,12 @@ void ServerGameLoop::run() {
                       << ", Mass: " << stats.mass << ", Brake Force: " << stats.brake_force
                       << ", Handling: " << stats.handling << ", Health Max: " << stats.health_max
                       << ", Length: " << stats.length << ", Width: " << stats.width << std::endl;
-            uint8_t car_type = getCarTypeFromName(carName);
+            uint8_t car_type = CarStatsDatabase::getCarTypeFromName(carName);
             players.emplace_back(std::make_unique<Player>(userName, clientId, stats, car_type));
             playerId++;
         }
 
-        bool first = true;
+        int raceNumber = 0;
         // cppcheck-suppress knownEmptyContainer
         for (auto& raceInfo: racesInfo) {
             Race race(raceInfo.city, raceInfo.trackFile, players);
@@ -158,10 +139,9 @@ void ServerGameLoop::run() {
                    .racesInfo = nullptr,
                    .players = &players};
 
-            if (!first) {
+            if (raceNumber != 0) {
                 handle_upgrades(players);
             }
-            first = false;
 
             auto startingRaceCmd = std::make_shared<ServerToClientStartingRace_Server>(
                     raceInfo.city, raceInfo.trackFile);
@@ -201,8 +181,10 @@ void ServerGameLoop::run() {
                 }
             }
             if (race.isFinished() && !resultsAlreadySent) {
-                send_acumulated_results(race, players, resultsAlreadySent);
+                send_acumulated_results(race, players, resultsAlreadySent,
+                                        raceNumber == racesInfo.size() - 1);
             }
+            raceNumber++;
         }
 
         stop();
@@ -250,7 +232,7 @@ void ServerGameLoop::send_partial_results(Race& race,
 
 void ServerGameLoop::send_acumulated_results(const Race& race,
                                              std::vector<std::unique_ptr<Player>> const& players,
-                                             bool& resultsAlreadySent) {
+                                             bool& resultsAlreadySent, bool isLastRace) {
     resultsAlreadySent = true;
     const auto& finishTimes = race.getFinishTimes();
     std::vector<std::pair<int, float>> sortedFinishTimes(finishTimes.begin(), finishTimes.end());
@@ -322,7 +304,8 @@ void ServerGameLoop::send_acumulated_results(const Race& race,
                   return a.playerId < b.playerId;
               });
 
-    auto accumCmd = std::make_shared<ServerToClientAccumulatedResults_Server>(orderedAccum);
+    auto accumCmd =
+            std::make_shared<ServerToClientAccumulatedResults_Server>(orderedAccum, isLastRace);
     protected_clients.broadcast(accumCmd);
 
     std::cout << "\n--- ACUMULADO HASTA AHORA ---\n";

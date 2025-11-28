@@ -115,8 +115,12 @@ void Race::initNPCs(b2WorldId world) {
         CarStats npcStats = CarStatsDatabase::getCarStats(randomCarName);
         uint8_t carType = CarStatsDatabase::getCarTypeFromName(randomCarName);
 
+        float offsetDist = npcStats.length * 0.5f + margin;
+        b2Vec2 spawnPos = b2Vec2{inter.x, inter.y} + 
+                          b2MulSV(offsetDist, b2RotateVector(b2MakeRot(spawnAngle), {1, 0}));
+
         npcs.push_back(std::make_unique<NPCCar>(
-                world, npcStats, b2Vec2{inter.x, inter.y}, b2MakeRot(spawnAngle),
+                world, npcStats, spawnPos, b2MakeRot(spawnAngle),
                 false,  // isParked
                 carType));
 

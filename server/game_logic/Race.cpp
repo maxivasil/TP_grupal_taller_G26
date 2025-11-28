@@ -84,12 +84,13 @@ void Race::initNPCs(b2WorldId world) {
     std::mt19937 g(rd());
     std::shuffle(spawnPoints.begin(), spawnPoints.end(), g);
 
-    int numNPCsToCreate = MIN_NPCS + (std::rand() % (MAX_NPCS - MIN_NPCS + 1));
-
-    numNPCsToCreate = std::min(numNPCsToCreate, (int)spawnPoints.size());
+    int minNPCs = std::max(1, (int)(spawnPoints.size() * 0.40f));
+    int maxNPCs = std::max(minNPCs, (int)(spawnPoints.size() * 0.90f));
+    int numNPCsToCreate = minNPCs + (std::rand() % (maxNPCs - minNPCs + 1));
 
     int createdCount = 0;
     std::vector<std::string> carNames = CarStatsDatabase::getAllCarNames();
+    float margin = 0.5f;
 
     for (const auto& inter: spawnPoints) {
         if (createdCount >= numNPCsToCreate)
@@ -114,10 +115,14 @@ void Race::initNPCs(b2WorldId world) {
         std::string randomCarName = carNames[std::rand() % carNames.size()];
         CarStats npcStats = CarStatsDatabase::getCarStats(randomCarName);
 
-        npcs.push_back(std::make_unique<NPCCar>(
-                world, npcStats, b2Vec2{inter.x, inter.y}, b2MakeRot(spawnAngle),
-                false,  // isParked = false, queremos que circulen
-                CarStatsDatabase::getCarTypeFromName(randomCarName)));
+        float offsetDist = npcStats.length * 0.5f + margin;
+        b2Vec2 spawnPos = b2Vec2{inter.x, inter.y} +
+                          b2MulSV(offsetDist, b2RotateVector(b2MakeRot(spawnAngle), {1, 0}));
+
+        npcs.push_back(
+                std::make_unique<NPCCar>(world, npcStats, spawnPos, b2MakeRot(spawnAngle),
+                                         false,  // isParked = false, queremos que circulen
+                                         CarStatsDatabase::getCarTypeFromName(randomCarName)));
 
         createdCount++;
     }

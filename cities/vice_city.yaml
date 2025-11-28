@@ -1,4 +1,706 @@
 objects:
+- type: Intersections
+  x: 17.080555555555556
+  y: 582.428571428572
+  width: 3.77444444444444
+  height: 3.4285714285714715
+  up: true
+  down: false
+  left: false
+  right: true
+- type: Intersections
+  x: 16.62666666666667
+  y: 543.5142857142854
+  width: 3.774439666666667
+  height: 3.4285757142857145
+  up: false
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 27.711111111111066
+  y: 543.4714285714286
+  width: 3.774439666666667
+  height: 3.4285757142857145
+  up: true
+  down: false
+  left: true
+  right: false
+- type: Intersections
+  x: 26.851111111111067
+  y: 473.40000000000003
+  width: 3.774439666666667
+  height: 3.4285757142857145
+  up: false
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 69.9944444444444
+  y: 473.871428571429
+  width: 3.774439666666667
+  height: 3.4285757142857145
+  up: false
+  down: true
+  left: true
+  right: true
+- type: Intersections
+  x: 133.06111111111107
+  y: 474.17142857142863
+  width: 3.774439666666667
+  height: 3.4285757142857145
+  up: true
+  down: true
+  left: true
+  right: true
+- type: Intersections
+  x: 132.58333333333334
+  y: 507.2142857142858
+  width: 3.774439666666667
+  height: 1.6285757142857402
+  up: true
+  down: false
+  left: true
+  right: true
+- type: Intersections
+  x: 155.80333333333334
+  y: 507.2142857142858
+  width: 3.0577730000000005
+  height: 1.6285757142857145
+  up: false
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 68.99111111111107
+  y: 553.9285714285711
+  width: 3.774439666666667
+  height: 3.4285757142857145
+  up: true
+  down: false
+  left: false
+  right: true
+- type: Intersections
+  x: 91.1860606060606
+  y: 582.8961038961036
+  width: 3.774439666666667
+  height: 3.4285757142857145
+  up: true
+  down: false
+  left: true
+  right: false
+- type: Intersections
+  x: 90.69416666666667
+  y: 552.8571428571429
+  width: 3.774439666666667
+  height: 3.4285757142857145
+  up: false
+  down: true
+  left: true
+  right: true
+- type: Intersections
+  x: 188.34
+  y: 555.2999999999997
+  width: 3.774439666666667
+  height: 2.057147142857216
+  up: false
+  down: true
+  left: true
+  right: true
+- type: Intersections
+  x: 155.75555555555604
+  y: 532.4142857142858
+  width: 3.0577730000000005
+  height: 1.6285757142857145
+  up: true
+  down: false
+  left: false
+  right: true
+- type: Intersections
+  x: 187.19333333333336
+  y: 586.9285714285714
+  width: 3.774439666666667
+  height: 3.4285757142857145
+  up: true
+  down: false
+  left: false
+  right: true
+- type: Intersections
+  x: 332.96333333333337
+  y: 586.5428571428572
+  width: 3.774439666666667
+  height: 3.4285757142857145
+  up: true
+  down: false
+  left: true
+  right: false
+- type: Intersections
+  x: 334.444444444444
+  y: 547.2857142857148
+  width: 3.774439666666667
+  height: 3.4285757142857145
+  up: true
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 625.2916666666667
+  y: 547.2642857142857
+  width: 3.774439666666667
+  height: 5.1000042857142605
+  up: true
+  down: false
+  left: true
+  right: true
+- type: Intersections
+  x: 638.5500000000001
+  y: 547.2
+  width: 3.774439666666667
+  height: 5.100004285714286
+  up: true
+  down: false
+  left: true
+  right: false
+- type: Intersections
+  x: 625.5425
+  y: 355.1464285714286
+  width: 3.4161063333333335
+  height: 2.850004285714312
+  up: false
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 638.9083333333334
+  y: 343.92857142857144
+  width: 3.4161063333333335
+  height: 2.8500042857142858
+  up: false
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 574.5755555555561
+  y: 344.5714285714286
+  width: 3.4161063333333335
+  height: 2.8500042857142858
+  up: true
+  down: false
+  left: false
+  right: true
+- type: Intersections
+  x: 528.661111111111
+  y: 354.25714285714247
+  width: 1.7916618888888363
+  height: 2.8500042857142858
+  up: true
+  down: false
+  left: true
+  right: true
+- type: Intersections
+  x: 507.40000000000003
+  y: 354.27857142857147
+  width: 1.7916666666666667
+  height: 2.8500042857142858
+  up: false
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 506.8266666666667
+  y: 401.17500000000007
+  width: 4.2283333333333335
+  height: 3.8142900000000264
+  up: true
+  down: false
+  left: true
+  right: false
+- type: Intersections
+  x: 132.3444444444444
+  y: 404.35714285714334
+  width: 2.5083333333333333
+  height: 2.3571471428572117
+  up: false
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 148.78
+  y: 397.28571428571433
+  width: 2.5083333333333333
+  height: 2.357151428571429
+  up: true
+  down: false
+  left: false
+  right: true
+- type: Intersections
+  x: 148.11111111111066
+  y: 349.88571428571396
+  width: 2.5083333333333333
+  height: 2.357151428571429
+  up: false
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 470.42
+  y: 351.06428571428575
+  width: 2.5083333333333333
+  height: 2.357151428571429
+  up: true
+  down: false
+  left: true
+  right: false
+- type: Intersections
+  x: 468.9866666666667
+  y: 330.3
+  width: 2.5083333333333333
+  height: 2.357151428571429
+  up: false
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 480.95500000000004
+  y: 331.5214285714286
+  width: 2.5083333333333333
+  height: 2.357151428571429
+  up: true
+  down: false
+  left: true
+  right: false
+- type: Intersections
+  x: 479.3066666666667
+  y: 323.77500000000003
+  width: 1.935
+  height: 1.77858
+  up: false
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 500.37666666666667
+  y: 326.18571428571477
+  width: 3.3683333333333336
+  height: 3.471437142857186
+  up: true
+  down: false
+  left: true
+  right: false
+- type: Intersections
+  x: 496.98444444444397
+  y: 309.94285714285763
+  width: 3.3683333333333336
+  height: 2.95715571428574
+  up: true
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 575.6266666666672
+  y: 309.5571428571425
+  width: 4.371661888888909
+  height: 2.164289999999979
+  up: true
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 529.1627777777774
+  y: 259.1142857142853
+  width: 3.0816666666667385
+  height: 1.6500085714285715
+  up: true
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 460.76888888888936
+  y: 258.6000000000005
+  width: 4.084999999999928
+  height: 1.9928614285714117
+  up: false
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 461.96333333333337
+  y: 294.25714285714247
+  width: 2.651666666666667
+  height: 2.3357142857143285
+  up: true
+  down: false
+  left: true
+  right: false
+- type: Intersections
+  x: 575.5311111111106
+  y: 204.64285714285674
+  width: 4.371666666666667
+  height: 1.7357228571428618
+  up: true
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 575.531111111111
+  y: 146.65714285714333
+  width: 3.6072222222221986
+  height: 3.278584285714286
+  up: false
+  down: true
+  left: true
+  right: true
+- type: Intersections
+  x: 527.2992031666668
+  y: 187.07142857142858
+  width: 3.081666666666667
+  height: 2.2928657142857145
+  up: false
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 517.4808698333334
+  y: 247.05000000000004
+  width: 3.081666666666667
+  height: 1.6500085714285715
+  up: true
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 563.8496833333334
+  y: 134.59285928571433
+  width: 3.607227
+  height: 3.278584285714286
+  up: false
+  down: true
+  left: true
+  right: true
+- type: Intersections
+  x: 527.0125365
+  y: 244.02857142857147
+  width: 3.081666666666667
+  height: 1.6500085714285715
+  up: true
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 573.38135
+  y: 131.57143071428573
+  width: 3.607227
+  height: 3.278584285714286
+  up: false
+  down: true
+  left: true
+  right: true
+- type: Intersections
+  x: 549.8266666666667
+  y: 188.8714285714286
+  width: 3.081666666666667
+  height: 2.2928657142857145
+  up: true
+  down: false
+  left: true
+  right: false
+- type: Intersections
+  x: 547.6766666666667
+  y: 96.42857142857144
+  width: 3.081666666666667
+  height: 2.2928657142857145
+  up: false
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 591.6800000000001
+  y: 98.4857142857143
+  width: 3.081666666666667
+  height: 2.2928657142857145
+  up: true
+  down: false
+  left: true
+  right: true
+- type: Intersections
+  x: 592.5400000000001
+  y: 29.14285714285719
+  width: 3.081666666666667
+  height: 2.2928657142857145
+  up: false
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 623.7866666666667
+  y: 96.25714285714291
+  width: 3.081666666666667
+  height: 2.2928657142857145
+  up: false
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 622.544444444444
+  y: 147.0857142857143
+  width: 3.607227
+  height: 3.278584285714286
+  up: true
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 622.9266666666667
+  y: 219.68571428571474
+  width: 3.081666666666667
+  height: 2.2928657142857145
+  up: true
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 623.6911111111107
+  y: 243.42857142857105
+  width: 3.081666666666667
+  height: 2.2928657142857145
+  up: true
+  down: false
+  left: true
+  right: false
+- type: Intersections
+  x: 604.3891277777774
+  y: 217.24264285714287
+  width: 3.081666666666667
+  height: 2.2928657142857145
+  up: false
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 604.4842055555561
+  y: 243.6430714285719
+  width: 3.081666666666667
+  height: 2.2928657142857145
+  up: true
+  down: false
+  left: false
+  right: true
+- type: Intersections
+  x: 333.68
+  y: 28.92857142857143
+  width: 3.081666666666667
+  height: 2.2928657142857145
+  up: false
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 336.69
+  y: 57.02142857142858
+  width: 3.081666666666667
+  height: 2.2928657142857145
+  up: true
+  down: false
+  left: true
+  right: false
+- type: Intersections
+  x: 256.9429166666667
+  y: 54.900000000000006
+  width: 2.6875
+  height: 2.100008571428572
+  up: false
+  down: true
+  left: true
+  right: true
+- type: Intersections
+  x: 255.27666666666667
+  y: 100.76785714285715
+  width: 2.6875
+  height: 2.100008571428572
+  up: true
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 254.8466666666667
+  y: 147.21428571428572
+  width: 2.6875
+  height: 2.100008571428572
+  up: true
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 256.495
+  y: 180.32142857142858
+  width: 2.6875
+  height: 2.100008571428572
+  up: true
+  down: true
+  left: true
+  right: true
+- type: Intersections
+  x: 256.495
+  y: 237.43928571428575
+  width: 2.6875
+  height: 2.100008571428572
+  up: true
+  down: false
+  left: true
+  right: true
+- type: Intersections
+  x: 157.16500000000002
+  y: 237.79285714285717
+  width: 2.6875
+  height: 2.100008571428572
+  up: true
+  down: false
+  left: false
+  right: true
+- type: Intersections
+  x: 157.73833333333334
+  y: 149.2714285714286
+  width: 2.6875
+  height: 2.100008571428572
+  up: true
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 160.82000000000002
+  y: 86.33571428571429
+  width: 2.6875
+  height: 2.100008571428572
+  up: true
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 157.30833333333334
+  y: 53.74285714285715
+  width: 2.6875
+  height: 2.100008571428572
+  up: false
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 27.770833333333336
+  y: 87.91071428571429
+  width: 2.4725
+  height: 2.550008571428572
+  up: true
+  down: false
+  left: false
+  right: true
+- type: Intersections
+  x: 27.80666666666667
+  y: 28.221428571428575
+  width: 2.4725
+  height: 2.550008571428572
+  up: false
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 205.75500000000002
+  y: 28.092857142857145
+  width: 2.4725
+  height: 2.550008571428572
+  up: false
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 203.82000000000002
+  y: 56.18571428571429
+  width: 2.4725
+  height: 2.550008571428572
+  up: true
+  down: false
+  left: true
+  right: true
+- type: Intersections
+  x: 223.02666666666667
+  y: 148.4357142857143
+  width: 2.4725
+  height: 2.550008571428572
+  up: false
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 220.4466666666667
+  y: 180.8571428571433
+  width: 2.4725
+  height: 2.550008571428572
+  up: true
+  down: false
+  left: false
+  right: true
+- type: Intersections
+  x: 384.2288888888894
+  y: 180.08571428571472
+  width: 2.6875
+  height: 2.100008571428572
+  up: false
+  down: true
+  left: true
+  right: true
+- type: Intersections
+  x: 442.42222222222273
+  y: 179.14285714285674
+  width: 2.6875
+  height: 2.100008571428572
+  up: false
+  down: true
+  left: true
+  right: false
+- type: Intersections
+  x: 440.03333333333336
+  y: 206.31428571428617
+  width: 2.6875
+  height: 2.100008571428572
+  up: true
+  down: false
+  left: false
+  right: true
+- type: Intersections
+  x: 325.3666666666667
+  y: 101.91428571428577
+  width: 2.6875
+  height: 2.100008571428572
+  up: true
+  down: false
+  left: true
+  right: false
+- type: Intersections
+  x: 322.93
+  y: 85.32857142857148
+  width: 2.6875
+  height: 2.100008571428572
+  up: false
+  down: true
+  left: false
+  right: true
+- type: Intersections
+  x: 399.9716666666667
+  y: 87.42857142857144
+  width: 3.081666666666667
+  height: 2.2928657142857145
+  up: true
+  down: false
+  left: true
+  right: false
+- type: Intersections
+  x: 397.75
+  y: 29.828571428571433
+  width: 3.081666666666667
+  height: 2.2928657142857145
+  up: false
+  down: true
+  left: true
+  right: true
 - type: CollisionDown
   x: 24.062083333333334
   y: 596.0732142857144
@@ -4095,9 +4797,9 @@ objects:
   width: 13.616666666666667
   height: 18.450000000000003
 - type: CollisionDown
-  x: 350.61131515151516
+  x: 350.6113145
   y: 401.20200000000006
-  width: 13.55803030303029
+  width: 13.558029000000001
   height: 18.192857142857147
 - type: CollisionDown
   x: 362.3466666666667
@@ -5885,15 +6587,15 @@ objects:
   width: 1.1466666666666667
   height: 0.9642857142857144
 - type: CollisionDown
-  x: 318.0045454545459
+  x: 318.00415649999997
   y: 350.77500000000003
-  width: 12.574242424242465
+  width: 12.574246333333335
   height: 14.335714285714287
 - type: CollisionDown
-  x: 348.10780303030305
-  y: 350.82467532467575
-  width: 7.355606060606087
-  height: 14.236363636363674
+  x: 348.1078043333333
+  y: 350.82430714285715
+  width: 7.355608666666667
+  height: 14.236328571428574
 - type: CollisionDown
   x: 302.6961135
   y: 68.4
@@ -6295,14 +6997,14 @@ objects:
   width: 95.08375000000001
   height: 1.992857142857143
 - type: CollisionDown
-  x: 461.69395592424246
+  x: 461.69395266666663
   y: 198.5374285714286
-  width: 12.917378515151551
+  width: 12.917372
   height: 1.992857142857143
 - type: CollisionDown
-  x: 461.82833092424244
+  x: 461.82832766666667
   y: 210.86614285714288
-  width: 13.114461848484884
+  width: 13.114455333333334
   height: 1.992857142857143
 - type: CollisionDown
   x: 512.7033333333334
@@ -6351,13 +7053,13 @@ objects:
   height: 6.332142857142858
 - type: CollisionDown
   x: 556.1691666666667
-  y: 169.62808441558454
+  y: 169.6279692857143
   width: 2.2933333333333334
-  height: 6.297077922077919
+  height: 6.297081428571429
 - type: CollisionDown
-  x: 472.3784111111117
+  x: 472.3788865
   y: 204.66430714285715
-  width: 9.077777777777802
+  width: 9.077773
   height: 14.357185714285716
 - type: CollisionDown
   x: 520.6349198333334
@@ -6446,8 +7148,8 @@ objects:
   height: 6.128575714285715
 - type: CollisionDown
   x: 341.6315385
-  y: 194.18528571428573
-  width: 11.580143666666697
+  y: 194.18464285714288
+  width: 11.580143666666668
   height: 14.496428571428574
 - type: CollisionDown
   x: 341.67083333333335
@@ -6457,7 +7159,7 @@ objects:
 - type: CollisionDown
   x: 341.7813218333333
   y: 128.84194285714287
-  width: 11.257643666666697
+  width: 11.257643666666668
   height: 19.087457142857144
 - type: CollisionDown
   x: 350.3061865
@@ -6521,14 +7223,14 @@ objects:
   height: 10.285714285714286
 - type: CollisionDown
   x: 334.70676833333334
-  y: 278.9259954545457
+  y: 278.92575
   width: 19.445603333333334
-  height: 16.005237662337688
+  height: 16.00521428571429
 - type: CollisionDown
   x: 334.778865
-  y: 315.13094590909094
+  y: 315.1309435714286
   width: 20.544396666666668
-  height: 6.003891818181811
+  height: 6.003887142857144
 - type: CollisionDown
   x: 352.58208333333334
   y: 329.175
@@ -6927,7 +7629,7 @@ objects:
 - type: CollisionDown
   x: 474.7145891666667
   y: 253.0084692857143
-  width: 6.765978333333305
+  width: 6.765978333333334
   height: 1.9577957142857145
 - type: CollisionDown
   x: 475.02406016666674
@@ -6951,29 +7653,29 @@ objects:
   height: 0.9000000000000001
 - type: CollisionDown
   x: 72.24895833333333
-  y: 287.9839285714286
+  y: 287.9845714285715
   width: 4.5687500000000005
   height: 14.271428571428572
 - type: CollisionDown
-  x: 80.29272727272722
-  y: 288.0000000000005
-  width: 6.827878787878783
-  height: 14.306493506493473
+  x: 80.29278200000002
+  y: 287.99955000000006
+  width: 6.827884000000001
+  height: 14.306528571428572
 - type: CollisionDown
-  x: 93.46636363636364
-  y: 288.0000000000005
-  width: 5.759393939393942
-  height: 14.306493506493473
+  x: 93.46636233333334
+  y: 287.99955000000006
+  width: 5.759391333333334
+  height: 14.306528571428572
 - type: CollisionDown
-  x: 308.72696969696915
-  y: 455.5870129870126
-  width: 5.238181818181811
-  height: 2.0103896103896575
+  x: 308.7274941666667
+  y: 455.5874828571429
+  width: 5.2381883333333334
+  height: 2.010394285714286
 - type: CollisionDown
-  x: 308.7139393939392
-  y: 467.96493506493533
+  x: 308.71420000000006
+  y: 467.96470071428575
   width: 5.16
-  height: 1.9402597402597288
+  height: 1.9402585714285716
 - type: CollisionDown
   x: 360.03541666666666
   y: 467.98392857142863
@@ -6985,25 +7687,25 @@ objects:
   width: 4.335833333333333
   height: 2.121428571428572
 - type: CollisionDown
-  x: 308.0754545454548
-  y: 392.93766233766183
-  width: 3.7787878787878983
-  height: 1.9636363636363932
+  x: 308.0751913333333
+  y: 392.9382450000001
+  width: 3.7787826666666673
+  height: 1.9636328571428574
 - type: CollisionDown
-  x: 308.1015151515152
-  y: 409.406493506493
-  width: 3.8830303030302904
-  height: 1.9870129870129931
+  x: 308.1015145
+  y: 409.4070750000001
+  width: 3.8830290000000005
+  height: 1.987007142857143
 - type: CollisionDown
-  x: 359.79272727272684
-  y: 392.93766233766183
-  width: 4.743030303030362
-  height: 1.9636363636363932
+  x: 359.79324783333334
+  y: 392.9382450000001
+  width: 4.743029
+  height: 1.9636328571428574
 - type: CollisionDown
-  x: 359.7796969696977
-  y: 409.37142857142805
-  width: 4.769090909090942
-  height: 1.9168831168831288
+  x: 359.7790435
+  y: 409.3720135714286
+  width: 4.769087
+  height: 1.916884285714286
 - type: CollisionDown
   x: 282.02625
   y: 374.85
@@ -7025,28 +7727,28 @@ objects:
   width: 2.4725
   height: 4.6607142857142865
 - type: CollisionDown
-  x: 325.6403030303031
-  y: 319.93246753246774
-  width: 2.2672727272727533
-  height: 3.6467532467532005
+  x: 325.64030433333335
+  y: 319.9322314285714
+  width: 2.2672753333333335
+  height: 3.646748571428572
 - type: CollisionDown
-  x: 343.934848484848
-  y: 324.71298701298645
-  width: 2.2672727272727533
+  x: 343.935371
+  y: 324.71357142857147
+  width: 2.2672753333333335
   height: 13.114285714285716
 - type: CollisionDown
   x: 325.65333333333336
-  y: 268.66753246753296
+  y: 268.6670678571429
   width: 2.2933333333333334
-  height: 4.441558441558436
+  height: 4.441564285714286
 - type: CollisionDown
-  x: 343.88272727272766
-  y: 268.66753246753296
-  width: 2.267272727272682
-  height: 4.441558441558436
+  x: 343.8823376666667
+  y: 268.6670678571429
+  width: 2.2672753333333335
+  height: 4.441564285714286
 - type: CollisionDown
-  x: 337.0841666666667
-  y: 203.01428571428573
+  x: 337.0848833333334
+  y: 203.0149285714286
   width: 2.1858333333333335
   height: 3.310714285714286
 - type: CollisionDown
@@ -7060,30 +7762,30 @@ objects:
   width: 2.2037500000000003
   height: 3.0696428571428576
 - type: CollisionDown
-  x: 346.338125
+  x: 346.3388416666667
   y: 117.73125000000002
   width: 2.3470833333333334
   height: 3.005357142857143
 - type: CollisionDown
-  x: 309.0136363636365
-  y: 344.51298701298657
-  width: 5.394545454545507
-  height: 2.0337662337662574
+  x: 309.0135086666667
+  y: 344.5134557142857
+  width: 5.394550666666667
+  height: 2.0337685714285714
 - type: CollisionDown
-  x: 308.8572727272723
-  y: 356.8558441558445
-  width: 5.759393939393914
-  height: 2.1272727272727217
+  x: 308.8576623333334
+  y: 356.8554964285715
+  width: 5.759391333333334
+  height: 2.1272785714285716
 - type: CollisionDown
-  x: 354.78909090909116
-  y: 344.55974025974047
-  width: 6.046060606060581
-  height: 1.987012987012929
+  x: 354.788829
+  y: 344.5595035714286
+  width: 6.046058
+  height: 1.987007142857143
 - type: CollisionDown
-  x: 354.6978787878793
-  y: 356.902597402598
-  width: 5.811515151515144
-  height: 2.174025974025986
+  x: 354.6973608333334
+  y: 356.9020135714286
+  width: 5.811521666666667
+  height: 2.174027142857143
 - type: CollisionDown
   x: 521.6616666666667
   y: 227.94107142857146
@@ -7210,8 +7912,8 @@ objects:
   width: 2.2933333333333334
   height: 112.11428571428573
 - type: BridgeLevelSensor
-  x: 308.30104166666666
-  y: 461.7562500000001
+  x: 308.30175833333334
+  y: 461.75689285714293
   width: 3.17125
   height: 13.580357142857144
 - type: BridgeLevelSensor
@@ -7225,9 +7927,9 @@ objects:
   width: 2.006666666666667
   height: 14.464285714285715
 - type: BridgeLevelSensor
-  x: 361.0485878787878
+  x: 361.0485876833334
   y: 401.10557142857147
-  width: 1.322575757575728
+  width: 1.3225753666666669
   height: 15.87857142857143
 - type: BridgeLevelSensor
   x: 277.31416666666667
@@ -7240,15 +7942,15 @@ objects:
   width: 9.137500000000001
   height: 1.8000000000000003
 - type: BridgeLevelSensor
-  x: 308.24484848484923
-  y: 350.78376623376613
-  width: 1.8893939393939851
-  height: 10.928571428571495
+  x: 308.24419566666666
+  y: 350.78400000000005
+  width: 1.8893913333333336
+  height: 10.92857142857143
 - type: BridgeLevelSensor
-  x: 355.18325757575764
-  y: 350.88311688311734
-  width: 1.8698484848485502
-  height: 11.653246753246801
+  x: 355.18326083333335
+  y: 350.88276857142864
+  width: 1.8698550000000003
+  height: 11.65325142857143
 - type: BridgeLevelSensor
   x: 555.1065865
   y: 204.8361428571429
@@ -7257,21 +7959,21 @@ objects:
 - type: BridgeLevelSensor
   x: 549.3195031666668
   y: 123.71785714285716
-  width: 11.836939666666638
+  width: 11.836939666666666
   height: 2.0571428571428574
 - type: BridgeLevelSensor
-  x: 549.158863636364
-  y: 170.08100649350675
-  width: 12.417878787878768
-  height: 2.7438311688311834
+  x: 549.1584753333334
+  y: 170.08077214285717
+  width: 12.417883999999999
+  height: 2.7438300000000004
 - type: BridgeLevelSensor
   x: 464.6568031666667
   y: 204.48707142857145
-  width: 2.0902729999999714
+  width: 2.090273
   height: 12.632142857142858
 - type: BridgeLevelSensor
   x: 341.6584135
-  y: 203.18035500000002
+  y: 203.18099785714287
   width: 10.128893666666668
   height: 1.5857100000000002
 - type: BridgeLevelSensor
@@ -7281,23 +7983,23 @@ objects:
   height: 1.0446428571428572
 - type: BridgeLevelSensor
   x: 334.5643666666667
-  y: 268.1025995454542
+  y: 268.1029478571429
   width: 17.916666666666668
-  height: 1.6753289610390045
+  height: 1.675324285714286
 - type: BridgeLevelSensor
   x: 334.8501016666667
-  y: 319.95195019480525
+  y: 319.9519478571429
   width: 18.298936666666666
-  height: 1.6753289610390045
+  height: 1.675324285714286
 - type: BridgeLevelSensor
-  x: 528.487415
+  x: 528.4874149999999
   y: 335.088855
-  width: 13.270230000000014
-  height: 1.7142814285714032
+  width: 13.27023
+  height: 1.7142814285714287
 - type: BridgeLevelSensor
   x: 528.5292468333333
   y: 227.5611428571429
-  width: 12.708893666666697
+  width: 12.708893666666668
   height: 2.3142857142857145
 - type: BridgeLevelSensor
   x: 473.25083333333333

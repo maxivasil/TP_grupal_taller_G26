@@ -16,10 +16,19 @@ NPCCar::NPCCar(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot ro
         carType(carType) {}
 
 void NPCCar::updatePhysics(const CarInput& input) {
-    b2Vec2 forward = b2Normalize(b2RotateVector(b2Body_GetRotation(body), {1, 0}));
-    forward = b2MulSV(getMaxSpeed(), forward);
-    b2Body_SetLinearVelocity(body, forward);
+    CarInput npcInput;
+    npcInput.turn_direction = Direction::FORWARD;
 
+    float speed = b2Length(b2Body_GetLinearVelocity(body));
+    float normalized = std::clamp(speed / getMaxSpeed(), 0.0f, 1.0f);
+
+    float accelProb = (1.0f - normalized) * 0.2f;
+    float brakeProb = normalized * 0.7f;
+
+    npcInput.accelerating = ((std::rand() / float(RAND_MAX)) < accelProb);
+    npcInput.braking = ((std::rand() / float(RAND_MAX)) < brakeProb);
+
+    Car::updatePhysics(npcInput);
     if (!isParked) {
         handleBlocked();
     }

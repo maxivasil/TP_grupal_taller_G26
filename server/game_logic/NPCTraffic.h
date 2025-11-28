@@ -29,8 +29,11 @@ private:
 
     // Movimiento aleatorio inteligente (basado en esquinas/colisiones)
     int currentDirection = 0;  // 0=N, 1=E, 2=S, 3=O
+    int lastRotatedDirection = -1;  // Última dirección a la que se rotó (para no rotar cada frame)
     b2Vec2 lastPosition;       // Posición anterior para detectar si se movió
     float stuckTimer = 0.0f;   // Timer para detectar si está estancado
+    bool isReversing = false;  // Si está retrocediendo actualmente
+    bool isRotating = false;   // Si está rotando después de retroceder
     int collisionCount = 0;    // Contador de colisiones recientes
     
     // Sistema de navegación aleatoria
@@ -137,6 +140,11 @@ public:
      * @brief Obtiene el tipo de auto
      */
     uint8_t getCarType() const { return carType; }
+
+    /**
+     * @brief Obtiene el NPCCar asociado
+     */
+    NPCCar* getCar() const { return car; }
 
     /**
      * @brief Obtiene la salud actual del NPC

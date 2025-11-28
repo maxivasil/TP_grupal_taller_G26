@@ -60,6 +60,20 @@ public:
      * @param direction Dirección a la que rotar (FORWARD, LEFT, RIGHT)
      */
     void rotateBodyToDirection(Direction direction);
+
+    /**
+     * @brief Rota el cuerpo físico del NPC a un ángulo específico en radianes
+     * @param angleRadians Ángulo en radianes
+     */
+    void rotateToAngle(float angleRadians);
+
+    /**
+     * @brief Maneja el giro del NPC con rotación más agresiva que Car::handleTurning
+     * Optimizado para NPCs que se quedan atascados
+     * @param turnDir Dirección de giro
+     * @param speed Velocidad actual
+     */
+    void handleTurning(Direction turnDir, float speed);
 };
 
 #endif

@@ -43,7 +43,33 @@ void WorldContactListener::BeginTouch(const b2SensorBeginTouchEvent* sensor) {
             checkpointManager.onCarEnterCheckpoint(car, data->id);
             break;
         case SensorType::BridgeLevel:
-            car->setLevel(!car->getIsOnBridge());
+            car->setLevel(true);  // Entró al sensor de puente
+            break;
+    }
+}
+
+void WorldContactListener::EndTouch(const b2SensorEndTouchEvent* sensor) {
+    b2ShapeId sensorShape = sensor->sensorShapeId;
+    b2ShapeId otherShape = sensor->visitorShapeId;
+
+    void* userData = b2Shape_GetUserData(sensorShape);
+    if (!userData) {
+        return;
+    }
+
+    const SensorData* data = static_cast<SensorData*>(userData);
+
+    b2BodyId otherBody = b2Shape_GetBody(otherShape);
+    Car* car = reinterpret_cast<Car*>(b2Body_GetUserData(otherBody));
+    if (!car)
+        return;
+
+    switch (data->type) {
+        case SensorType::Checkpoint:
+            // No hacer nada en Checkpoint cuando sale
+            break;
+        case SensorType::BridgeLevel:
+            car->setLevel(false);  // Salió del sensor de puente
             break;
     }
 }

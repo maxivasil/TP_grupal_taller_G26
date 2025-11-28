@@ -335,9 +335,15 @@ std::vector<CarSnapshot> Race::getSnapshot() const {
         float angle = b2Rot_GetAngle(rot) * 180.0f / B2_PI;
         b2Vec2 velocity = npc->getLinearVelocity();
         float speed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+        
+        // Obtener el estado de puente del NPCCar subyacente
+        bool onBridge = false;
+        if (npc->getCar()) {
+            onBridge = npc->getCar()->getIsOnBridge();
+        }
 
         CarSnapshot cs{(uint8_t)(npcIdOffset + i), pos.x, pos.y, false,
-                       npc->getCurrentHealth(),    speed, angle, false,
+                       npc->getCurrentHealth(),    speed, angle, onBridge,
                        npc->getCarType()};
         cs.isNPC = true;
         snapshot.push_back(cs);

@@ -6,14 +6,16 @@
 #include <cstdlib>
 
 NPCTraffic::NPCTraffic(b2WorldId world, uint8_t carType_, b2Vec2 position):
-        carType(carType_), car(nullptr), currentDirection(rand() % 4), stuckTimer(0.0f),
+        carType(carType_), car(nullptr), currentDirection(0), stuckTimer(0.0f),
         collisionCount(0), isParked(false), lastPosition(position), 
         directionChangeTimer(0.0f), currentMovementDir(Direction::FORWARD) {
     // Obtener stats válidos según el tipo de auto
     std::vector<std::string> carNames = CarStatsDatabase::getAllCarNames();
     std::string selectedCar = carNames[carType_ % carNames.size()];
     CarStats stats = CarStatsDatabase::getCarStats(selectedCar);
-    car = new NPCCar(world, stats, position, b2MakeRot(0));
+    
+    // Spawnear mirando hacia el Norte (-Y) para mejor posicionamiento inicial
+    car = new NPCCar(world, stats, position, b2MakeRot(-1.5708f));  // -π/2 radianes
 }
 
 NPCTraffic::~NPCTraffic() {
@@ -28,41 +30,145 @@ void NPCTraffic::updatePhysics(float deltaTime, const void* route) {
     // Si está estacionado, no moverse
     if (isParked) {
         if (car) {
-            car->updateNPCPhysics(0.0f, Direction::FORWARD);  // Parado
+            car->updateNPCPhysics(0.0f, Direction::FORWARD);
         }
         return;
     }
     
     if (!car) return;
+
+    // Obtener posición actual
+    b2Vec2 currentPos = car->getPosition();
     
-    // ===== VELOCIDAD CONSTANTE Y SIMPLE =====
-    // Todos los NPCs avanzan a 0.5 (50% de velocidad máxima)
-    float cruiseSpeed = 0.5f;
+    // Velocidad base (metros/segundo)
+    float targetSpeed = 0.5f;
     
-    // ===== DECIDIR SI GIRAR O CONTINUAR RECTO =====
-    directionChangeTimer += deltaTime;
-    
-    // Cada 4-8 segundos, decidir si girar o continuar
-    if (directionChangeTimer >= MIN_TIME_BETWEEN_TURNS) {
-        // 80% probabilidad de continuar recto, 20% de girar
-        int randomChoice = rand() % 100;
+    // ===== FASE DE RETROCESO =====
+    if (isReversing) {
+        reverseTimer += deltaTime;
         
-        if (randomChoice < 20) {
-            // Girar: 50% izquierda, 50% derecha
-            currentMovementDir = (rand() % 2 == 0) ? Direction::LEFT : Direction::RIGHT;
+        if (reverseTimer < 1.0f) {
+            // Retroceder durante 1 segundo para asegurar que se libra del obstáculo
+            car->updateNPCPhysics(-0.5f, Direction::FORWARD);
         } else {
-            // Continuar recto
-            currentMovementDir = Direction::FORWARD;
+            // Terminó el retroceso, parar y cambiar dirección
+            isReversing = false;
+            isRotating = true;
+            reverseTimer = 0.0f;
+            
+            // Parar completamente
+            car->updateNPCPhysics(0.0f, Direction::FORWARD);
+            
+            // Cambiar a una dirección aleatoria
+            if ((rand() % 2) == 0) {
+                currentDirection = (currentDirection + 1) % 4;
+            } else {
+                currentDirection = (currentDirection + 3) % 4;
+            }
         }
         
-        // Resetear timer con variación (4-8 segundos)
-        directionChangeTimer = 0.0f;
-        MIN_TIME_BETWEEN_TURNS = 4.0f + (rand() % 40) / 10.0f;
+        lastPosition = currentPos;
+        return;
     }
+
+    // ===== FASE DE ROTACIÓN =====
+    if (isRotating) {
+        float targetAngle = 0.0f;
+        switch (currentDirection % 4) {
+            case 0: targetAngle = -1.5708f; break;  // -π/2
+            case 1: targetAngle = 0.0f; break;
+            case 2: targetAngle = 1.5708f; break;   // π/2
+            case 3: targetAngle = 3.14159f; break;  // π
+        }
+        
+        b2Rot currentRot = car->getRotation();
+        float currentAngle = b2Rot_GetAngle(currentRot);
+        
+        // Normalizar ángulos
+        while (targetAngle > 3.14159f) targetAngle -= 6.28318f;
+        while (targetAngle < -3.14159f) targetAngle += 6.28318f;
+        while (currentAngle > 3.14159f) currentAngle -= 6.28318f;
+        while (currentAngle < -3.14159f) currentAngle += 6.28318f;
+        
+        float angleDiff = std::abs(targetAngle - currentAngle);
+        if (angleDiff > 3.14159f) {
+            angleDiff = 6.28318f - angleDiff;
+        }
+        
+        if (angleDiff < 0.15f) {
+            // Rotación completada
+            isRotating = false;
+            lastRotatedDirection = currentDirection;
+            lastPosition = currentPos;  // Resetear posición para nuevo movimiento
+            stuckTimer = 0.0f;  // Resetear stuck timer
+            // Continuar al código de movimiento normal (no retornar)
+        } else {
+            // Aún rotando
+            NPCCar* npcCar = dynamic_cast<NPCCar*>(car);
+            if (npcCar) {
+                npcCar->rotateToAngle(targetAngle);
+            }
+            lastPosition = currentPos;
+            return;
+        }
+    }
+
+    // ===== DETECCIÓN DE ATASCAMIENTO Y MOVIMIENTO NORMAL =====
+    float distMoved = b2Distance(lastPosition, currentPos);
+    stuckTimer += deltaTime;
+
+    // Si el NPC se movió muy poco en este frame Y se intenta mover
+    if (distMoved < 0.05f && stuckTimer > 0.3f) {
+        // Hay un obstáculo, iniciar retroceso
+        isReversing = true;
+        reverseTimer = 0.0f;
+        car->updateNPCPhysics(0.0f, Direction::FORWARD);
+        lastPosition = currentPos;
+        return;
+    }
+
+    // Resetear stuck timer si se está moviendo bien
+    if (distMoved > 0.1f) {
+        stuckTimer = 0.0f;
+    }
+
+    // Recordar posición para próximo frame
+    lastPosition = currentPos;
+
+    // Vector de dirección según currentDirection
+    b2Vec2 direction = {0.0f, 0.0f};
+    float targetAngle = 0.0f;
+
+    switch (currentDirection % 4) {
+        case 0:  // Norte (arriba, -Y)
+            direction = {0.0f, -1.0f};
+            targetAngle = -1.5708f;
+            break;
+        case 1:  // Este (derecha, +X)
+            direction = {1.0f, 0.0f};
+            targetAngle = 0.0f;
+            break;
+        case 2:  // Sur (abajo, +Y)
+            direction = {0.0f, 1.0f};
+            targetAngle = 1.5708f;
+            break;
+        case 3:  // Oeste (izquierda, -X)
+            direction = {-1.0f, 0.0f};
+            targetAngle = 3.14159f;
+            break;
+    }
+
+    // Aplicar velocidad
+    car->updateNPCPhysics(targetSpeed, Direction::FORWARD);
     
-    // ===== APLICAR MOVIMIENTO SIMPLE =====
-    // Siempre avanzar a velocidad constante, cambiar dirección según timer o colisión
-    car->updateNPCPhysics(cruiseSpeed, currentMovementDir);
+    // ROTACIÓN SOLO SI CAMBIÓ LA DIRECCIÓN
+    if (currentDirection != lastRotatedDirection) {
+        NPCCar* npcCar = dynamic_cast<NPCCar*>(car);
+        if (npcCar) {
+            npcCar->rotateToAngle(targetAngle);
+            lastRotatedDirection = currentDirection;
+        }
+    }
 }
 
 b2Vec2 NPCTraffic::getPosition() const {

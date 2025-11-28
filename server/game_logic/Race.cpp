@@ -84,12 +84,13 @@ void Race::initNPCs(b2WorldId world) {
     std::mt19937 g(rd());
     std::shuffle(spawnPoints.begin(), spawnPoints.end(), g);
 
-    int numNPCsToCreate = MIN_NPCS + (std::rand() % (MAX_NPCS - MIN_NPCS + 1));
-
-    numNPCsToCreate = std::min(numNPCsToCreate, (int)spawnPoints.size());
+    int minNPCs = std::max(1, (int)(spawnPoints.size() * 0.40f));
+    int maxNPCs = std::max(minNPCs, (int)(spawnPoints.size() * 0.90f));
+    int numNPCsToCreate = minNPCs + (std::rand() % (maxNPCs - minNPCs + 1));
 
     int createdCount = 0;
     std::vector<std::string> carNames = CarStatsDatabase::getAllCarNames();
+    float margin = 0.5f;
 
     for (const auto& inter: spawnPoints) {
         if (createdCount >= numNPCsToCreate)

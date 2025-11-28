@@ -164,7 +164,6 @@ void Car::applyCollision(const CollisionInfo& info) {
 void Car::repair() { current_health = getMaxHealth(); }
 
 bool Car::isDestroyed() const { return current_health <= 0; }
-B2_API b2BodyId b2CreateBody(b2WorldId worldId, const b2BodyDef* def);
 
 b2Vec2 Car::getPosition() const { return b2Body_GetPosition(body); }
 

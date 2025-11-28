@@ -23,8 +23,6 @@
 #include "graphics/hud.h"
 #include "graphics/minimap.h"
 
-#include "npc_routes.h"
-#include "npc_system.h"
 #include "session.h"
 
 struct RenderCar {
@@ -51,8 +49,6 @@ private:
     CheckpointArrow arrow;
     CollisionExplosion explosion;
     CarSoundEngine carSoundEngine;
-    NPCManager npcManager;            // Gestor de NPCs (autos de tráfico)
-    NPCRouteManager npcRouteManager;  // Gestor de rutas para NPCs
     std::map<int, std::shared_ptr<SDL2pp::Texture>> textures;
     std::map<uint8_t, std::shared_ptr<SDL2pp::Texture>>
             carTextures;  // Texturas individuales por auto
@@ -71,8 +67,6 @@ private:
     float elapsedTime = 0.0f;
 
     std::vector<RaceCheckpoint> trackCheckpoints;
-
-    std::vector<NPCRoute> currentTrackRoutes;  // Rutas del track actual
 
     std::unordered_map<int, float> previousHealthState;
 
@@ -98,6 +92,7 @@ private:
     bool hasRaceResults = false;
     bool raceFullyFinished = false;
     std::vector<AccumulatedResultDTO> accumulatedResults;
+    bool isLastRace = false;
     ClientPlayerResult myOwnResults = {0, "", 0.0f, 0};
 
     // Upgrades system
@@ -144,12 +139,6 @@ private:
 
     void handleUpgradesInput(const SDL_Event& event);
 
-    void renderNPCs();
-
-    void updateNPCs(float deltaTime);
-
-    void checkNPCCollisions();
-
 public:
     explicit Game(ClientSession& client_session);
 
@@ -157,7 +146,7 @@ public:
     void setClientId(uint32_t id);
     void update_snapshots(const std::vector<CarSnapshot>& snapshots, float elapsedTime);
     void setRaceResults(const std::vector<ClientPlayerResult>& results, bool isFinished);
-    void setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res);
+    void setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res, bool lastRace);
     void resetForNextRace(uint8_t nextCityId, const std::string& trackName);
 };
 

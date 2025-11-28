@@ -81,6 +81,12 @@ private:
     bool playerDestroyed = false;
     Uint32 destructionStartTime = 0;
 
+    // Countdown system
+    bool showCountdown = false;
+    Uint32 countdownStartTime = 0;
+    int countdownValue = 3;  // 3, 2, 1, then "YA!"
+    const Uint32 COUNTDOWN_INTERVAL_MS = 1000;  // 1 segundo por número
+
     GameState gameState = GameState::PLAYING;
     std::string endGameMessage = "";
     Uint32 endGameTime = 0;
@@ -135,6 +141,14 @@ private:
     void renderUpgradesScreen();
 
     void handleUpgradesInput(const SDL_Event& event);
+
+    void renderCountdown();
+
+    void startCountdown();
+
+    bool isCountdownActive() const {
+        return showCountdown && (SDL_GetTicks() - countdownStartTime) <= 4000;
+    }
 
 public:
     explicit Game(ClientSession& client_session);

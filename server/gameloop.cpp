@@ -159,11 +159,17 @@ void ServerGameLoop::run() {
 
             const std::chrono::milliseconds frameDuration(1000 / FPS);
             auto t1 = std::chrono::high_resolution_clock::now();
+            auto raceStartTime = std::chrono::high_resolution_clock::now();
             bool resultsAlreadySent = false;
             std::set<int> playersWhoAlreadyReceivedPartial;
 
             while (!race.isFinished() && should_keep_running()) {
                 process_pending_commands(ctx);
+
+                // Pause physics for first 4 seconds (countdown duration)
+                auto raceElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
+                        std::chrono::high_resolution_clock::now() - raceStartTime);
+                race.setPausePhysics(raceElapsed < std::chrono::milliseconds(4000));
 
                 race.updatePhysics(std::chrono::duration<float>(frameDuration).count());
 

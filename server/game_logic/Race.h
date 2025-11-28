@@ -45,6 +45,7 @@ private:
     std::chrono::steady_clock::time_point startTime;
     std::unordered_map<int, float> playerFinishTimes;
     bool finished;
+    bool isPhysicsPaused = false;  // Pause physics during countdown
 
     void checkFinishConditions();
     void initCheckpoints(b2WorldId world);
@@ -62,6 +63,10 @@ public:
     void start();
 
     void updatePhysics(float dt);
+
+    void setPausePhysics(bool pause) { isPhysicsPaused = pause; }
+
+    bool isPhysicsPausedState() const { return isPhysicsPaused; }
 
     bool isFinished() const;
 

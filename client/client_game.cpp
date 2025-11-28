@@ -228,19 +228,19 @@ bool Game::handleEvents() {
     }
 
     if (state[SDL_SCANCODE_RIGHT]) {
-        if (!playerDestroyed)
+        if (!playerDestroyed && !isCountdownActive())
             client_session.send_command(new ClientToServerMove_Client(MOVE_RIGHT));
     }
     if (state[SDL_SCANCODE_LEFT]) {
-        if (!playerDestroyed)
+        if (!playerDestroyed && !isCountdownActive())
             client_session.send_command(new ClientToServerMove_Client(MOVE_LEFT));
     }
     if (state[SDL_SCANCODE_UP]) {
-        if (!playerDestroyed)
+        if (!playerDestroyed && !isCountdownActive())
             client_session.send_command(new ClientToServerMove_Client(MOVE_UP));
     }
     if (state[SDL_SCANCODE_DOWN]) {
-        if (!playerDestroyed)
+        if (!playerDestroyed && !isCountdownActive())
             client_session.send_command(new ClientToServerMove_Client(MOVE_DOWN));
     }
 
@@ -578,6 +578,9 @@ void Game::render() {
         SDL_Rect rightBorder = {windowWidth - borderWidth, 0, borderWidth, windowHeight};
         rendererPtr->FillRect(rightBorder);
     }
+
+    // Render countdown
+    renderCountdown();
 
     rendererPtr->Present();
 }
@@ -1061,6 +1064,7 @@ void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
     lastPlayerX = 0.0f;
     lastPlayerY = 0.0f;
     initMinimapAndCheckpoints(trackName);
+    startCountdown();  // Inicia el countdown
 }
 
 void Game::initMinimapAndCheckpoints(const std::string& trackName) {
@@ -1324,3 +1328,68 @@ void Game::handleUpgradesInput(const SDL_Event& event) {
         return;
     }
 }
+
+void Game::startCountdown() {
+    showCountdown = true;
+    countdownStartTime = SDL_GetTicks();
+    countdownValue = 3;
+    carSoundEngine.playCountdownRace();
+    std::cout << "[COUNTDOWN] Started countdown" << std::endl;
+}
+
+void Game::renderCountdown() {
+    if (!showCountdown) {
+        return;
+    }
+
+    Uint32 elapsed = SDL_GetTicks() - countdownStartTime;
+    
+    // Total countdown duration: 4 seconds (3 + 1 for "YA!")
+    if (elapsed > 4000) {
+        showCountdown = false;
+        return;
+    }
+
+    // Calculate current number: 3 (0-999ms), 2 (1000-1999ms), 1 (2000-2999ms), YA! (3000-3999ms)
+    int displayValue = 3 - (elapsed / 1000);
+    
+    Uint8 r, g, b, a;
+    rendererPtr->GetDrawColor(r, g, b, a);
+    
+    int width = rendererPtr->GetOutputWidth();
+    int height = rendererPtr->GetOutputHeight();
+
+    // Semi-transparent background
+    SDL_Rect bgRect = {0, 0, width, height};
+    rendererPtr->SetDrawColor(0, 0, 0, 180);
+    rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    rendererPtr->FillRect(bgRect);
+    rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
+
+    // Render countdown text
+    SDL2pp::Font countdownFont(
+            hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" :
+            hud.fontPath,
+            80);  // Medium font
+
+    SDL_Color textColor = {100, 200, 255, 255};  // Cyan/Sky blue
+    std::string displayText;
+    
+    if (displayValue > 0) {
+        displayText = std::to_string(displayValue);
+    } else {
+        displayText = "YA!";
+    }
+
+    auto textSurface = countdownFont.RenderText_Solid(displayText, textColor);
+    SDL2pp::Texture textTexture(*rendererPtr, textSurface);
+
+    int textX = (width - textTexture.GetWidth()) / 2;
+    int textY = (height - textTexture.GetHeight()) / 2;
+    SDL_Rect textRect = {textX, textY, textTexture.GetWidth(), textTexture.GetHeight()};
+    
+    rendererPtr->Copy(textTexture, SDL2pp::NullOpt, textRect);
+
+    rendererPtr->SetDrawColor(r, g, b, a);
+}
+

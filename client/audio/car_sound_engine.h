@@ -29,6 +29,7 @@ private:
     Mix_Chunk* gameOverSound;        // Sound when player loses
     Mix_Chunk* cheatActivatedSound;  // Sound when cheat is activated
     Mix_Chunk* championshipWinSound; // Sound when championship is won
+    Mix_Chunk* countdownRaceSound;   // Sound for race countdown
     Mix_Music* musicTrack;
 
     int engineStartChannel = -1;
@@ -81,6 +82,7 @@ public:
     void playGameOver();        // When player loses
     void playChampionshipWin();  // When player wins championship
     void playCheatActivated();  // When cheat is activated
+    void playCountdownRace();   // When race countdown starts
 
     // Audio state control (3-state: Full Sound -> Music Only -> Muted -> Full Sound)
     void toggleAudioState();  // Cycle through: FULL_SOUND -> MUSIC_ONLY -> MUTED -> FULL_SOUND

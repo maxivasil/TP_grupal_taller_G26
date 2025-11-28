@@ -212,6 +212,11 @@ void Race::checkFinishConditions() {
 }
 
 void Race::updatePhysics(float dt) {
+    // Skip physics update if paused (during countdown)
+    if (isPhysicsPaused) {
+        return;
+    }
+
     for (auto& npc: npcs) {
         if (!npc->isDestroyed()) {
             npc->updatePhysics({});

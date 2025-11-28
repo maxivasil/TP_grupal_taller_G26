@@ -57,6 +57,25 @@ public:
         return stats_map.at("Chevrolet Corsa");
     }
 
+    // Función helper para convertir nombre del auto a car_type (0-6)
+    static uint8_t getCarTypeFromName(const std::string& carName) {
+        if (carName == "Iveco Daily")
+            return 0;
+        if (carName == "Dodge Viper")
+            return 1;
+        if (carName == "Chevrolet Corsa")
+            return 2;
+        if (carName == "Jeep Wrangler")
+            return 3;
+        if (carName == "Toyota Tacoma")
+            return 4;
+        if (carName == "Lincoln TownCar")
+            return 5;
+        if (carName == "Lamborghini Diablo")
+            return 6;
+        return 0;  // Default
+    }
+
     /**
      * @brief Verifica si un nombre de auto es válido
      * @param car_name Nombre del auto

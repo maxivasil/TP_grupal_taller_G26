@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "../common/CarStats.h"
 #include "../common/queue.h"
 #include "../common/socket.h"
 #include "../common/thread.h"

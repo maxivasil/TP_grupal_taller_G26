@@ -24,29 +24,12 @@ City::City(CityName name): name(name) {
         } else if (type == "BridgeLevelSensor") {
             bridgeSensors.push_back({obj["x"].as<float>(), obj["y"].as<float>(),
                                      obj["width"].as<float>(), obj["height"].as<float>()});
+        } else if (type == "Intersections") {
+            intersections.push_back({obj["x"].as<float>(), obj["y"].as<float>(),
+                                     obj["width"].as<float>(), obj["height"].as<float>(),
+                                     obj["up"].as<bool>(), obj["down"].as<bool>(),
+                                     obj["right"].as<bool>(), obj["left"].as<bool>()});
         }
-    }
-
-    // Load NPC traffic configuration if it exists
-    if (data["npc_traffic"]) {
-        const auto& npcConfig = data["npc_traffic"];
-        npcTrafficConfig.enabled = npcConfig["enabled"].as<bool>(false);
-        npcTrafficConfig.total_npcs = npcConfig["total_npcs"].as<int>(120);
-        npcTrafficConfig.parked_npcs = npcConfig["parked_npcs"].as<int>(40);
-
-        // Load spawn points
-        if (npcConfig["spawn_points"]) {
-            for (const auto& spawn: npcConfig["spawn_points"]) {
-                npcTrafficConfig.spawn_points.push_back(
-                        {spawn["x"].as<float>(), spawn["y"].as<float>(), spawn["width"].as<float>(),
-                         spawn["height"].as<float>()});
-            }
-        }
-
-        std::cout << "[CITY] NPC Traffic loaded for " << filename << ": "
-                  << npcTrafficConfig.total_npcs << " moving, " << npcTrafficConfig.parked_npcs
-                  << " parked, " << npcTrafficConfig.spawn_points.size() << " spawn zones"
-                  << std::endl;
     }
 }
 
@@ -62,8 +45,10 @@ std::string City::getYamlFileName() const {
     return "";
 }
 
-const std::vector<StaticObjectData> City::getStaticObjects() const { return staticObjects; }
+const std::vector<StaticObjectData>& City::getStaticObjects() const { return staticObjects; }
 
 const std::vector<BridgeSensorData>& City::getBridgeSensors() const { return bridgeSensors; }
+
+const std::vector<IntersectionData>& City::getIntersections() const { return intersections; }
 
 City::~City() {}

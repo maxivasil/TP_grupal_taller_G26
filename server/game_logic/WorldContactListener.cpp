@@ -45,6 +45,9 @@ void WorldContactListener::BeginTouch(const b2SensorBeginTouchEvent* sensor) {
         case SensorType::BridgeLevel:
             car->setLevel(!car->getIsOnBridge());
             break;
+        case SensorType::Intersection:
+            car->chooseIntersectionDirection(data->id);
+            break;
     }
 }
 

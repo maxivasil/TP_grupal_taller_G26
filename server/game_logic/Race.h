@@ -15,12 +15,12 @@
 #include "BridgeSensorManager.h"
 #include "CheckpointManager.h"
 #include "City.h"
+#include "IntersectionManager.h"
 #include "NPCCar.h"
 #include "PhysicsEngine.h"
 #include "Player.h"
 #include "StaticObject.h"
 #include "Track.h"
-#include "npc_route_manager.h"
 
 #define MAX_RACE_TIME 600.0f
 
@@ -36,6 +36,7 @@ private:
     Track track;
     CheckpointManager checkpointManager;
     BridgeSensorManager bridgeSensorManager;
+    IntersectionManager intersectionManager;
     std::list<StaticObject> staticObjects;
     PhysicsEngine physics;
     std::vector<std::unique_ptr<Player>>& players;
@@ -49,8 +50,9 @@ private:
     void initCheckpoints(b2WorldId world);
     void initStaticObjects(b2WorldId world);
     void initBridgeSensors(b2WorldId world);
+    void initIntersections(b2WorldId world);
     void initCars(b2WorldId world);
-    void initNPCs(b2WorldId world);           // Initialize NPC traffic
+    void initNPCs(b2WorldId world);  // Initialize NPC traffic
 
 public:
     Race(CityName cityName, std::string& trackFile, std::vector<std::unique_ptr<Player>>& players);

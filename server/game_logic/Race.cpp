@@ -7,12 +7,14 @@
 #include <iostream>
 #include <memory>
 #include <numeric>
+#include <random>
 #include <utility>
 #include <vector>
 
-#include "npc_route_from_track.h"
-
 #define VELOCITY_ITERATIONS 4
+#define MIN_NPCS 50
+#define MAX_NPCS 100
+#define NPC_SPEED 15.0f
 
 void Race::initCheckpoints(b2WorldId world) {
     for (auto& ckpt: track.getCheckpoints()) {
@@ -32,6 +34,15 @@ void Race::initBridgeSensors(b2WorldId world) {
     for (auto bridgeSensor: city.getBridgeSensors()) {
         bridgeSensorManager.createBridgeSensor(world, b2Vec2{bridgeSensor.x, bridgeSensor.y},
                                                bridgeSensor.width, bridgeSensor.height);
+    }
+}
+
+void Race::initIntersections(b2WorldId world) {
+    for (auto intersection: city.getIntersections()) {
+        intersectionManager.createIntersection(world, b2Vec2{intersection.x, intersection.y},
+                                               intersection.width, intersection.height,
+                                               intersection.up, intersection.down,
+                                               intersection.right, intersection.left);
     }
 }
 
@@ -64,129 +75,54 @@ void Race::initCars(b2WorldId world) {
 }
 
 void Race::initNPCs(b2WorldId world) {
-    // Sistema de spawn simplificado - sin rutas complejas
-    // Los NPCs ahora spawnan en posiciones aleatorias y navegan usando lógica aleatoria
-    
-    const auto& trackCheckpoints = track.getCheckpoints();
-    if (trackCheckpoints.empty()) {
-        std::cerr << "[RACE ERROR] No track checkpoints available for NPC spawn" << std::endl;
+    std::vector<IntersectionData> spawnPoints = city.getIntersections();
+
+    if (spawnPoints.empty())
         return;
-    }
 
-    // Calcular límites del mapa basado en checkpoints
-    float minX = 1e6f, maxX = -1e6f, minY = 1e6f, maxY = -1e6f;
-    for (const auto& ckpt : trackCheckpoints) {
-        minX = std::min(minX, ckpt.x - ckpt.width / 2);
-        maxX = std::max(maxX, ckpt.x + ckpt.width / 2);
-        minY = std::min(minY, ckpt.y - 50);
-        maxY = std::max(maxY, ckpt.y + 50);
-    }
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(spawnPoints.begin(), spawnPoints.end(), g);
 
-    // Expandir límites para que NPCs puedan spawnear alrededor
-    float mapPadding = 100.0f;
-    minX -= mapPadding;
-    maxX += mapPadding;
-    minY -= mapPadding;
-    maxY += mapPadding;
+    int numNPCsToCreate = MIN_NPCS + (std::rand() % (MAX_NPCS - MIN_NPCS + 1));
 
-    float mapWidth = maxX - minX;
-    float mapHeight = maxY - minY;
+    numNPCsToCreate = std::min(numNPCsToCreate, (int)spawnPoints.size());
 
-    int numCheckpoints = trackCheckpoints.size();
-    int maxNPCs = 100;  // Cantidad de NPCs móviles
-    int maxParked = 45;  // Cantidad de NPCs estacionados
+    int createdCount = 0;
+    std::vector<std::string> carNames = CarStatsDatabase::getAllCarNames();
 
-    // Ajustar según track
-    if (numCheckpoints < 6) {
-        maxNPCs = 55;
-        maxParked = 10;
-        std::cout << "[RACE NPC CONFIG] Small track: " << maxNPCs << " moving, " 
-                  << maxParked << " parked" << std::endl;
-    } else if (numCheckpoints >= 12) {
-        maxNPCs = 150;
-        maxParked = 85;
-        std::cout << "[RACE NPC CONFIG] Large track: " << maxNPCs << " moving, " 
-                  << maxParked << " parked" << std::endl;
-    }
+    for (const auto& inter: spawnPoints) {
+        if (createdCount >= numNPCsToCreate)
+            break;
 
-    int npcCount = 0;
-    std::vector<b2Vec2> usedPositions;
+        std::vector<float> validAngles;
 
-    // ===== SPAWN NPCs MÓVILES =====
-    for (int i = 0; i < maxNPCs; ++i) {
-        b2Vec2 spawnPos;
-        bool validPosition = false;
-        int attempts = 0;
+        if (inter.right)
+            validAngles.push_back(0.0f);
+        if (inter.up)
+            validAngles.push_back(-B2_PI / 2.0f);
+        if (inter.left)
+            validAngles.push_back(B2_PI);
+        if (inter.down)
+            validAngles.push_back(B2_PI / 2.0f);
 
-        // Intentar encontrar una posición válida (sin colisiones)
-        while (!validPosition && attempts < 20) {
-            // Generar posición aleatoria en el mapa
-            float randomX = minX + (rand() % static_cast<int>(mapWidth));
-            float randomY = minY + (rand() % static_cast<int>(mapHeight));
-            spawnPos = b2Vec2{randomX, randomY};
-
-            // Validar distancia mínima con otros NPCs
-            validPosition = true;
-            float MIN_SPAWN_DISTANCE = 40.0f;
-            
-            for (const auto& usedPos : usedPositions) {
-                if (b2Distance(spawnPos, usedPos) < MIN_SPAWN_DISTANCE) {
-                    validPosition = false;
-                    break;
-                }
-            }
-
-            attempts++;
-        }
-
-        // Si no encontró posición válida, pasar al siguiente
-        if (!validPosition) {
+        if (validAngles.empty())
             continue;
-        }
 
-        usedPositions.push_back(spawnPos);
+        float spawnAngle = validAngles[std::rand() % validAngles.size()];
 
-        uint8_t carType = rand() % 7;
-        auto npc = std::make_unique<NPCTraffic>(world, carType, spawnPos);
-        npcs.push_back(std::move(npc));
+        std::string randomCarName = carNames[std::rand() % carNames.size()];
+        CarStats npcStats = CarStatsDatabase::getCarStats(randomCarName);
 
-        std::cout << "[RACE NPC] #" << npcCount << " (MOVING) spawned at (" 
-                  << spawnPos.x << ", " << spawnPos.y << ") [Car Type: " 
-                  << static_cast<int>(carType) << "]" << std::endl;
-        npcCount++;
+        npcs.push_back(std::make_unique<NPCCar>(
+                world, npcStats, b2Vec2{inter.x, inter.y}, b2MakeRot(spawnAngle),
+                false,  // isParked = false, queremos que circulen
+                CarStatsDatabase::getCarTypeFromName(randomCarName)));
+
+        createdCount++;
     }
 
-    // ===== SPAWN NPCs ESTACIONADOS (esquinas del mapa) =====
-    std::vector<b2Vec2> cornerPositions = {
-        b2Vec2{minX + 50, minY + 50},      // Esquina superior izquierda
-        b2Vec2{maxX - 50, minY + 50},      // Esquina superior derecha
-        b2Vec2{minX + 50, maxY - 50},      // Esquina inferior izquierda
-        b2Vec2{maxX - 50, maxY - 50},      // Esquina inferior derecha
-    };
-
-    int parkedCount = 0;
-    for (const auto& cornerPos : cornerPositions) {
-        if (parkedCount >= maxParked) break;
-
-        // Agregar offset aleatorio a la esquina
-        float offsetX = (rand() % 100) - 50;
-        float offsetY = (rand() % 100) - 50;
-        b2Vec2 parkedPos{cornerPos.x + offsetX, cornerPos.y + offsetY};
-
-        uint8_t carType = rand() % 7;
-        auto npc = std::make_unique<NPCTraffic>(world, carType, parkedPos);
-        npc->setParked(true);
-        npcs.push_back(std::move(npc));
-
-        std::cout << "[RACE NPC] #" << npcCount << " (PARKED) spawned at (" 
-                  << parkedPos.x << ", " << parkedPos.y << ") [Car Type: " 
-                  << static_cast<int>(carType) << "]" << std::endl;
-        npcCount++;
-        parkedCount++;
-    }
-
-    std::cout << "[RACE] Initialized " << npcCount << " NPC traffic vehicles: " 
-              << (npcCount - parkedCount) << " moving, " << parkedCount << " parked" << std::endl;
+    std::cout << "[RACE] Initialized " << createdCount << " NPCs." << std::endl;
 }
 
 Race::Race(CityName cityName, std::string& trackFile,
@@ -200,6 +136,7 @@ Race::Race(CityName cityName, std::string& trackFile,
     initCheckpoints(world);
     initStaticObjects(world);
     initBridgeSensors(world);
+    initIntersections(world);
     initCars(world);
     initNPCs(world);
 }

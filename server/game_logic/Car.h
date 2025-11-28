@@ -20,7 +20,7 @@ class Car: public Collidable {
 protected:
     b2BodyId body;
 
-        /**
+    /**
      * @brief Obtiene la estadística de velocidad máxima incluyendo upgrades.
      * @return Velocidad máxima actual del auto (stats base + upgrades)
      */
@@ -71,7 +71,7 @@ private:
 public:
     Car(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation);
     ~Car() override;
-    
+
     void repair();
 
     virtual void updatePhysics(const CarInput& input);
@@ -122,6 +122,8 @@ public:
      * @return Referencia constante a las mejoras aplicadas
      */
     const CarUpgrades& getUpgrades() const;
+
+    virtual void chooseIntersectionDirection(int intersectionId);
 };
 
 

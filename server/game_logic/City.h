@@ -21,18 +21,15 @@ struct BridgeSensorData {
     float height;
 };
 
-struct NPCSpawnZone {
+struct IntersectionData {
     float x;
     float y;
     float width;
     float height;
-};
-
-struct NPCTrafficConfig {
-    bool enabled = false;
-    int total_npcs = 120;
-    int parked_npcs = 40;
-    std::vector<NPCSpawnZone> spawn_points;
+    bool up;
+    bool down;
+    bool right;
+    bool left;
 };
 
 class City {
@@ -40,7 +37,7 @@ private:
     CityName name;
     std::vector<StaticObjectData> staticObjects;
     std::vector<BridgeSensorData> bridgeSensors;
-    NPCTrafficConfig npcTrafficConfig;
+    std::vector<IntersectionData> intersections;
 
     std::string getYamlFileName() const;
 
@@ -48,11 +45,11 @@ public:
     explicit City(CityName name);
     ~City();
 
-    const std::vector<StaticObjectData> getStaticObjects() const;
+    const std::vector<StaticObjectData>& getStaticObjects() const;
 
     const std::vector<BridgeSensorData>& getBridgeSensors() const;
 
-    const NPCTrafficConfig& getNPCTrafficConfig() const { return npcTrafficConfig; }
+    const std::vector<IntersectionData>& getIntersections() const;
 
     CityName getCityName() const { return name; }
 };

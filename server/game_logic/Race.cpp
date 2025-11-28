@@ -110,14 +110,14 @@ void Race::initNPCs(b2WorldId world) {
             continue;
 
         float spawnAngle = validAngles[std::rand() % validAngles.size()];
-
         std::string randomCarName = carNames[std::rand() % carNames.size()];
         CarStats npcStats = CarStatsDatabase::getCarStats(randomCarName);
+        uint8_t carType = CarStatsDatabase::getCarTypeFromName(randomCarName);
 
         npcs.push_back(std::make_unique<NPCCar>(
                 world, npcStats, b2Vec2{inter.x, inter.y}, b2MakeRot(spawnAngle),
-                false,  // isParked = false, queremos que circulen
-                CarStatsDatabase::getCarTypeFromName(randomCarName)));
+                false,  // isParked
+                carType));
 
         createdCount++;
     }
@@ -259,11 +259,8 @@ std::vector<CarSnapshot> Race::getSnapshot() const {
         b2Vec2 velocity = npc->getLinearVelocity();
         float speed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
         
-        // Obtener el estado de puente del NPCCar subyacente
-        bool onBridge = false;
-        if (npc->getCar()) {
-            onBridge = npc->getCar()->getIsOnBridge();
-        }
+        // Obtener el estado de puente del NPC
+        bool onBridge = npc->getIsOnBridge();
 
         CarSnapshot cs{(uint8_t)(npcIdOffset + i), pos.x, pos.y, false,
                        npc->getCurrentHealth(),    speed, angle, onBridge,

@@ -5,6 +5,8 @@
 #include <memory>
 #include <unordered_map>
 
+
+
 /**
  * @class NPCCheckpointManager
  * @brief Gestor de NPCs distribuidos en checkpoints

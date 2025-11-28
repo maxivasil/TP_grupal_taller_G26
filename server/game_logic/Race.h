@@ -38,10 +38,9 @@ private:
     BridgeSensorManager bridgeSensorManager;
     IntersectionManager intersectionManager;
     std::list<StaticObject> staticObjects;
-    std::vector<std::unique_ptr<NPCTraffic>> npcs;  // NPCs con física
+    std::vector<std::unique_ptr<NPCCar>> npcs;  // NPCs con física
     PhysicsEngine physics;
     std::vector<std::unique_ptr<Player>>& players;
-    std::vector<std::unique_ptr<NPCCar>> npcs;
 
     std::chrono::steady_clock::time_point startTime;
     std::unordered_map<int, float> playerFinishTimes;

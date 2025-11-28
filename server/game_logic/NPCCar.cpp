@@ -7,6 +7,7 @@
 
 #define MINMOVEMENT 0.1f
 #define MAXFRAMESBLOQUED 60
+#define RETROCESO_FRAMES 90  // ~1.5 segundos a 60 FPS
 
 NPCCar::NPCCar(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation, bool parked,
                uint8_t carType):
@@ -16,10 +17,68 @@ NPCCar::NPCCar(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot ro
         carType(carType) {}
 
 void NPCCar::updatePhysics(const CarInput& input) {
+    // If in retroceso mode, handle it
+    if (isInRetrocesoMode) {
+        retrocesoFramesRemaining--;
+        
+        if (retrocesoFramesRemaining > RETROCESO_FRAMES / 2) {
+            // Primera mitad: retroceder
+            Car::updatePhysics({.accelerating = false, .braking = true, .turn_direction = Direction::FORWARD});
+        } else if (retrocesoFramesRemaining > 0) {
+            // Segunda mitad: frenar completamente
+            Car::updatePhysics({.accelerating = false, .braking = true, .turn_direction = Direction::FORWARD});
+            // Detener completamente
+            b2Body_SetLinearVelocity(body, {0.0f, 0.0f});
+        } else {
+            // Terminó retroceso: cambiar a dirección aleatoria
+            isInRetrocesoMode = false;
+            
+            // Seleccionar una dirección aleatoria (izquierda o derecha relativa a current heading)
+            float currentHeading = b2Rot_GetAngle(b2Body_GetRotation(body));
+            if (std::rand() % 2 == 0) {
+                // Girar 90° a la izquierda
+                retrocesoAngle = currentHeading + B2_PI / 2.0f;
+            } else {
+                // Girar 90° a la derecha
+                retrocesoAngle = currentHeading - B2_PI / 2.0f;
+            }
+            b2Vec2 pos = b2Body_GetPosition(body);
+            b2Body_SetTransform(body, pos, b2MakeRot(retrocesoAngle));
+        }
+        
+        if (!isParked) {
+            handleBlocked();
+        }
+        return;
+    }
+    
+    // Normal movement: mantener velocidad crucero
+    Direction turnDir = Direction::FORWARD;
+    
+    // Si está bloqueado, intentar girar para salir
+    if (isBlocked) {
+        int turnChoice = std::rand() % 2;
+        turnDir = (turnChoice == 0) ? Direction::LEFT : Direction::RIGHT;
+    }
+    
+    // Velocidad crucero: 5 unidades (moderada, no depende del auto)
+    const float CRUISE_SPEED = 5.0f;
+    
+    b2Vec2 velocity = b2Body_GetLinearVelocity(body);
+    float speed = b2Length(velocity);
     b2Vec2 forward = b2Normalize(b2RotateVector(b2Body_GetRotation(body), {1, 0}));
-    forward = b2MulSV(getMaxSpeed(), forward);
-    b2Body_SetLinearVelocity(body, forward);
-
+    
+    // Control de velocidad crucero
+    if (speed < CRUISE_SPEED * 0.95f) {
+        // Acelerar si está por debajo
+        b2Vec2 force = b2MulSV(b2Body_GetMass(body) * getAcceleration(), forward);
+        b2Body_ApplyForceToCenter(body, force, true);
+    } else if (speed > CRUISE_SPEED * 1.05f) {
+        // Frenar si está por encima
+        b2Vec2 brake_force = b2MulSV(b2Body_GetMass(body) * 5.0f, -b2Normalize(velocity));
+        b2Body_ApplyForceToCenter(body, brake_force, true);
+    }
+    
     if (!isParked) {
         handleBlocked();
     }
@@ -52,79 +111,6 @@ void NPCCar::chooseIntersectionDirection(int intersectionId) {
     if (intersectionId & DIR_LEFT) {
         validAngles.push_back(B2_PI);
     }
-    
-    // Normalizar el ángulo a rango [-pi, pi]
-    while (newAngle > B2_PI) newAngle -= 2.0f * B2_PI;
-    while (newAngle < -B2_PI) newAngle += 2.0f * B2_PI;
-    
-    // Crear nueva rotación
-    b2Rot newRot = b2MakeRot(newAngle);
-    
-    // Reorientar velocidad hacia nueva dirección forward
-    b2Vec2 newForward = b2RotateVector(newRot, {1, 0});
-    b2Vec2 newVelocity = b2MulSV(speed, newForward);
-    
-    // Aplicar nueva velocidad con nueva orientación usando torque
-    // Primero cambiar velocidad hacia nueva dirección
-    b2Body_SetLinearVelocity(body, newVelocity);
-    
-    // Aplicar torque suficiente para rotar el cuerpo físico
-    float rotationDifference = newAngle - b2Rot_GetAngle(currentRot);
-    float torque = rotationDifference > 0 ? 50000.0f : -50000.0f;  // Rotación rápida
-    b2Body_ApplyTorque(body, torque, true);
-}
-
-void NPCCar::rotateToAngle(float angleRadians) {
-    // Obtener estado actual
-    b2Rot currentRot = b2Body_GetRotation(body);
-    b2Vec2 velocity = b2Body_GetLinearVelocity(body);
-    float speed = b2Length(velocity);
-
-    // Normalizar el ángulo a rango [-pi, pi]
-    while (angleRadians > B2_PI) angleRadians -= 2.0f * B2_PI;
-    while (angleRadians < -B2_PI) angleRadians += 2.0f * B2_PI;
-
-    float currentAngle = b2Rot_GetAngle(currentRot);
-    
-    // Normalizar ángulo actual también
-    while (currentAngle > B2_PI) currentAngle -= 2.0f * B2_PI;
-    while (currentAngle < -B2_PI) currentAngle += 2.0f * B2_PI;
-
-    // Calcular diferencia de rotación (tomar la ruta más corta)
-    float rotationDifference = angleRadians - currentAngle;
-    
-    // Normalizar la diferencia a [-π, π]
-    while (rotationDifference > B2_PI) rotationDifference -= 2.0f * B2_PI;
-    while (rotationDifference < -B2_PI) rotationDifference += 2.0f * B2_PI;
-
-    // Si ya está en el ángulo correcto (< 0.05 radianes), parar de rotar
-    if (std::abs(rotationDifference) < 0.05f) {
-        // Ya rotó lo suficiente, no aplicar torque
-        // Detener rotación angular
-        b2Body_SetAngularVelocity(body, 0.0f);
-        return;
-    }
-
-    // Reorientar velocidad hacia nueva dirección forward
-    b2Rot newRot = b2MakeRot(angleRadians);
-    b2Vec2 newForward = b2RotateVector(newRot, {1, 0});
-    b2Vec2 newVelocity = (speed > 0.01f) ? b2MulSV(speed, newForward) : b2Vec2{0, 0};
-
-    // Aplicar nueva velocidad
-    b2Body_SetLinearVelocity(body, newVelocity);
-
-    // Aplicar torque proporcional a la diferencia (torque más suave)
-    // Cuanto mayor sea la diferencia, mayor el torque, pero con límite más bajo
-    float torqueStrength = std::clamp(std::abs(rotationDifference) * 8000.0f, 3000.0f, 15000.0f);
-    float torque = rotationDifference > 0 ? torqueStrength : -torqueStrength;
-    b2Body_ApplyTorque(body, torque, true);
-}
-
-void NPCCar::handleTurning(Direction turnDir, float speed) {
-    // Los NPCs manejan su propia rotación a través de rotateToAngle()
-    // No necesitan giros adicionales aquí
-    // Esta función está vacía para los NPCs
-}
     if (intersectionId & DIR_UP) {
         validAngles.push_back(-B2_PI / 2.0f);
     }
@@ -145,3 +131,15 @@ void NPCCar::handleTurning(Direction turnDir, float speed) {
 bool NPCCar::isNPCBlocked() { return isBlocked; }
 
 uint8_t NPCCar::getCarType() const { return carType; }
+
+void NPCCar::applyCollision(const CollisionInfo& info) {
+    // Call parent collision handler for damage
+    Car::applyCollision(info);
+    
+    // Activate retroceso mode
+    if (!isInRetrocesoMode) {
+        isInRetrocesoMode = true;
+        retrocesoFramesRemaining = RETROCESO_FRAMES;
+        retrocesoAngle = b2Rot_GetAngle(b2Body_GetRotation(body)) + (B2_PI / 2.0f) * ((std::rand() % 2) * 2 - 1);
+    }
+}

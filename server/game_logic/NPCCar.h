@@ -14,6 +14,9 @@ private:
     b2Vec2 lastPos = {0, 0};
     int blockedFrames = 0;
     uint8_t carType;
+    bool isInRetrocesoMode = false;
+    int retrocesoFramesRemaining = 0;
+    float retrocesoAngle = 0.0f;
 
     void handleBlocked();
 
@@ -26,45 +29,11 @@ public:
 
     void chooseIntersectionDirection(int intersectionId) override;
 
+    void applyCollision(const CollisionInfo& info) override;
+
     bool isNPCBlocked();
 
-    /**
-     * @brief Establece la tasa de aceleración
-     * @param rate Aceleración en m/s²
-     */
-    void setAccelerationRate(float rate) { accelerationRate = std::max(1.0f, rate); }
-
-    /**
-     * @brief Actualiza física del NPC con control simple de velocidad
-     * @param targetVel Velocidad objetivo (-1.0 a 1.0, normalizado)
-     * @param turnDir Dirección de giro (FORWARD, LEFT, RIGHT)
-     */
-    void updateNPCPhysics(float targetVel, Direction turnDir);
-
-    /**
-     * @brief Aplica la aceleración/frenado para llegar a velocidad objetivo
-     */
-    void applyAcceleration(float deltaTime);
-
-    /**
-     * @brief Rota el cuerpo físico del NPC instantáneamente a una nueva dirección
-     * @param direction Dirección a la que rotar (FORWARD, LEFT, RIGHT)
-     */
-    void rotateBodyToDirection(Direction direction);
-
-    /**
-     * @brief Rota el cuerpo físico del NPC a un ángulo específico en radianes
-     * @param angleRadians Ángulo en radianes
-     */
-    void rotateToAngle(float angleRadians);
-
-    /**
-     * @brief Maneja el giro del NPC con rotación más agresiva que Car::handleTurning
-     * Optimizado para NPCs que se quedan atascados
-     * @param turnDir Dirección de giro
-     * @param speed Velocidad actual
-     */
-    void handleTurning(Direction turnDir, float speed);
+    uint8_t getCarType() const;
 };
 
 #endif

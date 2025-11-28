@@ -4,62 +4,23 @@
 #include "Car.h"
 #include <box2d/box2d.h>
 
-/**
- * @class NPCCar
- * @brief Vehículo especializado para NPCs con control de movimiento predecible
- *
- * Hereda de Car pero reemplaza la lógica de movimiento para que sea más
- * controlable y predecible para sistemas de IA. Permite control directo
- * de velocidad deseada sin aceleración/frenado complejo.
- */
-class NPCCar : public Car {
-private:
-    float targetVelocity = 0.0f;  // Velocidad objetivo directa
-    float accelerationRate = 5.0f;  // Qué tan rápido llega a velocidad objetivo (m/s²)
-    
+
+class NPCCar : public Car {  
+private: 
+    bool isParked;
+    bool isBlocked;
+    b2Vec2 lastPos = {0, 0};
+    int blockedFrames = 0;
+
+    void handleBlocked();
+
 public:
-    NPCCar(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation);
+    NPCCar(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot rotation, bool parked);
     ~NPCCar() override = default;
 
-    /**
-     * @brief Establece velocidad objetivo directamente
-     * @param velocity Velocidad deseada (0.0 = parado, > 0 = adelante, < 0 = atrás)
-     */
-    void setTargetVelocity(float velocity);
+    void updatePhysics(const CarInput& input) override;
 
-    /**
-     * @brief Obtiene la velocidad objetivo actual
-     */
-    float getTargetVelocity() const { return targetVelocity; }
-
-    /**
-     * @brief Obtiene la tasa de aceleración
-     */
-    float getAccelerationRate() const { return accelerationRate; }
-
-    /**
-     * @brief Establece la tasa de aceleración
-     * @param rate Aceleración en m/s²
-     */
-    void setAccelerationRate(float rate) { accelerationRate = std::max(1.0f, rate); }
-
-    /**
-     * @brief Actualiza física del NPC con control simple de velocidad
-     * @param targetVel Velocidad objetivo (-1.0 a 1.0, normalizado)
-     * @param turnDir Dirección de giro (FORWARD, LEFT, RIGHT)
-     */
-    void updateNPCPhysics(float targetVel, Direction turnDir);
-
-    /**
-     * @brief Aplica la aceleración/frenado para llegar a velocidad objetivo
-     */
-    void applyAcceleration(float deltaTime);
-
-    /**
-     * @brief Rota el cuerpo físico del NPC instantáneamente a una nueva dirección
-     * @param direction Dirección a la que rotar (FORWARD, LEFT, RIGHT)
-     */
-    void rotateBodyToDirection(Direction direction);
+    bool isNPCBlocked();
 };
 
 #endif

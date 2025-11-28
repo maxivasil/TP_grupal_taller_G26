@@ -64,10 +64,6 @@ void Race::initCars(b2WorldId world) {
 }
 
 void Race::initNPCs(b2WorldId world) {
-    initNPCsFromTrack(world);
-}
-
-void Race::initNPCsFromTrack(b2WorldId world) {
     // Sistema de spawn simplificado - sin rutas complejas
     // Los NPCs ahora spawnan en posiciones aleatorias y navegan usando lógica aleatoria
     
@@ -245,27 +241,9 @@ void Race::checkFinishConditions() {
 }
 
 void Race::updatePhysics(float dt) {
-    // Actualizar física de los NPCs
     for (auto& npc: npcs) {
         if (!npc->isDestroyed()) {
-            // Pasar la ruta correcta dinámicamente (evita problemas con punteros inválidos)
-            // El NPC tiene un índice de ruta que usamos para acceder a currentRoutes
-            if (!currentRoutes.empty()) {
-                // Esto garantiza que siempre accedemos al vector actual, no a un puntero antiguo
-                npc->updatePhysics(dt, nullptr);  // Usa la ruta almacenada internamente
-            } else {
-                npc->updatePhysics(dt, nullptr);
-            }
-
-            // ===== SISTEMA DE RESPAWN POR ATORAMIENTO (DESHABILITADO) =====
-            // El respawn agresivo causa que NPCs desaparezcan del mapa visible.
-            // Se detecta en updatePhysics de NPCTraffic: si stuckTimer > 1.5f, ya salta waypoints.
-            // No es necesario respawnearlo aquí - dejar que NPCTraffic lo maneje.
-            // 
-            // Descomentar solo si NPCs se quedan completamente atrapados:
-            // float npcSpeed = npc->getSpeed();
-            // bool isStuck = (npcSpeed < 0.5f && npc->getStuckTimer() >= 5.0f);
-            // if (isStuck && !npc->getParked()) { ... respawn logic ... }
+            npc->updatePhysics({});
         }
     }
 

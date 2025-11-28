@@ -29,6 +29,8 @@ City::City(CityName name): name(name) {
                                      obj["width"].as<float>(), obj["height"].as<float>(),
                                      obj["up"].as<bool>(), obj["down"].as<bool>(),
                                      obj["right"].as<bool>(), obj["left"].as<bool>()});
+        } else if (type == "ParkedCar") {
+            parkedCars.push_back({obj["x"].as<float>(), obj["y"].as<float>()});
         }
     }
 }
@@ -50,5 +52,7 @@ const std::vector<StaticObjectData>& City::getStaticObjects() const { return sta
 const std::vector<BridgeSensorData>& City::getBridgeSensors() const { return bridgeSensors; }
 
 const std::vector<IntersectionData>& City::getIntersections() const { return intersections; }
+
+const std::vector<ParkedCarData>& City::getParkedCars() const { return parkedCars; }
 
 City::~City() {}

@@ -53,6 +53,7 @@ private:
     void initIntersections(b2WorldId world);
     void initCars(b2WorldId world);
     void initNPCs(b2WorldId world);  // Initialize NPC traffic
+    void initParkedCars(b2WorldId world);  // Initialize parked cars as static obstacles
 
 public:
     Race(CityName cityName, std::string& trackFile, std::vector<std::unique_ptr<Player>>& players);

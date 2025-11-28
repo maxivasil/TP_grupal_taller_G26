@@ -125,6 +125,39 @@ void Race::initNPCs(b2WorldId world) {
     std::cout << "[RACE] Initialized " << createdCount << " NPCs." << std::endl;
 }
 
+void Race::initParkedCars(b2WorldId world) {
+    std::vector<ParkedCarData> parkedCarPositions = city.getParkedCars();
+    
+    if (parkedCarPositions.empty()) {
+        std::cout << "[RACE] No parked cars defined in city data." << std::endl;
+        return;
+    }
+    
+    std::vector<std::string> carNames = CarStatsDatabase::getAllCarNames();
+    int parkedCount = 0;
+    
+    for (const auto& parkedCarData : parkedCarPositions) {
+        try {
+            b2Vec2 position = {parkedCarData.x, parkedCarData.y};
+            
+            // Seleccionar un auto aleatorio
+            std::string randomCarName = carNames[std::rand() % carNames.size()];
+            CarStats carStats = CarStatsDatabase::getCarStats(randomCarName);
+            uint8_t carType = CarStatsDatabase::getCarTypeFromName(randomCarName);
+            
+            npcs.push_back(std::make_unique<NPCCar>(
+                    world, carStats, position, b2MakeRot(0.0f),
+                    true,  // isParked = true
+                    carType));
+            parkedCount++;
+        } catch (const std::exception& e) {
+            std::cerr << "[RACE] Error creating parked car: " << e.what() << std::endl;
+        }
+    }
+    
+    std::cout << "[RACE] Initialized " << parkedCount << " parked cars." << std::endl;
+}
+
 Race::Race(CityName cityName, std::string& trackFile,
            std::vector<std::unique_ptr<Player>>& players):
         city(cityName),
@@ -139,6 +172,7 @@ Race::Race(CityName cityName, std::string& trackFile,
     initIntersections(world);
     initCars(world);
     initNPCs(world);
+    initParkedCars(world);
 }
 
 void Race::start() {

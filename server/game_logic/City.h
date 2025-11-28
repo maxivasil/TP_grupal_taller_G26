@@ -32,12 +32,18 @@ struct IntersectionData {
     bool left;
 };
 
+struct ParkedCarData {
+    float x;
+    float y;
+};
+
 class City {
 private:
     CityName name;
     std::vector<StaticObjectData> staticObjects;
     std::vector<BridgeSensorData> bridgeSensors;
     std::vector<IntersectionData> intersections;
+    std::vector<ParkedCarData> parkedCars;
 
     std::string getYamlFileName() const;
 
@@ -50,6 +56,8 @@ public:
     const std::vector<BridgeSensorData>& getBridgeSensors() const;
 
     const std::vector<IntersectionData>& getIntersections() const;
+
+    const std::vector<ParkedCarData>& getParkedCars() const;
 
     CityName getCityName() const { return name; }
 };

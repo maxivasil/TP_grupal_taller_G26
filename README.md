@@ -1,6 +1,9 @@
 # TP_grupal_taller_G26
 
 
+## Requisitos del sistema
+- Ubuntu 24.04 LTS
+
 ## Instalación
 
 ```bash
@@ -10,6 +13,7 @@ sudo bash install.sh
 **El instalador automático:**
 
 - Descarga e instala todas las dependencias (SDL2, Qt5, yaml-cpp, etc)
+- Ejecuta los tests
 - Compila el proyecto completo
 - Instala binarios en `/usr/bin/`
 - Instala assets en `/var/nfs2d/`
@@ -52,8 +56,14 @@ nfs2d_server <puerto>
 Para ejecutar el cliente:
 
 ```bash
-nfs2d_client <IP> <puerto>
+nfs2d_client
 ```
+
+#### Unirse al servidor
+
+Debés eligir un nombre de usuario e indicar la IP y puerto del servidor al que te quieras unir.
+
+<img src="DocsImages/Unirse-Server.jpg" width="700">
 
 #### Unirse/Crear Lobby
 

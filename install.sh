@@ -116,8 +116,10 @@ else
     echo "✖ No se encontró $BIN_EDITOR"
 fi
 
+./build/nfs2d_tests
+
 echo
-echo "======================================"
+echo "=========================================="
 echo "   Instalación completada correctamente"
-echo "======================================"
+echo "=========================================="
 echo

@@ -17,7 +17,10 @@ private:
     bool isInRetrocesoMode = false;
     int retrocesoFramesRemaining = 0;
     float retrocesoAngle = 0.0f;
-    int lastIntersectionId = 0;  // ID de intersección para elegir dirección válida al salir de retroceso
+    int lastIntersectionId =
+            0;  // ID de intersección para elegir dirección válida al salir de retroceso
+    int intersectionCooldownFrames = 0;
+    int postTurnGraceFrames = 0;
 
     void handleBlocked();
 

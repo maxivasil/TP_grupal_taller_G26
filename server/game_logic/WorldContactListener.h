@@ -23,8 +23,6 @@ public:
 
     void BeginTouch(const b2SensorBeginTouchEvent* sensor);
 
-    void EndTouch(const b2SensorEndTouchEvent* sensor);
-
     ~WorldContactListener();
 };
 

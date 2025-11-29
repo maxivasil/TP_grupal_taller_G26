@@ -17,6 +17,7 @@ private:
     bool isInRetrocesoMode = false;
     int retrocesoFramesRemaining = 0;
     float retrocesoAngle = 0.0f;
+    int lastIntersectionId = 0;  // ID de intersección para elegir dirección válida al salir de retroceso
 
     void handleBlocked();
 
@@ -36,6 +37,11 @@ public:
     bool isNPCBlocked();
 
     uint8_t getCarType() const;
+
+    /**
+     * @brief Registra el ID de la intersección actual para usar al salir de retroceso
+     */
+    void setLastIntersectionId(int id) { lastIntersectionId = id; }
 };
 
 #endif

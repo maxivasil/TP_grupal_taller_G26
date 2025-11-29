@@ -17,15 +17,6 @@ NPCCar::NPCCar(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot ro
         carType(carType) {}
 
 CarInput NPCCar::generateRandomMovement() {
-    // Dirección de giro: completamente aleatoria (33% cada una)
-    int turnChoice = std::rand() % 3;  // 0: LEFT, 1: FORWARD, 2: RIGHT
-    Direction turnDir = Direction::FORWARD;
-    if (turnChoice == 0) {
-        turnDir = Direction::LEFT;
-    } else if (turnChoice == 2) {
-        turnDir = Direction::RIGHT;
-    }
-
     // Velocidad crucero: 5 unidades (moderada, no depende del auto)
     const float CRUISE_SPEED = 5.0f;
     b2Vec2 velocity = b2Body_GetLinearVelocity(body);
@@ -34,10 +25,11 @@ CarInput NPCCar::generateRandomMovement() {
     bool shouldAccelerate = (speed < CRUISE_SPEED * 0.95f);
     bool shouldBrake = (speed > CRUISE_SPEED * 1.05f);
 
+    // El NPC mantiene su orientación actual (chooseIntersectionDirection lo rota en intersecciones)
     return {
         .accelerating = shouldAccelerate,
         .braking = shouldBrake,
-        .turn_direction = turnDir
+        .turn_direction = Direction::FORWARD
     };
 }
 
@@ -54,25 +46,23 @@ void NPCCar::updatePhysics(const CarInput& input) {
             // Detener completamente
             b2Body_SetLinearVelocity(body, {0.0f, 0.0f});
         } else {
-            // Terminó retroceso: cambiar a dirección aleatoria
+            // Terminó retroceso: elegir una dirección válida de la intersección
             isInRetrocesoMode = false;
             
-            // Seleccionar una dirección aleatoria (izquierda o derecha relativa a current heading)
-            float currentHeading = b2Rot_GetAngle(b2Body_GetRotation(body));
-            if (std::rand() % 2 == 0) {
-                // Girar 90° a la izquierda
-                retrocesoAngle = currentHeading + B2_PI / 2.0f;
+            // Si tenemos info de intersección válida, usar solo direcciones válidas
+            if (lastIntersectionId > 0) {
+                chooseIntersectionDirection(lastIntersectionId);
             } else {
-                // Girar 90° a la derecha
-                retrocesoAngle = currentHeading - B2_PI / 2.0f;
+                // Fallback: si no hay intersección, girar aleatoriamente
+                float currentHeading = b2Rot_GetAngle(b2Body_GetRotation(body));
+                float newHeading = currentHeading + (std::rand() % 2 == 0 ? B2_PI / 2.0f : -B2_PI / 2.0f);
+                b2Vec2 pos = b2Body_GetPosition(body);
+                b2Body_SetTransform(body, pos, b2MakeRot(newHeading));
             }
-            b2Vec2 pos = b2Body_GetPosition(body);
-            b2Body_SetTransform(body, pos, b2MakeRot(retrocesoAngle));
         }
         return;
     }
     
-    // Generar movimiento aleatorio (dirección + velocidad)
     CarInput npcMovement = generateRandomMovement();
     Car::updatePhysics(npcMovement);
     
@@ -118,6 +108,7 @@ void NPCCar::chooseIntersectionDirection(int intersectionId) {
     if (validAngles.empty())
         return;
 
+    // Elegir UNA dirección aleatoria de las válidas
     int choice = std::rand() % validAngles.size();
     float newAngle = validAngles[choice];
 

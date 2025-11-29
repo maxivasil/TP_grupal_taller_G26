@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "Collidable.h"
+#include "NPCCar.h"
 #include "SensorData.h"
 
 WorldContactListener::WorldContactListener(CheckpointManager& checkpointManager):
@@ -45,6 +46,14 @@ void WorldContactListener::BeginTouch(const b2SensorBeginTouchEvent* sensor) {
         case SensorType::BridgeLevel:
             car->setLevel(true);  // Entró al sensor de puente
             break;
+        case SensorType::Intersection: {
+            // Registrar intersección en NPCs para usar al salir de retroceso
+            NPCCar* npc = dynamic_cast<NPCCar*>(car);
+            if (npc) {
+                npc->setLastIntersectionId(data->id);
+            }
+            break;
+        }
     }
 }
 

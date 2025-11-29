@@ -27,6 +27,8 @@ public:
 
     void updatePhysics(const CarInput& input) override;
 
+    CarInput generateRandomMovement();
+
     void chooseIntersectionDirection(int intersectionId) override;
 
     void applyCollision(const CollisionInfo& info) override;

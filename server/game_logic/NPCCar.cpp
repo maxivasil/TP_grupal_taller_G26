@@ -16,8 +16,32 @@ NPCCar::NPCCar(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot ro
         isBlocked(false),
         carType(carType) {}
 
+CarInput NPCCar::generateRandomMovement() {
+    // Dirección de giro: completamente aleatoria (33% cada una)
+    int turnChoice = std::rand() % 3;  // 0: LEFT, 1: FORWARD, 2: RIGHT
+    Direction turnDir = Direction::FORWARD;
+    if (turnChoice == 0) {
+        turnDir = Direction::LEFT;
+    } else if (turnChoice == 2) {
+        turnDir = Direction::RIGHT;
+    }
+
+    // Velocidad crucero: 5 unidades (moderada, no depende del auto)
+    const float CRUISE_SPEED = 5.0f;
+    b2Vec2 velocity = b2Body_GetLinearVelocity(body);
+    float speed = b2Length(velocity);
+
+    bool shouldAccelerate = (speed < CRUISE_SPEED * 0.95f);
+    bool shouldBrake = (speed > CRUISE_SPEED * 1.05f);
+
+    return {
+        .accelerating = shouldAccelerate,
+        .braking = shouldBrake,
+        .turn_direction = turnDir
+    };
+}
+
 void NPCCar::updatePhysics(const CarInput& input) {
-    // If in retroceso mode, handle it
     if (isInRetrocesoMode) {
         retrocesoFramesRemaining--;
         
@@ -45,39 +69,12 @@ void NPCCar::updatePhysics(const CarInput& input) {
             b2Vec2 pos = b2Body_GetPosition(body);
             b2Body_SetTransform(body, pos, b2MakeRot(retrocesoAngle));
         }
-        
-        if (!isParked) {
-            handleBlocked();
-        }
         return;
     }
     
-    // Normal movement: mantener velocidad crucero
-    Direction turnDir = Direction::FORWARD;
-    
-    // Si está bloqueado, intentar girar para salir
-    if (isBlocked) {
-        int turnChoice = std::rand() % 2;
-        turnDir = (turnChoice == 0) ? Direction::LEFT : Direction::RIGHT;
-    }
-    
-    // Velocidad crucero: 5 unidades (moderada, no depende del auto)
-    const float CRUISE_SPEED = 5.0f;
-    
-    b2Vec2 velocity = b2Body_GetLinearVelocity(body);
-    float speed = b2Length(velocity);
-    b2Vec2 forward = b2Normalize(b2RotateVector(b2Body_GetRotation(body), {1, 0}));
-    
-    // Control de velocidad crucero
-    if (speed < CRUISE_SPEED * 0.95f) {
-        // Acelerar si está por debajo
-        b2Vec2 force = b2MulSV(b2Body_GetMass(body) * getAcceleration(), forward);
-        b2Body_ApplyForceToCenter(body, force, true);
-    } else if (speed > CRUISE_SPEED * 1.05f) {
-        // Frenar si está por encima
-        b2Vec2 brake_force = b2MulSV(b2Body_GetMass(body) * 5.0f, -b2Normalize(velocity));
-        b2Body_ApplyForceToCenter(body, brake_force, true);
-    }
+    // Generar movimiento aleatorio (dirección + velocidad)
+    CarInput npcMovement = generateRandomMovement();
+    Car::updatePhysics(npcMovement);
     
     if (!isParked) {
         handleBlocked();

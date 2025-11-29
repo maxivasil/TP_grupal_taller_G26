@@ -180,11 +180,6 @@ bool Game::handleEvents() {
                     arrow.onWindowResize(w, h, uiScale);
                 }
                 break;
-            case SDL_MOUSEBUTTONDOWN:
-                if (event.button.button == SDL_BUTTON_LEFT) {
-                    // Mute button removed
-                }
-                break;
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_m) {
                     // M key: toggle minimap (all states)

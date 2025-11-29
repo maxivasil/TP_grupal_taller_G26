@@ -318,12 +318,10 @@ void CarSoundEngine::onChannelFinished(int channel) {
     if (!instance)
         return;
 
-    // Remove channel from active effect channels when it finishes
     instance->activeEffectChannels.erase(channel);
 
     if (channel == instance->engineStartChannel) {
         instance->engineLoopChannel = Mix_PlayChannel(-1, instance->engineLoopSound, -1);
-        // Register the loop channel as an effect channel
         if (instance->engineLoopChannel != -1) {
             instance->activeEffectChannels.insert(instance->engineLoopChannel);
         }
@@ -364,7 +362,6 @@ void CarSoundEngine::stopAll() {
     if (!audioInitialized)
         return;
     
-    // Stop only effect channels, preserve music
     stopAcceleration();
     stopBrake();
     stopTurn();
@@ -375,66 +372,4 @@ void CarSoundEngine::stopAll() {
     }
     
     activeEffectChannels.clear();
-}
-
-void CarSoundEngine::toggleAudioState() {
-    // Cycle through: FULL_SOUND -> MUSIC_ONLY -> MUTED -> FULL_SOUND
-    int nextState = (static_cast<int>(audioState) + 1) % 3;
-    setAudioState(static_cast<AudioState>(nextState));
-}
-
-void CarSoundEngine::setAudioState(AudioState state) {
-    audioState = state;
-
-    switch (audioState) {
-        case AudioState::FULL_SOUND:
-            // Restore all sounds (music and effects)
-            Mix_ResumeMusic();                            // Resume music
-            Mix_VolumeMusic(int(MIX_MAX_VOLUME * 0.3f));  // Restore music volume
-            for (int channel: activeEffectChannels) {
-                if (Mix_Playing(channel)) {
-                    Mix_Resume(channel);
-                    Mix_Volume(channel, MIX_MAX_VOLUME);  // Restore channel volume
-                }
-            }
-            // Restore all channel volumes to max
-            for (int i = 0; i < MIX_CHANNELS; i++) {
-                Mix_Volume(i, MIX_MAX_VOLUME);
-            }
-            break;
-
-        case AudioState::MUSIC_ONLY:
-            // Play ONLY effects (no music) - inverse behavior
-            Mix_PauseMusic();  // Pause music
-            for (int channel: activeEffectChannels) {
-                if (Mix_Playing(channel)) {
-                    Mix_Resume(channel);
-                }
-            }
-            break;
-
-        case AudioState::MUTED:
-            // Mute everything - use aggressive mute
-            muteAllSound();
-            break;
-    }
-}
-
-void CarSoundEngine::muteAllSound() {
-    // Pause music (don't halt - we need to resume it later)
-    Mix_PauseMusic();
-
-    // Pause all channels as backup
-    Mix_Pause(-1);
-
-    // Also pause each known effect channel
-    for (int channel: activeEffectChannels) {
-        Mix_Pause(channel);
-    }
-
-    // Set volume to 0 for additional safety
-    Mix_VolumeMusic(0);
-    for (int i = 0; i < MIX_CHANNELS; i++) {
-        Mix_Volume(i, 0);
-    }
 }

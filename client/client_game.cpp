@@ -735,7 +735,7 @@ void Game::setWon() {
     endGameMessage = "¡GANASTE!";
     endGameTime = SDL_GetTicks();
     carSoundEngine.stopAll();  // Detener todos los sonidos de movimiento
-    
+
     if (isLastRace) {
         carSoundEngine.playChampionshipWin();
     } else {
@@ -1038,9 +1038,8 @@ void Game::renderAccumulatedTable() {
     }
 }
 
-void Game::setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res, bool lastRace) {
+void Game::setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res) {
     accumulatedResults = res;
-    isLastRace = lastRace;
 }
 
 void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
@@ -1338,7 +1337,7 @@ void Game::renderCountdown() {
     }
 
     Uint32 elapsed = SDL_GetTicks() - countdownStartTime;
-    
+
     // Total countdown duration: 4 seconds (3 + 1 for "YA!")
     if (elapsed > 4000) {
         showCountdown = false;
@@ -1347,10 +1346,10 @@ void Game::renderCountdown() {
 
     // Calculate current number: 3 (0-999ms), 2 (1000-1999ms), 1 (2000-2999ms), YA! (3000-3999ms)
     int displayValue = 3 - (elapsed / 1000);
-    
+
     Uint8 r, g, b, a;
     rendererPtr->GetDrawColor(r, g, b, a);
-    
+
     int width = rendererPtr->GetOutputWidth();
     int height = rendererPtr->GetOutputHeight();
 
@@ -1362,14 +1361,14 @@ void Game::renderCountdown() {
     rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
 
     // Render countdown text
-    SDL2pp::Font countdownFont(
-            hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" :
-            hud.fontPath,
-            80);  // Medium font
+    SDL2pp::Font countdownFont(hud.fontPath.empty() ?
+                                       "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" :
+                                       hud.fontPath,
+                               80);  // Medium font
 
     SDL_Color textColor = {100, 200, 255, 255};  // Cyan/Sky blue
     std::string displayText;
-    
+
     if (displayValue > 0) {
         displayText = std::to_string(displayValue);
     } else {
@@ -1382,9 +1381,8 @@ void Game::renderCountdown() {
     int textX = (width - textTexture.GetWidth()) / 2;
     int textY = (height - textTexture.GetHeight()) / 2;
     SDL_Rect textRect = {textX, textY, textTexture.GetWidth(), textTexture.GetHeight()};
-    
+
     rendererPtr->Copy(textTexture, SDL2pp::NullOpt, textRect);
 
     rendererPtr->SetDrawColor(r, g, b, a);
 }
-

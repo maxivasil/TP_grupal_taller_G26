@@ -187,8 +187,7 @@ void ServerGameLoop::run() {
                 }
             }
             if (race.isFinished() && !resultsAlreadySent) {
-                send_acumulated_results(race, players, resultsAlreadySent,
-                                        raceNumber == racesInfo.size() - 1);
+                send_acumulated_results(race, players, resultsAlreadySent);
             }
             raceNumber++;
         }
@@ -238,7 +237,7 @@ void ServerGameLoop::send_partial_results(Race& race,
 
 void ServerGameLoop::send_acumulated_results(const Race& race,
                                              std::vector<std::unique_ptr<Player>> const& players,
-                                             bool& resultsAlreadySent, bool isLastRace) {
+                                             bool& resultsAlreadySent) {
     resultsAlreadySent = true;
     const auto& finishTimes = race.getFinishTimes();
     std::vector<std::pair<int, float>> sortedFinishTimes(finishTimes.begin(), finishTimes.end());
@@ -310,8 +309,7 @@ void ServerGameLoop::send_acumulated_results(const Race& race,
                   return a.playerId < b.playerId;
               });
 
-    auto accumCmd =
-            std::make_shared<ServerToClientAccumulatedResults_Server>(orderedAccum, isLastRace);
+    auto accumCmd = std::make_shared<ServerToClientAccumulatedResults_Server>(orderedAccum);
     protected_clients.broadcast(accumCmd);
 
     std::cout << "\n--- ACUMULADO HASTA AHORA ---\n";

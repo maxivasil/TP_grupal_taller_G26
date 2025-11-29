@@ -16,7 +16,7 @@ private:
     bool isLastRace;
 
 public:
-    ServerToClientStartingRace_Server(uint8_t cityId, std::string& trackFile, bool isLastRace = false);
+    ServerToClientStartingRace_Server(uint8_t cityId, std::string& trackFile, bool isLastRace);
 
     std::vector<uint8_t> to_bytes() const override;
 

@@ -9,7 +9,6 @@ TEST(STCProtocolDeserializationTest, AccumulatedResults) {
     std::vector<uint8_t> bytes;
 
     BufferUtils::append_uint8(bytes, ACCUMULATED_RESULTS_COMMAND);
-    BufferUtils::append_uint8(bytes, 0);
 
     BufferUtils::append_uint16(bytes, 2);
 
@@ -24,9 +23,7 @@ TEST(STCProtocolDeserializationTest, AccumulatedResults) {
     auto msg = ServerToClientAccumulatedResults_Client::from_bytes(bytes);
 
     std::vector<AccumulatedResultDTO> results = msg.get_only_for_test_results();
-    bool isLastRace = msg.get_only_for_test_isLastRace();
 
-    EXPECT_FALSE(isLastRace);
     ASSERT_EQ(results.size(), 2);
 
     EXPECT_EQ(results[0].playerId, 0);

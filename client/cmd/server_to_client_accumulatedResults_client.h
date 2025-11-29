@@ -19,19 +19,15 @@ struct AccumulatedResultDTO {
 class ServerToClientAccumulatedResults_Client: public ServerToClientCmd_Client {
 private:
     std::vector<AccumulatedResultDTO> results;
-    bool isLastRace;
 
 public:
-    ServerToClientAccumulatedResults_Client(const std::vector<AccumulatedResultDTO>& res,
-                                            bool isLastRace);
+    explicit ServerToClientAccumulatedResults_Client(const std::vector<AccumulatedResultDTO>& res);
 
     virtual void execute(ClientContext& ctx) override;
 
     static ServerToClientAccumulatedResults_Client from_bytes(const std::vector<uint8_t>& data);
 
-    const std::vector<AccumulatedResultDTO> get_only_for_test_results() const;
-
-    bool get_only_for_test_isLastRace() const;
+    const std::vector<AccumulatedResultDTO>& get_only_for_test_results() const;
 };
 
 #endif  // SERVER_TO_CLIENT_ACCUMULATEDRESULTS_CLIENT_H

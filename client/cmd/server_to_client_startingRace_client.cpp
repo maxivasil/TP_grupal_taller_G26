@@ -28,18 +28,18 @@ ServerToClientStartingRace_Client ServerToClientStartingRace_Client::from_bytes(
     uint8_t header = data[0];
     if (header != STARTING_RACE_COMMAND)
         throw std::runtime_error("Invalid header for Race Starting");
-    
+
     uint8_t cityId;
     size_t offset = 1;
     BufferUtils::read_uint8(data, offset, cityId);
-    
-    uint8_t isLastRaceFlag = 0;
+
     bool isLastRace = false;
     if (data.size() > offset) {
+        uint8_t isLastRaceFlag;
         BufferUtils::read_uint8(data, offset, isLastRaceFlag);
         isLastRace = (isLastRaceFlag != 0);
     }
-    
+
     std::string trackFile;
     if (data.size() > offset) {
         trackFile = std::string(data.begin() + offset, data.end());
@@ -52,3 +52,5 @@ uint8_t ServerToClientStartingRace_Client::get_only_for_test_cityId() const { re
 const std::string& ServerToClientStartingRace_Client::get_only_for_test_trackFile() const {
     return trackFile;
 }
+
+bool ServerToClientStartingRace_Client::get_only_for_test_isLastRace() const { return isLastRace; }

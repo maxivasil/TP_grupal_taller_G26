@@ -11,7 +11,7 @@
 TEST(STCProtocolSerializationTest, AccumulatedResults) {
     std::vector<AccumulatedResultDTO> results = {{0, 1, 12.34f}, {1, 2, 15.99f}};
 
-    ServerToClientAccumulatedResults_Server msg(results, false);
+    ServerToClientAccumulatedResults_Server msg(results);
     std::vector<uint8_t> bytes = msg.to_bytes();
 
     ASSERT_GT(bytes.size(), 1);
@@ -19,9 +19,6 @@ TEST(STCProtocolSerializationTest, AccumulatedResults) {
     EXPECT_EQ(bytes[0], ACCUMULATED_RESULTS_COMMAND);
 
     size_t offset = 1;
-    uint8_t isLastRace;
-    BufferUtils::read_uint8(bytes, offset, isLastRace);
-    EXPECT_EQ(isLastRace, 0);
 
     uint16_t count;
     BufferUtils::read_uint16(bytes, offset, count);

@@ -41,7 +41,7 @@ private:
     void send_partial_results(Race& race, std::set<int>& playersWhoAlreadyReceivedPartial);
     void send_acumulated_results(const Race& race,
                                  std::vector<std::unique_ptr<Player>> const& players,
-                                 bool& resultsAlreadySent, bool isLastRace);
+                                 bool& resultsAlreadySent);
     void handle_upgrades(std::vector<std::unique_ptr<Player>>& players);
 };
 

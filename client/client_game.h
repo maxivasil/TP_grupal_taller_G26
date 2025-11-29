@@ -84,7 +84,7 @@ private:
     // Countdown system
     bool showCountdown = false;
     Uint32 countdownStartTime = 0;
-    int countdownValue = 3;  // 3, 2, 1, then "YA!"
+    int countdownValue = 3;                     // 3, 2, 1, then "YA!"
     const Uint32 COUNTDOWN_INTERVAL_MS = 1000;  // 1 segundo por número
 
     GameState gameState = GameState::PLAYING;
@@ -158,7 +158,7 @@ public:
     void update_snapshots(const std::vector<CarSnapshot>& snapshots, float elapsedTime);
     void setRaceResults(const std::vector<ClientPlayerResult>& results, bool isFinished);
     void setIsLastRace(bool lastRace) { isLastRace = lastRace; }
-    void setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res, bool lastRace);
+    void setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res);
     void resetForNextRace(uint8_t nextCityId, const std::string& trackName);
 };
 

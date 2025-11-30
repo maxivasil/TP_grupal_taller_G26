@@ -12,9 +12,6 @@ ClientToServerTour_Server::ClientToServerTour_Server(std::string tourFile, uint3
         tourFile(tourFile), ClientToServerCmd_Server(client_id) {}
 
 void ClientToServerTour_Server::execute(ServerContext& ctx) {
-    std::cout << "Ejecutando comando Tour con archivo: " << tourFile
-              << " del cliente con id: " << client_id << std::endl;
-
     if (!ctx.inLobby || !*(ctx.inLobby) || !ctx.racesInfo)
         return;
 
@@ -36,11 +33,6 @@ void ClientToServerTour_Server::execute(ServerContext& ctx) {
         }
 
         ctx.racesInfo->emplace_back(city, track);
-    }
-
-    for (const auto& raceInfo: *(ctx.racesInfo)) {
-        std::cout << "  - Ciudad: " << raceInfo.city << ", Pista: " << raceInfo.trackFile
-                  << std::endl;
     }
 }
 

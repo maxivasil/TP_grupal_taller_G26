@@ -7,6 +7,8 @@ ServerToClientAccumulatedResults_Client::ServerToClientAccumulatedResults_Client
         results(res) {}
 
 void ServerToClientAccumulatedResults_Client::execute(ClientContext& ctx) {
+    if (!ctx.game)
+        return;
     ctx.game->setAccumulatedResults(results);
 }
 

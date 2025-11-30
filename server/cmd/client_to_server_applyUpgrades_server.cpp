@@ -14,11 +14,8 @@ ClientToServerApplyUpgrades_Server::ClientToServerApplyUpgrades_Server(uint32_t 
         ClientToServerCmd_Server(client_id), upgrades(upgrades) {}
 
 void ClientToServerApplyUpgrades_Server::execute(ServerContext& ctx) {
-    std::cout << "Cliente con id: " << client_id << " está aplicando mejoras al auto" << std::endl;
-
     // Validar upgrades
     if (!ctx.players || !upgrades.isValid()) {
-        std::cerr << "Error: Upgrades inválidos para cliente " << client_id << std::endl;
         return;
     }
     // Encontrar el jugador correspondiente al cliente
@@ -27,10 +24,7 @@ void ClientToServerApplyUpgrades_Server::execute(ServerContext& ctx) {
 
     if (it != ctx.players->end()) {
         (*it)->applyCarUpgrades(upgrades);
-        std::cout << "Mejoras aplicadas para cliente " << client_id
-                  << " - Penalización de tiempo: " << upgrades.getTimePenalty() << "s" << std::endl;
     }
-    std::cerr << "Error: No se encontró al jugador con id " << client_id << std::endl;
 }
 
 ClientToServerApplyUpgrades_Server* ClientToServerApplyUpgrades_Server::from_bytes(

@@ -9,7 +9,11 @@
 
 ServerToClientGameStarting_Client::ServerToClientGameStarting_Client() {}
 
-void ServerToClientGameStarting_Client::execute(ClientContext& ctx) { ctx.mainwindow->close(); }
+void ServerToClientGameStarting_Client::execute(ClientContext& ctx) {
+    if (!ctx.mainwindow)
+        return;
+    ctx.mainwindow->close();
+}
 
 ServerToClientGameStarting_Client ServerToClientGameStarting_Client::from_bytes(
         const std::vector<uint8_t>& data) {

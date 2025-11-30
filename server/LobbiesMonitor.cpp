@@ -7,11 +7,15 @@
 LobbiesMonitor::LobbiesMonitor() {}
 
 void LobbiesMonitor::killFinishedLobbies() {
-    for (auto& [_, lobby]: lobbies) {
+    for (auto it = lobbies.begin(); it != lobbies.end();) {
+        const auto& lobby = it->second;
         if (lobby->status == LobbyStatus::FINISHED) {
             lobby->gameloop.empty_gameloop_queue();
             lobby->gameloop.stop();
             lobby->gameloop.join();
+            it = lobbies.erase(it);
+        } else {
+            ++it;
         }
     }
 }

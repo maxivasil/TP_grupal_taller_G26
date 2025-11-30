@@ -15,6 +15,8 @@ ServerToClientJoinLobbyResponse_Client::ServerToClientJoinLobbyResponse_Client(u
 
 
 void ServerToClientJoinLobbyResponse_Client::execute(ClientContext& ctx) {
+    if (!ctx.mainwindow)
+        return;
     InitialWindow* window = qobject_cast<InitialWindow*>(ctx.mainwindow);
     if (status == STATUS_OK) {
         window->changeScreen(lobbyId);

@@ -43,7 +43,6 @@ void ServerClientHandler::run() {
         if (!inLobby) {
             return;
         }
-        std::cout << "[SERVER] Assigned client ID " << client_id << " to connected client.\n";
         auto assignIdCmd = std::make_shared<ServerToClientAssignId_Server>(client_id);
         send_message(assignIdCmd);
 

@@ -12,6 +12,8 @@ ServerToClientSnapshot_Client::ServerToClientSnapshot_Client(std::vector<CarSnap
         cars_snapshot(std::move(cars)), elapsedTime(elapsedTime) {}
 
 void ServerToClientSnapshot_Client::execute(ClientContext& ctx) {
+    if (!ctx.game)
+        return;
     ctx.game->update_snapshots(cars_snapshot, elapsedTime);
 }
 

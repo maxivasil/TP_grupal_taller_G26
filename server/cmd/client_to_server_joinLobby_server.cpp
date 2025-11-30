@@ -25,9 +25,7 @@ ClientToServerJoinLobby_Server::ClientToServerJoinLobby_Server(std::string&& lob
         lobbyId(std::move(lobbyId)), ClientToServerCmd_Server(client_id), type(type) {}
 
 void ClientToServerJoinLobby_Server::execute(ServerContext& ctx) {
-    std::cout << "EJECUTANDO JOIN LOBBY " << lobbyId << " " << type << std::endl;
-    if (ctx.inLobby && *(ctx.inLobby)) {
-        std::cout << "YA en lobby " << std::endl;
+    if (!ctx.client || !ctx.inLobby || *(ctx.inLobby)) {
         return;
     }
     Queue<ClientToServerCmd_Server*>* gameloop_queue = nullptr;
@@ -42,7 +40,6 @@ void ClientToServerJoinLobby_Server::execute(ServerContext& ctx) {
     if (type == TYPE_JOIN) {
         gameloop_queue = ctx.client->joinLobby(lobbyId);
         if (!gameloop_queue) {
-            std::cout << "Error al conectarse al Lobby " << std::endl;
             auto error_cmd = std::make_shared<ServerToClientJoinLobbyResponse_Server>(
                     STATUS_ERROR, LOBBY_ALREADY_STARTED);
             ctx.client->send_message(error_cmd);
@@ -53,7 +50,6 @@ void ClientToServerJoinLobby_Server::execute(ServerContext& ctx) {
     *(ctx.inLobby) = true;
     auto success_cmd = std::make_shared<ServerToClientJoinLobbyResponse_Server>(STATUS_OK, lobbyId);
     ctx.client->send_message(success_cmd);
-    std::cout << "lobby Correctamente " << std::endl;
 }
 
 // Deserialización desde bytes

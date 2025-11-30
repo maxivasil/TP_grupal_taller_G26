@@ -10,21 +10,12 @@ ClientToServerReady_Server::ClientToServerReady_Server(uint32_t client_id, const
         ClientToServerCmd_Server(client_id), car(car), username(username) {}
 
 void ClientToServerReady_Server::execute(ServerContext& ctx) {
-    std::cout << "Cliente con id: " << client_id
-              << " está listo para comenzar la carrera con el auto " << car << std::endl;
-
-    // Store the selected car in the lobby
-    if (ctx.lobby) {
-        ctx.lobby->clientCarSelection[client_id] = car;
-        ctx.lobby->clientUsernames[client_id] = username;
-        std::cout << "Auto guardado para cliente " << client_id << ": " << car << std::endl;
-    }
-
-    if (!ctx.inLobby || !*(ctx.inLobby) || !ctx.clientsReady) {
+    if (!ctx.inLobby || !*(ctx.inLobby) || !ctx.clientsReady || !ctx.lobby) {
         return;
     }
-    std::cout << "Cliente con id: " << client_id
-              << " está listo para comenzar la carrera con el auto " << car << std::endl;
+    // Store the selected car in the lobby
+    ctx.lobby->clientCarSelection[client_id] = car;
+    ctx.lobby->clientUsernames[client_id] = username;
     ctx.clientsReady->insert(client_id);
 }
 

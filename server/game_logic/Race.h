@@ -42,9 +42,10 @@ private:
     PhysicsEngine physics;
     std::vector<std::unique_ptr<Player>>& players;
 
-    std::chrono::steady_clock::time_point startTime;
+    std::chrono::steady_clock::time_point raceTimeOffset;
     std::unordered_map<int, float> playerFinishTimes;
     bool finished;
+    bool isRunning = false;
     bool isPhysicsPaused = false;  // Pause physics during countdown
 
     void checkFinishConditions();
@@ -53,14 +54,14 @@ private:
     void initBridgeSensors(b2WorldId world);
     void initIntersections(b2WorldId world);
     void initCars(b2WorldId world);
-    void initNPCs(b2WorldId world);  // Initialize NPC traffic
+    void initNPCs(b2WorldId world);        // Initialize NPC traffic
     void initParkedCars(b2WorldId world);  // Initialize parked cars as static obstacles
 
 public:
     Race(CityName cityName, std::string& trackFile, std::vector<std::unique_ptr<Player>>& players);
     ~Race();
 
-    void start();
+    void start(std::chrono::steady_clock::time_point offsetTime);
 
     void updatePhysics(float dt);
 

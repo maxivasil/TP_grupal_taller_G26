@@ -14,10 +14,6 @@ struct PlayerResult {
     std::string playerName;
     float finishTime;
     uint8_t position;
-
-    PlayerResult(): playerId(0), playerName(""), finishTime(0.0f), position(0) {}
-    PlayerResult(uint32_t id, const std::string& name, float time, uint8_t pos):
-            playerId(id), playerName(name), finishTime(time), position(pos) {}
 };
 
 class ServerToClientRaceResults_Server: public ServerToClientCmd_Server {
@@ -26,7 +22,6 @@ private:
     bool isFinished;
 
 public:
-    ServerToClientRaceResults_Server();
     ServerToClientRaceResults_Server(const std::vector<PlayerResult>& playerResults, bool finished);
 
     std::vector<uint8_t> to_bytes() const override;

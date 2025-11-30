@@ -2,6 +2,7 @@
 #define SERVER_TO_CLIENT_ACCUMULATEDRESULTS_SERVER_H
 
 #include <cstdint>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -12,6 +13,7 @@
 
 struct AccumulatedResultDTO {
     uint32_t playerId;
+    std::string playerName;
     uint16_t completedRaces;
     float totalTime;
 };

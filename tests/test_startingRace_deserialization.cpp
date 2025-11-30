@@ -15,6 +15,7 @@ TEST(STCProtocolDeserializationTest, FromBytes_CorrectData) {
     BufferUtils::append_uint8(bytes, STARTING_RACE_COMMAND);
     BufferUtils::append_uint8(bytes, cityId);
     BufferUtils::append_uint8(bytes, 1);
+    BufferUtils::append_uint8(bytes, 10);
 
     BufferUtils::append_bytes(bytes, trackFile.data(), trackFile.size());
 
@@ -23,4 +24,5 @@ TEST(STCProtocolDeserializationTest, FromBytes_CorrectData) {
     EXPECT_EQ(cmd.get_only_for_test_cityId(), cityId);
     EXPECT_EQ(cmd.get_only_for_test_trackFile(), trackFile);
     EXPECT_TRUE(cmd.get_only_for_test_isLastRace());
+    EXPECT_EQ(cmd.get_only_for_test_countdownValue(), 10);
 }

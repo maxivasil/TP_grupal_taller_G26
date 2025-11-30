@@ -7,8 +7,6 @@
 
 #include "../../common/buffer_utils.h"
 
-ServerToClientRaceResults_Server::ServerToClientRaceResults_Server(): isFinished(false) {}
-
 ServerToClientRaceResults_Server::ServerToClientRaceResults_Server(
         const std::vector<PlayerResult>& playerResults, bool finished):
         results(playerResults), isFinished(finished) {}

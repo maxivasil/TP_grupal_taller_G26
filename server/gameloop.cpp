@@ -144,9 +144,37 @@ void ServerGameLoop::run() {
             }
 
             auto startingRaceCmd = std::make_shared<ServerToClientStartingRace_Server>(
-                    raceInfo.city, raceInfo.trackFile, raceNumber == racesInfo.size() - 1);
+                    raceInfo.city, raceInfo.trackFile, raceNumber == racesInfo.size() - 1,
+                    UINT8_MAX);
             protected_clients.broadcast(startingRaceCmd);
 
+            int secondsDuration = (raceNumber == 0) ? 15 : 5;
+            const std::chrono::milliseconds countdownFrame(1000);
+
+            auto countdownStart = std::chrono::high_resolution_clock::now();
+            int countdownValue = secondsDuration;
+
+            race.setPausePhysics(true);
+
+            while (countdownValue >= 0 && should_keep_running()) {
+                auto now = std::chrono::high_resolution_clock::now();
+                auto elapsed =
+                        std::chrono::duration_cast<std::chrono::milliseconds>(now - countdownStart);
+
+                int nextCountdownValue =
+                        secondsDuration - (elapsed.count() / countdownFrame.count());
+
+                if (nextCountdownValue < countdownValue) {
+                    countdownValue = nextCountdownValue;
+                    auto countdownCmd = std::make_shared<ServerToClientStartingRace_Server>(
+                            raceInfo.city, raceInfo.trackFile, raceNumber == racesInfo.size() - 1,
+                            (uint8_t)countdownValue);
+                    protected_clients.broadcast(countdownCmd);
+                }
+
+                update_game_state(race);
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            }
             try {
                 empty_gameloop_queue();
             } catch (const ClosedQueue&) {
@@ -154,22 +182,18 @@ void ServerGameLoop::run() {
                 status = LobbyStatus::FINISHED;
                 break;
             }
+            race.setPausePhysics(false);
 
-            race.start();
+            auto realStartTime = std::chrono::steady_clock::now();
+            race.start(realStartTime);
 
             const std::chrono::milliseconds frameDuration(1000 / FPS);
             auto t1 = std::chrono::high_resolution_clock::now();
-            auto raceStartTime = std::chrono::high_resolution_clock::now();
             bool resultsAlreadySent = false;
             std::set<int> playersWhoAlreadyReceivedPartial;
 
             while (!race.isFinished() && should_keep_running()) {
                 process_pending_commands(ctx);
-
-                // Pause physics for first 4 seconds (countdown duration)
-                auto raceElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
-                        std::chrono::high_resolution_clock::now() - raceStartTime);
-                race.setPausePhysics(raceElapsed < std::chrono::milliseconds(4000));
 
                 race.updatePhysics(std::chrono::duration<float>(frameDuration).count());
 
@@ -279,7 +303,7 @@ void ServerGameLoop::send_acumulated_results(const Race& race,
                                });
 
         if (it == accumulatedResults.end()) {
-            accumulatedResults.push_back({p->getId(), 0, -1.0f});
+            accumulatedResults.push_back({p->getId(), p->getName(), 0, -1.0f});
         }
     }
 

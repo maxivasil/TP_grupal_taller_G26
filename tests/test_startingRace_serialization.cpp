@@ -10,14 +10,15 @@ TEST(STCProtocolSerializationTest, StartingRace) {
     uint8_t cityId = 3;
     std::string trackFile = "liberty_city.map";
 
-    ServerToClientStartingRace_Server msg(cityId, trackFile, false);
+    ServerToClientStartingRace_Server msg(cityId, trackFile, false, 10);
     auto bytes = msg.to_bytes();
 
     ASSERT_GT(bytes.size(), 2);
     EXPECT_EQ(bytes[0], STARTING_RACE_COMMAND);
     EXPECT_EQ(bytes[1], cityId);
     EXPECT_EQ(bytes[2], 0);
+    EXPECT_EQ(bytes[3], 10);
 
-    std::string file(reinterpret_cast<const char*>(&bytes[3]), bytes.size() - 3);
+    std::string file(reinterpret_cast<const char*>(&bytes[4]), bytes.size() - 4);
     EXPECT_EQ(file, trackFile);
 }

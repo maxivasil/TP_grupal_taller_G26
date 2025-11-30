@@ -83,9 +83,8 @@ private:
 
     // Countdown system
     bool showCountdown = false;
-    Uint32 countdownStartTime = 0;
-    int countdownValue = 3;                     // 3, 2, 1, then "YA!"
-    const Uint32 COUNTDOWN_INTERVAL_MS = 1000;  // 1 segundo por número
+    uint8_t countdownValue = 0;
+    Uint32 yaStartTime = 0;
 
     GameState gameState = GameState::PLAYING;
     std::string endGameMessage = "";
@@ -144,11 +143,9 @@ private:
 
     void renderCountdown();
 
-    void startCountdown();
+    bool isCountdownActive() const;
 
-    bool isCountdownActive() const {
-        return showCountdown && (SDL_GetTicks() - countdownStartTime) <= 4000;
-    }
+    void renderOwnName(const SDL_Rect& rowRect) const;
 
 public:
     explicit Game(ClientSession& client_session);
@@ -159,6 +156,7 @@ public:
     void setRaceResults(const std::vector<ClientPlayerResult>& results, bool isFinished);
     void setIsLastRace(bool lastRace) { isLastRace = lastRace; }
     void setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res);
+    void setCountdownValue(uint8_t value);
     void resetForNextRace(uint8_t nextCityId, const std::string& trackName);
 };
 

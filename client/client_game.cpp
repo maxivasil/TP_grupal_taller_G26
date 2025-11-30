@@ -875,6 +875,17 @@ void Game::renderMyOwnTime() {
     rendererPtr->Copy(tex, SDL2pp::NullOpt, rect);
 }
 
+void Game::renderOwnName(const SDL_Rect& rowRect) const {
+    SDL_Rect bgRect = {rowRect.x - 10, rowRect.y - 2, rowRect.w + 20, rowRect.h + 4};
+    SDL_Color highlightColor = {255, 255, 100, 90};
+    rendererPtr->SetDrawColor(highlightColor.r, highlightColor.g, highlightColor.b,
+                              highlightColor.a);
+    rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    rendererPtr->FillRect(bgRect);
+    rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    rendererPtr->SetDrawColor(255, 255, 255, 255);
+}
+
 void Game::renderRaceTable() {
     SDL2pp::Font font(
             hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
@@ -889,7 +900,7 @@ void Game::renderRaceTable() {
     int startY = height / 4;
     int lineHeight = 28;
 
-    auto surfHeader = font.RenderText_Solid("RESULTADOS", headerColor);
+    auto surfHeader = font.RenderText_Solid("RESULTADOS DE LA CARRERA", headerColor);
     SDL2pp::Texture texHeader(*rendererPtr, surfHeader);
 
     SDL_Rect headerRect = {(width - texHeader.GetWidth()) / 2, startY, texHeader.GetWidth(),
@@ -914,7 +925,7 @@ void Game::renderRaceTable() {
         int millis = (int)((r.finishTime - (int)r.finishTime) * 1000);
 
         char line[256];
-        snprintf(line, sizeof(line), "%d. %s   %02d:%02d.%03d", (int)r.position,
+        snprintf(line, sizeof(line), "%2d. %-15.15s   %02d:%02d.%03ds", (int)r.position,
                  r.playerName.c_str(), minutes, seconds, millis);
 
         auto surfRow = font.RenderText_Solid(line, rowColor);
@@ -924,17 +935,7 @@ void Game::renderRaceTable() {
                             texRow.GetHeight()};
 
         if (isMe) {
-            SDL_Rect bgRect = {rowRect.x - 10, rowRect.y - 2, rowRect.w + 20, rowRect.h + 4};
-
-            SDL_Color highlightColor = {255, 255, 100, 90};
-
-            rendererPtr->SetDrawColor(highlightColor.r, highlightColor.g, highlightColor.b,
-                                      highlightColor.a);
-            rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-            rendererPtr->FillRect(bgRect);
-
-            rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
-            rendererPtr->SetDrawColor(255, 255, 255, 255);
+            renderOwnName(rowRect);
         }
 
         rendererPtr->Copy(texRow, SDL2pp::NullOpt, rowRect);
@@ -955,7 +956,7 @@ void Game::renderRaceTable() {
         for (const auto& r: dnf) {
             bool isMe = (r.playerId == client_id);
             char line[256];
-            snprintf(line, sizeof(line), "-    %s    DNF", r.playerName.c_str());
+            snprintf(line, sizeof(line), " --  %-15.15s   DNF", r.playerName.c_str());
 
             auto surfRow = font.RenderText_Solid(line, rowColor);
             SDL2pp::Texture texRow(*rendererPtr, surfRow);
@@ -964,17 +965,7 @@ void Game::renderRaceTable() {
                                 texRow.GetHeight()};
 
             if (isMe) {
-                SDL_Rect bgRect = {rowRect.x - 10, rowRect.y - 2, rowRect.w + 20, rowRect.h + 4};
-
-                SDL_Color highlightColor = {255, 255, 100, 90};
-
-                rendererPtr->SetDrawColor(highlightColor.r, highlightColor.g, highlightColor.b,
-                                          highlightColor.a);
-                rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-                rendererPtr->FillRect(bgRect);
-
-                rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
-                rendererPtr->SetDrawColor(255, 255, 255, 255);
+                renderOwnName(rowRect);
             }
 
             rendererPtr->Copy(texRow, SDL2pp::NullOpt, rowRect);
@@ -1006,15 +997,18 @@ void Game::renderAccumulatedTable() {
 
     startY += lineHeight + 20;
 
+    int position = 1;
+
     for (const auto& r: accumulatedResults) {
         bool isMe = (r.playerId == client_id);
         char line[256];
 
         if (r.completedRaces == 0) {
-            snprintf(line, sizeof(line), "%u  |  Carreras: 0  |  Tiempo total: N/A", r.playerId);
+            snprintf(line, sizeof(line), "%2d. %-15.15s | Carreras: 0 | T.Total: ---", position,
+                     r.playerName.c_str());
         } else {
-            snprintf(line, sizeof(line), "%u  |  Carreras: %u  |  Tiempo total: %.2f", r.playerId,
-                     r.completedRaces, r.totalTime);
+            snprintf(line, sizeof(line), "%2d. %-15.15s | Carreras: %u | T.Total: %7.2fs", position,
+                     r.playerName.c_str(), r.completedRaces, r.totalTime);
         }
 
         auto surfRow = font.RenderText_Solid(line, rowColor);
@@ -1024,21 +1018,12 @@ void Game::renderAccumulatedTable() {
                             texRow.GetHeight()};
 
         if (isMe) {
-            SDL_Rect bgRect = {rowRect.x - 10, rowRect.y - 2, rowRect.w + 20, rowRect.h + 4};
-
-            SDL_Color highlightColor = {255, 255, 100, 90};
-
-            rendererPtr->SetDrawColor(highlightColor.r, highlightColor.g, highlightColor.b,
-                                      highlightColor.a);
-            rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-            rendererPtr->FillRect(bgRect);
-
-            rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
-            rendererPtr->SetDrawColor(255, 255, 255, 255);
+            renderOwnName(rowRect);
         }
 
         rendererPtr->Copy(texRow, SDL2pp::NullOpt, rowRect);
         startY += lineHeight;
+        position++;
     }
 }
 
@@ -1062,7 +1047,6 @@ void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
     lastPlayerX = 0.0f;
     lastPlayerY = 0.0f;
     initMinimapAndCheckpoints(trackName);
-    startCountdown();  // Inicia el countdown
 }
 
 void Game::initMinimapAndCheckpoints(const std::string& trackName) {
@@ -1327,29 +1311,17 @@ void Game::handleUpgradesInput(const SDL_Event& event) {
     }
 }
 
-void Game::startCountdown() {
-    showCountdown = true;
-    countdownStartTime = SDL_GetTicks();
-    countdownValue = 3;
-    carSoundEngine.playCountdownRace();
-    std::cout << "[COUNTDOWN] Started countdown" << std::endl;
-}
-
 void Game::renderCountdown() {
     if (!showCountdown) {
         return;
     }
 
-    Uint32 elapsed = SDL_GetTicks() - countdownStartTime;
-
-    // Total countdown duration: 4 seconds (3 + 1 for "YA!")
-    if (elapsed > 4000) {
-        showCountdown = false;
-        return;
+    if (countdownValue == 0) {
+        if (SDL_GetTicks() - yaStartTime > 1000) {
+            showCountdown = false;
+            return;
+        }
     }
-
-    // Calculate current number: 3 (0-999ms), 2 (1000-1999ms), 1 (2000-2999ms), YA! (3000-3999ms)
-    int displayValue = 3 - (elapsed / 1000);
 
     Uint8 r, g, b, a;
     rendererPtr->GetDrawColor(r, g, b, a);
@@ -1373,8 +1345,8 @@ void Game::renderCountdown() {
     SDL_Color textColor = {100, 200, 255, 255};  // Cyan/Sky blue
     std::string displayText;
 
-    if (displayValue > 0) {
-        displayText = std::to_string(displayValue);
+    if (countdownValue > 0) {
+        displayText = std::to_string(countdownValue);
     } else {
         displayText = "YA!";
     }
@@ -1390,3 +1362,17 @@ void Game::renderCountdown() {
 
     rendererPtr->SetDrawColor(r, g, b, a);
 }
+
+void Game::setCountdownValue(uint8_t value) {
+    if (value == 0 && countdownValue != 0) {
+        yaStartTime = SDL_GetTicks();
+    }
+    if (value == 3) {
+        carSoundEngine.playCountdownRace();
+    }
+
+    countdownValue = value;
+    showCountdown = true;
+}
+
+bool Game::isCountdownActive() const { return showCountdown; }

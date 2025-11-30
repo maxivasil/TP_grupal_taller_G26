@@ -9,7 +9,8 @@
 #include "../server/cmd/server_to_client_accumulatedResults_server.h"
 
 TEST(STCProtocolSerializationTest, AccumulatedResults) {
-    std::vector<AccumulatedResultDTO> results = {{0, 1, 12.34f}, {1, 2, 15.99f}};
+    std::vector<AccumulatedResultDTO> results = {{0, "Player1", 1, 12.34f},
+                                                 {1, "Player2", 2, 15.99f}};
 
     ServerToClientAccumulatedResults_Server msg(results);
     std::vector<uint8_t> bytes = msg.to_bytes();
@@ -28,6 +29,13 @@ TEST(STCProtocolSerializationTest, AccumulatedResults) {
     BufferUtils::read_uint32(bytes, offset, pid0);
     EXPECT_EQ(pid0, results[0].playerId);
 
+    uint16_t nameLen0;
+    BufferUtils::read_uint16(bytes, offset, nameLen0);
+    EXPECT_EQ(nameLen0, results[0].playerName.size());
+    std::string name0(reinterpret_cast<const char*>(&bytes[offset]), nameLen0);
+    EXPECT_EQ(name0, results[0].playerName);
+    offset += nameLen0;
+
     uint16_t completedRaces0;
     BufferUtils::read_uint16(bytes, offset, completedRaces0);
     EXPECT_EQ(completedRaces0, results[0].completedRaces);
@@ -39,6 +47,13 @@ TEST(STCProtocolSerializationTest, AccumulatedResults) {
     uint32_t pid1;
     BufferUtils::read_uint32(bytes, offset, pid1);
     EXPECT_EQ(pid1, results[1].playerId);
+
+    uint16_t nameLen1;
+    BufferUtils::read_uint16(bytes, offset, nameLen1);
+    EXPECT_EQ(nameLen1, results[1].playerName.size());
+    std::string name1(reinterpret_cast<const char*>(&bytes[offset]), nameLen1);
+    EXPECT_EQ(name1, results[1].playerName);
+    offset += nameLen1;
 
     uint16_t completedRaces1;
     BufferUtils::read_uint16(bytes, offset, completedRaces1);

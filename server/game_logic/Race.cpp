@@ -190,7 +190,8 @@ Race::Race(CityName cityName, std::string& trackFile,
         track(trackFile),
         physics(checkpointManager),
         players(players),
-        finished(false) {
+        finished(false),
+        isRunning(false) {
     b2WorldId world = physics.getWorld();
     initCheckpoints(world);
     initStaticObjects(world);
@@ -201,8 +202,9 @@ Race::Race(CityName cityName, std::string& trackFile,
     initParkedCars(world);
 }
 
-void Race::start() {
-    startTime = std::chrono::steady_clock::now();
+void Race::start(std::chrono::steady_clock::time_point offsetTime) {
+    raceTimeOffset = offsetTime;
+    isRunning = true;
     finished = false;
 }
 
@@ -211,8 +213,7 @@ void Race::checkFinishConditions() {
         if (checkpointManager.hasCarFinished(player->getCar()) &&
             !playerFinishTimes.count(player->getId())) {
 
-            auto now = std::chrono::steady_clock::now();
-            float elapsed = std::chrono::duration<float>(now - startTime).count();
+            float elapsed = getCurrentElapsedTime();
             playerFinishTimes[player->getId()] = elapsed;
 
             std::cout << "[RACE] Player " << player->getId() << " (" << player->getName()
@@ -226,9 +227,7 @@ void Race::checkFinishConditions() {
         }
     }
 
-    if (playerFinishTimes.size() == players.size() ||
-        std::chrono::duration<float>(std::chrono::steady_clock::now() - startTime).count() >=
-                MAX_RACE_TIME) {
+    if (playerFinishTimes.size() == players.size() || getCurrentElapsedTime() >= MAX_RACE_TIME) {
         finished = true;
         std::cout << "[RACE] RACE FINISHED! Reason: "
                   << (playerFinishTimes.size() == players.size() ? "All players done" :
@@ -256,8 +255,11 @@ void Race::updatePhysics(float dt) {
 bool Race::isFinished() const { return finished; }
 
 float Race::getCurrentElapsedTime() const {
+    if (!isRunning) {
+        return 0.0f;
+    }
     auto now = std::chrono::steady_clock::now();
-    return std::chrono::duration<float>(now - startTime).count();
+    return std::chrono::duration<float>(now - raceTimeOffset).count();
 }
 
 void Race::turnPlayer(int playerId, Direction dir) {
@@ -363,10 +365,9 @@ void Race::forceWinCheat(int playerId) {
 
     if (it != players.end()) {
         // Marcar como finalizador inmediatamente
-        auto now = std::chrono::steady_clock::now();
-        auto raceTime = std::chrono::duration_cast<std::chrono::seconds>(now - startTime).count();
-        playerFinishTimes[playerId] = static_cast<float>(raceTime);
-        std::cout << "CHEAT: Cliente " << playerId << " ganó en " << raceTime << " segundos"
+        float elapsed = getCurrentElapsedTime();
+        playerFinishTimes[playerId] = elapsed;
+        std::cout << "CHEAT: Cliente " << playerId << " ganó en " << elapsed << " segundos"
                   << std::endl;
     }
 }

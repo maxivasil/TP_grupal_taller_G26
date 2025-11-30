@@ -2,8 +2,12 @@
 
 ServerToClientStartingRace_Server::ServerToClientStartingRace_Server(uint8_t cityId,
                                                                      std::string& trackFile,
-                                                                     bool isLastRace):
-        cityId(cityId), trackFile(trackFile), isLastRace(isLastRace) {}
+                                                                     bool isLastRace,
+                                                                     uint8_t countdownValue):
+        cityId(cityId),
+        trackFile(trackFile),
+        isLastRace(isLastRace),
+        countdownValue(countdownValue) {}
 
 std::vector<uint8_t> ServerToClientStartingRace_Server::to_bytes() const {
     std::vector<uint8_t> data;
@@ -14,6 +18,8 @@ std::vector<uint8_t> ServerToClientStartingRace_Server::to_bytes() const {
 
     uint8_t lastRaceFlag = isLastRace ? 1 : 0;
     BufferUtils::append_uint8(data, lastRaceFlag);
+
+    BufferUtils::append_uint8(data, countdownValue);
 
     BufferUtils::append_bytes(data, trackFile.data(), trackFile.size());
     return data;

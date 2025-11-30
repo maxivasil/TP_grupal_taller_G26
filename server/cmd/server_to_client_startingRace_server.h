@@ -14,9 +14,11 @@ private:
     uint8_t cityId;
     std::string trackFile;
     bool isLastRace;
+    uint8_t countdownValue;
 
 public:
-    ServerToClientStartingRace_Server(uint8_t cityId, std::string& trackFile, bool isLastRace);
+    ServerToClientStartingRace_Server(uint8_t cityId, std::string& trackFile, bool isLastRace,
+                                      uint8_t countdownValue);
 
     std::vector<uint8_t> to_bytes() const override;
 

@@ -98,11 +98,11 @@ void CarSoundEngine::update(bool isAccelerating, bool isTurning, bool isBraking)
         return;
 
     if (isAccelerating && !enginePlaying) {
-        playAcceleration();
         enginePlaying = true;
+        playAcceleration();
     } else if (enginePlaying && !isAccelerating) {
-        stopAcceleration();
         enginePlaying = false;
+        stopAcceleration();
     }
 
     if (isTurning && !turnPlaying) {
@@ -256,10 +256,8 @@ void CarSoundEngine::playChampionshipWin() {
         return;
     }
 
-    if (contextSoundChannel != -1) {
-        activeEffectChannels.erase(contextSoundChannel);
-        Mix_HaltChannel(contextSoundChannel);
-    }
+    stopAll();
+    Mix_HaltMusic();
 
     int channel = Mix_PlayChannel(-1, championshipWinSound, 0);
     if (channel == -1) {
@@ -268,7 +266,7 @@ void CarSoundEngine::playChampionshipWin() {
     } else {
         contextSoundChannel = channel;
         activeEffectChannels.insert(channel);
-        Mix_Volume(channel, MIX_MAX_VOLUME);  // Full volume
+        Mix_Volume(channel, MIX_MAX_VOLUME);
     }
 }
 
@@ -320,7 +318,7 @@ void CarSoundEngine::onChannelFinished(int channel) {
 
     instance->activeEffectChannels.erase(channel);
 
-    if (channel == instance->engineStartChannel) {
+    if (channel == instance->engineStartChannel && instance->enginePlaying) {
         instance->engineLoopChannel = Mix_PlayChannel(-1, instance->engineLoopSound, -1);
         if (instance->engineLoopChannel != -1) {
             instance->activeEffectChannels.insert(instance->engineLoopChannel);
@@ -330,15 +328,17 @@ void CarSoundEngine::onChannelFinished(int channel) {
 
 void CarSoundEngine::stopAcceleration() {
     if (engineStartChannel != -1) {
-        activeEffectChannels.erase(engineStartChannel);
-        Mix_HaltChannel(engineStartChannel);
+        int channelToHalt = engineStartChannel;
         engineStartChannel = -1;
+        activeEffectChannels.erase(channelToHalt);
+        Mix_HaltChannel(channelToHalt);
     }
 
     if (engineLoopChannel != -1) {
-        activeEffectChannels.erase(engineLoopChannel);
-        Mix_HaltChannel(engineLoopChannel);
+        int channelToHalt = engineLoopChannel;
         engineLoopChannel = -1;
+        activeEffectChannels.erase(channelToHalt);
+        Mix_HaltChannel(channelToHalt);
     }
 }
 
@@ -361,15 +361,20 @@ void CarSoundEngine::stopBrake() {
 void CarSoundEngine::stopAll() {
     if (!audioInitialized)
         return;
-    
+
     stopAcceleration();
     stopBrake();
     stopTurn();
-    
-    if (contextSoundChannel != -1 && Mix_Playing(contextSoundChannel)) {
+
+    if (contextSoundChannel != -1) {
         Mix_HaltChannel(contextSoundChannel);
+        activeEffectChannels.erase(contextSoundChannel);
         contextSoundChannel = -1;
     }
-    
+
+    for (int channel: activeEffectChannels) {
+        Mix_HaltChannel(channel);
+    }
+
     activeEffectChannels.clear();
 }

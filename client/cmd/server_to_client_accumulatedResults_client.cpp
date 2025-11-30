@@ -31,6 +31,11 @@ ServerToClientAccumulatedResults_Client ServerToClientAccumulatedResults_Client:
         BufferUtils::read_uint32(data, offset, playerId);
         dto.playerId = playerId;
 
+        uint16_t nameLen;
+        BufferUtils::read_uint16(data, offset, nameLen);
+        dto.playerName = std::string(reinterpret_cast<const char*>(&data[offset]), nameLen);
+        offset += nameLen;
+
         uint16_t races;
         BufferUtils::read_uint16(data, offset, races);
         dto.completedRaces = races;

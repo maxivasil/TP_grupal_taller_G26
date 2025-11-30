@@ -18,6 +18,9 @@ std::vector<uint8_t> ServerToClientAccumulatedResults_Server::to_bytes() const {
     for (const auto& dto: results) {
         BufferUtils::append_uint32(bytes, dto.playerId);
 
+        BufferUtils::append_uint16(bytes, static_cast<uint16_t>(dto.playerName.length()));
+        BufferUtils::append_bytes(bytes, dto.playerName.data(), dto.playerName.length());
+
         BufferUtils::append_uint16(bytes, dto.completedRaces);
 
         BufferUtils::append_float(bytes, dto.totalTime);

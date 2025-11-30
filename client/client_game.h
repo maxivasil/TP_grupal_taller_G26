@@ -98,6 +98,7 @@ private:
     std::vector<AccumulatedResultDTO> accumulatedResults;
     bool isLastRace = false;
     ClientPlayerResult myOwnResults = {0, "", 0.0f, 0};
+    std::map<uint32_t, std::string> playerNames;  // Mapeo de client_id a playerName
 
     // Upgrades system
     bool showUpgradesScreen = false;
@@ -148,6 +149,8 @@ private:
     bool isCountdownActive() const;
 
     void renderOwnName(const SDL_Rect& rowRect) const;
+
+    void renderPlayerNames(SDL2pp::Renderer& renderer, const SDL_Rect& src, float scale);
 
 public:
     explicit Game(ClientSession& client_session);

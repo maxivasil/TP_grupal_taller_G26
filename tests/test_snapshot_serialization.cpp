@@ -10,8 +10,8 @@
 
 TEST(STCProtocolSerializationTest, Snapshot) {
     std::vector<CarSnapshot> cars = {
-            {10, 100.5f, 200.75f, true, 95.0f, 30.2f, 45.0f, false, 2, true, true},
-            {22, -10.0f, 0.5f, false, 80.0f, 70.0f, 180.0f, true, 5, false, false}};
+            {10, 100.5f, 200.75f, true, 95.0f, 30.2f, 45.0f, false, 2, true, true, "Player1"},
+            {22, -10.0f, 0.5f, false, 80.0f, 70.0f, 180.0f, true, 5, false, false, "Player2"}};
 
     float elapsedTime = 12.34f;
     ServerToClientSnapshot_Server msg(cars, elapsedTime);
@@ -52,6 +52,16 @@ TEST(STCProtocolSerializationTest, Snapshot) {
         EXPECT_EQ(bytes[offset++], cars[i].car_type);
         EXPECT_EQ(bytes[offset++], cars[i].hasInfiniteHealth ? 1 : 0);
         EXPECT_EQ(bytes[offset++], cars[i].isNPC ? 1 : 0);
+
+        // Validar nombre
+        uint16_t nameLen;
+        BufferUtils::read_uint16(bytes, offset, nameLen);
+        EXPECT_EQ(nameLen, cars[i].playerName.length());
+        if (nameLen > 0) {
+            std::string readName((char*)&bytes[offset], nameLen);
+            EXPECT_EQ(readName, cars[i].playerName);
+            offset += nameLen;
+        }
     }
 
     EXPECT_EQ(offset, bytes.size());

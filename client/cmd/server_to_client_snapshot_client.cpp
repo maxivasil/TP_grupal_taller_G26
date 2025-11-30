@@ -70,6 +70,16 @@ ServerToClientSnapshot_Client ServerToClientSnapshot_Client::from_bytes(
 
         BufferUtils::read_uint8(data, offset, car.isNPC);
 
+        // Leer nombre del jugador
+        if (offset + sizeof(uint16_t) <= data.size()) {
+            uint16_t nameLen;
+            BufferUtils::read_uint16(data, offset, nameLen);
+            if (nameLen > 0 && offset + nameLen <= data.size()) {
+                car.playerName = std::string((char*)&data[offset], nameLen);
+                offset += nameLen;
+            }
+        }
+
         cars.push_back(car);
     }
 

@@ -21,6 +21,7 @@ struct CarSnapshot {
                        // 6=Descapotable
     uint8_t hasInfiniteHealth = false;  // Indica si el cheat de vida infinita está activado
     uint8_t isNPC = false;              // True si es un auto de tráfico (NPC), false si es jugador
+    std::string playerName = "";        // Nombre del jugador (vacío para NPCs)
 };
 
 class ServerToClientSnapshot_Client: public ServerToClientCmd_Client {

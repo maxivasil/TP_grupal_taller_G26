@@ -35,6 +35,13 @@ std::vector<uint8_t> ServerToClientSnapshot_Server::to_bytes() const {
         BufferUtils::append_bytes(data, &hasInfiniteHealth, sizeof(hasInfiniteHealth));
         uint8_t isNPC = car.isNPC ? 1 : 0;
         BufferUtils::append_bytes(data, &isNPC, sizeof(isNPC));
+        
+        // Agregar nombre del jugador
+        uint16_t nameLen = static_cast<uint16_t>(car.playerName.length());
+        BufferUtils::append_uint16(data, nameLen);
+        if (nameLen > 0) {
+            BufferUtils::append_bytes(data, (uint8_t*)car.playerName.c_str(), nameLen);
+        }
     }
 
     return data;

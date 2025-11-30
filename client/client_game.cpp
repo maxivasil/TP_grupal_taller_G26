@@ -419,6 +419,9 @@ void Game::render() {
         }
     }
 
+    float scale = (src.w > 0) ? float(dst.w) / float(src.w) : 1.0f;
+    renderPlayerNames(*rendererPtr, src, scale);
+
     auto it = std::find_if(snapshots.begin(), snapshots.end(), [&](const CarSnapshot& car) {
         return !car.isNPC && car.id == client_id;
     });
@@ -776,6 +779,11 @@ void Game::setRaceResults(const std::vector<ClientPlayerResult>& results, bool i
     raceFullyFinished = isFinished;
     std::cout << "\n=== GAME::setRaceResults LLAMADO ===" << std::endl;
     std::cout << "Resultados de carrera recibidos: " << results.size() << " jugadores" << std::endl;
+
+    // Actualizar mapa de nombres
+    for (const auto& r : results) {
+        playerNames[r.playerId] = r.playerName;
+    }
 
     auto it = std::find_if(results.begin(), results.end(),
                            [this](const auto& r) { return r.playerId == client_id; });
@@ -1388,5 +1396,53 @@ void Game::setCountdownValue(uint8_t value) {
     countdownValue = value;
     showCountdown = true;
 }
+
+void Game::renderPlayerNames(SDL2pp::Renderer& renderer, const SDL_Rect& src, float scale) {
+    if (snapshots.empty())
+        return;
+
+    try {
+        SDL2pp::Font nameFont("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 14);
+
+        for (const auto& car : snapshots) {
+            if (car.isNPC || car.playerName.empty())
+                continue;  // No mostrar nombres de NPCs ni autos sin nombre
+
+            // Calcular posición en pantalla
+            float worldX = car.pos_x * PX_PER_METER_X;
+            float worldY = car.pos_y * PX_PER_METER_Y;
+
+            float screenX = (worldX - src.x) * scale;
+            float screenY = (worldY - src.y) * scale - 40;  // 40 píxeles arriba del auto
+
+            // Crear texto blanco con fondo negro
+            SDL_Color textColor = {255, 255, 255, 255};
+            SDL_Color bgColor = {0, 0, 0, 200};
+
+            auto textSurface = nameFont.RenderText_Solid(car.playerName, textColor);
+            SDL2pp::Texture textTexture(renderer, textSurface);
+
+            int textWidth = textTexture.GetWidth();
+            int textHeight = textTexture.GetHeight();
+
+            // Dibujar fondo negro con algo de padding
+            int padding = 4;
+            SDL_Rect bgRect = {int(screenX - textWidth / 2 - padding), int(screenY - padding),
+                               textWidth + padding * 2, textHeight + padding * 2};
+
+            renderer.SetDrawColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a);
+            renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+            renderer.FillRect(bgRect);
+            renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+
+            // Dibujar texto
+            SDL_Rect textRect = {int(screenX - textWidth / 2), int(screenY), textWidth, textHeight};
+            renderer.Copy(textTexture, SDL2pp::NullOpt, textRect);
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "[ERROR] Error rendering player names: " << e.what() << std::endl;
+    }
+}
+
 
 bool Game::isCountdownActive() const { return showCountdown; }

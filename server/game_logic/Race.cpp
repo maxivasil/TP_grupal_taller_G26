@@ -312,6 +312,7 @@ std::vector<CarSnapshot> Race::getSnapshot() const {
                        player->getCarType()};
         cs.hasInfiniteHealth = player->hasInfiniteHealth();
         cs.isNPC = false;
+        cs.playerName = player->getName();  // Agregar nombre del jugador
         snapshot.push_back(cs);
     }
 

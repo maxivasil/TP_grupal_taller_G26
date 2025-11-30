@@ -17,6 +17,7 @@
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
+#define ZOOM 1.5f
 #define PX_PER_METER_X (62.0f / 8.9f)
 #define PX_PER_METER_Y (24.0f / 3.086f)
 
@@ -45,17 +46,16 @@ const int NUM_SPRITES = 7;
 
 Game::Game(ClientSession& client_session):
         client_session(client_session),
-        camera(WINDOW_WIDTH, WINDOW_HEIGHT),
+        camera(WINDOW_WIDTH, WINDOW_HEIGHT, ZOOM),
         minimap(150),
         hud(WINDOW_WIDTH, WINDOW_HEIGHT),
-        arrow(WINDOW_WIDTH, WINDOW_HEIGHT) {
-    explosion.setSoundEngine(&carSoundEngine);
-}
+        arrow(WINDOW_WIDTH, WINDOW_HEIGHT) {}
 
 int Game::start() {
     try {
         SDL2pp::SDL sdl(SDL_INIT_VIDEO);
         TTF_Init();
+        hud.initFont(fontPath, 18);
 
         std::string titulo = "NFS-2D";
 
@@ -73,20 +73,6 @@ int Game::start() {
         SDL2pp::Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         rendererPtr = &renderer;
         init_textures();
-
-        std::vector<std::string> font_paths = {
-                "assets/fonts/arial.ttf",
-                "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-                "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
-        };
-
-        auto it = std::find_if(font_paths.begin(), font_paths.end(),
-                               [](const auto& path) { return std::filesystem::exists(path); });
-
-        if (it != font_paths.end()) {
-            hud.loadFont(*it, 18);
-        }
-
 
         auto t1 = SDL_GetTicks();
         auto rate = FPS;
@@ -279,6 +265,7 @@ bool Game::update(ServerToClientSnapshot_Client cmd_snapshot) {
                 collisionFlashStartTime = SDL_GetTicks();
             }
 
+            carSoundEngine.playCollisionSound();
             explosion.trigger(worldX, worldY, src.x, src.y, scale);
         }
 
@@ -286,12 +273,13 @@ bool Game::update(ServerToClientSnapshot_Client cmd_snapshot) {
             playerDestroyed = true;
             destructionStartTime = SDL_GetTicks();
             if (src.w > 0 && src.h > 0 && scale > 0) {
+                carSoundEngine.playCollisionSound();
                 explosion.triggerFinalExplosion(worldX, worldY, src.x, src.y, scale);
-                float screenX = (worldX - src.x) * scale;
-                float screenY = (worldY - src.y) * scale;
                 float carWidth = src.w * 0.8f;
                 float carHeight = src.h * 0.8f;
                 if (carWidth > 0 && carHeight > 0 && carWidth < 1000 && carHeight < 1000) {
+                    float screenX = (worldX - src.x) * scale;
+                    float screenY = (worldY - src.y) * scale;
                     fireEffect.start(screenX, screenY, carWidth, carHeight);
                 }
             }
@@ -427,7 +415,6 @@ void Game::render() {
     });
 
     MinimapPlayer localPlayer;
-    std::vector<MinimapPlayer> otherPlayers;
     HUDData hudData;
     hudData.speed = 0.0f;
     hudData.health = 100.0f;
@@ -439,9 +426,6 @@ void Game::render() {
         localPlayer.x = serverX;
         localPlayer.y = serverY;
         localPlayer.angle = it->angle;
-        localPlayer.playerId = client_id;
-        localPlayer.health = it->health;
-        localPlayer.isLocal = true;
 
         hudData.health = it->health;
         if (it->speed > 0.0f) {
@@ -463,42 +447,10 @@ void Game::render() {
             lastPlayerY = it->pos_y;
             lastSpeedUpdateTime = currentTime;
         }
-
-        for (const auto& car: snapshots) {
-            if (car.id != client_id) {
-                MinimapPlayer mp;
-                mp.x = car.pos_x;  // Coordenadas del servidor
-                mp.y = car.pos_y;  // Ajuste si es necesario
-                mp.angle = car.angle;
-                mp.playerId = car.id;
-                mp.health = car.health;
-                mp.isLocal = false;
-                otherPlayers.push_back(mp);
-            }
-        }
-    } else {
-        // Sin datos reales - animar posición de test para demostración
-        // Esto permite ver el minimap funcionando aunque no haya datos del servidor
-        testPlayerX += 2.0f;
-        testPlayerY += 1.5f;
-        testPlayerAngle += 5.0f;
-        if (testPlayerX > 700.0f)
-            testPlayerX = 0.0f;
-        if (testPlayerY > 600.0f)
-            testPlayerY = 0.0f;
-        if (testPlayerAngle >= 360.0f)
-            testPlayerAngle = 0.0f;
-
-        localPlayer.x = testPlayerX;
-        localPlayer.y = testPlayerY;
-        localPlayer.angle = testPlayerAngle;
-        localPlayer.playerId = 0;
-        localPlayer.health = 100.0f;
-        localPlayer.isLocal = true;
     }
 
     if (showMinimap) {
-        minimap.render(*rendererPtr, localPlayer, otherPlayers, currentCheckpoint);
+        minimap.render(*rendererPtr, localPlayer, currentCheckpoint);
     }
 
     renderCheckpoints(*rendererPtr);
@@ -704,10 +656,7 @@ void Game::renderEndGameScreen() {
 
     rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
 
-    SDL2pp::Font titleFont(hud.fontPath.empty() ?
-                                   "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" :
-                                   hud.fontPath,
-                           48);
+    SDL2pp::Font titleFont(fontPath, 48);
     SDL_Color titleColor =
             (gameState == GameState::WON) ? SDL_Color{0, 255, 0, 255} : SDL_Color{255, 0, 0, 255};
 
@@ -781,7 +730,7 @@ void Game::setRaceResults(const std::vector<ClientPlayerResult>& results, bool i
     std::cout << "Resultados de carrera recibidos: " << results.size() << " jugadores" << std::endl;
 
     // Actualizar mapa de nombres
-    for (const auto& r : results) {
+    for (const auto& r: results) {
         playerNames[r.playerId] = r.playerName;
     }
 
@@ -833,9 +782,7 @@ void Game::renderPressESC() {
     int width = rendererPtr->GetOutputWidth();
     int height = rendererPtr->GetOutputHeight();
 
-    SDL2pp::Font instructFont(
-            hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
-            16);
+    SDL2pp::Font instructFont(fontPath, 16);
 
     SDL_Color instructColor = {200, 200, 200, 255};
 
@@ -867,9 +814,7 @@ void Game::renderPressESC() {
 void Game::renderMyOwnTime() {
     SDL_Color color = {255, 255, 255, 255};
 
-    SDL2pp::Font font(
-            hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
-            28);
+    SDL2pp::Font font(fontPath, 28);
 
     int width = rendererPtr->GetOutputWidth();
     int height = rendererPtr->GetOutputHeight();
@@ -907,9 +852,7 @@ void Game::renderOwnName(const SDL_Rect& rowRect) const {
 }
 
 void Game::renderRaceTable() {
-    SDL2pp::Font font(
-            hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
-            20);
+    SDL2pp::Font font(fontPath, 20);
 
     SDL_Color headerColor = {255, 255, 0, 255};
     SDL_Color rowColor = {200, 200, 200, 255};
@@ -995,9 +938,7 @@ void Game::renderRaceTable() {
 }
 
 void Game::renderAccumulatedTable() {
-    SDL2pp::Font font(
-            hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
-            20);
+    SDL2pp::Font font(fontPath, 20);
 
     SDL_Color headerColor = {0, 200, 255, 255};
     SDL_Color rowColor = {200, 200, 200, 255};
@@ -1062,8 +1003,8 @@ void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
     myOwnResults = ClientPlayerResult();
     currentCheckpoint = 0;
     playerDestroyed = false;
-    explosion.stop(); 
-    fireEffect.stop();  
+    explosion.stop();
+    fireEffect.stop();
     previousHealthState.clear();
     lastSpeedUpdateTime = 0;
     lastPlayerX = 0.0f;
@@ -1109,10 +1050,7 @@ void Game::renderUpgradesScreen() {
     rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
 
     // Título
-    SDL2pp::Font titleFont(hud.fontPath.empty() ?
-                                   "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" :
-                                   hud.fontPath,
-                           32);
+    SDL2pp::Font titleFont(fontPath, 32);
     SDL_Color titleColor = {100, 200, 255, 255};  // Azul
     std::string titleText = "MEJORAS DISPONIBLES";
     auto titleSurface = titleFont.RenderText_Solid(titleText, titleColor);
@@ -1123,13 +1061,8 @@ void Game::renderUpgradesScreen() {
     rendererPtr->Copy(titleTexture, SDL2pp::NullOpt, titleRect);
 
     // Fuentes
-    SDL2pp::Font labelFont(
-            hud.fontPath.empty() ? "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" : hud.fontPath,
-            18);
-    SDL2pp::Font valueFont(hud.fontPath.empty() ?
-                                   "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" :
-                                   hud.fontPath,
-                           16);
+    SDL2pp::Font labelFont(fontPath, 18);
+    SDL2pp::Font valueFont(fontPath, 16);
 
     SDL_Color labelColor = {200, 200, 200, 255};
     SDL_Color valueColor = {100, 255, 100, 255};    // Verde
@@ -1359,10 +1292,7 @@ void Game::renderCountdown() {
     rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
 
     // Render countdown text
-    SDL2pp::Font countdownFont(hud.fontPath.empty() ?
-                                       "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" :
-                                       hud.fontPath,
-                               80);  // Medium font
+    SDL2pp::Font countdownFont(fontPath, 80);  // Medium font
 
     SDL_Color textColor = {100, 200, 255, 255};  // Cyan/Sky blue
     std::string displayText;
@@ -1404,7 +1334,7 @@ void Game::renderPlayerNames(SDL2pp::Renderer& renderer, const SDL_Rect& src, fl
     try {
         SDL2pp::Font nameFont("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 14);
 
-        for (const auto& car : snapshots) {
+        for (const auto& car: snapshots) {
             if (car.isNPC || car.playerName.empty())
                 continue;  // No mostrar nombres de NPCs ni autos sin nombre
 

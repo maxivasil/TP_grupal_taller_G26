@@ -1,7 +1,5 @@
 #include "checkpoint_arrow.h"
 
-#include <iostream>
-
 CheckpointArrow::CheckpointArrow(int windowWidth, int windowHeight):
         windowWidth(windowWidth),
         windowHeight(windowHeight),
@@ -67,10 +65,6 @@ void CheckpointArrow::drawArrow(SDL2pp::Renderer& renderer, float centerX, float
     }
     renderer.SetDrawColor(r, g, b, a);
 }
-
-void CheckpointArrow::drawFilledTriangle(SDL2pp::Renderer& /* renderer */, float /* x1 */,
-                                         float /* y1 */, float /* x2 */, float /* y2 */,
-                                         float /* x3 */, float /* y3 */, SDL_Color /* color */) {}
 
 void CheckpointArrow::render(SDL2pp::Renderer& renderer) {
     if (!hasTarget) {

@@ -3,11 +3,8 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
-#include <iostream>
 
-#include "../audio/car_sound_engine.h"
-
-CollisionExplosion::CollisionExplosion(): soundEngine(nullptr) {}
+CollisionExplosion::CollisionExplosion() {}
 
 CollisionExplosion::~CollisionExplosion() {}
 
@@ -38,16 +35,10 @@ void CollisionExplosion::trigger(float worldX, float worldY, float camX, float c
 
         particles.push_back(p);
     }
-
-    if (soundEngine) {
-        soundEngine->playCollisionSound();
-    }
-
-    std::cout << "[EXPLOSION] Triggered at screen (" << relX << ", " << relY << ") with "
-              << particles.size() << " particles" << std::endl;
 }
 
-void CollisionExplosion::triggerFinalExplosion(float worldX, float worldY, float camX, float camY, float scale) {
+void CollisionExplosion::triggerFinalExplosion(float worldX, float worldY, float camX, float camY,
+                                               float scale) {
     particles.clear();
 
     float relX = (worldX - camX) * scale;
@@ -70,13 +61,6 @@ void CollisionExplosion::triggerFinalExplosion(float worldX, float worldY, float
 
         particles.push_back(p);
     }
-
-    if (soundEngine) {
-        soundEngine->playCollisionSound();  // Using collision sound for now
-    }
-
-    std::cout << "[FINAL EXPLOSION] Triggered at screen (" << relX << ", " << relY << ") with "
-              << particles.size() << " particles (DESTRUCTION)" << std::endl;
 }
 
 void CollisionExplosion::update(float dt) {
@@ -118,3 +102,5 @@ void CollisionExplosion::render(SDL2pp::Renderer& renderer) {
     }
     renderer.SetDrawColor(r, g, b, a);
 }
+
+void CollisionExplosion::stop() { particles.clear(); }

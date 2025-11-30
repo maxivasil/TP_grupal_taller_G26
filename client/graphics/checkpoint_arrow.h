@@ -12,7 +12,7 @@ private:
 
     int arrowX;
     int arrowY;
-    int arrowSize = 40;
+    int arrowSize;
 
     float angleToCheckpoint = 0.0f;
     float distanceToCheckpoint = 0.0f;
@@ -32,16 +32,10 @@ public:
 
     void render(SDL2pp::Renderer& renderer);
 
-    bool hasActiveTarget() const { return hasTarget; }
-    float getDistance() const { return distanceToCheckpoint; }
-    float getAngle() const { return angleToCheckpoint; }
     void onWindowResize(int w, int h, float scale);
 
 private:
     void drawArrow(SDL2pp::Renderer& renderer, float centerX, float centerY, float angle, int size);
-
-    void drawFilledTriangle(SDL2pp::Renderer& renderer, float x1, float y1, float x2, float y2,
-                            float x3, float y3, SDL_Color color);
 };
 
 #endif

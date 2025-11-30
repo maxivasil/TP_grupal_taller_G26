@@ -2,9 +2,11 @@
 #define CLIENT_HUD_H
 
 #include <string>
+#include <vector>
 
 #include <SDL2pp/SDL2pp.hh>
 
+#include "../../common/constants.h"
 #include "../audio/car_sound_engine.h"
 
 struct HUDData {
@@ -20,8 +22,6 @@ private:
     int windowWidth;
     int windowHeight;
     SDL2pp::Font* font;
-    bool fontLoaded = false;
-    std::string loadedFontPath;
     float hudScale = 1.0f;
 
 public:
@@ -33,15 +33,11 @@ public:
     HUD(HUD&&) = default;
     HUD& operator=(HUD&&) = default;
 
-    void loadFont(const std::string& fontPath, int fontSize);
+    void initFont(const std::string& fontPath, int fontSize);
+
     void render(SDL2pp::Renderer& renderer, const HUDData& data);
 
-    const std::string& getFontPath() const { return loadedFontPath; }
-
     void onWindowResize(int w, int h, float scale);
-
-    // Acceso público para obtener fontPath desde el exterior
-    std::string fontPath;
 };
 
 #endif

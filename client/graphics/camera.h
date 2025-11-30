@@ -14,15 +14,13 @@ private:
     float zoom;
 
 public:
-    Camera(int screenW, int screenH, float zoomInicial = 1.5f);
+    Camera(int screenW, int screenH, float initialZoom);
 
     void follow(float objX, float objY);
 
-    // Devuelve srcRect para usar en renderer.Copy()
     SDL_Rect getSrcRect(int worldW, int worldH);
 
     void setDimensions(int w, int h);
-    void setZoom(float z);
 };
 
 #endif  // _CAMERA_H

@@ -12,7 +12,6 @@ std::vector<RaceCheckpoint> TrackLoader::loadTrackCheckpoints(const std::string&
     std::vector<RaceCheckpoint> checkpoints;
 
     try {
-        std::cout << "Loading track from: " << trackFile << std::endl;
         YAML::Node config = YAML::LoadFile(ABS_DIR "tracks/" + trackFile);
 
         if (!config["checkpoints"]) {
@@ -43,14 +42,8 @@ std::vector<RaceCheckpoint> TrackLoader::loadTrackCheckpoints(const std::string&
 
             checkpoints.push_back(cp);
 
-            std::cout << "  Checkpoint " << id << ": (" << cp.x << ", " << cp.y << ") "
-                      << (isFinish ? "[FINISH]" : "[CHECKPOINT]") << std::endl;
-
             id++;
         }
-
-        std::cout << "Successfully loaded " << checkpoints.size() << " checkpoints" << std::endl;
-
     } catch (const YAML::Exception& e) {
         std::cerr << "ERROR: Failed to parse track file: " << e.what() << std::endl;
     } catch (const std::exception& e) {

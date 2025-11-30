@@ -73,6 +73,11 @@ void HostWindow::createConection() {
         error_text->setText("Se deben rellenar todos los campos!");
         return;
     }
+    if (username_text.size() > 15) {
+        QLabel* error_text = findChild<QLabel*>("intro_text");
+        error_text->setText("El nombre de usuario es muy largo (max 15 caracteres)!");
+        return;
+    }
     try {
         client_session.emplace(ip_text.c_str(), puerto_text.c_str(), queue);
         client_session->start();

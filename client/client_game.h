@@ -14,13 +14,14 @@
 #include <SDL2pp/SDL2pp.hh>
 #include <SDL_image.h>
 
+#include "../common/constants.h"
 #include "../server/game_logic/CarUpgrades.h"
 #include "audio/car_sound_engine.h"
 #include "cmd/server_to_client_raceResults_client.h"
 #include "graphics/camera.h"
+#include "graphics/car_fire_effect.h"
 #include "graphics/checkpoint_arrow.h"
 #include "graphics/collision_explosion.h"
-#include "graphics/car_fire_effect.h"
 #include "graphics/hud.h"
 #include "graphics/minimap.h"
 
@@ -54,6 +55,8 @@ private:
     std::map<int, std::shared_ptr<SDL2pp::Texture>> textures;
     std::map<uint8_t, std::shared_ptr<SDL2pp::Texture>>
             carTextures;  // Texturas individuales por auto
+
+    const std::string fontPath = ABS_DIR "assets/fonts/DejaVuSans-Bold.ttf";
 
     std::vector<CarSnapshot> snapshots;
     std::vector<RenderCar> carsToRender;

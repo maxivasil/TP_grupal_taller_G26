@@ -26,8 +26,6 @@ void Minimap::loadMapImage(SDL2pp::Renderer& renderer, const std::string& imageP
         mapTexture = std::make_unique<SDL2pp::Texture>(renderer, imagePath);
         mapWidth = static_cast<float>(mapTexture->GetWidth());
         mapHeight = static_cast<float>(mapTexture->GetHeight());
-        std::cout << "Minimap: Loaded map image " << imagePath << " (" << mapWidth << "x"
-                  << mapHeight << ")\n";
     } catch (const std::exception& e) {
         std::cerr << "Error loading minimap image: " << e.what() << "\n";
         mapTexture = nullptr;
@@ -35,10 +33,17 @@ void Minimap::loadMapImage(SDL2pp::Renderer& renderer, const std::string& imageP
     }
 }
 
-void Minimap::setCheckpoints(const std::vector<RaceCheckpoint>& cp) {
-    checkpoints = cp;
-    std::cout << "Minimap: Loaded " << checkpoints.size() << " checkpoints\n";
+void Minimap::setWorldScale(float sx, float sy) {
+    scaleX = sx;
+    scaleY = sy;
 }
+
+void Minimap::setZoomPixels(float w, float h) {
+    zoomPixelWidth = std::max(50.0f, w);
+    zoomPixelHeight = std::max(50.0f, h);
+}
+
+void Minimap::setCheckpoints(const std::vector<RaceCheckpoint>& cp) { checkpoints = cp; }
 
 void Minimap::updateViewport(float playerMapX, float playerMapY) {
     if (mapWidth <= 0.0f || mapHeight <= 0.0f) {
@@ -115,7 +120,7 @@ void Minimap::renderCheckpoints(SDL2pp::Renderer& renderer, int nextCheckpointId
     }
 }
 
-void Minimap::renderPlayer(SDL2pp::Renderer& renderer, const MinimapPlayer& p, bool isLocal) {
+void Minimap::renderPlayer(SDL2pp::Renderer& renderer, const MinimapPlayer& p) {
     int screenX = renderer.GetOutputWidth() - size - 10;
     int screenY = 10;
 
@@ -125,35 +130,24 @@ void Minimap::renderPlayer(SDL2pp::Renderer& renderer, const MinimapPlayer& p, b
     int screenMinimapX = screenX + minimapX;
     int screenMinimapY = screenY + minimapY;
 
-    if (isLocal) {
-        renderer.SetDrawColor(255, 255, 255, 255);
-
-        float angleRad = p.angle * 3.14159265f / 180.0f;
-        float cos_a = std::cos(angleRad);
-        float sin_a = std::sin(angleRad);
-
-        int r = arrowPixelSize;
-        SDL2pp::Point pts[3] = {
-                SDL2pp::Point(screenMinimapX + int(r * cos_a), screenMinimapY + int(r * sin_a)),
-                SDL2pp::Point(screenMinimapX - int(r * sin_a), screenMinimapY + int(r * cos_a)),
-                SDL2pp::Point(screenMinimapX + int(r * sin_a), screenMinimapY - int(r * cos_a))};
-
-        renderer.DrawLines(pts, 3);
-        renderer.DrawLine(pts[2], pts[0]);
-
-        renderer.SetDrawColor(255, 255, 0, 255);
-        SDL_Rect dot{pts[0].x - 2, pts[0].y - 2, 4, 4};
-        renderer.FillRect(dot);
-
-    } else {
-        renderer.SetDrawColor(100, 200, 255, 255);
-        SDL_Rect rect{screenMinimapX - 2, screenMinimapY - 2, 4, 4};
-        renderer.FillRect(rect);
-    }
+    renderer.SetDrawColor(255, 255, 255, 255);
+    float angleRad = p.angle * 3.14159265f / 180.0f;
+    float cos_a = std::cos(angleRad);
+    float sin_a = std::sin(angleRad);
+    int r = arrowPixelSize;
+    SDL2pp::Point pts[3] = {
+            SDL2pp::Point(screenMinimapX + int(r * cos_a), screenMinimapY + int(r * sin_a)),
+            SDL2pp::Point(screenMinimapX - int(r * sin_a), screenMinimapY + int(r * cos_a)),
+            SDL2pp::Point(screenMinimapX + int(r * sin_a), screenMinimapY - int(r * cos_a))};
+    renderer.DrawLines(pts, 3);
+    renderer.DrawLine(pts[2], pts[0]);
+    renderer.SetDrawColor(255, 255, 0, 255);
+    SDL_Rect dot{pts[0].x - 2, pts[0].y - 2, 4, 4};
+    renderer.FillRect(dot);
 }
 
 void Minimap::render(SDL2pp::Renderer& renderer, const MinimapPlayer& localPlayer,
-                     const std::vector<MinimapPlayer>& /* otherPlayers */, int nextCheckpointId) {
+                     int nextCheckpointId) {
     Uint8 r, g, b, a;
     renderer.GetDrawColor(r, g, b, a);
     int screenX = renderer.GetOutputWidth() - size - 10;
@@ -179,7 +173,7 @@ void Minimap::render(SDL2pp::Renderer& renderer, const MinimapPlayer& localPlaye
     }
 
     renderCheckpoints(renderer, nextCheckpointId);
-    renderPlayer(renderer, localPlayer, true);
+    renderPlayer(renderer, localPlayer);
 
     renderer.SetDrawColor(0, 255, 255, 255);
     for (int i = 0; i < 2; i++) {
@@ -187,12 +181,6 @@ void Minimap::render(SDL2pp::Renderer& renderer, const MinimapPlayer& localPlaye
         renderer.DrawRect(border);
     }
 
-    static int frame = 0;
-    if (frame++ % 120 == 0) {
-        std::cout << "[Minimap] view=(" << viewLeft << "," << viewTop << ") "
-                  << "zoom=(" << zoomPixelWidth << "x" << zoomPixelHeight << ") "
-                  << "playerMap=(" << playerMapX << "," << playerMapY << ")\n";
-    }
     renderer.SetDrawColor(r, g, b, a);
 }
 

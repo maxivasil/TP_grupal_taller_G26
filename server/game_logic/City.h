@@ -35,6 +35,9 @@ struct IntersectionData {
 struct ParkedCarData {
     float x;
     float y;
+    float width;
+    float height;
+    bool isVertical;
 };
 
 class City {

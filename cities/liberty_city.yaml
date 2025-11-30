@@ -1,4 +1,790 @@
 objects:
+- type: ParkedCar
+  x: 6.0200000000000005
+  y: 237.47142857142885
+  width: 2.006666666666667
+  height: 461.9142857142862
+  orientation: vertical
+- type: ParkedCar
+  x: 11.275555555555554
+  y: 469.28571428571473
+  width: 8.408888888888894
+  height: 2.657142857142836
+  orientation: horizontal
+- type: ParkedCar
+  x: 16.93722222222222
+  y: 475.92857142857105
+  width: 2.91444444444444
+  height: 10.371428571428615
+  orientation: vertical
+- type: ParkedCar
+  x: 13.580833333333342
+  y: 482.89285714285717
+  width: 3.607222222222227
+  height: 2.9142857142856933
+  orientation: horizontal
+- type: ParkedCar
+  x: 6.5216666666666745
+  y: 497.57142857142816
+  width: 3.1055555555555605
+  height: 23.57142857142853
+  orientation: vertical
+- type: ParkedCar
+  x: 13.760000000000002
+  y: 511.3071428571434
+  width: 11.18
+  height: 2.614285714285736
+  orientation: horizontal
+- type: ParkedCar
+  x: 21.093888888888888
+  y: 507.7714285714291
+  width: 2.197777777777773
+  height: 4.414285714285736
+  orientation: vertical
+- type: ParkedCar
+  x: 17.462777777777823
+  y: 504.5571428571429
+  width: 3.487777777777773
+  height: 2.399999999999979
+  orientation: horizontal
+- type: ParkedCar
+  x: 19.696388888888936
+  y: 489.9642857142853
+  width: 5.231666666666667
+  height: 2.7
+  orientation: horizontal
+- type: ParkedCar
+  x: 24.557777777777826
+  y: 480.02142857142815
+  width: 3.3444444444444397
+  height: 17.014285714285673
+  orientation: vertical
+- type: ParkedCar
+  x: 32.5605555555556
+  y: 469.45714285714286
+  width: 11.036666666666667
+  height: 2.9142857142856933
+  orientation: horizontal
+- type: ParkedCar
+  x: 39.64958333333333
+  y: 447.91071428571433
+  width: 3.1175
+  height: 33.042857142857144
+  orientation: vertical
+- type: ParkedCar
+  x: 28.94138888888887
+  y: 429.46071428571435
+  width: 17.510555555555605
+  height: 2.635714285714286
+  orientation: horizontal
+- type: ParkedCar
+  x: 22.580972222222222
+  y: 458.2767857142858
+  width: 5.888611111111107
+  height: 3.1178571428571433
+  orientation: horizontal
+- type: ParkedCar
+  x: 27.16166666666667
+  y: 449.4964285714291
+  width: 3.1533333333333333
+  height: 13.22142857142853
+  orientation: vertical
+- type: ParkedCar
+  x: 22.58694444444449
+  y: 440.6625000000001
+  width: 5.781111111111106
+  height: 2.7964285714285717
+  orientation: horizontal
+- type: ParkedCar
+  x: 17.862916666666667
+  y: 449.34107142857147
+  width: 3.189166666666667
+  height: 13.017857142857144
+  orientation: vertical
+- type: ParkedCar
+  x: 34.40000000000008
+  y: 410.95714285714337
+  width: 26.468888888888937
+  height: 3.0000000000000218
+  orientation: horizontal
+- type: ParkedCar
+  x: 50.8594444444445
+  y: 389.8178571428572
+  width: 3.4877777777777874
+  height: 36.74999999999996
+  orientation: vertical
+- type: ParkedCar
+  x: 33.9102777777778
+  y: 368.7428571428568
+  width: 27.066111111111066
+  height: 3.257142857142879
+  orientation: horizontal
+- type: ParkedCar
+  x: 19.326111111111064
+  y: 331.68750000000045
+  width: 5.924439666666667
+  height: 23.41067142857143
+  orientation: vertical
+- type: ParkedCar
+  x: 17.880833333333335
+  y: 289.6232142857143
+  width: 3.4161063333333335
+  height: 27.396385714285717
+  orientation: vertical
+- type: ParkedCar
+  x: 46.010000000000005
+  y: 285.32142857142816
+  width: 3.4161063333333335
+  height: 31.37138571428576
+  orientation: vertical
+- type: ParkedCar
+  x: 18.203333333333333
+  y: 244.41428571428574
+  width: 3.4161063333333335
+  height: 20.099957142857146
+  orientation: vertical
+- type: ParkedCar
+  x: 18.131666666666668
+  y: 211.95000000000002
+  width: 3.4161063333333335
+  height: 20.29281428571429
+  orientation: vertical
+- type: ParkedCar
+  x: 17.916666666666668
+  y: 178.2964285714286
+  width: 3.4161063333333335
+  height: 14.18567142857143
+  orientation: vertical
+- type: ParkedCar
+  x: 17.630000000000003
+  y: 149.20714285714288
+  width: 3.4161063333333335
+  height: 10.328528571428585
+  orientation: vertical
+- type: ParkedCar
+  x: 17.916666666666668
+  y: 123.2357142857143
+  width: 3.4161063333333335
+  height: 15.728528571428573
+  orientation: vertical
+- type: ParkedCar
+  x: 17.630000000000003
+  y: 85.66071428571429
+  width: 3.4161063333333335
+  height: 24.08567142857143
+  orientation: vertical
+- type: ParkedCar
+  x: 17.701666666666668
+  y: 40.45714285714284
+  width: 3.4161063333333335
+  height: 38.657099999999964
+  orientation: vertical
+- type: ParkedCar
+  x: 45.77111111111107
+  y: 219.59999999999965
+  width: 3.4161063333333335
+  height: 32.742814285714374
+  orientation: vertical
+- type: ParkedCar
+  x: 46.34444444444449
+  y: 86.14285714285715
+  width: 3.0338841111111066
+  height: 18.685671428571432
+  orientation: vertical
+- type: ParkedCar
+  x: 46.440000000000005
+  y: 39.278571428571496
+  width: 3.033879333333333
+  height: 33.98562857142862
+  orientation: vertical
+- type: ParkedCar
+  x: 46.440000000000005
+  y: 325.90714285714324
+  width: 3.4161063333333335
+  height: 12.042814285714257
+  orientation: vertical
+- type: ParkedCar
+  x: 45.67555555555561
+  y: 349.71428571428527
+  width: 3.4161063333333335
+  height: 11.785671428571387
+  orientation: vertical
+- type: ParkedCar
+  x: 54.74138888888889
+  y: 357.6857142857143
+  width: 12.493841111111108
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 63.735555555555614
+  y: 330.17142857142863
+  width: 3.4161063333333335
+  height: 14.957100000000002
+  orientation: vertical
+- type: ParkedCar
+  x: 64.5
+  y: 296.8500000000001
+  width: 3.4161063333333335
+  height: 11.314242857142837
+  orientation: vertical
+- type: ParkedCar
+  x: 63.92666666666667
+  y: 271.1571428571425
+  width: 3.4161063333333335
+  height: 11.785671428571463
+  orientation: vertical
+- type: ParkedCar
+  x: 64.02222222222228
+  y: 227.85000000000008
+  width: 3.4161063333333335
+  height: 38.271385714285806
+  orientation: vertical
+- type: ParkedCar
+  x: 40.18111111111111
+  y: 5.399999999999982
+  width: 61.89606333333334
+  height: 2.8285671428571475
+  orientation: horizontal
+- type: ParkedCar
+  x: 228.85555555555533
+  y: 5.48571428571429
+  width: 293.1405077777773
+  height: 2.8285714285714287
+  orientation: horizontal
+- type: ParkedCar
+  x: 102.65164141414142
+  y: 16.842857142857145
+  width: 8.076616161616183
+  height: 2.8285714285714287
+  orientation: horizontal
+- type: ParkedCar
+  x: 72.95666666666672
+  y: 17.057142857142903
+  width: 10.752173888888894
+  height: 2.8285714285714287
+  orientation: horizontal
+- type: ParkedCar
+  x: 63.92666666666667
+  y: 58.11428571428578
+  width: 3.033879333333333
+  height: 23.14281428571433
+  orientation: vertical
+- type: ParkedCar
+  x: 119.56388888888885
+  y: 16.928571428571473
+  width: 7.742173888888894
+  height: 2.8285714285714287
+  orientation: horizontal
+- type: ParkedCar
+  x: 142.76000000000002
+  y: 16.800000000000043
+  width: 9.509951666666668
+  height: 2.8285714285714287
+  orientation: horizontal
+- type: ParkedCar
+  x: 183.75333333333293
+  y: 17.31428571428576
+  width: 30.341062777777875
+  height: 2.8285714285714287
+  orientation: horizontal
+- type: ParkedCar
+  x: 151.7422222222227
+  y: 30.30000000000005
+  width: 3.033879333333333
+  height: 15.599957142857145
+  orientation: vertical
+- type: ParkedCar
+  x: 151.83777777777732
+  y: 61.76785714285719
+  width: 3.033879333333333
+  height: 19.392814285714287
+  orientation: vertical
+- type: ParkedCar
+  x: 164.64198333333334
+  y: 27.171428571428574
+  width: 3.033879333333333
+  height: 11.12138571428572
+  orientation: vertical
+- type: ParkedCar
+  x: 164.73801666666668
+  y: 70.61785714285715
+  width: 3.033879333333333
+  height: 41.571385714285725
+  orientation: vertical
+- type: ParkedCar
+  x: 151.93333333333334
+  y: 131.1857142857143
+  width: 3.033879333333333
+  height: 18.385671428571474
+  orientation: vertical
+- type: ParkedCar
+  x: 164.61833333333334
+  y: 163.2214285714286
+  width: 3.033879333333333
+  height: 38.228528571428576
+  orientation: vertical
+- type: ParkedCar
+  x: 151.79000000000002
+  y: 176.43214285714288
+  width: 3.033879333333333
+  height: 12.06424285714287
+  orientation: vertical
+- type: ParkedCar
+  x: 127.94888888888894
+  y: 303.771428571429
+  width: 3.4161063333333335
+  height: 14.957100000000002
+  orientation: vertical
+- type: ParkedCar
+  x: 87.19444444444447
+  y: 317.27142857142906
+  width: 16.5071744444444
+  height: 2.9999957142857405
+  orientation: horizontal
+- type: ParkedCar
+  x: 116.81666666666668
+  y: 317.50714285714287
+  width: 13.067126666666667
+  height: 2.9999957142857148
+  orientation: horizontal
+- type: ParkedCar
+  x: 152.984444444444
+  y: 286.99285714285764
+  width: 3.033879333333333
+  height: 12.6428142857143
+  orientation: vertical
+- type: ParkedCar
+  x: 189.24777777777732
+  y: 237.21428571428575
+  width: 3.8938793333333335
+  height: 13.542814285714288
+  orientation: vertical
+- type: ParkedCar
+  x: 199.23333333333383
+  y: 229.20000000000044
+  width: 14.309348888888865
+  height: 2.9999957142857148
+  orientation: horizontal
+- type: ParkedCar
+  x: 326.91944444444397
+  y: 53.30357142857145
+  width: 4.323879333333333
+  height: 13.307100000000045
+  orientation: vertical
+- type: ParkedCar
+  x: 326.5013888888893
+  y: 87.91071428571435
+  width: 2.962212666666667
+  height: 20.592857142857188
+  orientation: vertical
+- type: ParkedCar
+  x: 266.504444444444
+  y: 163.54285714285757
+  width: 4.323879333333333
+  height: 12.557142857142862
+  orientation: vertical
+- type: ParkedCar
+  x: 121.46305555555554
+  y: 453.2357142857148
+  width: 16.148841111111064
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 124.12666666666668
+  y: 519.9428571428572
+  width: 39.177730000000004
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 175.15333333333334
+  y: 487.5428571428572
+  width: 20.544396666666668
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 198.42111111111114
+  y: 487.62857142857195
+  width: 17.19995222222227
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 227.32666666666668
+  y: 448.02857142857107
+  width: 3.1175
+  height: 11.753571428571473
+  orientation: vertical
+- type: ParkedCar
+  x: 227.4222222222227
+  y: 469.02857142857147
+  width: 3.1175
+  height: 11.753575714285716
+  orientation: vertical
+- type: ParkedCar
+  x: 240.41777777777733
+  y: 419.39999999999964
+  width: 3.1175
+  height: 27.867861428571516
+  orientation: vertical
+- type: ParkedCar
+  x: 227.51777777777733
+  y: 426.77142857142815
+  width: 3.1175
+  height: 11.753575714285716
+  orientation: vertical
+- type: ParkedCar
+  x: 227.51777777777733
+  y: 404.9142857142853
+  width: 3.1175
+  height: 9.69643285714286
+  orientation: vertical
+- type: ParkedCar
+  x: 267.245
+  y: 391.4357142857143
+  width: 3.404166666666667
+  height: 12.396432857142885
+  orientation: vertical
+- type: ParkedCar
+  x: 303.38888888888886
+  y: 357.6857142857143
+  width: 48.82884111111107
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 214.85666666666668
+  y: 383.0999999999996
+  width: 18.82439666666667
+  height: 6.428567142857123
+  orientation: horizontal
+- type: ParkedCar
+  x: 300.54611111111114
+  y: 328.6928571428572
+  width: 41.56661888888894
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 358.19000000000005
+  y: 307.1571428571429
+  width: 13.664396666666681
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 388.1466666666667
+  y: 261.25714285714287
+  width: 4.323879333333333
+  height: 16.32857142857143
+  orientation: vertical
+- type: ParkedCar
+  x: 374.00444444444395
+  y: 292.97142857142904
+  width: 4.323879333333333
+  height: 16.32857142857143
+  orientation: vertical
+- type: ParkedCar
+  x: 382.6044444444449
+  y: 178.50000000000045
+  width: 6.521657111111063
+  height: 11.871428571428568
+  orientation: vertical
+- type: ParkedCar
+  x: 473.66888888888934
+  y: 73.71428571428568
+  width: 13.664396666666667
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 497.68916666666667
+  y: 36.964285714285715
+  width: 5.016652333333333
+  height: 13.371428571428574
+  orientation: vertical
+- type: ParkedCar
+  x: 551.5466666666667
+  y: 73.86428571428573
+  width: 2.962212666666667
+  height: 13.307142857142859
+  orientation: vertical
+- type: ParkedCar
+  x: 537.6911111111107
+  y: 75.5571428571429
+  width: 2.962212666666667
+  height: 20.764285714285716
+  orientation: vertical
+- type: ParkedCar
+  x: 551.26
+  y: 103.8857142857143
+  width: 2.962212666666667
+  height: 14.335714285714287
+  orientation: vertical
+- type: ParkedCar
+  x: 557.3516666666668
+  y: 147.5357142857143
+  width: 5.064396666666681
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 654.2688888888895
+  y: 21.599999999999987
+  width: 2.962212666666667
+  height: 18.364285714285675
+  orientation: vertical
+- type: ParkedCar
+  x: 654.0777777777773
+  y: 60.471428571428596
+  width: 2.962212666666667
+  height: 42.964285714285765
+  orientation: vertical
+- type: ParkedCar
+  x: 593.6508333333334
+  y: 16.90714285714286
+  width: 30.506063333333334
+  height: 2.9999957142857148
+  orientation: horizontal
+- type: ParkedCar
+  x: 487.62000000000006
+  y: 186.85714285714243
+  width: 6.067730000000014
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 319.5855555555561
+  y: 571.35
+  width: 3.1175
+  height: 10.167861428571435
+  orientation: vertical
+- type: ParkedCar
+  x: 319.49
+  y: 547.221428571429
+  width: 3.1175
+  height: 13.167861428571431
+  orientation: vertical
+- type: ParkedCar
+  x: 306.54222222222273
+  y: 569.9357142857143
+  width: 3.1175
+  height: 10.682147142857032
+  orientation: vertical
+- type: ParkedCar
+  x: 306.73333333333335
+  y: 529.7785714285715
+  width: 3.1175
+  height: 23.710718571428572
+  orientation: vertical
+- type: ParkedCar
+  x: 319.92
+  y: 519.4821428571425
+  width: 3.834166666666667
+  height: 7.532185714285796
+  orientation: vertical
+- type: ParkedCar
+  x: 319.84833333333336
+  y: 487.66071428571433
+  width: 3.834166666666667
+  height: 27.225042857142817
+  orientation: vertical
+- type: ParkedCar
+  x: 440.8933333333334
+  y: 565.2642857142857
+  width: 3.1175
+  height: 23.06786142857143
+  orientation: vertical
+- type: ParkedCar
+  x: 428.28000000000003
+  y: 550.0285714285715
+  width: 3.1175
+  height: 26.15361428571429
+  orientation: vertical
+- type: ParkedCar
+  x: 428.1366666666667
+  y: 492.30000000000007
+  width: 3.1175
+  height: 24.610757142857146
+  orientation: vertical
+- type: ParkedCar
+  x: 440.96500000000003
+  y: 485.7428571428572
+  width: 3.1175
+  height: 24.610757142857146
+  orientation: vertical
+- type: ParkedCar
+  x: 428.1725
+  y: 446.62499999999966
+  width: 2.4725
+  height: 18.032185714285674
+  orientation: vertical
+- type: ParkedCar
+  x: 441.10833333333335
+  y: 449.78571428571433
+  width: 2.4725
+  height: 10.61790000000003
+  orientation: vertical
+- type: ParkedCar
+  x: 562.9416666666667
+  y: 566.8928571428572
+  width: 2.4725
+  height: 16.875042857142944
+  orientation: vertical
+- type: ParkedCar
+  x: 549.5758333333333
+  y: 530.7107142857144
+  width: 2.8308333333333335
+  height: 13.167900000000001
+  orientation: vertical
+- type: ParkedCar
+  x: 562.7266666666667
+  y: 489.6000000000001
+  width: 2.8308333333333335
+  height: 27.63218571428572
+  orientation: vertical
+- type: ParkedCar
+  x: 549.8983333333333
+  y: 432.9642857142858
+  width: 2.8308333333333335
+  height: 39.97504285714286
+  orientation: vertical
+- type: ParkedCar
+  x: 654.1733333333334
+  y: 528.2571428571429
+  width: 2.8308333333333335
+  height: 105.58932857142854
+  orientation: vertical
+- type: ParkedCar
+  x: 654.1733333333334
+  y: 368.1857142857141
+  width: 2.8308333333333335
+  height: 192.58928571428615
+  orientation: vertical
+- type: ParkedCar
+  x: 290.68
+  y: 589.971428571429
+  width: 87.14666666666668
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 399.3744444444449
+  y: 590.1000000000005
+  width: 106.83111111111107
+  height: 2.9999957142857148
+  orientation: horizontal
+- type: ParkedCar
+  x: 559.812222222222
+  y: 590.1428571428572
+  width: 163.20884111111064
+  height: 2.9999957142857148
+  orientation: horizontal
+- type: ParkedCar
+  x: 349.1958333333333
+  y: 470.63571428571436
+  width: 49.42606333333334
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 367.63805555555604
+  y: 458.39999999999964
+  width: 15.456063333333335
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 515.7133333333329
+  y: 470.65714285714336
+  width: 55.70884111111121
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 457.8066666666667
+  y: 410.05714285714254
+  width: 25.704396666666668
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 532.34
+  y: 397.02857142857147
+  width: 21.691063333333336
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 608.4500000000005
+  y: 408.7714285714282
+  width: 18.91995222222227
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 541.0833333333334
+  y: 458.61428571428576
+  width: 10.367730000000014
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 488.05
+  y: 444.2142857142858
+  width: 19.827730000000003
+  height: 3.257138571428572
+  orientation: horizontal
+- type: ParkedCar
+  x: 641.8466666666667
+  y: 519.2142857142853
+  width: 2.4725
+  height: 8.217899999999988
+  orientation: vertical
+- type: ParkedCar
+  x: 641.2733333333333
+  y: 477.9857142857148
+  width: 2.4725
+  height: 8.217900000000002
+  orientation: vertical
+- type: ParkedCar
+  x: 640.9627777777773
+  y: 455.0892857142854
+  width: 3.3325
+  height: 5.19647142857148
+  orientation: vertical
+- type: ParkedCar
+  x: 641.3688888888894
+  y: 435.01071428571424
+  width: 3.3325
+  height: 10.38218571428566
+  orientation: vertical
+- type: ParkedCar
+  x: 641.3688888888894
+  y: 308.3892857142862
+  width: 3.3325
+  height: 7.8107571428571525
+  orientation: vertical
+- type: ParkedCar
+  x: 641.4883333333333
+  y: 283.9928571428576
+  width: 3.3325
+  height: 11.089328571428581
+  orientation: vertical
+- type: ParkedCar
+  x: 562.7983333333334
+  y: 290.86071428571427
+  width: 3.3325
+  height: 11.110757142857132
+  orientation: vertical
+- type: ParkedCar
+  x: 575.2683333333333
+  y: 178.56428571428575
+  width: 3.3325
+  height: 12.353614285714292
+  orientation: vertical
+- type: ParkedCar
+  x: 640.9866666666667
+  y: 414.4285714285711
+  width: 3.3325
+  height: 4.875042857142858
+  orientation: vertical
+- type: ParkedCar
+  x: 645.5733333333334
+  y: 386.1214285714291
+  width: 3.3325
+  height: 4.232185714285715
+  orientation: vertical
+- type: ParkedCar
+  x: 474.1466666666667
+  y: 570.2785714285715
+  width: 28.71439666666667
+  height: 2.871424285714286
+  orientation: horizontal
 - type: Intersections
   x: 10.248333333333333
   y: 10.317857142857145
@@ -9,19 +795,19 @@ objects:
   left: false
   right: true
 - type: Intersections
-  x: 9.878055555555555
-  y: 66.8678571428571
-  width: 3.8461111111111066
-  height: 0.8357142857143
+  x: 9.878053166666668
+  y: 66.86781428571429
+  width: 3.8461063333333336
+  height: 0.8357142857142859
   up: true
   down: true
   left: false
   right: true
 - type: Intersections
-  x: 10.666388888888887
-  y: 106.93928571428569
-  width: 3.9894444444444397
-  height: 3.5785714285714247
+  x: 10.666386500000002
+  y: 106.93924071428572
+  width: 3.989439666666667
+  height: 3.5785671428571435
   up: true
   down: true
   left: false
@@ -45,55 +831,55 @@ objects:
   left: true
   right: true
 - type: Intersections
-  x: 84.66439393939392
-  y: 77.31233766233767
-  width: 1.817727272727261
-  height: 1.7298701298701358
+  x: 84.66440566666668
+  y: 77.31234642857144
+  width: 1.8177246666666669
+  height: 1.7298642857142859
   up: false
   down: true
   left: true
   right: false
 - type: Intersections
-  x: 53.009444444444455
-  y: 78.12857142857148
-  width: 5.04055555555556
-  height: 0.7714285714285574
+  x: 53.009446833333335
+  y: 78.12861428571429
+  width: 5.0405603333333335
+  height: 0.7714285714285716
   up: true
   down: true
   left: false
   right: true
 - type: Intersections
-  x: 56.13888888888884
-  y: 67.0285714285714
-  width: 6.760555555555561
-  height: 0.6428571428571571
+  x: 56.13884350000001
+  y: 67.02852857142858
+  width: 6.760560333333333
+  height: 0.6428571428571429
   up: true
   down: true
   left: true
   right: false
 - type: Intersections
-  x: 54.80111111111107
-  y: 10.532142857142857
-  width: 5.518333333333348
-  height: 4.092857142857139
+  x: 54.80106333333334
+  y: 10.532140714285717
+  width: 5.5183333333333335
+  height: 4.092852857142858
   up: false
   down: true
   left: true
   right: true
 - type: Intersections
-  x: 130.7362878787879
-  y: 10.151298701298701
-  width: 0.8469696969696928
-  height: 3.524025974025973
+  x: 130.73627478333336
+  y: 10.151299285714286
+  width: 0.8469695666666667
+  height: 3.5240271428571432
   up: false
   down: true
   left: true
   right: true
 - type: Intersections
-  x: 158.33555555555557
-  y: 10.328571428571431
-  width: 3.2011111111111066
-  height: 4.007142857142862
+  x: 158.33555316666667
+  y: 10.328573571428572
+  width: 3.2011063333333336
+  height: 4.007147142857143
   up: false
   down: true
   left: true
@@ -117,7 +903,7 @@ objects:
   left: true
   right: true
 - type: Intersections
-  x: 275.18208333333337
+  x: 275.18280000000004
   y: 10.2375
   width: 1.2183333333333335
   height: 3.8250000000000006
@@ -127,17 +913,17 @@ objects:
   right: true
 - type: Intersections
   x: 320.2066666666667
-  y: 10.21607142857143
+  y: 10.216073571428572
   width: 2.651666666666667
-  height: 3.6535714285714334
+  height: 3.6535757142857146
   up: false
   down: true
   left: true
   right: true
 - type: Intersections
-  x: 373.7416666666662
+  x: 373.7411865
   y: 9.450000000000001
-  width: 4.777777777777802
+  width: 4.777773000000001
   height: 4.307142857142858
   up: false
   down: true
@@ -153,10 +939,10 @@ objects:
   left: false
   right: true
 - type: Intersections
-  x: 617.0923484848489
-  y: 10.186363636363641
-  width: 1.2965151515152111
-  height: 3.5941558441558503
+  x: 617.0919572500001
+  y: 10.186360714285716
+  width: 1.2965145000000002
+  height: 3.5941500000000004
   up: false
   down: true
   left: true
@@ -171,17 +957,17 @@ objects:
   left: true
   right: false
 - type: Intersections
-  x: 85.15742151515151
-  y: 38.29480305194809
-  width: 1.9675757575757538
-  height: 1.6383074025974016
+  x: 85.15743650000002
+  y: 38.29476857142857
+  width: 1.9675796666666667
+  height: 1.6383085714285717
   up: false
   down: true
   left: false
   right: true
 - type: Intersections
-  x: 85.07045727272725
-  y: 68.77398097402599
+  x: 85.07048333333334
+  y: 68.77396928571429
   width: 2.15
   height: 2.0357100000000004
   up: true
@@ -189,18 +975,18 @@ objects:
   left: false
   right: true
 - type: Intersections
-  x: 105.06328555555561
+  x: 105.06333333333333
   y: 67.28575500000001
   width: 2.15
-  height: 1.0071385714285728
+  height: 1.0071385714285717
   up: true
   down: true
   left: true
   right: false
 - type: Intersections
-  x: 104.17939666666673
+  x: 104.17944468333334
   y: 38.63566928571429
-  width: 0.9555555555555503
+  width: 0.9555560333333334
   height: 1.3928528571428573
   up: false
   down: true
@@ -208,9 +994,9 @@ objects:
   right: true
 - type: Intersections
   x: 103.415
-  y: 74.97856928571434
+  y: 74.9786142857143
   width: 2.006666666666667
-  height: 1.7357100000000174
+  height: 1.735714285714286
   up: true
   down: false
   left: false
@@ -219,7 +1005,7 @@ objects:
   x: 131.03648
   y: 73.96066928571429
   width: 1.3258333333333334
-  height: 0.5571385714285728
+  height: 0.5571385714285716
   up: true
   down: true
   left: true
@@ -228,7 +1014,7 @@ objects:
   x: 130.39148
   y: 78.25977642857143
   width: 1.3975
-  height: 0.4767814285714299
+  height: 0.47678142857142863
   up: true
   down: true
   left: false
@@ -237,16 +1023,16 @@ objects:
   x: 130.34977
   y: 45.230355
   width: 1.2183333333333335
-  height: 0.58928142857143
+  height: 0.5892814285714287
   up: true
   down: true
   left: false
   right: true
 - type: Intersections
-  x: 130.54621484848477
-  y: 106.9558012987013
-  width: 0.6189393939394013
-  height: 3.097402597402599
+  x: 130.54614956666668
+  y: 106.95580071428572
+  width: 0.6189391333333334
+  height: 3.097401428571429
   up: true
   down: true
   left: true
@@ -262,17 +1048,17 @@ objects:
   right: true
 - type: Intersections
   x: 104.29291666666667
-  y: 136.91238428571427
+  y: 136.9123842857143
   width: 2.0425
-  height: 1.7444828571428443
+  height: 1.7444828571428572
   up: false
   down: true
   left: true
   right: false
 - type: Intersections
-  x: 75.0871212121212
+  x: 75.08712101666667
   y: 148.11417000000003
-  width: 1.3225757575757437
+  width: 1.3225753666666669
   height: 2.6766257142857146
   up: false
   down: false
@@ -280,9 +1066,9 @@ objects:
   right: true
 - type: Intersections
   x: 104.13166666666667
-  y: 148.11417
+  y: 148.11417000000003
   width: 1.2183333333333335
-  height: 1.0694828571428483
+  height: 1.0694828571428572
   up: true
   down: true
   left: true
@@ -297,36 +1083,36 @@ objects:
   left: true
   right: true
 - type: Intersections
-  x: 10.188611111111113
-  y: 137.67857142857102
-  width: 2.818888888888894
+  x: 10.1886135
+  y: 137.67814285714286
+  width: 2.8188936666666664
   height: 0.5785714285714286
   up: true
   down: true
   left: false
   right: true
 - type: Intersections
-  x: 10.343888888888888
-  y: 165.75000000000045
-  width: 3.487777777777773
-  height: 0.5785714285714583
+  x: 10.343886500000002
+  y: 165.7504285714286
+  width: 3.4877730000000002
+  height: 0.5785714285714286
   up: true
   down: true
   left: false
   right: true
 - type: Intersections
   x: 10.176666666666668
-  y: 193.45714285714246
+  y: 193.45671642857147
   width: 3.4400000000000004
-  height: 2.978571428571433
+  height: 2.9785757142857143
   up: true
   down: true
   left: false
   right: true
 - type: Intersections
-  x: 10.272222222222222
-  y: 228.12857142857104
-  width: 3.3444444444444397
+  x: 10.272219833333335
+  y: 228.12814285714288
+  width: 3.344439666666667
   height: 0.5785714285714286
   up: true
   down: true
@@ -334,117 +1120,117 @@ objects:
   right: true
 - type: Intersections
   x: 10.391666666666667
-  y: 270.5571428571424
+  y: 270.5567142857143
   width: 3.726666666666667
-  height: 0.5785714285714866
+  height: 0.5785714285714286
   up: true
   down: true
   left: false
   right: true
 - type: Intersections
   x: 10.821666666666667
-  y: 311.7964285714286
+  y: 311.79643071428575
   width: 3.87
-  height: 2.657142857142836
+  height: 2.657147142857143
   up: true
   down: true
   left: false
   right: true
 - type: Intersections
-  x: 10.58277777777778
-  y: 372.1714285714286
-  width: 3.9655555555555604
-  height: 0.8142857142857332
+  x: 10.582780166666666
+  y: 372.17142835714293
+  width: 3.9655603333333334
+  height: 0.8142852857142858
   up: true
   down: true
   left: false
   right: true
 - type: Intersections
-  x: 10.463333333333326
-  y: 407.228571428571
-  width: 3.77444444444444
-  height: 0.6428571428572009
+  x: 10.463326166666667
+  y: 407.22814285714287
+  width: 3.774439666666667
+  height: 0.6428571428571429
   up: true
   down: true
   left: false
   right: true
 - type: Intersections
-  x: 10.343888888888888
-  y: 435.13928571428534
-  width: 3.8222222222222273
-  height: 1.1785714285714677
+  x: 10.343886500000002
+  y: 435.13885735714285
+  width: 3.822227
+  height: 1.1785718571428572
   up: true
   down: true
   left: false
   right: true
 - type: Intersections
-  x: 9.310694444444445
-  y: 465.98571428571483
-  width: 3.8580555555555605
-  height: 3.707142857142879
+  x: 9.310696833333333
+  y: 465.9861407142858
+  width: 3.8580603333333334
+  height: 3.707138571428572
   up: true
   down: false
   left: false
   right: true
 - type: Intersections
-  x: 35.90499999999995
-  y: 465.953571428572
-  width: 3.3444444444444397
-  height: 3.1285714285714503
+  x: 35.90494983333333
+  y: 465.95399785714295
+  width: 3.344439666666667
+  height: 3.1285671428571433
   up: true
   down: false
   left: true
   right: false
 - type: Intersections
   x: 35.61833333333333
-  y: 433.00714285714287
+  y: 433.00714500000004
   width: 4.156666666666667
-  height: 3.4285714285714075
+  height: 3.4285757142857145
   up: false
   down: true
   left: true
   right: false
 - type: Intersections
-  x: 56.37777777777783
-  y: 248.70042857142815
-  width: 6.56944444444444
-  height: 0.5999999999999812
+  x: 56.377823166666666
+  y: 248.70000021428575
+  width: 6.569439666666667
+  height: 0.6000004285714287
   up: true
   down: true
   left: true
   right: false
 - type: Intersections
   x: 53.36773000000001
-  y: 283.77814285714334
+  y: 283.77857121428576
   width: 5.5183333333333335
-  height: 0.557142857142876
+  height: 0.5571424285714287
   up: true
   down: true
   left: false
   right: true
 - type: Intersections
-  x: 56.043285555555514
-  y: 338.37814285714245
-  width: 6.473888888888894
-  height: 0.8142857142857923
+  x: 56.04324016666667
+  y: 338.3777140714286
+  width: 6.473893666666667
+  height: 0.8142852857142858
   up: true
   down: true
   left: true
   right: false
 - type: Intersections
-  x: 51.611944444444454
-  y: 352.6821428571434
-  width: 5.828888888888894
-  height: 5.121428571428593
+  x: 51.611946833333334
+  y: 352.68256928571435
+  width: 5.828893666666667
+  height: 5.121424285714286
   up: true
   down: false
   left: false
   right: true
 - type: Intersections
   x: 24.271063333333334
-  y: 339.06385714285767
+  y: 339.06428357142863
   width: 1.5050000000000001
-  height: 1.5857142857143072
+  height: 1.5857100000000002
   up: true
   down: false
   left: false
@@ -453,7 +1239,7 @@ objects:
   x: 105.63064666666666
   y: 166.36595785714286
   width: 1.8991666666666667
-  height: 1.9587728571428444
+  height: 1.9587728571428573
   up: true
   down: false
   left: true
@@ -461,44 +1247,44 @@ objects:
 - type: Intersections
   x: 96.37380016666667
   y: 165.19274357142857
-  width: 0.6330603333333319
+  width: 0.6330603333333333
   height: 1.7337728571428572
   up: false
   down: true
   left: true
   right: true
 - type: Intersections
-  x: 96.30946304545459
-  y: 194.1403669480515
-  width: 0.7617345757575711
-  height: 3.066240389610382
+  x: 96.30942415
+  y: 194.14083214285716
+  width: 0.7617349666666666
+  height: 3.066235714285715
   up: true
   down: false
   left: true
   right: true
 - type: Intersections
-  x: 91.7203531969697
-  y: 192.70550980519482
-  width: 0.7144997272727175
-  height: 3.4870196103895803
+  x: 91.72035306666668
+  y: 192.70551214285715
+  width: 0.7144994666666667
+  height: 3.4870242857142864
   up: false
   down: true
   left: true
   right: true
 - type: Intersections
-  x: 129.53755016666662
-  y: 194.29274357142904
-  width: 0.7883381111110992
-  height: 3.190915714285736
+  x: 129.53750215
+  y: 194.29317000000003
+  width: 0.7883376333333333
+  height: 3.190911428571429
   up: true
   down: false
   left: true
   right: true
 - type: Intersections
-  x: 124.01921683333327
-  y: 192.47217214285718
-  width: 0.7883381111110992
-  height: 2.848058571428576
+  x: 124.01916881666666
+  y: 192.47217428571432
+  width: 0.7883376333333333
+  height: 2.8480628571428572
   up: false
   down: true
   left: true
@@ -540,10 +1326,10 @@ objects:
   left: true
   right: true
 - type: Intersections
-  x: 158.25374696969752
-  y: 193.51233116883165
-  width: 3.2543181818181597
-  height: 3.6262987012987073
+  x: 158.2532225
+  y: 193.51186071428572
+  width: 3.2543116666666667
+  height: 3.6262928571428574
   up: true
   down: true
   left: true
@@ -630,9 +1416,9 @@ objects:
   left: true
   right: true
 - type: Intersections
-  x: 556.265438888889
+  x: 556.2654365000001
   y: 193.12521428571432
-  width: 2.0902777777778017
+  width: 2.090273
   height: 4.017857142857143
   up: false
   down: true
@@ -657,10 +1443,10 @@ objects:
   left: true
   right: false
 - type: Intersections
-  x: 555.0342055555556
-  y: 269.10021428571486
-  width: 2.663611111111064
-  height: 1.4464285714286358
+  x: 555.0342031666667
+  y: 269.10064285714293
+  width: 2.6636063333333335
+  height: 1.4464285714285716
   up: true
   down: true
   left: false
@@ -684,25 +1470,25 @@ objects:
   left: true
   right: false
 - type: Intersections
-  x: 556.3600388888884
-  y: 403.33907142857197
-  width: 2.7113888888889366
-  height: 1.96071428571435
+  x: 556.3595635
+  y: 403.33950000000004
+  width: 2.7113936666666665
+  height: 1.9607142857142859
   up: true
   down: true
   left: true
   right: true
 - type: Intersections
-  x: 556.1340499999995
-  y: 464.76364285714254
-  width: 2.3769444444443972
-  height: 1.8321428571429215
+  x: 556.1335698333334
+  y: 464.7632142857143
+  width: 2.376939666666667
+  height: 1.8321428571428573
   up: true
   down: true
   left: true
   right: true
 - type: Intersections
-  x: 556.0982166666668
+  x: 556.0989333333334
   y: 585.2359285714286
   width: 2.5083333333333333
   height: 3.760714285714286
@@ -720,46 +1506,46 @@ objects:
   left: true
   right: false
 - type: Intersections
-  x: 649.4755833333339
-  y: 464.86992857142906
-  width: 3.28472222222227
-  height: 1.6607142857143287
+  x: 649.4760635000001
+  y: 464.8703592857143
+  width: 3.284727
+  height: 1.6607185714285717
   up: true
   down: true
   left: true
   right: false
 - type: Intersections
   x: 651.0192833333333
-  y: 403.52207142857185
+  y: 403.5225021428572
   width: 1.0391666666666668
-  height: 2.432142857142836
+  height: 2.432147142857143
   up: true
   down: true
   left: true
   right: false
 - type: Intersections
-  x: 646.3614277777777
-  y: 401.91450000000003
-  width: 1.1347222222222657
-  height: 2.646428571428529
+  x: 646.3614280166668
+  y: 401.9144978571429
+  width: 1.1347227
+  height: 2.646424285714286
   up: false
   down: true
   left: true
   right: false
 - type: Intersections
-  x: 434.68511060606005
-  y: 584.942201298702
-  width: 2.3682575757576085
+  x: 434.6857601666667
+  y: 584.9427857142858
+  width: 2.368253666666667
   height: 4.017857142857143
   up: true
   down: false
   left: true
   right: true
 - type: Intersections
-  x: 313.0962257575758
-  y: 585.3192662337663
-  width: 2.3943181818181882
-  height: 3.737337662337686
+  x: 313.0962225
+  y: 585.3193842857144
+  width: 2.394311666666667
+  height: 3.7373400000000006
   up: true
   down: false
   left: true
@@ -810,10 +1596,10 @@ objects:
   left: true
   right: false
 - type: Intersections
-  x: 271.3537813888894
-  y: 324.4806428571433
-  width: 4.744118333333348
-  height: 4.189285714285736
+  x: 271.3542591666667
+  y: 324.48106928571434
+  width: 4.744118333333334
+  height: 4.189281428571429
   up: true
   down: false
   left: false
@@ -848,26 +1634,26 @@ objects:
 - type: Intersections
   x: 364.78322583333335
   y: 275.7587142857143
-  width: 4.099118333333348
+  width: 4.099118333333334
   height: 3.985714285714286
   up: false
   down: true
   left: false
   right: true
 - type: Intersections
-  x: 397.7498925000005
-  y: 279.4935000000005
-  width: 4.266340555555604
-  height: 4.317857142857164
+  x: 397.75037266666664
+  y: 279.4939264285715
+  width: 4.266345333333334
+  height: 4.317852857142857
   up: true
   down: false
   left: true
   right: false
 - type: Intersections
-  x: 393.3777480555551
-  y: 251.91492857142862
-  width: 4.40967388888888
-  height: 4.103571428571433
+  x: 393.37727266666667
+  y: 251.91493071428576
+  width: 4.409678666666667
+  height: 4.103575714285714
   up: false
   down: true
   left: false
@@ -884,7 +1670,7 @@ objects:
 - type: Intersections
   x: 421.0415591666667
   y: 193.14707142857148
-  width: 2.379118333333348
+  width: 2.3791183333333334
   height: 2.7321428571428577
   up: false
   down: true
@@ -893,7 +1679,7 @@ objects:
 - type: Intersections
   x: 476.0930258333334
   y: 195.08014285714287
-  width: 2.6657850000000147
+  width: 2.6657850000000005
   height: 2.8928571428571432
   up: true
   down: false
@@ -909,37 +1695,37 @@ objects:
   left: true
   right: false
 - type: Intersections
-  x: 442.62599553030356
-  y: 129.35458051948058
-  width: 2.0338153030303046
-  height: 2.7788961038961086
+  x: 442.62547366666666
+  y: 129.35453142857145
+  width: 2.033814
+  height: 2.7788914285714292
   up: true
   down: false
   left: true
   right: true
 - type: Intersections
-  x: 442.4829228030306
-  y: 105.87272727272726
-  width: 2.138057727272696
-  height: 3.293181818181823
+  x: 442.4826635
+  y: 105.87276000000001
+  width: 2.1380603333333337
+  height: 3.2931771428571435
   up: false
   down: true
   left: true
   right: true
 - type: Intersections
-  x: 388.8154480555555
-  y: 126.72857142857144
-  width: 4.3618961111110774
-  height: 4.0607142857142815
+  x: 388.8154456666667
+  y: 126.7285692857143
+  width: 4.361891333333333
+  height: 4.06071
   up: false
   down: true
   left: false
   right: true
 - type: Intersections
-  x: 389.8426702777778
-  y: 194.8077857142853
-  width: 3.263007222222213
-  height: 3.460714285714265
+  x: 389.84267266666666
+  y: 194.80735928571434
+  width: 3.2630120000000002
+  height: 3.4607185714285715
   up: true
   down: false
   left: false
@@ -954,17 +1740,17 @@ objects:
   left: false
   right: true
 - type: Intersections
-  x: 434.80889848484793
-  y: 464.72207142857206
-  width: 3.0197727272726818
-  height: 1.5866883116883002
+  x: 434.809421
+  y: 464.7214864285715
+  width: 3.0197753333333335
+  height: 1.586687142857143
   up: true
   down: true
   left: true
   right: true
 - type: Intersections
-  x: 432.4325621212116
-  y: 401.38462987012934
+  x: 432.43308333333334
+  y: 401.38521428571437
   width: 4.765833333333333
   height: 4.017857142857143
   up: false
@@ -972,7 +1758,7 @@ objects:
   left: false
   right: true
 - type: Intersections
-  x: 373.885
+  x: 373.88451983333334
   y: 70.90714285714286
   width: 4.777773000000001
   height: 4.307142857142858
@@ -981,9 +1767,9 @@ objects:
   left: true
   right: false
 - type: Intersections
-  x: 318.26868055555605
+  x: 318.2686781666667
   y: 68.91428571428573
-  width: 4.150689666666638
+  width: 4.150689666666667
   height: 1.5428571428571431
   up: true
   down: true
@@ -999,17 +1785,17 @@ objects:
   left: true
   right: false
 - type: Intersections
-  x: 565.4999494949498
-  y: 46.066558441558506
-  width: 2.914444444444397
+  x: 565.4996865
+  y: 46.066500000000005
+  width: 2.914439666666667
   height: 0.9642857142857144
   up: true
   down: true
   left: false
   right: true
 - type: Intersections
-  x: 144.5875
-  y: 481.30714285714294
+  x: 144.5872635
+  y: 481.3077857142858
   width: 2.209727
   height: 1.767857142857143
   up: false
@@ -1017,8 +1803,8 @@ objects:
   left: false
   right: true
 - type: Intersections
-  x: 147.92000000000002
-  y: 516.2785714285715
+  x: 147.91976350000002
+  y: 516.2792142857144
   width: 4.6463936666666665
   height: 3.8250000000000006
   up: true
@@ -1026,17 +1812,17 @@ objects:
   left: true
   right: false
 - type: Intersections
-  x: 100.61999999999996
-  y: 516.5571428571429
-  width: 4.264171444444425
-  height: 3.739285714285736
+  x: 100.62
+  y: 516.5577835714287
+  width: 4.264166666666667
+  height: 3.739281428571429
   up: true
   down: false
   left: false
   right: true
 - type: Intersections
-  x: 100.66777777777774
-  y: 444.08571428571435
+  x: 100.66773
+  y: 444.0859264285715
   width: 4.264166666666667
   height: 3.739281428571429
   up: false
@@ -1044,8 +1830,8 @@ objects:
   left: false
   right: true
 - type: Intersections
-  x: 131.77111111111108
-  y: 448.54285714285766
+  x: 131.77106333333333
+  y: 448.54349785714294
   width: 4.264166666666667
   height: 3.739281428571429
   up: true
@@ -1054,7 +1840,7 @@ objects:
   right: false
 - type: Intersections
   x: 126.99333333333334
-  y: 388.62857142857195
+  y: 388.6292121428572
   width: 4.264166666666667
   height: 3.739281428571429
   up: false
@@ -12441,153 +13227,3 @@ objects:
   y: 193.37099785714287
   width: 1.337773
   height: 11.099995714285715
-- type: ParkedCar
-  x: 7.4
-  y: 9.0
-- type: ParkedCar
-  x: 82.0
-  y: 107.8
-- type: ParkedCar
-  x: 86.5
-  y: 74.4
-- type: ParkedCar
-  x: 52.4
-  y: 8.1
-- type: ParkedCar
-  x: 155.8
-  y: 9.1
-- type: ParkedCar
-  x: 204.9
-  y: 8.4
-- type: ParkedCar
-  x: 276.0
-  y: 9.4
-- type: ParkedCar
-  x: 317.6
-  y: 11.0
-- type: ParkedCar
-  x: 615.5
-  y: 7.4
-- type: ParkedCar
-  x: 83.4
-  y: 38.3
-- type: ParkedCar
-  x: 106.5
-  y: 66.9
-- type: ParkedCar
-  x: 105.6
-  y: 72.9
-- type: ParkedCar
-  x: 130.5
-  y: 48.1
-- type: ParkedCar
-  x: 131.9
-  y: 147.2
-- type: ParkedCar
-  x: 77.9
-  y: 149.7
-- type: ParkedCar
-  x: 102.3
-  y: 147.4
-- type: ParkedCar
-  x: 12.9
-  y: 168.0
-- type: ParkedCar
-  x: 12.2
-  y: 231.0
-- type: ParkedCar
-  x: 10.6
-  y: 271.2
-- type: ParkedCar
-  x: 10.1
-  y: 407.3
-- type: ParkedCar
-  x: 10.9
-  y: 432.2
-- type: ParkedCar
-  x: 36.9
-  y: 464.2
-- type: ParkedCar
-  x: 55.8
-  y: 246.3
-- type: ParkedCar
-  x: 53.4
-  y: 339.7
-- type: ParkedCar
-  x: 24.0
-  y: 341.3
-- type: ParkedCar
-  x: 99.1
-  y: 196.7
-- type: ParkedCar
-  x: 123.3
-  y: 195.4
-- type: ParkedCar
-  x: 158.1
-  y: 266.1
-- type: ParkedCar
-  x: 158.2
-  y: 109.2
-- type: ParkedCar
-  x: 241.3
-  y: 193.0
-- type: ParkedCar
-  x: 572.3
-  y: 59.1
-- type: ParkedCar
-  x: 542.4
-  y: 59.3
-- type: ParkedCar
-  x: 648.0
-  y: 121.5
-- type: ParkedCar
-  x: 587.4
-  y: 120.1
-- type: ParkedCar
-  x: 652.0
-  y: 268.9
-- type: ParkedCar
-  x: 649.3
-  y: 349.1
-- type: ParkedCar
-  x: 554.1
-  y: 406.2
-- type: ParkedCar
-  x: 558.8
-  y: 586.4
-- type: ParkedCar
-  x: 653.4
-  y: 405.3
-- type: ParkedCar
-  x: 436.4
-  y: 587.2
-- type: ParkedCar
-  x: 234.7
-  y: 588.1
-- type: ParkedCar
-  x: 233.4
-  y: 392.2
-- type: ParkedCar
-  x: 275.0
-  y: 305.8
-- type: ParkedCar
-  x: 343.4
-  y: 298.1
-- type: ParkedCar
-  x: 367.1
-  y: 306.0
-- type: ParkedCar
-  x: 364.4
-  y: 278.7
-- type: ParkedCar
-  x: 393.5
-  y: 253.8
-- type: ParkedCar
-  x: 418.8
-  y: 195.5
-- type: ParkedCar
-  x: 477.8
-  y: 129.1
-- type: ParkedCar
-  x: 388.6
-  y: 126.4

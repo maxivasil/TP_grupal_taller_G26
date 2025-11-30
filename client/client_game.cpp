@@ -254,8 +254,9 @@ bool Game::update(ServerToClientSnapshot_Client cmd_snapshot) {
     dst = {0, 0, rendererPtr->GetOutputWidth(), rendererPtr->GetOutputHeight()};
     float scale = float(dst.w) / float(src.w);
 
-    auto it = std::find_if(snapshots.begin(), snapshots.end(),
-                           [&](const CarSnapshot& car) { return car.id == client_id; });
+    auto it = std::find_if(snapshots.begin(), snapshots.end(), [&](const CarSnapshot& car) {
+        return !car.isNPC && car.id == client_id;
+    });
 
     if (it != snapshots.end()) {
         float worldX = it->pos_x * PX_PER_METER_X;
@@ -370,7 +371,7 @@ bool Game::update(ServerToClientSnapshot_Client cmd_snapshot) {
         rc.angle = car.angle;      // Restar 270 grados para orientación correcta
         rc.car_id = car.car_type;  // Usar car_type para renderizado
 
-        if (car.id == client_id) {
+        if (!car.isNPC && car.id == client_id) {
             camera.follow(worldX, worldY);
         }
 
@@ -407,8 +408,9 @@ void Game::render() {
         }
     }
 
-    auto it = std::find_if(snapshots.begin(), snapshots.end(),
-                           [&](const CarSnapshot& car) { return car.id == client_id; });
+    auto it = std::find_if(snapshots.begin(), snapshots.end(), [&](const CarSnapshot& car) {
+        return !car.isNPC && car.id == client_id;
+    });
 
     MinimapPlayer localPlayer;
     std::vector<MinimapPlayer> otherPlayers;
@@ -495,8 +497,9 @@ void Game::render() {
     hud.render(*rendererPtr, hudData);
 
     if (!snapshots.empty()) {
-        auto it2 = std::find_if(snapshots.begin(), snapshots.end(),
-                                [&](const CarSnapshot& car) { return car.id == client_id; });
+        auto it2 = std::find_if(snapshots.begin(), snapshots.end(), [&](const CarSnapshot& car) {
+            return !car.isNPC && car.id == client_id;
+        });
         if (it2 != snapshots.end()) {
             arrow.render(*rendererPtr);
         }
@@ -548,8 +551,9 @@ void Game::render() {
     }
 
     // Dibujar indicador de vida infinita en los bordes de la pantalla
-    auto it_local = std::find_if(snapshots.begin(), snapshots.end(),
-                                 [&](const CarSnapshot& car) { return car.id == client_id; });
+    auto it_local = std::find_if(snapshots.begin(), snapshots.end(), [&](const CarSnapshot& car) {
+        return !car.isNPC && car.id == client_id;
+    });
     if (it_local != snapshots.end() && it_local->hasInfiniteHealth) {
         int windowWidth = rendererPtr->GetOutputWidth();
         int windowHeight = rendererPtr->GetOutputHeight();

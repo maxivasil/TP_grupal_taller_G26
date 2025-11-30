@@ -30,7 +30,9 @@ City::City(CityName name): name(name) {
                                      obj["up"].as<bool>(), obj["down"].as<bool>(),
                                      obj["right"].as<bool>(), obj["left"].as<bool>()});
         } else if (type == "ParkedCar") {
-            parkedCars.push_back({obj["x"].as<float>(), obj["y"].as<float>()});
+            parkedCars.push_back({obj["x"].as<float>(), obj["y"].as<float>(),
+                                  obj["width"].as<float>(), obj["height"].as<float>(),
+                                  obj["orientation"].as<std::string>() == "vertical"});
         }
     }
 }

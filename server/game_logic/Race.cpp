@@ -116,13 +116,12 @@ void Race::initNPCs(b2WorldId world) {
         uint8_t carType = CarStatsDatabase::getCarTypeFromName(randomCarName);
 
         float offsetDist = npcStats.length * 0.5f + margin;
-        b2Vec2 spawnPos = b2Vec2{inter.x, inter.y} + 
+        b2Vec2 spawnPos = b2Vec2{inter.x, inter.y} +
                           b2MulSV(offsetDist, b2RotateVector(b2MakeRot(spawnAngle), {1, 0}));
 
-        npcs.push_back(std::make_unique<NPCCar>(
-                world, npcStats, spawnPos, b2MakeRot(spawnAngle),
-                false,  // isParked
-                carType));
+        npcs.push_back(std::make_unique<NPCCar>(world, npcStats, spawnPos, b2MakeRot(spawnAngle),
+                                                false,  // isParked
+                                                carType));
 
         createdCount++;
     }
@@ -131,35 +130,57 @@ void Race::initNPCs(b2WorldId world) {
 }
 
 void Race::initParkedCars(b2WorldId world) {
-    std::vector<ParkedCarData> parkedCarPositions = city.getParkedCars();
-    
-    if (parkedCarPositions.empty()) {
-        std::cout << "[RACE] No parked cars defined in city data." << std::endl;
+    std::vector<ParkedCarData> parkedAreas = city.getParkedCars();
+    if (parkedAreas.empty()) {
+        std::cout << "[RACE] No parked car areas defined." << std::endl;
         return;
     }
-    
+
     std::vector<std::string> carNames = CarStatsDatabase::getAllCarNames();
+
+    int minCars = std::max(1, static_cast<int>(parkedAreas.size() * 0.4f));
+    int maxCars = std::max(minCars, static_cast<int>(parkedAreas.size() * 0.9f));
+    int totalCarsToSpawn = minCars + (std::rand() % (maxCars - minCars + 1));
+
     int parkedCount = 0;
-    
-    for (const auto& parkedCarData : parkedCarPositions) {
-        try {
-            b2Vec2 position = {parkedCarData.x, parkedCarData.y};
-            
-            // Seleccionar un auto aleatorio
-            std::string randomCarName = carNames[std::rand() % carNames.size()];
-            CarStats carStats = CarStatsDatabase::getCarStats(randomCarName);
-            uint8_t carType = CarStatsDatabase::getCarTypeFromName(randomCarName);
-            
-            npcs.push_back(std::make_unique<NPCCar>(
-                    world, carStats, position, b2MakeRot(0.0f),
-                    true,  // isParked = true
-                    carType));
-            parkedCount++;
-        } catch (const std::exception& e) {
-            std::cerr << "[RACE] Error creating parked car: " << e.what() << std::endl;
+    const float margin = 0.1f;
+
+    size_t areaIndex = 0;
+    while (parkedCount < totalCarsToSpawn) {
+        const ParkedCarData& area = parkedAreas[areaIndex % parkedAreas.size()];
+
+        std::string randomCarName = carNames[std::rand() % carNames.size()];
+        CarStats carStats = CarStatsDatabase::getCarStats(randomCarName);
+        uint8_t carType = CarStatsDatabase::getCarTypeFromName(randomCarName);
+
+        float carWidth = carStats.width;
+        float carHeight = carStats.length;
+        float widthUsed = area.isVertical ? carWidth : carHeight;
+        float heightUsed = area.isVertical ? carHeight : carWidth;
+
+        float availableWidth = area.width - 2 * margin;
+        float availableHeight = area.height - 2 * margin;
+
+        float posX = area.x + margin +
+                     static_cast<float>(std::rand()) / RAND_MAX * (availableWidth - widthUsed);
+        float posY = area.y + margin +
+                     static_cast<float>(std::rand()) / RAND_MAX * (availableHeight - heightUsed);
+
+        b2Vec2 position = {posX + widthUsed / 2.0f, posY + heightUsed / 2.0f};
+
+        float angle = 0.0f;
+        if (area.isVertical) {
+            angle = (std::rand() % 2 == 0) ? B2_PI / 2.0f : -B2_PI / 2.0f;
+        } else {
+            angle = (std::rand() % 2 == 0) ? 0.0f : B2_PI;
         }
+        npcs.push_back(std::make_unique<NPCCar>(world, carStats, position, b2MakeRot(angle), true,
+                                                carType));
+
+        parkedCount++;
+        areaIndex++;
     }
-    
+
     std::cout << "[RACE] Initialized " << parkedCount << " parked cars." << std::endl;
 }
 
@@ -302,7 +323,7 @@ std::vector<CarSnapshot> Race::getSnapshot() const {
         float angle = b2Rot_GetAngle(rot) * 180.0f / B2_PI;
         b2Vec2 velocity = npc->getLinearVelocity();
         float speed = std::sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
-        
+
         // Obtener el estado de puente del NPC
         bool onBridge = npc->getIsOnBridge();
 

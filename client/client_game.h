@@ -20,6 +20,7 @@
 #include "graphics/camera.h"
 #include "graphics/checkpoint_arrow.h"
 #include "graphics/collision_explosion.h"
+#include "graphics/car_fire_effect.h"
 #include "graphics/hud.h"
 #include "graphics/minimap.h"
 
@@ -48,6 +49,7 @@ private:
     HUD hud;
     CheckpointArrow arrow;
     CollisionExplosion explosion;
+    CarFireEffect fireEffect;
     CarSoundEngine carSoundEngine;
     std::map<int, std::shared_ptr<SDL2pp::Texture>> textures;
     std::map<uint8_t, std::shared_ptr<SDL2pp::Texture>>

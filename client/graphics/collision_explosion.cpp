@@ -47,6 +47,38 @@ void CollisionExplosion::trigger(float worldX, float worldY, float camX, float c
               << particles.size() << " particles" << std::endl;
 }
 
+void CollisionExplosion::triggerFinalExplosion(float worldX, float worldY, float camX, float camY, float scale) {
+    particles.clear();
+
+    float relX = (worldX - camX) * scale;
+    float relY = (worldY - camY) * scale;
+
+    for (int i = 0; i < finalParticleCount; ++i) {
+        Particle p;
+        p.x = relX;
+        p.y = relY;
+
+        float angle = randomFloat(0.0f, 2.0f * 3.14159f);
+        float speed = randomFloat(finalParticleSpeed * 0.6f, finalParticleSpeed);
+
+        p.vx = std::cos(angle) * speed;
+        p.vy = std::sin(angle) * speed;
+
+        p.lifetime = 0.0f;
+        p.maxLifetime = randomFloat(finalExplosionDuration * 0.7f, finalExplosionDuration);
+        p.size = randomFloat(8, 20);  // Larger particles
+
+        particles.push_back(p);
+    }
+
+    if (soundEngine) {
+        soundEngine->playCollisionSound();  // Using collision sound for now
+    }
+
+    std::cout << "[FINAL EXPLOSION] Triggered at screen (" << relX << ", " << relY << ") with "
+              << particles.size() << " particles (DESTRUCTION)" << std::endl;
+}
+
 void CollisionExplosion::update(float dt) {
     for (auto it = particles.begin(); it != particles.end();) {
         it->lifetime += dt;

@@ -120,6 +120,8 @@ int Game::start() {
             }
 
             explosion.update(deltaTime);
+            fireEffect.update(deltaTime);
+            fireEffect.update(deltaTime);
 
             // Auto-close upgrades screen after duration
             if (showUpgradesScreen) {
@@ -283,10 +285,19 @@ bool Game::update(ServerToClientSnapshot_Client cmd_snapshot) {
         if (it->health <= 0.0f && !playerDestroyed) {
             playerDestroyed = true;
             destructionStartTime = SDL_GetTicks();
+            if (src.w > 0 && src.h > 0 && scale > 0) {
+                explosion.triggerFinalExplosion(worldX, worldY, src.x, src.y, scale);
+                float screenX = (worldX - src.x) * scale;
+                float screenY = (worldY - src.y) * scale;
+                float carWidth = src.w * 0.8f;
+                float carHeight = src.h * 0.8f;
+                if (carWidth > 0 && carHeight > 0 && carWidth < 1000 && carHeight < 1000) {
+                    fireEffect.start(screenX, screenY, carWidth, carHeight);
+                }
+            }
             std::cout << "[GAME] Player destroyed! Health: " << it->health << std::endl;
         }
 
-        // If destroyed, trigger death sequence after short delay
         if (playerDestroyed && (SDL_GetTicks() - destructionStartTime) > 500) {
             setLost();
         }
@@ -489,6 +500,7 @@ void Game::render() {
 
     renderCheckpoints(*rendererPtr);
     explosion.render(*rendererPtr);
+    fireEffect.render(*rendererPtr);
 
     rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     hudData.checkpointCurrent = currentCheckpoint;
@@ -1042,6 +1054,8 @@ void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
     myOwnResults = ClientPlayerResult();
     currentCheckpoint = 0;
     playerDestroyed = false;
+    explosion.stop(); 
+    fireEffect.stop();  
     previousHealthState.clear();
     lastSpeedUpdateTime = 0;
     lastPlayerX = 0.0f;

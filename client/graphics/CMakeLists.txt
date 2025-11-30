@@ -9,6 +9,8 @@ add_library(client_graphics OBJECT
     checkpoint_arrow.h
     collision_explosion.cpp
     collision_explosion.h
+    car_fire_effect.cpp
+    car_fire_effect.h
     track_loader.cpp
     track_loader.h
 )

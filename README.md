@@ -4,7 +4,7 @@
 ## Requisitos del sistema
 - Ubuntu 24.04 LTS
 
-## Instalación
+# Instalación
 
 ```bash
 sudo bash install.sh
@@ -21,7 +21,7 @@ sudo bash install.sh
 **Nota:** El instalador requiere permisos de administrador para instalar en el sistema.
 
 
-## Desinstalación
+# Desinstalación
 
 ```bash
 sudo bash uninstall.sh
@@ -36,9 +36,10 @@ sudo bash uninstall.sh
 
 
 
-## Guía de Usuario
+# Guía de Usuario
 
-### Servidor
+## Servidor
+
 
 Para ejecutar el servidor:
 
@@ -100,8 +101,18 @@ En esta pantalla deberás esperar que todos tus amigos se una a tu partida media
 | **T** | (entre carreras) Resultados parciales/acumulados |
 | **Esc** / **q** | Salir |
 
+## Explicación de Juego
 
-### Editor de Carreras
+### Carrera
+La carrera consta de uno o más circuitos en los que todos los jugadores compiten en simultáneo, atravesando las zonas del mapa marcadas como checkpoints en el orden establecido hasta llegar a la línea de meta. Cada circuito finaliza cuando todos los jugadores la cruzan o en su defecto quedan destruidos. Luego se muestra el tiempo registrado por cada uno y el acumulado correspondiente a todos los circuitos. Una vez completados todos los circuitos, la carrera concluye y resultando ganador el jugador con el menor tiempo total acumulado.
+
+### Auto
+El usuario tiene la posibilidad de elegir entre una variedad de autos. Cada vehiculo tiene distintas estadísticas, influyendo en su control y forma de manejo. A su vez, cada auto cuenta con una salud inicial la cual disminuye cuando se produce un choque. La fuerza del choque determina la cantidad de vida que es disminuida.
+
+- **Modificaciones:**
+Cada vez que se finaliza un circuito el usuario tiene la posibilidad de mejorar algunas de las estadísticas de su auto (velocidad, aceleración, controlabilidad, salud). Cada mejora tiene un costo que se computa como una penalización del tiempo de llegada de la siguiente carrera.
+
+## Editor de Carreras
 
 Para ejecutar el editor:
 
@@ -127,7 +138,7 @@ Deberás elegir en la esquina superior izquierda para qué mapa deseas crear una
 | **Ctrl + ruedita** | Zoom in/out en la grilla |
 
 
-## Créditos
+# Créditos
 
 ### Grupo 26
 

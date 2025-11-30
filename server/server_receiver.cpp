@@ -15,7 +15,7 @@ void ThreadReceiver::run() {
         while (should_keep_running()) {
             std::vector<uint8_t> data = protocol.recv_full_message();
             if (data.empty())
-                continue;
+                break;
             auto cmd = ClientToServerCmd_Server::from_bytes(data, registry, client_id);
             receive_queue.push(std::move(cmd));
         }

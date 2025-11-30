@@ -33,7 +33,7 @@ void ServerClientHandler::run() {
         while (should_keep_running() && !inLobby) {
             std::vector<uint8_t> data = protocol.recv_full_message();
             if (data.empty())
-                continue;
+                break;
             std::unique_ptr<ClientToServerCmd_Server> cmd(
                     ClientToServerCmd_Server::from_bytes(data, registry, client_id));
             cmd->execute(ctx);
@@ -41,10 +41,6 @@ void ServerClientHandler::run() {
 
         // cppcheck-suppress knownConditionTrueFalse
         if (!inLobby) {
-            sender.stop();
-            send_queue.close();
-            sender.join();
-            protocol.close_connection();
             return;
         }
         std::cout << "[SERVER] Assigned client ID " << client_id << " to connected client.\n";
@@ -52,10 +48,6 @@ void ServerClientHandler::run() {
         send_message(assignIdCmd);
 
         receiver->start();
-
-        receiver->join();
-        protocol.close_connection();
-        sender.join();
     } catch (const std::exception& e) {
         if (!should_keep_running()) {
             return;
@@ -67,14 +59,15 @@ void ServerClientHandler::run() {
 void ServerClientHandler::stop() {
     resetSelfPtr();
     Thread::stop();
-    if (receiver) {
-        receiver->stop();
-    }
+    send_queue.close();
     if (!protocol.is_connection_closed()) {
         protocol.close_connection();
     }
+    if (receiver) {
+        receiver->stop();
+        receiver->join();
+    }
     sender.stop();
-    send_queue.close();
     sender.join();
 }
 

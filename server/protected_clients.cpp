@@ -45,7 +45,7 @@ void ServerProtectedClients::stop_and_delete_dead() {
     }
     for (auto& client: to_remove) {
         if (client) {
-            if (client->is_alive()) {
+            if (!client->is_alive()) {
                 client->join();
             }
         }

@@ -22,6 +22,6 @@ void ServerSession::run() {
 void ServerSession::stop() {
     acceptor.stop();
     acceptor.join();
-    lobbiesMonitor.closeAllLobbies();
     protected_clients.stop_all_and_delete();
+    lobbiesMonitor.closeAllLobbies();
 }

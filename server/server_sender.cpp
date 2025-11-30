@@ -10,7 +10,7 @@ ThreadSender::ThreadSender(Protocol& protocol,
 
 void ThreadSender::run() {
     try {
-        while (should_keep_running()) {
+        while (should_keep_running() && !protocol.is_connection_closed()) {
             std::shared_ptr<ServerToClientCmd_Server> raw = send_queue.pop();
             if (raw) {
                 auto data = raw->to_bytes();

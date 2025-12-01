@@ -64,33 +64,33 @@ nfs2d_client
 
 Debés eligir un nombre de usuario e indicar la IP y puerto del servidor al que te quieras unir.
 
-<img src="DocsImages/Unirse-Server.jpg" width="700">
+<img src="doc/DocsImages/Unirse-Server.jpg" width="700">
 
 #### Unirse/Crear Lobby
 
 Podés crear un nuevo Lobby o unirte a uno ya existente. 
 
-<img src="DocsImages/Crear-Unirse-Lobby.jpg" width="700">
+<img src="doc/DocsImages/Crear-Unirse-Lobby.jpg" width="700">
 
 
 #### Crear Partida
 
 Al crear una partida tendrás que seleccionar el tour que desees jugar de los disponibles.
 
-<img src="DocsImages/Looby-Seleccionar-Tour.jpg" width="700">
+<img src="doc/DocsImages/Looby-Seleccionar-Tour.jpg" width="700">
 
 
 ##### Selección del Auto
 
 Tanto al unirte como al crear tendrás que seleccionar el auto con el que desees jugar y luego presionar "Ready".
 
-<img src="DocsImages/Looby-Seleccionar-Auto.jpg" width="700">
+<img src="doc/DocsImages/Looby-Seleccionar-Auto.jpg" width="700">
 
 ##### Listo para jugar
 
 En esta pantalla deberás esperar que todos tus amigos se unan a tu partida mediante el **Código de Sala**. Una vez todos los jugadores en la sala hayan clickeado "Listo para empezar!" la partida comienza.
 
-<img src="DocsImages/Looby-Ready.jpg" width="700">
+<img src="doc/DocsImages/Looby-Ready.jpg" width="700">
 
 #### Controles del juego
 
@@ -125,7 +125,7 @@ sudo nfs2d_editor
 Al iniciar el editor verás la siguiente interfaz:
 
 
-<img src="DocsImages/Editor.jpg" width="700">
+<img src="doc/DocsImages/Editor.jpg" width="700">
 
 Deberás elegir en la esquina superior izquierda para qué mapa deseas crear una carrera. Luego tendrás que colocar los checkpoints deseados (al menos uno) haciendo click en "Agregar Checkpoint" y luego sobre la imagen mantén presionado el botón izquierdo del mouse y arrastra para dibujar un rectángulo. Luego seleccioná la dirección en la que quieras que los autos aparezcan. Y finalmente presioná "Exportar YAML".
 

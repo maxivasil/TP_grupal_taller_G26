@@ -5,8 +5,8 @@
 #include <cstdlib>
 #include <vector>
 
-#define MINMOVEMENT 0.01f
-#define MAXFRAMESBLOQUED 120
+#define MINMOVEMENT 0.03f
+#define MAXFRAMESBLOQUED 150
 #define RETROCESO_FRAMES 90  // ~1.5 segundos a 60 FPS
 #define INTERSECTION_COOLDOWN 90
 #define POST_TURN_GRACE 60
@@ -19,18 +19,19 @@ NPCCar::NPCCar(b2WorldId world, const CarStats& stats, b2Vec2 position, b2Rot ro
         carType(carType) {}
 
 CarInput NPCCar::generateRandomMovement() {
-    // Velocidad crucero: 5 unidades (moderada, no depende del auto)
-    const float CRUISE_SPEED = 5.0f;
-    b2Vec2 velocity = b2Body_GetLinearVelocity(body);
-    float speed = b2Length(velocity);
+    float speed = b2Length(b2Body_GetLinearVelocity(body));
+    float normalized = std::clamp(speed / getMaxSpeed(), 0.0f, 1.0f);
 
-    bool shouldAccelerate = (speed < CRUISE_SPEED * 0.95f);
-    bool shouldBrake = (speed > CRUISE_SPEED * 1.05f);
+    float accelProb = (1.0f - normalized) * 0.2f;
+    float brakeProb = normalized * 0.7f;
 
-    // El NPC mantiene su orientación actual (chooseIntersectionDirection lo rota en intersecciones)
-    return {.accelerating = shouldAccelerate,
-            .braking = shouldBrake,
-            .turn_direction = Direction::FORWARD};
+    bool accelerating = ((std::rand() / float(RAND_MAX)) < accelProb);
+    if (accelerating) {
+        brakeProb *= 0.3f;
+    }
+    bool braking = ((std::rand() / float(RAND_MAX)) < brakeProb);
+
+    return {.accelerating = accelerating, .braking = braking, .turn_direction = Direction::FORWARD};
 }
 
 void NPCCar::updatePhysics(const CarInput& input) {
@@ -38,8 +39,12 @@ void NPCCar::updatePhysics(const CarInput& input) {
         intersectionCooldownFrames--;
     if (postTurnGraceFrames > 0)
         postTurnGraceFrames--;
-    if (isBlocked || isParked) {
-        handleBlocked();
+    if (isParked)
+        return;
+    if (isBlocked) {
+        b2Body_SetLinearVelocity(body, {0, 0});
+        b2Body_SetAngularVelocity(body, 0);
+        b2Body_SetAwake(body, false);
         return;
     }
     if (isInRetrocesoMode) {
@@ -71,6 +76,7 @@ void NPCCar::updatePhysics(const CarInput& input) {
                 b2Body_SetTransform(body, pos, b2MakeRot(newHeading));
             }
         }
+        handleBlocked();
         return;
     }
 
@@ -139,6 +145,7 @@ void NPCCar::chooseIntersectionDirection(int intersectionId) {
     }
 
     b2Vec2 currentPos = b2Body_GetPosition(body);
+    b2Body_SetLinearVelocity(body, {0.0f, 0.0f});
     b2Body_SetTransform(body, currentPos, b2MakeRot(newAngle));
 
     intersectionCooldownFrames = INTERSECTION_COOLDOWN;
@@ -148,6 +155,20 @@ void NPCCar::chooseIntersectionDirection(int intersectionId) {
 bool NPCCar::isNPCBlocked() { return isBlocked; }
 
 uint8_t NPCCar::getCarType() const { return carType; }
+
+void NPCCar::respawn(b2Vec2 pos, b2Rot rot) {
+    b2Body_SetTransform(body, pos, rot);
+    b2Body_SetLinearVelocity(body, {0.0f, 0.0f});
+    b2Body_SetAngularVelocity(body, 0.0f);
+    b2Body_SetAwake(body, true);
+    setLevel(false);
+    blockedFrames = 0;
+    isBlocked = false;
+    isInRetrocesoMode = false;
+    intersectionCooldownFrames = 0;
+    postTurnGraceFrames = 0;
+    repair();
+}
 
 void NPCCar::applyCollision(const CollisionInfo& info) {
     // Call parent collision handler for damage

@@ -280,4 +280,6 @@ void Car::setDestroyed() { current_health = 0.0f; }
 
 void Car::chooseIntersectionDirection(int intersectionId) {}
 
+const CarStats& Car::getStats() const { return stats; }
+
 Car::~Car() {}

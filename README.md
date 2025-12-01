@@ -88,7 +88,7 @@ Tanto al unirte como al crear tendrás que seleccionar el auto con el que desees
 
 ##### Listo para jugar
 
-En esta pantalla deberás esperar que todos tus amigos se una a tu partida mediante el **Código de Sala**. Una vez todos los jugadores en la sala hayan clickeado "Listo para empezar!" la partida comienza.
+En esta pantalla deberás esperar que todos tus amigos se unan a tu partida mediante el **Código de Sala**. Una vez todos los jugadores en la sala hayan clickeado "Listo para empezar!" la partida comienza.
 
 <img src="DocsImages/Looby-Ready.jpg" width="700">
 
@@ -107,7 +107,7 @@ En esta pantalla deberás esperar que todos tus amigos se una a tu partida media
 La carrera consta de uno o más circuitos en los que todos los jugadores compiten en simultáneo, atravesando las zonas del mapa marcadas como checkpoints en el orden establecido hasta llegar a la línea de meta. Cada circuito finaliza cuando todos los jugadores la cruzan o en su defecto quedan destruidos, o cuando se alcanza el límite de tiempo de diez (10) minutos. Luego se muestra el tiempo registrado por cada uno y el acumulado correspondiente a todos los circuitos. Una vez completados todos los circuitos, la carrera concluye y resultando ganador el jugador con el menor tiempo total acumulado.
 
 ### Auto
-El usuario tiene la posibilidad de elegir entre una variedad de autos. Cada vehiculo tiene distintas estadísticas, influyendo en su control y forma de manejo. A su vez, cada auto cuenta con una salud inicial la cual disminuye cuando se produce un choque. La fuerza del choque determina la cantidad de vida que es disminuida.
+El usuario tiene la posibilidad de elegir entre una variedad de autos. Cada vehículo tiene distintas estadísticas, influyendo en su control y forma de manejo. A su vez, cada auto cuenta con una salud inicial la cual disminuye cuando se produce un choque. La fuerza del choque determina la cantidad de vida que es disminuida.
 
 - **Modificaciones:**
 Cada vez que se finaliza un circuito el usuario tiene la posibilidad de mejorar algunas de las estadísticas de su auto (velocidad, aceleración, controlabilidad, salud). Cada mejora tiene un costo que se computa como una penalización del tiempo de llegada de la siguiente carrera.

@@ -89,38 +89,19 @@ void Race::initNPCs(b2WorldId world) {
 
     int createdCount = 0;
     std::vector<std::string> carNames = CarStatsDatabase::getAllCarNames();
-    float margin = 0.5f;
 
     for (const auto& inter: spawnPoints) {
         if (createdCount >= numNPCsToCreate)
             break;
 
-        std::vector<float> validAngles;
-
-        if (inter.right)
-            validAngles.push_back(0.0f);
-        if (inter.up)
-            validAngles.push_back(-B2_PI / 2.0f);
-        if (inter.left)
-            validAngles.push_back(B2_PI);
-        if (inter.down)
-            validAngles.push_back(B2_PI / 2.0f);
-
-        if (validAngles.empty())
-            continue;
-
-        float spawnAngle = validAngles[std::rand() % validAngles.size()];
         std::string randomCarName = carNames[std::rand() % carNames.size()];
         CarStats npcStats = CarStatsDatabase::getCarStats(randomCarName);
         uint8_t carType = CarStatsDatabase::getCarTypeFromName(randomCarName);
 
-        float offsetDist = npcStats.length * 0.5f + margin;
-        b2Vec2 spawnPos = b2Vec2{inter.x, inter.y} +
-                          b2MulSV(offsetDist, b2RotateVector(b2MakeRot(spawnAngle), {1, 0}));
+        auto respawn = getRandomNPCRespawn(npcStats, &inter);
 
-        npcs.push_back(std::make_unique<NPCCar>(world, npcStats, spawnPos, b2MakeRot(spawnAngle),
-                                                false,  // isParked
-                                                carType));
+        npcs.push_back(std::make_unique<NPCCar>(world, npcStats, respawn.position, respawn.rotation,
+                                                false, carType));
 
         createdCount++;
     }
@@ -178,6 +159,43 @@ void Race::initParkedCars(b2WorldId world) {
     }
 }
 
+NPCRespawnInfo Race::getRandomNPCRespawn(const CarStats& stats,
+                                         const IntersectionData* forcedInter) const {
+    std::vector<IntersectionData> spawnPoints = city.getIntersections();
+    if (spawnPoints.empty())
+        return {{0, 0}, b2MakeRot(0)};
+
+    const IntersectionData* inter;
+    if (forcedInter != nullptr) {
+        inter = forcedInter;
+    } else {
+        inter = &spawnPoints[std::rand() % spawnPoints.size()];
+    }
+
+    std::vector<float> validAngles;
+    if (inter->right)
+        validAngles.push_back(0.0f);
+    if (inter->up)
+        validAngles.push_back(-B2_PI / 2.0f);
+    if (inter->left)
+        validAngles.push_back(B2_PI);
+    if (inter->down)
+        validAngles.push_back(B2_PI / 2.0f);
+
+    if (validAngles.empty())
+        return {{inter->x, inter->y}, b2MakeRot(0)};
+
+    float angle = validAngles[std::rand() % validAngles.size()];
+    b2Rot rot = b2MakeRot(angle);
+
+    float margin = 0.5f;
+    float offsetDist = stats.length * 0.5f + margin;
+
+    b2Vec2 spawnPos = b2Vec2{inter->x, inter->y} + b2MulSV(offsetDist, b2RotateVector(rot, {1, 0}));
+
+    return {spawnPos, rot};
+}
+
 Race::Race(CityName cityName, std::string& trackFile,
            std::vector<std::unique_ptr<Player>>& players):
         city(cityName),
@@ -229,6 +247,10 @@ void Race::updatePhysics(float dt) {
     for (auto& npc: npcs) {
         if (!npc->isDestroyed()) {
             npc->updatePhysics({});
+        }
+        if (npc->isNPCBlocked()) {
+            auto info = getRandomNPCRespawn(npc->getStats(), nullptr);
+            npc->respawn(info.position, info.rotation);
         }
     }
 

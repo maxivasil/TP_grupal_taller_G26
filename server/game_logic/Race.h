@@ -30,6 +30,11 @@ struct RaceInfo {
     RaceInfo(CityName city, const std::string& trackFile): city(city), trackFile(trackFile) {}
 };
 
+struct NPCRespawnInfo {
+    b2Vec2 position;
+    b2Rot rotation;
+};
+
 class Race {
 private:
     City city;
@@ -56,6 +61,8 @@ private:
     void initCars(b2WorldId world);
     void initNPCs(b2WorldId world);        // Initialize NPC traffic
     void initParkedCars(b2WorldId world);  // Initialize parked cars as static obstacles
+    NPCRespawnInfo getRandomNPCRespawn(const CarStats& stats,
+                                       const IntersectionData* forcedInter) const;
 
 public:
     Race(CityName cityName, std::string& trackFile, std::vector<std::unique_ptr<Player>>& players);

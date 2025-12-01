@@ -123,6 +123,8 @@ public:
      */
     const CarUpgrades& getUpgrades() const;
 
+    const CarStats& getStats() const;
+
     virtual void chooseIntersectionDirection(int intersectionId);
 };
 

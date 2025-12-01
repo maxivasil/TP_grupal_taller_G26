@@ -41,6 +41,8 @@ public:
 
     uint8_t getCarType() const;
 
+    void respawn(b2Vec2 pos, b2Rot rot);
+
     /**
      * @brief Registra el ID de la intersección actual para usar al salir de retroceso
      */

@@ -67,29 +67,9 @@ void ServerGameLoop::run() {
             process_pending_commands(ctx);
             std::this_thread::sleep_for(std::chrono::milliseconds(250));
         }
-        std::cout << "Starting Game" << std::endl;
         auto starting_cmd = std::make_shared<ServerToClientGameStarting_Server>();
         protected_clients.broadcast(starting_cmd);
         status = LobbyStatus::IN_GAME;
-
-        // Debug: print car selections
-        std::cout << "\n=== CAR SELECTIONS ===" << std::endl;
-        if (lobby) {
-            std::cout << "Total car selections stored: " << lobby->clientCarSelection.size()
-                      << std::endl;
-            for (const auto& pair: lobby->clientCarSelection) {
-                std::cout << "  Client " << pair.first << " -> " << pair.second << std::endl;
-            }
-        } else {
-            std::cout << "ERROR: lobby is nullptr!" << std::endl;
-        }
-        std::cout << "Clients ready: " << clientsReady.size() << std::endl;
-        // cppcheck-suppress knownEmptyContainer
-        for (uint32_t clientId: clientsReady) {
-            std::cout << "  Client " << clientId << " is ready" << std::endl;
-        }
-        std::cout << "=====================\n" << std::endl;
-        //
 
         // Create players with their selected cars
         std::vector<std::unique_ptr<Player>> players;
@@ -103,25 +83,13 @@ void ServerGameLoop::run() {
             if (lobby &&
                 lobby->clientCarSelection.find(clientId) != lobby->clientCarSelection.end()) {
                 carName = lobby->clientCarSelection[clientId];
-                std::cout << "Found car selection for client " << clientId << ": " << carName
-                          << std::endl;
-            } else {
-                std::cout << "No car selection found for client " << clientId << ", using default"
-                          << std::endl;
             }
-            std::cout << "Creating player " << playerId << " (client " << clientId
-                      << ") with car: " << carName << std::endl;
 
             // Use generic stats for now (can be customized per car later)
             CarStats stats = CarStatsDatabase::getCarStats(carName);
             if (lobby) {
                 userName = lobby->clientUsernames[clientId];
             }
-            std::cout << "  Car stats - Accel: " << stats.acceleration
-                      << ", Max Speed: " << stats.max_speed << ", Turn Speed: " << stats.turn_speed
-                      << ", Mass: " << stats.mass << ", Brake Force: " << stats.brake_force
-                      << ", Handling: " << stats.handling << ", Health Max: " << stats.health_max
-                      << ", Length: " << stats.length << ", Width: " << stats.width << std::endl;
             uint8_t car_type = CarStatsDatabase::getCarTypeFromName(carName);
             players.emplace_back(std::make_unique<Player>(userName, clientId, stats, car_type));
             playerId++;
@@ -253,9 +221,6 @@ void ServerGameLoop::send_partial_results(Race& race,
         auto partialCmd = std::make_shared<ServerToClientRaceResults_Server>(partial, false);
 
         protected_clients.broadcast(partialCmd);
-
-        std::cout << "[RACE] Sent PARTIAL result to player " << pid << " => " << finishTime
-                  << " seconds\n";
     }
 }
 
@@ -294,7 +259,6 @@ void ServerGameLoop::send_acumulated_results(const Race& race,
     }
     auto fullCmd = std::make_shared<ServerToClientRaceResults_Server>(fullResults, true);
     protected_clients.broadcast(fullCmd);
-    std::cout << "[RACE] Sent FULL results to all players.\n";
 
     for (const auto& p: players) {
         auto it = std::find_if(accumulatedResults.begin(), accumulatedResults.end(),
@@ -335,12 +299,6 @@ void ServerGameLoop::send_acumulated_results(const Race& race,
 
     auto accumCmd = std::make_shared<ServerToClientAccumulatedResults_Server>(orderedAccum);
     protected_clients.broadcast(accumCmd);
-
-    std::cout << "\n--- ACUMULADO HASTA AHORA ---\n";
-    for (const auto& acc: orderedAccum) {
-        std::cout << "Player " << acc.playerId << ": completed=" << acc.completedRaces
-                  << ", totalTime=" << acc.totalTime << "\n";
-    }
 }
 
 void ServerGameLoop::handle_upgrades(std::vector<std::unique_ptr<Player>>& players) {

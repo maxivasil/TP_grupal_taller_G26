@@ -76,7 +76,6 @@ void Race::initCars(b2WorldId world) {
 
 void Race::initNPCs(b2WorldId world) {
     std::vector<IntersectionData> spawnPoints = city.getIntersections();
-
     if (spawnPoints.empty())
         return;
 
@@ -84,8 +83,8 @@ void Race::initNPCs(b2WorldId world) {
     std::mt19937 g(rd());
     std::shuffle(spawnPoints.begin(), spawnPoints.end(), g);
 
-    int minNPCs = std::max(1, (int)(spawnPoints.size() * 0.40f));
-    int maxNPCs = std::max(minNPCs, (int)(spawnPoints.size() * 0.90f));
+    int minNPCs = std::max(1, (int)(spawnPoints.size() * 0.4f));
+    int maxNPCs = std::max(minNPCs, (int)(spawnPoints.size() * 0.6f));
     int numNPCsToCreate = minNPCs + (std::rand() % (maxNPCs - minNPCs + 1));
 
     int createdCount = 0;
@@ -125,21 +124,18 @@ void Race::initNPCs(b2WorldId world) {
 
         createdCount++;
     }
-
-    std::cout << "[RACE] Initialized " << createdCount << " NPCs." << std::endl;
 }
 
 void Race::initParkedCars(b2WorldId world) {
     std::vector<ParkedCarData> parkedAreas = city.getParkedCars();
     if (parkedAreas.empty()) {
-        std::cout << "[RACE] No parked car areas defined." << std::endl;
         return;
     }
 
     std::vector<std::string> carNames = CarStatsDatabase::getAllCarNames();
 
     int minCars = std::max(1, static_cast<int>(parkedAreas.size() * 0.4f));
-    int maxCars = std::max(minCars, static_cast<int>(parkedAreas.size() * 0.9f));
+    int maxCars = std::max(minCars, static_cast<int>(parkedAreas.size() * 0.6f));
     int totalCarsToSpawn = minCars + (std::rand() % (maxCars - minCars + 1));
 
     int parkedCount = 0;
@@ -180,8 +176,6 @@ void Race::initParkedCars(b2WorldId world) {
         parkedCount++;
         areaIndex++;
     }
-
-    std::cout << "[RACE] Initialized " << parkedCount << " parked cars." << std::endl;
 }
 
 Race::Race(CityName cityName, std::string& trackFile,
@@ -215,24 +209,14 @@ void Race::checkFinishConditions() {
 
             float elapsed = getCurrentElapsedTime();
             playerFinishTimes[player->getId()] = elapsed;
-
-            std::cout << "[RACE] Player " << player->getId() << " (" << player->getName()
-                      << ") finished in " << elapsed << "s" << std::endl;
         }
         if (player->getCurrentHealth() <= 0.0f && !playerFinishTimes.count(player->getId())) {
             playerFinishTimes[player->getId()] = -1.0f;
-
-            std::cout << "[RACE] Player " << player->getId() << " (" << player->getName()
-                      << ") destroyed their car" << std::endl;
         }
     }
 
     if (playerFinishTimes.size() == players.size() || getCurrentElapsedTime() >= MAX_RACE_TIME) {
         finished = true;
-        std::cout << "[RACE] RACE FINISHED! Reason: "
-                  << (playerFinishTimes.size() == players.size() ? "All players done" :
-                                                                   "Time limit")
-                  << std::endl;
     }
 }
 
@@ -355,7 +339,6 @@ void Race::activateInfiniteHealthCheat(int playerId) {
 
     if (it != players.end()) {
         (*it)->getCar()->setInfiniteHealth();
-        std::cout << "CHEAT: Vida infinita activada para cliente: " << playerId << std::endl;
     }
 }
 
@@ -368,8 +351,6 @@ void Race::forceWinCheat(int playerId) {
         // Marcar como finalizador inmediatamente
         float elapsed = getCurrentElapsedTime();
         playerFinishTimes[playerId] = elapsed;
-        std::cout << "CHEAT: Cliente " << playerId << " ganó en " << elapsed << " segundos"
-                  << std::endl;
     }
 }
 
@@ -380,6 +361,5 @@ void Race::forceLoseCheat(int playerId) {
 
     if (it != players.end()) {
         (*it)->getCar()->setDestroyed();
-        std::cout << "CHEAT: Cliente " << playerId << " perdió automáticamente" << std::endl;
     }
 }

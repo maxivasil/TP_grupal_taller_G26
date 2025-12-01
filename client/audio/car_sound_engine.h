@@ -26,6 +26,7 @@ private:
     Mix_Chunk* gameOverSound;        // Sound when player loses
     Mix_Chunk* cheatActivatedSound;  // Sound when cheat is activated
     Mix_Chunk* championshipWinSound; // Sound when championship is won
+    Mix_Chunk* championshipLossSound; // Sound when championship is lost
     Mix_Chunk* countdownRaceSound;   // Sound for race countdown
     Mix_Music* musicTrack;
 
@@ -78,6 +79,7 @@ public:
     void playRaceFinish();      // When player finishes race (victory)
     void playGameOver();        // When player loses
     void playChampionshipWin();  // When player wins championship
+    void playChampionshipLoss(); // When player loses championship
     void playCheatActivated();  // When cheat is activated
     void playCountdownRace();   // When race countdown starts
 

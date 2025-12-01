@@ -105,6 +105,7 @@ private:
     bool raceFullyFinished = false;
     std::vector<AccumulatedResultDTO> accumulatedResults;
     bool isLastRace = false;
+    bool championshipLossSoundPlayed = false;  // Para reproducir el sonido una sola vez
     ClientPlayerResult myOwnResults = {0, "", 0.0f, 0};
     std::map<uint32_t, std::string> playerNames;  // Mapeo de client_id a playerName
 
@@ -169,6 +170,13 @@ private:
     void renderOwnName(const SDL_Rect& rowRect) const;
 
     void renderPlayerNames(SDL2pp::Renderer& renderer, const SDL_Rect& src, float scale);
+
+    // Para la última carrera del tour - 4 pantallas distintas
+    bool isChampion() const;
+    void renderLastRaceWonChampion();
+    void renderLastRaceWonNotChampion();
+    void renderLastRaceLostChampion();
+    void renderLastRaceLostNotChampion();
 
 public:
     explicit Game(ClientSession& client_session);

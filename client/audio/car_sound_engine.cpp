@@ -76,6 +76,7 @@ void CarSoundEngine::initAudio() {
     gameOverSound = loadSound(basePath + "game_over.mp3");
     cheatActivatedSound = loadSound(basePath + "cheat_activated.mp3");
     championshipWinSound = loadSound(basePath + "championship_win.mp3");
+    championshipLossSound = loadSound(basePath + "championship_lost.mp3");
     countdownRaceSound = loadSound(basePath + "countdown_race.mp3");
     musicTrack = Mix_LoadMUS((basePath + "music_theme.mp3").c_str());
 
@@ -262,6 +263,25 @@ void CarSoundEngine::playChampionshipWin() {
     int channel = Mix_PlayChannel(-1, championshipWinSound, 0);
     if (channel == -1) {
         std::cerr << "[CarSoundEngine] Failed to play championship win sound: " << Mix_GetError()
+                  << std::endl;
+    } else {
+        contextSoundChannel = channel;
+        activeEffectChannels.insert(channel);
+        Mix_Volume(channel, MIX_MAX_VOLUME);
+    }
+}
+
+void CarSoundEngine::playChampionshipLoss() {
+    if (!audioInitialized || !championshipLossSound) {
+        return;
+    }
+
+    stopAll();
+    Mix_HaltMusic();
+
+    int channel = Mix_PlayChannel(-1, championshipLossSound, 0);
+    if (channel == -1) {
+        std::cerr << "[CarSoundEngine] Failed to play championship loss sound: " << Mix_GetError()
                   << std::endl;
     } else {
         contextSoundChannel = channel;

@@ -54,7 +54,7 @@ public:
             return it->second;
         }
         // Retornar stats por defecto si no encuentra
-        return stats_map.at("Chevrolet Corsa");
+        return stats_map.at("Iveco Daily");
     }
 
     // Función helper para convertir nombre del auto a car_type (0-6)

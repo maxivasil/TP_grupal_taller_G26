@@ -1,7 +1,6 @@
 #include "minimap.h"
 
 #include <cmath>
-#include <iostream>
 
 static inline int clampi(int v, int lo, int hi) { return std::max(lo, std::min(v, hi)); }
 
@@ -27,7 +26,6 @@ void Minimap::loadMapImage(SDL2pp::Renderer& renderer, const std::string& imageP
         mapWidth = static_cast<float>(mapTexture->GetWidth());
         mapHeight = static_cast<float>(mapTexture->GetHeight());
     } catch (const std::exception& e) {
-        std::cerr << "Error loading minimap image: " << e.what() << "\n";
         mapTexture = nullptr;
         mapWidth = mapHeight = 0.0f;
     }

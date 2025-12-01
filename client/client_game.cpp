@@ -1,53 +1,37 @@
 #include "client_game.h"
 
-#include <cmath>
-#include <filesystem>
-#include <utility>
-
-#include <SDL2pp/SDL2pp.hh>
-#include <SDL_ttf.h>
-#include <unistd.h>
-
-#include "../common/constants.h"
-#include "audio/car_sound_engine.h"
-#include "cmd/client_to_server_applyUpgrades_client.h"
-#include "cmd/client_to_server_cheat_client.h"
-#include "cmd/client_to_server_move_client.h"
-#include "graphics/track_loader.h"
-
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
 #define ZOOM 1.5f
+#define MINIMAP_SIZE 150
 #define PX_PER_METER_X (62.0f / 8.9f)
 #define PX_PER_METER_Y (24.0f / 3.086f)
-
-#define FPS 1000 / 30
+#define TARGET_FPS 30
+#define FRAME_TIME_MS (1000 / TARGET_FPS)
+#define NUM_SPRITES 7
 
 
 // Estructura de información de sprite
 struct SpriteInfo {
     SDL_Rect rect;
     const char* name;
+    std::pair<int, int> size;
 };
 
-// Mapeo de sprites para los 7 autos en Cars_Combined.png
-// Imagen: 196x22 píxeles (7 autos x 28 píxeles cada uno en una fila)
 const SpriteInfo SPRITE_MAP[] = {
-        {{0, 0, 75, 69}, "Iveco Daily"},         // Auto 0 - Van (75x69)
-        {{0, 0, 75, 86}, "Dodge Viper"},         // Auto 1 - Ferrari (75x86)
-        {{0, 0, 75, 86}, "Chevrolet Corsa"},     // Auto 2 - Celeste (75x86)
-        {{0, 0, 75, 86}, "Jeep Wrangler"},       // Auto 3 - Jeep (75x86)
-        {{0, 0, 75, 86}, "Toyota Tacoma"},       // Auto 4 - Pickup (75x86)
-        {{0, 0, 75, 103}, "Lincoln TownCar"},    // Auto 5 - Limo (75x103)
-        {{0, 0, 75, 86}, "Lamborghini Diablo"},  // Auto 6 - Descapotable (75x86)
+        {{0, 0, 75, 69}, "Iveco Daily", {28, 22}},         // Auto 0 - Van (75x69)
+        {{0, 0, 75, 86}, "Dodge Viper", {40, 24}},         // Auto 1 - Ferrari (75x86)
+        {{0, 0, 75, 86}, "Chevrolet Corsa", {39, 24}},     // Auto 2 - Celeste (75x86)
+        {{0, 0, 75, 86}, "Jeep Wrangler", {38, 24}},       // Auto 3 - Jeep (75x86)
+        {{0, 0, 75, 86}, "Toyota Tacoma", {40, 22}},       // Auto 4 - Pickup (75x86)
+        {{0, 0, 75, 103}, "Lincoln TownCar", {48, 20}},    // Auto 5 - Limo (75x103)
+        {{0, 0, 75, 86}, "Lamborghini Diablo", {40, 22}},  // Auto 6 - Descapotable (75x86)
 };
-
-const int NUM_SPRITES = 7;
 
 Game::Game(ClientSession& client_session):
         client_session(client_session),
         camera(WINDOW_WIDTH, WINDOW_HEIGHT, ZOOM),
-        minimap(150),
+        minimap(MINIMAP_SIZE),
         hud(WINDOW_WIDTH, WINDOW_HEIGHT),
         arrow(WINDOW_WIDTH, WINDOW_HEIGHT) {}
 
@@ -66,8 +50,6 @@ int Game::start() {
         if (icon) {
             SDL_SetWindowIcon(window.Get(), icon);
             SDL_FreeSurface(icon);
-        } else {
-            std::cerr << "No se pudo cargar el icono: " << SDL_GetError() << "\n";
         }
 
         SDL2pp::Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -75,13 +57,11 @@ int Game::start() {
         init_textures();
 
         auto t1 = SDL_GetTicks();
-        auto rate = FPS;
         Uint32 prevTime = t1;
 
         Queue<ServerToClientCmd_Client*>& recv_queue = client_session.get_recv_queue();
 
         while (true) {
-            t1 = SDL_GetTicks();
             float deltaTime = (t1 - prevTime) / 1000.0f;
             prevTime = t1;
 
@@ -107,7 +87,6 @@ int Game::start() {
 
             explosion.update(deltaTime);
             fireEffect.update(deltaTime);
-            fireEffect.update(deltaTime);
 
             // Auto-close upgrades screen after duration
             if (showUpgradesScreen) {
@@ -115,25 +94,23 @@ int Game::start() {
                 if (elapsedMs >= UPGRADES_SCREEN_DURATION_MS) {
                     showUpgradesScreen = false;
                     selectedUpgrades = CarUpgrades();  // Reset
-                    std::cout << "[UPGRADES] Upgrade screen auto-closed after 10 seconds"
-                              << std::endl;
                 }
             }
 
             render();
 
             auto t2 = SDL_GetTicks();
-            int rest = rate - (t2 - t1);
+            int rest = FRAME_TIME_MS - (t2 - t1);
 
             if (rest < 0) {
                 auto behind = -rest;
-                auto lost = behind - behind % rate;
+                auto lost = behind - (behind % FRAME_TIME_MS);
                 t1 += lost;
             } else {
                 SDL_Delay(rest);
             }
 
-            t1 += rate;
+            t1 += FRAME_TIME_MS;
         }
 
         return 0;
@@ -147,10 +124,8 @@ int Game::start() {
 bool Game::handleEvents() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
-        // Handle upgrades screen input
         if (showUpgradesScreen) {
             handleUpgradesInput(event);
-            // Continue processing other events even in upgrades screen
         }
 
         switch (event.type) {
@@ -170,7 +145,6 @@ bool Game::handleEvents() {
                 break;
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_m) {
-                    // M key: toggle minimap (all states)
                     showMinimap = !showMinimap;
                 } else if (event.key.keysym.sym == SDLK_t) {
                     if (gameState != GameState::PLAYING && raceFullyFinished &&
@@ -194,39 +168,49 @@ bool Game::handleEvents() {
     }
 
     // CHEATS
-    if (state[SDL_SCANCODE_LCTRL]) {
+    if (state[SDL_SCANCODE_LCTRL] && !isCountdownActive()) {
         if (state[SDL_SCANCODE_H]) {
             client_session.send_command(new ClientToServerCheat_Client(CHEAT_INFINITE_HEALTH));
             carSoundEngine.playCheatActivated();
-            std::cout << "CHEAT: Vida infinita activada\n";
         } else if (state[SDL_SCANCODE_W]) {
             client_session.send_command(new ClientToServerCheat_Client(CHEAT_WIN));
-            std::cout << "CHEAT: Victoria automática\n";
             setWon();
         } else if (state[SDL_SCANCODE_L]) {
             client_session.send_command(new ClientToServerCheat_Client(CHEAT_LOSE));
-            std::cout << "CHEAT: Derrota automática\n";
             setLost();
         }
     }
 
+    bool isAccelerating, isBraking, isTurning;
+
     if (state[SDL_SCANCODE_RIGHT]) {
-        if (!playerDestroyed && !isCountdownActive())
+        if (!playerDestroyed && !isCountdownActive()) {
+            isTurning = true;
             client_session.send_command(new ClientToServerMove_Client(MOVE_RIGHT));
+        }
     }
     if (state[SDL_SCANCODE_LEFT]) {
-        if (!playerDestroyed && !isCountdownActive())
+        if (!playerDestroyed && !isCountdownActive()) {
+            isTurning = true;
             client_session.send_command(new ClientToServerMove_Client(MOVE_LEFT));
+        }
     }
     if (state[SDL_SCANCODE_UP]) {
-        if (!playerDestroyed && !isCountdownActive())
+        if (!playerDestroyed && !isCountdownActive()) {
+            isAccelerating = true;
             client_session.send_command(new ClientToServerMove_Client(MOVE_UP));
+        }
     }
     if (state[SDL_SCANCODE_DOWN]) {
-        if (!playerDestroyed && !isCountdownActive())
+        if (!playerDestroyed && !isCountdownActive()) {
+            isBraking = true;
             client_session.send_command(new ClientToServerMove_Client(MOVE_DOWN));
+        }
     }
 
+    if (gameState == GameState::PLAYING) {
+        carSoundEngine.update(isAccelerating, isTurning, isBraking);
+    }
     return false;
 }
 
@@ -251,105 +235,9 @@ bool Game::update(ServerToClientSnapshot_Client cmd_snapshot) {
         float worldY = it->pos_y * PX_PER_METER_Y;
         camera.follow(worldX, worldY);
 
-        float previousHealth = previousHealthState[it->id];
-
-        if (previousHealth == 0.0f && it->health > 0.0f) {
-            previousHealth = it->health;
-        }
-
-        if (it->health < previousHealth && previousHealth > 0.0f) {
-            float healthDamage = previousHealth - it->health;
-            lastCollisionIntensity = healthDamage;
-
-            if (healthDamage > 5.0f) {
-                collisionFlashStartTime = SDL_GetTicks();
-            }
-
-            carSoundEngine.playCollisionSound();
-            explosion.trigger(worldX, worldY, src.x, src.y, scale);
-        }
-
-        if (it->health <= 0.0f && !playerDestroyed) {
-            playerDestroyed = true;
-            destructionStartTime = SDL_GetTicks();
-            if (src.w > 0 && src.h > 0 && scale > 0) {
-                carSoundEngine.playCollisionSound();
-                explosion.triggerFinalExplosion(worldX, worldY, src.x, src.y, scale);
-                float carWidth = src.w * 0.8f;
-                float carHeight = src.h * 0.8f;
-                if (carWidth > 0 && carHeight > 0 && carWidth < 1000 && carHeight < 1000) {
-                    float screenX = (worldX - src.x) * scale;
-                    float screenY = (worldY - src.y) * scale;
-                    fireEffect.start(screenX, screenY, carWidth, carHeight);
-                }
-            }
-            std::cout << "[GAME] Player destroyed! Health: " << it->health << std::endl;
-        }
-
-        if (playerDestroyed && (SDL_GetTicks() - destructionStartTime) > 500) {
-            setLost();
-        }
-
-        previousHealthState[it->id] = it->health;
-
-        const Uint8* keyState = SDL_GetKeyboardState(NULL);
-
-        // Solo actualizar sonido si la carrera está en curso
-        if (gameState == GameState::PLAYING) {
-            bool isAccelerating = keyState[SDL_SCANCODE_UP];
-            bool isBraking = keyState[SDL_SCANCODE_DOWN];
-            bool isTurning = keyState[SDL_SCANCODE_LEFT] || keyState[SDL_SCANCODE_RIGHT];
-            carSoundEngine.update(isAccelerating, isTurning, isBraking);
-        }
-
-        if (currentCheckpoint < totalCheckpoints) {
-            const RaceCheckpoint& current = trackCheckpoints[currentCheckpoint];
-            float checkpointX = current.x;
-            float checkpointY = current.y;
-
-            arrow.updateTarget(it->pos_x, it->pos_y, checkpointX, checkpointY, it->angle);
-
-            float halfW = current.width / 2.0f;
-            float halfH = current.height / 2.0f;
-            float minX = checkpointX - halfW;
-            float maxX = checkpointX + halfW;
-            float minY = checkpointY - halfH;
-            float maxY = checkpointY + halfH;
-
-            float px = it->pos_x;
-            float py = it->pos_y;
-
-            if (px >= minX && px <= maxX && py >= minY && py <= maxY) {
-                if (currentCheckpoint == totalCheckpoints - 1) {
-                    setWon();
-                } else {
-                    currentCheckpoint++;
-                }
-            }
-        }
+        updateCarDamageState(*it, worldX, worldY, scale);
+        updateCheckpointsState(it->pos_x, it->pos_y, it->angle);
     }
-
-    // Función helper para obtener tamaño según car_type
-    auto getCarSize = [](uint8_t car_type) -> std::pair<int, int> {
-        switch (car_type) {
-            case 0:
-                return {28, 22};  // Van (75x69) - proporción: 28/75 = 0.373
-            case 1:
-                return {40, 24};  // Ferrari (75x86) - proporción: 28/75 = 0.373, 32/86 = 0.372
-            case 2:
-                return {39, 24};  // Celeste (75x86)
-            case 3:
-                return {38, 24};  // Jeep (75x86)
-            case 4:
-                return {40, 22};  // Pickup (75x86)
-            case 5:
-                return {48, 20};  // Limo (75x103) - proporción: 28/75 = 0.373, 39/103 = 0.379
-            case 6:
-                return {40, 22};  // Descapotable (75x86)
-            default:
-                return {28, 22};
-        }
-    };
 
     for (const auto& car: snapshots) {
         float worldX = car.pos_x * PX_PER_METER_X;
@@ -359,7 +247,7 @@ bool Game::update(ServerToClientSnapshot_Client cmd_snapshot) {
         float relY = (worldY - src.y) * scale;
 
         // Obtener tamaño según car_type
-        auto [carW, carH] = getCarSize(car.car_type);
+        auto [carW, carH] = SPRITE_MAP[car.car_type].size;
 
         RenderCar rc;
         rc.dst = {int(relX - (carW * scale) / 2), int(relY - (carH * scale) / 2), int(carW * scale),
@@ -370,42 +258,91 @@ bool Game::update(ServerToClientSnapshot_Client cmd_snapshot) {
         rc.angle = car.angle;      // Restar 270 grados para orientación correcta
         rc.car_id = car.car_type;  // Usar car_type para renderizado
 
-        if (!car.isNPC && car.id == client_id) {
-            camera.follow(worldX, worldY);
-        }
-
         rc.onBridge = car.onBridge;
         rc.hasInfiniteHealth = car.hasInfiniteHealth;  // Asignar el estado de vida infinita
         carsToRender.push_back(rc);
     }
 
-    return false;  // Aca quizas haya que devolver true una vez que termine la partida?
+    return false;
+}
+
+void Game::updateCarDamageState(const CarSnapshot& car, float worldX, float worldY, float scale) {
+    float previousHealth = previousHealthState[car.id];
+
+    if (previousHealth == 0.0f && car.health > 0.0f) {
+        previousHealth = car.health;
+    }
+
+    if (car.health < previousHealth && previousHealth > 0.0f) {
+        float healthDamage = previousHealth - car.health;
+        lastCollisionIntensity = healthDamage;
+
+        if (healthDamage > 5.0f) {
+            collisionFlashStartTime = SDL_GetTicks();
+        }
+
+        carSoundEngine.playCollisionSound();
+        explosion.trigger(worldX, worldY, src.x, src.y, scale);
+    }
+
+    if (car.health <= 0.0f && !playerDestroyed) {
+        playerDestroyed = true;
+        destructionStartTime = SDL_GetTicks();
+        if (src.w > 0 && src.h > 0 && scale > 0) {
+            carSoundEngine.playCollisionSound();
+            explosion.triggerFinalExplosion(worldX, worldY, src.x, src.y, scale);
+            float carWidth = src.w * 0.8f;
+            float carHeight = src.h * 0.8f;
+            if (carWidth > 0 && carHeight > 0 && carWidth < 1000 && carHeight < 1000) {
+                float screenX = (worldX - src.x) * scale;
+                float screenY = (worldY - src.y) * scale;
+                fireEffect.start(screenX, screenY, carWidth, carHeight);
+            }
+        }
+    }
+
+    if (playerDestroyed && (SDL_GetTicks() - destructionStartTime) > 500) {
+        setLost();
+    }
+
+    previousHealthState[car.id] = car.health;
+}
+
+void Game::updateCheckpointsState(float posX, float posY, float angle) {
+    if (currentCheckpoint < totalCheckpoints) {
+        const RaceCheckpoint& current = trackCheckpoints[currentCheckpoint];
+        float checkpointX = current.x;
+        float checkpointY = current.y;
+
+        arrow.updateTarget(posX, posY, checkpointX, checkpointY, angle);
+
+        float halfW = current.width / 2.0f;
+        float halfH = current.height / 2.0f;
+        float minX = checkpointX - halfW;
+        float maxX = checkpointX + halfW;
+        float minY = checkpointY - halfH;
+        float maxY = checkpointY + halfH;
+
+        float px = posX;
+        float py = posY;
+
+        if (px >= minX && px <= maxX && py >= minY && py <= maxY) {
+            if (currentCheckpoint == totalCheckpoints - 1) {
+                setWon();
+            } else {
+                currentCheckpoint++;
+            }
+        }
+    }
 }
 
 void Game::render() {
     rendererPtr->SetDrawColor(0, 0, 0, 255);
     rendererPtr->Clear();
-
     rendererPtr->Copy(*textures[currentCityId], src, dst);
-    for (const auto& rc: carsToRender) {
-        if (!rc.onBridge) {
-            // Usar textura individual del auto según su car_id
-            if (carTextures.count(rc.car_id)) {
-                rendererPtr->Copy(*carTextures[rc.car_id], rc.src, rc.dst, rc.angle,
-                                  SDL2pp::NullOpt, SDL_FLIP_NONE);
-            }
-        }
-    }
+    renderCars(false);
     rendererPtr->Copy(*textures[currentCityId + 3], src, dst);
-    for (const auto& rc: carsToRender) {
-        if (rc.onBridge) {
-            // Usar textura individual del auto según su car_id
-            if (carTextures.count(rc.car_id)) {
-                rendererPtr->Copy(*carTextures[rc.car_id], rc.src, rc.dst, rc.angle,
-                                  SDL2pp::NullOpt, SDL_FLIP_NONE);
-            }
-        }
-    }
+    renderCars(true);
 
     float scale = (src.w > 0) ? float(dst.w) / float(src.w) : 1.0f;
     renderPlayerNames(*rendererPtr, src, scale);
@@ -420,33 +357,11 @@ void Game::render() {
     hudData.health = 100.0f;
 
     if (it != snapshots.end()) {
-        float serverX = it->pos_x;
-        float serverY = it->pos_y;
-
-        localPlayer.x = serverX;
-        localPlayer.y = serverY;
+        localPlayer.x = it->pos_x;
+        localPlayer.y = it->pos_y;
         localPlayer.angle = it->angle;
-
         hudData.health = it->health;
-        if (it->speed > 0.0f) {
-            hudData.speed = it->speed;
-        } else {
-            Uint32 currentTime = SDL_GetTicks();
-            if (lastSpeedUpdateTime > 0) {
-                float timeDelta = (currentTime - lastSpeedUpdateTime) / 1000.0f;
-
-                if (timeDelta > 0.0f) {
-                    float dx = it->pos_x - lastPlayerX;
-                    float dy = it->pos_y - lastPlayerY;
-                    float distance = std::sqrt(dx * dx + dy * dy);
-                    hudData.speed = distance / timeDelta;
-                }
-            }
-
-            lastPlayerX = it->pos_x;
-            lastPlayerY = it->pos_y;
-            lastSpeedUpdateTime = currentTime;
-        }
+        hudData.speed = it->speed;
     }
 
     if (showMinimap) {
@@ -462,25 +377,39 @@ void Game::render() {
     hudData.checkpointTotal = totalCheckpoints;
     hudData.raceTime = elapsedTime;
     hud.render(*rendererPtr, hudData);
-
-    if (!snapshots.empty()) {
-        auto it2 = std::find_if(snapshots.begin(), snapshots.end(), [&](const CarSnapshot& car) {
-            return !car.isNPC && car.id == client_id;
-        });
-        if (it2 != snapshots.end()) {
-            arrow.render(*rendererPtr);
-        }
-    }
+    arrow.render(*rendererPtr);
 
     if (gameState != GameState::PLAYING) {
         renderEndGameScreen();
     }
 
-    // Render upgrades screen after race ends
     if (showUpgradesScreen) {
         renderUpgradesScreen();
     }
 
+    renderFlashEffect();
+
+    if (it != snapshots.end() && it->hasInfiniteHealth) {
+        renderInfiniteHealthIndicator();
+    }
+
+    renderCountdown();
+
+    rendererPtr->Present();
+}
+
+void Game::renderCars(bool onBridge) {
+    for (const auto& rc: carsToRender) {
+        if (rc.onBridge == onBridge) {
+            if (carTextures.count(rc.car_id)) {
+                rendererPtr->Copy(*carTextures[rc.car_id], rc.src, rc.dst, rc.angle,
+                                  SDL2pp::NullOpt, SDL_FLIP_NONE);
+            }
+        }
+    }
+}
+
+void Game::renderFlashEffect() {
     // Render high-impact collision flash effect
     if (collisionFlashStartTime > 0) {
         Uint32 elapsedMs = SDL_GetTicks() - collisionFlashStartTime;
@@ -516,39 +445,26 @@ void Game::render() {
             collisionFlashStartTime = 0;  // Stop flashing
         }
     }
+}
 
-    // Dibujar indicador de vida infinita en los bordes de la pantalla
-    auto it_local = std::find_if(snapshots.begin(), snapshots.end(), [&](const CarSnapshot& car) {
-        return !car.isNPC && car.id == client_id;
-    });
-    if (it_local != snapshots.end() && it_local->hasInfiniteHealth) {
-        int windowWidth = rendererPtr->GetOutputWidth();
-        int windowHeight = rendererPtr->GetOutputHeight();
-        const int borderWidth = 10;  // Grosor del borde indicador (engrosado)
+void Game::renderInfiniteHealthIndicator() {
+    int windowWidth = rendererPtr->GetOutputWidth();
+    int windowHeight = rendererPtr->GetOutputHeight();
+    const int borderWidth = 10;                   // Grosor del borde indicador (engrosado)
+    rendererPtr->SetDrawColor(0, 255, 100, 255);  // Verde brillante
 
-        rendererPtr->SetDrawColor(0, 255, 100, 255);  // Verde brillante
-
-        // Borde superior
-        SDL_Rect topBorder = {0, 0, windowWidth, borderWidth};
-        rendererPtr->FillRect(topBorder);
-
-        // Borde inferior
-        SDL_Rect bottomBorder = {0, windowHeight - borderWidth, windowWidth, borderWidth};
-        rendererPtr->FillRect(bottomBorder);
-
-        // Borde izquierdo
-        SDL_Rect leftBorder = {0, 0, borderWidth, windowHeight};
-        rendererPtr->FillRect(leftBorder);
-
-        // Borde derecho
-        SDL_Rect rightBorder = {windowWidth - borderWidth, 0, borderWidth, windowHeight};
-        rendererPtr->FillRect(rightBorder);
-    }
-
-    // Render countdown
-    renderCountdown();
-
-    rendererPtr->Present();
+    // Borde superior
+    SDL_Rect topBorder = {0, 0, windowWidth, borderWidth};
+    rendererPtr->FillRect(topBorder);
+    // Borde inferior
+    SDL_Rect bottomBorder = {0, windowHeight - borderWidth, windowWidth, borderWidth};
+    rendererPtr->FillRect(bottomBorder);
+    // Borde izquierdo
+    SDL_Rect leftBorder = {0, 0, borderWidth, windowHeight};
+    rendererPtr->FillRect(leftBorder);
+    // Borde derecho
+    SDL_Rect rightBorder = {windowWidth - borderWidth, 0, borderWidth, windowHeight};
+    rendererPtr->FillRect(rightBorder);
 }
 
 void Game::renderCheckpoints(SDL2pp::Renderer& renderer) {
@@ -617,16 +533,10 @@ void Game::init_textures() {
 
     for (const auto& [car_id, filename]: carFiles) {
         std::string filepath = std::string(ABS_DIR) + std::string(ASSETS_DIR) + "cars/" + filename;
-        try {
-            carTextures[car_id] = std::make_shared<SDL2pp::Texture>(
-                    *rendererPtr, SDL2pp::Surface(filepath).SetColorKey(
-                                          true, SDL_MapRGB(SDL2pp::Surface(filepath).Get()->format,
-                                                           163, 163, 13)));
-            std::cout << "[TEXTURES] Loaded car " << (int)car_id << ": " << filename << std::endl;
-        } catch (const std::exception& e) {
-            std::cerr << "[WARNING] Failed to load car texture " << filename << ": " << e.what()
-                      << std::endl;
-        }
+        carTextures[car_id] = std::make_shared<SDL2pp::Texture>(
+                *rendererPtr,
+                SDL2pp::Surface(filepath).SetColorKey(
+                        true, SDL_MapRGB(SDL2pp::Surface(filepath).Get()->format, 163, 163, 13)));
     }
 }
 
@@ -691,10 +601,7 @@ void Game::renderEndGameScreen() {
     }
 }
 
-void Game::setClientId(uint32_t id) {
-    client_id = id;
-    std::cout << "[GAME] Client ID set to " << (int)client_id << std::endl;
-}
+void Game::setClientId(uint32_t id) { client_id = id; }
 
 void Game::setWon() {
     if (gameState != GameState::PLAYING)
@@ -709,7 +616,6 @@ void Game::setWon() {
     } else {
         carSoundEngine.playRaceFinish();
     }
-    std::cout << "¡VICTORIA! Presiona ESC para volver al lobby\n";
 }
 
 void Game::setLost() {
@@ -720,14 +626,11 @@ void Game::setLost() {
     endGameTime = SDL_GetTicks();
     carSoundEngine.stopAll();  // Detener todos los sonidos de movimiento
     carSoundEngine.playGameOver();
-    std::cout << "DERROTA. Presiona ESC para volver al lobby\n";
 }
 
 void Game::setRaceResults(const std::vector<ClientPlayerResult>& results, bool isFinished) {
     hasRaceResults = true;
     raceFullyFinished = isFinished;
-    std::cout << "\n=== GAME::setRaceResults LLAMADO ===" << std::endl;
-    std::cout << "Resultados de carrera recibidos: " << results.size() << " jugadores" << std::endl;
 
     // Actualizar mapa de nombres
     for (const auto& r: results) {
@@ -744,7 +647,6 @@ void Game::setRaceResults(const std::vector<ClientPlayerResult>& results, bool i
     myOwnResults = *it;
 
     if (myOwnResults.finishTime < 0.0f && gameState == GameState::PLAYING) {
-        std::cout << "[INFO] finishTime < 0 => DNF para player " << (int)client_id << std::endl;
         myOwnResults.position = 0;
         setLost();
         return;
@@ -769,7 +671,6 @@ void Game::setRaceResults(const std::vector<ClientPlayerResult>& results, bool i
     showUpgradesScreen = true;
     upgradesScreenStartTime = SDL_GetTicks();
     selectedUpgrades = CarUpgrades();  // Resetear selección
-    std::cout << "[UPGRADES] Upgrade screen activated after race results" << std::endl;
 }
 
 float Game::getScale(int w, int h) const {
@@ -1006,9 +907,6 @@ void Game::resetForNextRace(uint8_t nextCityId, const std::string& trackName) {
     explosion.stop();
     fireEffect.stop();
     previousHealthState.clear();
-    lastSpeedUpdateTime = 0;
-    lastPlayerX = 0.0f;
-    lastPlayerY = 0.0f;
     initMinimapAndCheckpoints(trackName);
 }
 
@@ -1227,8 +1125,6 @@ void Game::handleUpgradesInput(const SDL_Event& event) {
         SDL_Rect minusRect = {minusX, minusY, 30, 30};
         if (SDL_PointInRect(&mousePoint, &minusRect)) {
             *upgradeValues[i] = std::max(0.0f, *upgradeValues[i] - increment);
-            std::cout << "[UPGRADES] Decrement upgrade " << i << " to " << *upgradeValues[i]
-                      << std::endl;
             return;
         }
 
@@ -1238,8 +1134,6 @@ void Game::handleUpgradesInput(const SDL_Event& event) {
         SDL_Rect plusRect = {plusX, plusY, 30, 30};
         if (SDL_PointInRect(&mousePoint, &plusRect)) {
             *upgradeValues[i] = std::min(maxUpgrades, *upgradeValues[i] + increment);
-            std::cout << "[UPGRADES] Increment upgrade " << i << " to " << *upgradeValues[i]
-                      << std::endl;
             return;
         }
     }
@@ -1253,10 +1147,6 @@ void Game::handleUpgradesInput(const SDL_Event& event) {
     if (SDL_PointInRect(&mousePoint, &applyRect)) {
         // Enviar comando al servidor
         client_session.send_command(new ClientToServerApplyUpgrades_Client(selectedUpgrades));
-        std::cout << "[UPGRADES] Upgrades enviados al servidor: A="
-                  << selectedUpgrades.acceleration_boost << " S=" << selectedUpgrades.speed_boost
-                  << " H=" << selectedUpgrades.handling_boost
-                  << " HP=" << selectedUpgrades.health_boost << std::endl;
 
         // Cerrar pantalla de upgrades
         showUpgradesScreen = false;
@@ -1331,48 +1221,39 @@ void Game::renderPlayerNames(SDL2pp::Renderer& renderer, const SDL_Rect& src, fl
     if (snapshots.empty())
         return;
 
-    try {
-        SDL2pp::Font nameFont("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 14);
+    SDL2pp::Font nameFont(fontPath, 14);
 
-        for (const auto& car: snapshots) {
-            if (car.isNPC || car.playerName.empty())
-                continue;  // No mostrar nombres de NPCs ni autos sin nombre
+    for (const auto& car: snapshots) {
+        if (car.isNPC || car.playerName.empty())
+            continue;  // No mostrar nombres de NPCs ni autos sin nombre
 
-            // Calcular posición en pantalla
-            float worldX = car.pos_x * PX_PER_METER_X;
-            float worldY = car.pos_y * PX_PER_METER_Y;
+        // Calcular posición en pantalla
+        float worldX = car.pos_x * PX_PER_METER_X;
+        float worldY = car.pos_y * PX_PER_METER_Y;
+        float screenX = (worldX - src.x) * scale;
+        float screenY = (worldY - src.y) * scale - 40;  // 40 píxeles arriba del auto
 
-            float screenX = (worldX - src.x) * scale;
-            float screenY = (worldY - src.y) * scale - 40;  // 40 píxeles arriba del auto
+        // Crear texto blanco con fondo negro
+        SDL_Color textColor = {255, 255, 255, 255};
+        SDL_Color bgColor = {0, 0, 0, 150};
+        auto textSurface = nameFont.RenderText_Solid(car.playerName, textColor);
+        SDL2pp::Texture textTexture(renderer, textSurface);
+        int textWidth = textTexture.GetWidth();
+        int textHeight = textTexture.GetHeight();
 
-            // Crear texto blanco con fondo negro
-            SDL_Color textColor = {255, 255, 255, 255};
-            SDL_Color bgColor = {0, 0, 0, 200};
+        // Dibujar fondo negro con algo de padding
+        int padding = 4;
+        SDL_Rect bgRect = {int(screenX - textWidth / 2 - padding), int(screenY - padding),
+                           textWidth + padding * 2, textHeight + padding * 2};
+        renderer.SetDrawColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a);
+        renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+        renderer.FillRect(bgRect);
+        renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
 
-            auto textSurface = nameFont.RenderText_Solid(car.playerName, textColor);
-            SDL2pp::Texture textTexture(renderer, textSurface);
-
-            int textWidth = textTexture.GetWidth();
-            int textHeight = textTexture.GetHeight();
-
-            // Dibujar fondo negro con algo de padding
-            int padding = 4;
-            SDL_Rect bgRect = {int(screenX - textWidth / 2 - padding), int(screenY - padding),
-                               textWidth + padding * 2, textHeight + padding * 2};
-
-            renderer.SetDrawColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a);
-            renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-            renderer.FillRect(bgRect);
-            renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
-
-            // Dibujar texto
-            SDL_Rect textRect = {int(screenX - textWidth / 2), int(screenY), textWidth, textHeight};
-            renderer.Copy(textTexture, SDL2pp::NullOpt, textRect);
-        }
-    } catch (const std::exception& e) {
-        std::cerr << "[ERROR] Error rendering player names: " << e.what() << std::endl;
+        // Dibujar texto
+        SDL_Rect textRect = {int(screenX - textWidth / 2), int(screenY), textWidth, textHeight};
+        renderer.Copy(textTexture, SDL2pp::NullOpt, textRect);
     }
 }
-
 
 bool Game::isCountdownActive() const { return showCountdown; }

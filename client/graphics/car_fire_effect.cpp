@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <cstdlib>
-#include <iostream>
 
 CarFireEffect::CarFireEffect() {}
 
@@ -18,7 +17,6 @@ uint8_t CarFireEffect::randomByte(uint8_t min, uint8_t max) {
 
 void CarFireEffect::start(float screenX, float screenY, float carWidth, float carHeight) {
     if (carWidth <= 0 || carHeight <= 0 || carWidth > 1000 || carHeight > 1000) {
-        std::cerr << "[FIRE ERROR] Invalid car dimensions: " << carWidth << "x" << carHeight << std::endl;
         active = false;
         return;
     }
@@ -30,9 +28,6 @@ void CarFireEffect::start(float screenX, float screenY, float carWidth, float ca
     this->carHeight = carHeight;
     particles.clear();
     emissionTimer = 0.0f;
-
-    std::cout << "[FIRE] Fire effect started at screen (" << screenX << ", " << screenY
-              << ") car size (" << carWidth << "x" << carHeight << ")" << std::endl;
 }
 
 void CarFireEffect::emitFireParticles() {
@@ -43,7 +38,7 @@ void CarFireEffect::emitFireParticles() {
 
         float angle = randomFloat(0.0f, 2.0f * 3.14159f);
         float distance = randomFloat(carWidth * 0.15f, carWidth * 0.3f);  // Más cercano
-        
+
         p.x = baseX + std::cos(angle) * distance;
         p.y = baseY + std::sin(angle) * distance * 0.7f;
 
@@ -116,7 +111,7 @@ void CarFireEffect::render(SDL2pp::Renderer& renderer) {
     Uint8 r, g, b, a;
     renderer.GetDrawColor(r, g, b, a);
 
-    for (auto& p : particles) {
+    for (auto& p: particles) {
         float progress = p.lifetime / p.maxLifetime;
 
         uint8_t alpha = static_cast<uint8_t>(255 * (1.0f - progress * 0.8f));
@@ -136,4 +131,9 @@ void CarFireEffect::render(SDL2pp::Renderer& renderer) {
     }
 
     renderer.SetDrawColor(r, g, b, a);
+}
+
+void CarFireEffect::stop() {
+    active = false;
+    particles.clear();
 }

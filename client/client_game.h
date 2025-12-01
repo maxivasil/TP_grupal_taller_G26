@@ -2,21 +2,29 @@
 #define GAME_H
 
 #include <algorithm>
+#include <cmath>
 #include <exception>
+#include <filesystem>
 #include <iostream>
 #include <map>
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <SDL2/SDL.h>
 #include <SDL2pp/SDL2pp.hh>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
+#include <unistd.h>
 
 #include "../common/constants.h"
 #include "../server/game_logic/CarUpgrades.h"
 #include "audio/car_sound_engine.h"
+#include "cmd/client_to_server_applyUpgrades_client.h"
+#include "cmd/client_to_server_cheat_client.h"
+#include "cmd/client_to_server_move_client.h"
 #include "cmd/server_to_client_raceResults_client.h"
 #include "graphics/camera.h"
 #include "graphics/car_fire_effect.h"
@@ -24,6 +32,7 @@
 #include "graphics/collision_explosion.h"
 #include "graphics/hud.h"
 #include "graphics/minimap.h"
+#include "graphics/track_loader.h"
 
 #include "session.h"
 
@@ -75,10 +84,6 @@ private:
 
     std::unordered_map<int, float> previousHealthState;
 
-    float lastPlayerX = 0.0f;
-    float lastPlayerY = 0.0f;
-    Uint32 lastSpeedUpdateTime = 0;
-
     Uint32 collisionFlashStartTime = 0;
     const Uint32 FLASH_DURATION_MS = 300;
     float lastCollisionIntensity = 0.0f;
@@ -119,7 +124,17 @@ private:
 
     bool update(ServerToClientSnapshot_Client cmd_snapshot);
 
+    void updateCarDamageState(const CarSnapshot& car, float worldX, float worldY, float scale);
+
+    void updateCheckpointsState(float posX, float posY, float angle);
+
     void render();
+
+    void renderCars(bool onBridge);
+
+    void renderFlashEffect();
+
+    void renderInfiniteHealthIndicator();
 
     void renderEndGameScreen();
 

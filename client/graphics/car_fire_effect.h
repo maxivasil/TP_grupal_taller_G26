@@ -16,9 +16,7 @@ public:
 
     void render(SDL2pp::Renderer& renderer);
 
-    bool isActive() const { return active; }
-
-    void stop() { active = false; particles.clear(); }
+    void stop();
 
 private:
     struct FireParticle {

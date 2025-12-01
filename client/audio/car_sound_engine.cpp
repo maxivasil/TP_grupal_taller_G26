@@ -98,6 +98,17 @@ void CarSoundEngine::update(bool isAccelerating, bool isTurning, bool isBraking)
     if (!audioInitialized)
         return;
 
+    int ch = finishedChannel.exchange(-1);
+    if (ch != -1) {
+        activeEffectChannels.erase(ch);
+
+        if (ch == engineStartChannel && enginePlaying) {
+            engineLoopChannel = Mix_PlayChannel(-1, engineLoopSound, -1);
+            if (engineLoopChannel != -1)
+                activeEffectChannels.insert(engineLoopChannel);
+        }
+    }
+
     if (isAccelerating && !enginePlaying) {
         enginePlaying = true;
         playAcceleration();
@@ -335,15 +346,7 @@ void CarSoundEngine::playCountdownRace() {
 void CarSoundEngine::onChannelFinished(int channel) {
     if (!instance)
         return;
-
-    instance->activeEffectChannels.erase(channel);
-
-    if (channel == instance->engineStartChannel && instance->enginePlaying) {
-        instance->engineLoopChannel = Mix_PlayChannel(-1, instance->engineLoopSound, -1);
-        if (instance->engineLoopChannel != -1) {
-            instance->activeEffectChannels.insert(instance->engineLoopChannel);
-        }
-    }
+    instance->finishedChannel.store(channel, std::memory_order_relaxed);
 }
 
 void CarSoundEngine::stopAcceleration() {

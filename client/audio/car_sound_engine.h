@@ -2,6 +2,7 @@
 #define CAR_SOUND_ENGINE_H
 
 #include <algorithm>
+#include <atomic>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -22,12 +23,12 @@ private:
     Mix_Chunk* turnSound;
     Mix_Chunk* brakeSound;
     Mix_Chunk* collisionSound;
-    Mix_Chunk* raceFinishSound;      // Sound when race finishes (victory)
-    Mix_Chunk* gameOverSound;        // Sound when player loses
-    Mix_Chunk* cheatActivatedSound;  // Sound when cheat is activated
-    Mix_Chunk* championshipWinSound; // Sound when championship is won
-    Mix_Chunk* championshipLossSound; // Sound when championship is lost
-    Mix_Chunk* countdownRaceSound;   // Sound for race countdown
+    Mix_Chunk* raceFinishSound;        // Sound when race finishes (victory)
+    Mix_Chunk* gameOverSound;          // Sound when player loses
+    Mix_Chunk* cheatActivatedSound;    // Sound when cheat is activated
+    Mix_Chunk* championshipWinSound;   // Sound when championship is won
+    Mix_Chunk* championshipLossSound;  // Sound when championship is lost
+    Mix_Chunk* countdownRaceSound;     // Sound for race countdown
     Mix_Music* musicTrack;
 
     int engineStartChannel = -1;
@@ -52,6 +53,8 @@ private:
 
     // Sound loading
     Mix_Chunk* loadSound(const std::string& filepath);
+
+    std::atomic<int> finishedChannel{-1};
     void initAudio();
 
     static void onChannelFinished(int channel);
@@ -76,12 +79,12 @@ public:
     void stopAll();
 
     // Contextual sounds with distance modulation
-    void playRaceFinish();      // When player finishes race (victory)
-    void playGameOver();        // When player loses
-    void playChampionshipWin();  // When player wins championship
-    void playChampionshipLoss(); // When player loses championship
-    void playCheatActivated();  // When cheat is activated
-    void playCountdownRace();   // When race countdown starts
+    void playRaceFinish();        // When player finishes race (victory)
+    void playGameOver();          // When player loses
+    void playChampionshipWin();   // When player wins championship
+    void playChampionshipLoss();  // When player loses championship
+    void playCheatActivated();    // When cheat is activated
+    void playCountdownRace();     // When race countdown starts
 
 private:
 };

@@ -17,7 +17,7 @@ City::City(CityName name): name(name) {
     for (const auto& obj: data["objects"]) {
         std::string type = obj["type"].as<std::string>();
 
-        if (type == "CollisionUp" || type == "CollisionDown") {
+        if (type == "CollisionUp" || type == "CollisionDown" || type == "Water") {
             staticObjects.push_back({obj["x"].as<float>(), obj["y"].as<float>(),
                                      obj["width"].as<float>(), obj["height"].as<float>(),
                                      (type == "CollisionUp")});

@@ -26,7 +26,7 @@ public:
     virtual ~ServerToClientCmd_Client() = default;
 
     // Ejecuta el comando en el cliente (desde el servidor)
-    virtual void execute(ClientContext& ctx) = 0;  // ClientSession& client
+    virtual void execute(ClientContext& ctx) = 0;
 
     static ServerToClientCmd_Client* from_bytes(
             const std::vector<uint8_t>& data,

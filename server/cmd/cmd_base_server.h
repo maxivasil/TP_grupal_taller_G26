@@ -28,7 +28,7 @@ public:
     virtual ~ClientToServerCmd_Server() = default;
 
     // Ejecuta el comando en el contexto del servidor (desde el cliente)
-    virtual void execute(ServerContext& ctx) = 0;  // ServerSession& server, ClientSession& client
+    virtual void execute(ServerContext& ctx) = 0;
 
     // Fábrica estática para crear comandos desde bytes
     static ClientToServerCmd_Server* from_bytes(

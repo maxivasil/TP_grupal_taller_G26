@@ -574,19 +574,19 @@ void Game::renderEndGameScreen() {
             renderPressESC();
             return;
         }
-        
+
         // Por defecto: pantalla especial arriba + tabla de carrera abajo
         Uint8 prevR, prevG, prevB, prevA;
         rendererPtr->GetDrawColor(prevR, prevG, prevB, prevA);
-        
+
         // Fondo semi-transparente para la parte especial
-        SDL_Rect bgRect = {0, 0, width, height / 2};
+        SDL_Rect bgRect_ = {0, 0, width, height / 2};
         rendererPtr->SetDrawColor(0, 0, 0, 150);
         rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-        rendererPtr->FillRect(bgRect);
+        rendererPtr->FillRect(bgRect_);
         rendererPtr->SetDrawBlendMode(SDL_BLENDMODE_NONE);
         rendererPtr->SetDrawColor(prevR, prevG, prevB, prevA);
-        
+
         // Mostrar pantalla especial en la mitad superior
         if (gameState == GameState::WON) {
             if (isChampion()) {
@@ -601,12 +601,12 @@ void Game::renderEndGameScreen() {
                 renderLastRaceLostNotChampion();
             }
         }
-        
+
         // Mostrar tabla de resultados de la carrera en la mitad inferior
         if (!raceResults.empty()) {
             renderRaceTable();
         }
-        
+
         renderPressESC();
         return;
     }
@@ -939,7 +939,7 @@ void Game::renderAccumulatedTable() {
 
 void Game::setAccumulatedResults(const std::vector<AccumulatedResultDTO>& res) {
     accumulatedResults = res;
-    
+
     // Si es la última carrera, reproducir el sonido correcto dependiendo si eres campeón
     if (isLastRace && !accumulatedResults.empty() && !championshipLossSoundPlayed) {
         bool isChamp = (accumulatedResults[0].playerId == client_id);
@@ -1345,7 +1345,8 @@ void Game::renderLastRaceWonChampion() {
     SDL2pp::Texture subtitleTexture(*rendererPtr, subtitleSurface);
     int subtitleX = (width - subtitleTexture.GetWidth()) / 2;
     int subtitleY = titleY + titleTexture.GetHeight() + 15;
-    SDL_Rect subtitleRect = {subtitleX, subtitleY, subtitleTexture.GetWidth(), subtitleTexture.GetHeight()};
+    SDL_Rect subtitleRect = {subtitleX, subtitleY, subtitleTexture.GetWidth(),
+                             subtitleTexture.GetHeight()};
     rendererPtr->Copy(subtitleTexture, SDL2pp::NullOpt, subtitleRect);
 
     // Mensaje celebración
@@ -1356,7 +1357,8 @@ void Game::renderLastRaceWonChampion() {
     SDL2pp::Texture messageTexture(*rendererPtr, messageSurface);
     int messageX = (width - messageTexture.GetWidth()) / 2;
     int messageY = subtitleY + subtitleTexture.GetHeight() + 20;
-    SDL_Rect messageRect = {messageX, messageY, messageTexture.GetWidth(), messageTexture.GetHeight()};
+    SDL_Rect messageRect = {messageX, messageY, messageTexture.GetWidth(),
+                            messageTexture.GetHeight()};
     rendererPtr->Copy(messageTexture, SDL2pp::NullOpt, messageRect);
 }
 
@@ -1383,7 +1385,8 @@ void Game::renderLastRaceWonNotChampion() {
     SDL2pp::Texture subtitleTexture(*rendererPtr, subtitleSurface);
     int subtitleX = (width - subtitleTexture.GetWidth()) / 2;
     int subtitleY = titleY + titleTexture.GetHeight() + 15;
-    SDL_Rect subtitleRect = {subtitleX, subtitleY, subtitleTexture.GetWidth(), subtitleTexture.GetHeight()};
+    SDL_Rect subtitleRect = {subtitleX, subtitleY, subtitleTexture.GetWidth(),
+                             subtitleTexture.GetHeight()};
     rendererPtr->Copy(subtitleTexture, SDL2pp::NullOpt, subtitleRect);
 
     // Mensaje no campeón
@@ -1394,7 +1397,8 @@ void Game::renderLastRaceWonNotChampion() {
     SDL2pp::Texture messageTexture(*rendererPtr, messageSurface);
     int messageX = (width - messageTexture.GetWidth()) / 2;
     int messageY = subtitleY + subtitleTexture.GetHeight() + 20;
-    SDL_Rect messageRect = {messageX, messageY, messageTexture.GetWidth(), messageTexture.GetHeight()};
+    SDL_Rect messageRect = {messageX, messageY, messageTexture.GetWidth(),
+                            messageTexture.GetHeight()};
     rendererPtr->Copy(messageTexture, SDL2pp::NullOpt, messageRect);
 
     // Mostrar quién fue el campeón
@@ -1406,7 +1410,8 @@ void Game::renderLastRaceWonNotChampion() {
         SDL2pp::Texture championTexture(*rendererPtr, championSurface);
         int championX = (width - championTexture.GetWidth()) / 2;
         int championY = messageY + messageTexture.GetHeight() + 15;
-        SDL_Rect championRect = {championX, championY, championTexture.GetWidth(), championTexture.GetHeight()};
+        SDL_Rect championRect = {championX, championY, championTexture.GetWidth(),
+                                 championTexture.GetHeight()};
         rendererPtr->Copy(championTexture, SDL2pp::NullOpt, championRect);
     }
 }
@@ -1434,7 +1439,8 @@ void Game::renderLastRaceLostChampion() {
     SDL2pp::Texture subtitleTexture(*rendererPtr, subtitleSurface);
     int subtitleX = (width - subtitleTexture.GetWidth()) / 2;
     int subtitleY = titleY + titleTexture.GetHeight() + 15;
-    SDL_Rect subtitleRect = {subtitleX, subtitleY, subtitleTexture.GetWidth(), subtitleTexture.GetHeight()};
+    SDL_Rect subtitleRect = {subtitleX, subtitleY, subtitleTexture.GetWidth(),
+                             subtitleTexture.GetHeight()};
     rendererPtr->Copy(subtitleTexture, SDL2pp::NullOpt, subtitleRect);
 
     // Mensaje
@@ -1445,7 +1451,8 @@ void Game::renderLastRaceLostChampion() {
     SDL2pp::Texture messageTexture(*rendererPtr, messageSurface);
     int messageX = (width - messageTexture.GetWidth()) / 2;
     int messageY = subtitleY + subtitleTexture.GetHeight() + 20;
-    SDL_Rect messageRect = {messageX, messageY, messageTexture.GetWidth(), messageTexture.GetHeight()};
+    SDL_Rect messageRect = {messageX, messageY, messageTexture.GetWidth(),
+                            messageTexture.GetHeight()};
     rendererPtr->Copy(messageTexture, SDL2pp::NullOpt, messageRect);
 }
 
@@ -1472,7 +1479,8 @@ void Game::renderLastRaceLostNotChampion() {
     SDL2pp::Texture subtitleTexture(*rendererPtr, subtitleSurface);
     int subtitleX = (width - subtitleTexture.GetWidth()) / 2;
     int subtitleY = titleY + titleTexture.GetHeight() + 15;
-    SDL_Rect subtitleRect = {subtitleX, subtitleY, subtitleTexture.GetWidth(), subtitleTexture.GetHeight()};
+    SDL_Rect subtitleRect = {subtitleX, subtitleY, subtitleTexture.GetWidth(),
+                             subtitleTexture.GetHeight()};
     rendererPtr->Copy(subtitleTexture, SDL2pp::NullOpt, subtitleRect);
 
     // Mensaje
@@ -1483,7 +1491,8 @@ void Game::renderLastRaceLostNotChampion() {
     SDL2pp::Texture messageTexture(*rendererPtr, messageSurface);
     int messageX = (width - messageTexture.GetWidth()) / 2;
     int messageY = subtitleY + subtitleTexture.GetHeight() + 20;
-    SDL_Rect messageRect = {messageX, messageY, messageTexture.GetWidth(), messageTexture.GetHeight()};
+    SDL_Rect messageRect = {messageX, messageY, messageTexture.GetWidth(),
+                            messageTexture.GetHeight()};
     rendererPtr->Copy(messageTexture, SDL2pp::NullOpt, messageRect);
 
     // Mostrar quién fue el campeón
@@ -1495,7 +1504,8 @@ void Game::renderLastRaceLostNotChampion() {
         SDL2pp::Texture championTexture(*rendererPtr, championSurface);
         int championX = (width - championTexture.GetWidth()) / 2;
         int championY = messageY + messageTexture.GetHeight() + 15;
-        SDL_Rect championRect = {championX, championY, championTexture.GetWidth(), championTexture.GetHeight()};
+        SDL_Rect championRect = {championX, championY, championTexture.GetWidth(),
+                                 championTexture.GetHeight()};
         rendererPtr->Copy(championTexture, SDL2pp::NullOpt, championRect);
     }
 }

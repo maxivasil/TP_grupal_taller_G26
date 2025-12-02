@@ -58,7 +58,7 @@ TEST(STCProtocolSerializationTest, Snapshot) {
         BufferUtils::read_uint16(bytes, offset, nameLen);
         EXPECT_EQ(nameLen, cars[i].playerName.length());
         if (nameLen > 0) {
-            std::string readName((char*)&bytes[offset], nameLen);
+            std::string readName(reinterpret_cast<const char*>(bytes.data() + offset), nameLen);
             EXPECT_EQ(readName, cars[i].playerName);
             offset += nameLen;
         }

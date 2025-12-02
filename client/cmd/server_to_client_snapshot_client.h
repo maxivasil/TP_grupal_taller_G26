@@ -1,6 +1,7 @@
 #ifndef SERVER_TO_CLIENT_SNAPSHOT_CLIENT_H
 #define SERVER_TO_CLIENT_SNAPSHOT_CLIENT_H
 
+#include <string>
 #include <utility>
 #include <vector>
 

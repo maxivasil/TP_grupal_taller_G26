@@ -16,7 +16,8 @@ TEST(STCProtocolDeserializationTest, Snapshot) {
     BufferUtils::append_uint8(bytes, carCount);
 
     auto appendCar = [&](uint32_t id, float x, float y, bool coll, float health, float speed,
-                         float angle, bool bridge, uint8_t type, bool inf, bool npc, const std::string& name) {
+                         float angle, bool bridge, uint8_t type, bool inf, bool npc,
+                         const std::string& name) {
         BufferUtils::append_uint32(bytes, id);
 
         BufferUtils::append_float(bytes, x);
@@ -41,7 +42,7 @@ TEST(STCProtocolDeserializationTest, Snapshot) {
         uint16_t nameLen = static_cast<uint16_t>(name.length());
         BufferUtils::append_uint16(bytes, nameLen);
         if (nameLen > 0) {
-            BufferUtils::append_bytes(bytes, (uint8_t*)name.c_str(), nameLen);
+            BufferUtils::append_bytes(bytes, name.data(), nameLen);
         }
     };
 

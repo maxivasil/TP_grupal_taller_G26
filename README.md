@@ -117,10 +117,8 @@ Cada vez que se finaliza un circuito el usuario tiene la posibilidad de mejorar 
 Para ejecutar el editor:
 
 ```bash
-sudo nfs2d_editor
+nfs2d_editor
 ```
-**Nota:** El editor requiere permisos de administrador.
-
 
 Al iniciar el editor verás la siguiente interfaz:
 

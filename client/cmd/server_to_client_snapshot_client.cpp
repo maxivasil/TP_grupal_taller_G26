@@ -2,8 +2,7 @@
 
 #include <cstring>
 #include <stdexcept>
-
-#include <arpa/inet.h>
+#include <string>
 
 #include "../client_game.h"
 
@@ -75,7 +74,8 @@ ServerToClientSnapshot_Client ServerToClientSnapshot_Client::from_bytes(
             uint16_t nameLen;
             BufferUtils::read_uint16(data, offset, nameLen);
             if (nameLen > 0 && offset + nameLen <= data.size()) {
-                car.playerName = std::string((char*)&data[offset], nameLen);
+                car.playerName =
+                        std::string(reinterpret_cast<const char*>(data.data() + offset), nameLen);
                 offset += nameLen;
             }
         }

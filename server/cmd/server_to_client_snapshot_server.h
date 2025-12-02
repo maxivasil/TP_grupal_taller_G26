@@ -1,6 +1,7 @@
 #ifndef SERVER_TO_CLIENT_SNAPSHOT_SERVER_H
 #define SERVER_TO_CLIENT_SNAPSHOT_SERVER_H
 
+#include <string>
 #include <vector>
 
 #include "../../common/buffer_utils.h"

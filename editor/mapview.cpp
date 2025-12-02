@@ -147,7 +147,6 @@ void MapView::mouseReleaseEvent(QMouseEvent* event) {
             emit rectCreated(intersected);
             checkpoints.push_back(intersected);
             emit checkpointsChanged(checkpoints.size());
-        } else {
         }
 
         if (rubberBandItem) {

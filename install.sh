@@ -118,6 +118,8 @@ fi
 
 ./build/nfs2d_tests
 
+chmod -R 777 "${INSTALL_VAR_DIR}"
+
 echo
 echo "=========================================="
 echo "   Instalación completada correctamente"

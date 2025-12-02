@@ -1,5 +1,6 @@
 # TP_grupal_taller_G26
 
+#### [Enlace al Trailer del juego](https://youtu.be/mLHopa-LgVM)
 
 ## Requisitos del sistema
 - Ubuntu 24.04 LTS

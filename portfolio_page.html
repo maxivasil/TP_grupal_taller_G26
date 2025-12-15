@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFS2D - Racing Game | Maximiliano Vasil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px 20px;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .video-section {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .details-section {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        h3 {
+            color: #764ba2;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 15px 0;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #555;
+        }
+
+        .feature-list li:before {
+            content: "▶";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .tech-item {
+            background: #f5f5f5;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            color: #333;
+        }
+
+        .links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            margin-top: 40px;
+            font-size: 0.9em;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .links {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏎️ NFS2D</h1>
+            <p class="subtitle">Racing Game - Multiplayer Online</p>
+            <p style="color: #666; margin-bottom: 15px;">A collaborative university project featuring a competitive multiplayer racing experience</p>
+        </header>
+
+        <div class="main-content">
+            <div class="video-section">
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/mLHopa-LgVM" allowfullscreen="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" loading="lazy"></iframe>
+                </div>
+            </div>
+
+            <div class="details-section">
+                <h2>Acerca del Proyecto</h2>
+                
+                <h3>Descripción</h3>
+                <p>NFS2D es un juego de carreras multijugador desarrollado en C++ con arquitectura cliente-servidor. El proyecto fue realizado como trabajo grupal en el Taller de Programación de la Universidad de Buenos Aires (UBA).</p>
+
+                <h3>Características Principales</h3>
+                <ul class="feature-list">
+                    <li>Juego multijugador en línea</li>
+                    <li>Múltiples circuitos disponibles</li>
+                    <li>Sistema de lobby y salas</li>
+                    <li>Variedad de autos con estadísticas</li>
+                    <li>Sistema de audio sincronizado</li>
+                    <li>Interfaz gráfica moderna</li>
+                </ul>
+
+                <h3>Stack Tecnológico</h3>
+                <div class="tech-stack">
+                    <div class="tech-item">C++17</div>
+                    <div class="tech-item">SDL2</div>
+                    <div class="tech-item">Qt5</div>
+                    <div class="tech-item">YAML</div>
+                    <div class="tech-item">CMake</div>
+                    <div class="tech-item">Socket Programming</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="details-section">
+            <h2>Especificaciones Técnicas</h2>
+            
+            <h3>Arquitectura</h3>
+            <ul class="feature-list">
+                <li><strong>Cliente:</strong> Aplicación SDL2/Qt5 con interfaz gráfica</li>
+                <li><strong>Servidor:</strong> Aplicación multi-threading para gestionar múltiples conexiones</li>
+                <li><strong>Editor:</strong> Herramienta Qt5 para crear circuitos</li>
+                <li><strong>Protocolo:</strong> Comunicación basada en sockets TCP/IP</li>
+            </ul>
+
+            <h3>Requisitos</h3>
+            <ul class="feature-list">
+                <li>Ubuntu 24.04 LTS</li>
+                <li>Instalación automatizada con script</li>
+                <li>Dependencias: SDL2, Qt5, yaml-cpp, OpenGL</li>
+            </ul>
+
+            <h3>Funcionalidades del Juego</h3>
+            <ul class="feature-list">
+                <li>Crear o unirse a lobbies multijugador</li>
+                <li>Seleccionar circuito y automóvil</li>
+                <li>Sistema de código de sala para invitar amigos</li>
+                <li>Sincronización en tiempo real</li>
+                <li>Estadísticas de carrera</li>
+            </ul>
+        </div>
+
+        <div class="details-section">
+            <h2>Enlaces y Recursos</h2>
+            <div class="stats">
+                <div class="stat-box">
+                    <span class="stat-number">4</span>
+                    <span class="stat-label">Módulos Principales</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">3</span>
+                    <span class="stat-label">Circuitos</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Funcional</span>
+                </div>
+            </div>
+
+            <div class="links">
+                <a href="https://github.com/maxivasil/TP_grupal_taller_G26" class="btn">📂 Ver Código en GitHub</a>
+                <a href="https://youtu.be/mLHopa-LgVM" class="btn btn-secondary">▶️ Ver Trailer</a>
+            </div>
+        </div>
+
+        <footer>
+            <p>Desarrollado por Maximiliano Vasil | Taller de Programación - UBA | Diciembre 2025</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -81,21 +81,19 @@ void ReadyWindow::setReady() {
     QApplication::processEvents();
     QPushButton* senderButton = qobject_cast<QPushButton*>(sender());
     senderButton->setEnabled(false);
-    ServerToClientCmd_Client* raw_cmd;
     Queue<ServerToClientCmd_Client*>& recv_queue = client_session->get_recv_queue();
     client_session->send_command(new ClientToServerReady_Client(car, username));
     std::vector<ServerToClientCmd_Client*> stash;
     while (true) {
-        if (recv_queue.try_pop(raw_cmd)) {
-            std::unique_ptr<ServerToClientCmd_Client> cmd(raw_cmd);
-            auto* start_cmd = dynamic_cast<ServerToClientGameStarting_Client*>(cmd.get());
-            if (start_cmd) {
-                ClientContext ctx = {.game = nullptr, .mainwindow = (this)};
-                start_cmd->execute(ctx);
-                break;
-            } else {
-                stash.push_back(cmd.release());
-            }
+        ServerToClientCmd_Client* raw_cmd = recv_queue.pop();
+        std::unique_ptr<ServerToClientCmd_Client> cmd(raw_cmd);
+        auto* start_cmd = dynamic_cast<ServerToClientGameStarting_Client*>(cmd.get());
+        if (start_cmd) {
+            ClientContext ctx = {.game = nullptr, .mainwindow = (this)};
+            start_cmd->execute(ctx);
+            break;
+        } else {
+            stash.push_back(cmd.release());
         }
     }
     for (auto* c: stash) {

@@ -157,3 +157,6 @@ Deberás elegir en la esquina superior izquierda para qué mapa deseas crear una
 - **[Librería de Queue](https://github.com/eldipa/hands-on-threads)** (GPL v2)
 - **[Box2d](https://github.com/erincatto/box2d.git)** (MIT license)
 
+### Licencia
+
+Este proyecto está bajo la licencia **GNU General Public License v2.0**. Para más información, consulta el archivo [LICENSE](LICENSE).
